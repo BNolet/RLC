@@ -21,6 +21,7 @@ $(document).ready(function() {
           body.loggedin.liveupdate-app {background:#575757;color:white;}\
           div.content{background:#575757;color:white;}\
           div.md{color:white;}\
+          .liveupdate-listing li.liveupdate ul.buttonrow { display: none!important;}\
          .liveupdate-listing li.liveupdate .time {width:80px}  \
          .liveupdate .body {   \
             padding: 5px; \
