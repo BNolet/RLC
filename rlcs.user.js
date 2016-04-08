@@ -1,6 +1,6 @@
 
 // ==UserScript==
-// @name         live chatroom robinizer
+// @name         RLCS
 // @namespace    http://tampermonkey.net/
 // @version      0.way too much
 // @description  Parrot-like functionality for Reddit Live
