@@ -18,7 +18,7 @@ $(document).ready(function() {
  /*add css styles, every line must end with \  */
      GM_addStyle(" \
           a.author {float:left;} \
-          body.loggedin.liveupdate-app{background:#707070;}\
+          body.loggedin.liveupdate-app div.content{background:#707070;color:white;}\
          .liveupdate-listing li.liveupdate .time {width:80px}  \
          .liveupdate .body {   \
             padding: 5px; \
