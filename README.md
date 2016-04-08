@@ -1,4 +1,4 @@
-# RLCS
+# RLCS (Reddit Live Chat Simplifier)
 
 This is a script made for the reddit "live" feature. It makes chatting a little simpler. 
 
