@@ -27,6 +27,7 @@ $(document).ready(function() {
             padding: 5px; \
             max-width:600px!important; \
          } \
+         .liveupdate-listing li.liveupdate .body div.md {  display: block;} \
 ");
 
 });
