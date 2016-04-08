@@ -20,7 +20,6 @@ $(document).ready(function() {
          a.author {float:left;}   \
          .liveupdate-listing li.liveupdate .time {width:80px}  \
          .liveupdate .body {   \
-            background: darkslategrey; \
             padding: 5px; \
             max-width:600px!important; \
          } \
