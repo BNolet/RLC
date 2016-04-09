@@ -9,9 +9,11 @@ To use this script, install tampermonkey which can be found [here](https://chrom
 Version history:
 
 0.1: Ctrl+enter now sends message.
+
 0.2: first CSS styling added
+
 0.3: minor CSS update 
+
 0.4: major CSS update to emulate chatroom look including reversal of message flow. 
-0.5: minor CSS update to allow scroll to the bottom of the page to load old messages.
-    -Enter now sends.
-    -Right click usernames to insert in message.
+
+0.5: minor CSS update to allow scroll to the bottom of the page to load old messages. new features: Enter now sends, Right click usernames to insert in message.
