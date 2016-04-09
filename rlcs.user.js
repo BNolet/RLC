@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLCS
 // @namespace    http://tampermonkey.net/
-// @version      0.6 
+// @version      0.7 - death to embedly 
 // @description  Parrot-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
 // @include      https://*.reddit.com/live/*
@@ -111,4 +111,5 @@ ol.liveupdate-listing { \
 .live-timestamp {  position: absolute;    top: 20px;    left: 5px;} \
 .liveupdate-listing li.liveupdate a.author {padding:2px;word-break: normal;overflow: hidden;} \
 body {    overflow-y: hidden;} \
-");
+iframe, .embedFrame {    display: none!important;} \
+                  ");
