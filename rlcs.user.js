@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLCS
 // @namespace    http://tampermonkey.net/
-// @version      0.way too much
+// @version      0.4 
 // @description  Parrot-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
 // @include      https://www.reddit.com/live/*
@@ -9,11 +9,19 @@
 // @grant   GM_addStyle
 // ==/UserScript==                
 $(document).ready(function() {
+  
   $(document).keydown(function(e){
-      if (e.keyCode == 13 && e.ctrlKey == true) {
+      if (e.keyCode == 13) {
           $(".save-button .btn").click();  
       }
   });   
+    $('body').on('contextmenu', ".liveupdate .author", function (event) {
+        event.preventDefault();
+        var username = String($(this).text()).trim();
+        var source = String($(".usertext-edit.md-container textarea").val());
+        // Focus textarea and set the value of textarea
+        $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
+    });
  
  /*add css styles, every line must end with \  */
       GM_addStyle(" \
@@ -32,7 +40,7 @@ $(document).ready(function() {
         #new-update-form .usertext {  max-width: none;} \
 .usertext-edit .md {min-width: 100%!important;} \
 .content { \
-    width: 70%; \
+    width: 95%; \
     position:relative; \
 } \
 header#liveupdate-header { \
@@ -63,15 +71,16 @@ ol.liveupdate-listing { \
     max-width: 76%; \
     overflow-y: scroll; \
     padding-right: 15px; \
-    height:700px!important; \
+    height: calc(100vh - 250px); \
     margin-bottom: 150px; \
 } \
 .liveupdate-listing li.liveupdate {  border-top:1px solid grey;padding-top:2px; } \
 .liveupdate-listing li.liveupdate .body div.md { \
-    width: 90%; \
+    width: 84%; \
     display: block; \
     float: right; \
     margin-bottom:0; \
+    max-width: none; \
 } \
 a.author { \
     display: block; \
@@ -87,6 +96,12 @@ a.author { \
     max-width: 100%; \
     margin: 0; \
 } \
+ol.liveupdate-listing { \
+    display: flex; \
+    flex-direction: column-reverse; \
+} \
+.liveupdate-listing li.liveupdate {height: auto!important;overflow:visible;} \
+.footer-parent {    display: none; } \
 ");
 });
 
