@@ -4,7 +4,8 @@
 // @version      0.6 
 // @description  Parrot-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
-// @include      https://www.reddit.com/live/*
+// @include      https://*.reddit.com/live/*
+// @exclude      https://*.reddit.com/live/*/edit
 // @require      http://code.jquery.com/jquery-latest.js
 // @grant   GM_addStyle
 // ==/UserScript==                
