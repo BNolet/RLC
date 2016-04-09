@@ -110,4 +110,5 @@ ol.liveupdate-listing { \
 .liveupdate-listing li.liveupdate { position:relative;} \
 .live-timestamp {  position: absolute;    top: 20px;    left: 5px;} \
 .liveupdate-listing li.liveupdate a.author {padding:2px;word-break: normal;overflow: hidden;} \
+body {    overflow-y: hidden;} \
 ");
