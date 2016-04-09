@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLCS
 // @namespace    http://tampermonkey.net/
-// @version      0.4 
+// @version      0.6 
 // @description  Parrot-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
 // @include      https://www.reddit.com/live/*
@@ -22,7 +22,7 @@ $(document).ready(function() {
         // Focus textarea and set the value of textarea
         $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
     });
- 
+ });
  /*add css styles, every line must end with \  */
       GM_addStyle(" \
         .liveupdate-listing li.liveupdate ul.buttonrow { display: none!important;} \
@@ -34,7 +34,7 @@ $(document).ready(function() {
         body.loggedin.liveupdate-app {background:#404040;color:white;} \
         div.content{background:#404040;color:white;} \
         div.md{color:white;} \
-        div#liveupdate-options {color:white;position: absolute;top: 19px;right: 18px;} \
+        div#liveupdate-options {color:white;position: absolute;top: 146px;right: 20px;width:auto;} \
         aside.sidebar {background:#404040;!important} \
         h2{color:white!important} \
         #new-update-form .usertext {  max-width: none;} \
@@ -47,7 +47,7 @@ header#liveupdate-header { \
     position: absolute; \
     right: 10px; \
     top:10px; \
-    width: 305px; \
+    width: 21%; \
 } \
 div#new-update-form { \
     position: absolute; \
@@ -66,6 +66,8 @@ aside.sidebar.side.md-container { \
     right: 0; \
     top: 190px; \
     padding:10px; \
+    width:auto;  \
+    max-width: 21%; \
 } \
 ol.liveupdate-listing { \
     max-width: 76%; \
@@ -74,7 +76,8 @@ ol.liveupdate-listing { \
     height: calc(100vh - 250px); \
     margin-bottom: 150px; \
 } \
-.liveupdate-listing li.liveupdate {  border-top:1px solid grey;padding-top:2px; } \
+.liveupdate-listing li.liveupdate { border-top: none;margin-top:2px;padding:0px!important;} \
+.liveupdate-listing li.liveupdate { background:darkslategray;color:white;} \
 .liveupdate-listing li.liveupdate .body div.md { \
     width: 84%; \
     display: block; \
@@ -100,9 +103,10 @@ ol.liveupdate-listing { \
     display: flex; \
     flex-direction: column-reverse; \
 } \
+.separator { display:none;} \
 .liveupdate-listing li.liveupdate {height: auto!important;overflow:visible;} \
 .footer-parent {    display: none; } \
+.liveupdate-listing li.liveupdate { position:relative;} \
+.live-timestamp {  position: absolute;    top: 20px;    left: 5px;} \
+.liveupdate-listing li.liveupdate a.author {padding:2px;word-break: normal;overflow: hidden;} \
 ");
-});
-
-
