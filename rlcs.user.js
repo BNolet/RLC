@@ -5,6 +5,8 @@
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
 // @include      https://www.reddit.com/live/*
+// @exclude      https://www.reddit.com/live/*/edit*
+// @exclude      https://www.reddit.com/live/*/contributors*
 // @require      http://code.jquery.com/jquery-latest.js
 // @grant   GM_addStyle
 // ==/UserScript==                
