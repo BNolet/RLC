@@ -1,4 +1,7 @@
-# RLCS (Reddit Live Chat Simplifier)
+# FukBird
+where my fukbirds at?
+
+Formerly RLCS (Reddit Live Chat Simplifier)
 
 This is a script made for the reddit "live" feature. It makes chatting a little simpler. 
 
@@ -16,15 +19,15 @@ Features
 
 -messages appear from bottom and scroll up
 
+-NEW channels ! (thanks to Thybag)
+
 
 Known issues
 
 -chat history (scrolling to load more messages) has been disabled due to issues with the triggering of the load unintentionaly leading to lag if too many posts are loaded.
 
-screenshot, latest version: 
+screenshot, pre-channel version: 
 
 http://imgur.com/bJCiVwq
-
-For best results use with Reddit Enhancement Suit in Night Mode (used in screenshot)
 
 come hang out in https://www.reddit.com/live/wpytzw1guzg2 to help out
