@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         RLCS
 // @namespace    http://tampermonkey.net/
-// @version      0.91 Revamp 
+// @version      0.9 Revamp 
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
 // @include      https://www.reddit.com/live/*
+// @exclude      https://www.reddit.com/live/
+// @exclude      https://www.reddit.com/live
 // @exclude      https://www.reddit.com/live/*/edit*
 // @exclude      https://www.reddit.com/live/*/contributors*
 // @require      http://code.jquery.com/jquery-latest.js
@@ -52,7 +54,7 @@ $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
 } \
 #liveupdate-options {position: absolute;top:116px;left: 5px;} \
 .res-nightmode #liveupdate-options {color:white;} \
-.footer-parent, .separator,\
+.footer-parent, .liveupdate-listing .separator,\
 .liveupdate-listing li.liveupdate ul.buttonrow,\
 body > .content {display: none!important;}\
 .liveupdate .body {max-width: none!important;margin-bottom: 0!important;padding:2px!important;}  \
