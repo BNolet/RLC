@@ -93,6 +93,7 @@ body > .content { display: none!important; }\
     float: left;\
     margin: 0;\
     text-align: right;\
+    color:#0079d3;\
     } \
 #rlc-main .liveupdate-listing .liveupdate time {\
     padding: 0;\
