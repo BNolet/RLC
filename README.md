@@ -1,4 +1,5 @@
 # FukBird
+its not a robin, its not a parrot, its not a bird at all.
 where my fukbirds at?
 
 Formerly RLCS (Reddit Live Chat Simplifier)
