@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLCS
 // @namespace    http://tampermonkey.net/
-// @version      0.9 Revamp 
+// @version      1.0 
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
 // @include      https://www.reddit.com/live/*
@@ -58,14 +58,14 @@ $(document).ready(function() {
 .res-nightmode #liveupdate-options {color:white;}\
 /* hard removal */\
 .footer-parent, \
-.liveupdate-listing .separator,\
-.liveupdate-listing li.liveupdate ul.buttonrow,\
-.liveupdate-listing li.liveupdate time:before,\
+#rlc-main .liveupdate-listing .separator,\
+#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,\
+#rlc-main .liveupdate-listing li.liveupdate time:before,\
 .help-toggle, \
 .reddiquette,\
 body > .content { display: none!important; }\
 /*chat window*/\
-.liveupdate-listing { \
+#rlc-main .liveupdate-listing { \
     max-width: 100%; \
     overflow-y: scroll;  \
     height: calc(100vh - 138px); \
@@ -74,32 +74,32 @@ body > .content { display: none!important; }\
     display: flex; \
     flex-direction: column-reverse; \
 } \
-.liveupdate-listing .liveupdate .body {\
+#rlc-main .liveupdate-listing .liveupdate .body {\
     max-width: none!important;\
     margin-bottom: 0!important;\
     padding:2px!important;\
 }  \
-.liveupdate-listing .liveupdate {  \
+#rlc-main .liveupdate-listing .liveupdate {  \
     border-top:1px solid grey;\
     padding-top:2px; \
     height: auto!important; \
     overflow:visible!important;\
 } \
-.liveupdate-listing a.author {\
+#rlc-main .liveupdate-listing a.author {\
     display: block;\
     width: 12%;\
     float: left;\
     margin: 0;\
     text-align: right;\
     } \
-.liveupdate-listing .liveupdate time {\
+#rlc-main .liveupdate-listing .liveupdate time {\
     padding: 0;\
     width: 12%;\
     float:left;\
     margin: 0;\
     text-align: right;\
 } \
-.liveupdate-listing .liveupdate .body div.md {\
+#rlc-main .liveupdate-listing .liveupdate .body div.md {\
     width: 86%;\
     display: block;\
     float: right;\
