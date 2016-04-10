@@ -17,12 +17,12 @@ Features
 -messages appear from bottom and scroll up
 
 
-Known bugs
+Known issues
 
 -chat history (scrolling to load more messages) has been disabled due to issues with the triggering of the load unintentionaly leading to lag if too many posts are loaded.
 
 screenshot, latest version: 
 
-http://i.imgur.com/XPemYDO.jpg
+http://imgur.com/bJCiVwq
 
 come hang out in https://www.reddit.com/live/wpytzw1guzg2 to help out
