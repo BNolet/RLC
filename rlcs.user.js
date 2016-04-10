@@ -358,7 +358,10 @@
 
 		// Spam fuilter
 
-		// User mentions
+		// Highlight mentions
+		if(line.indexOf(robin_user) !== -1){
+			$ele.addClass("user-mention");
+		}
 
 		// whatever else
 
@@ -418,6 +421,7 @@
 	});
 
 	// Styles for filter tabs
+	GM_addStyle("body {overflow:hidden;}",0);
 	GM_addStyle("#filter_tabs {width:100%; display: table; table-layout: fixed; background:#d7d7d2; border-bottom:1px solid #efefed;}",0);
 	GM_addStyle("#filter_tabs > span {width:90%; display: table-cell;}",0);
 	GM_addStyle("#filter_tabs > span.all, #filter_tabs > span.more {width:60px; text-align:center; vertical-align:middle; cursor:pointer;}",0);
@@ -426,6 +430,9 @@
 	GM_addStyle("#filter_tabs .rlc-filters > span { padding: 5px 2px;text-align: center; display: table-cell; cursor: pointer;width:2%; vertical-align: middle; font-size: 1.1em;}", 0);
 	GM_addStyle("#filter_tabs .rlc-filters > span.selected, #filter_tabs .rlc-filters > span:hover { background: #fff;}", 0);
 	GM_addStyle("#filter_tabs .rlc-filters > span > span {pointer-events: none;}", 0);
+	// nightmode
+	GM_addStyle(".res-nightmode #filter_tabs {background: rgb(51, 51, 51);}", 0);
+	GM_addStyle(".res-nightmode #filter_tabs  .rlc-filters > span.selected,.res-nightmode #filter_tabs .rlc-filters > span:hover,.res-nightmode #filter_tabs > span.all.selected,.res-nightmode #filter_tabs > span.all:hover {background: rgb(34, 34, 34)}", 0);
 
 	GM_addStyle("#rlc-settings {padding: 20px 10px; text-align: left;}", 0);
 	GM_addStyle("#rlc-settings strong {display:block;font-weight:bold;}", 0);
@@ -445,6 +452,9 @@
 		GM_addStyle("#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-"+c+" { background: "+color+";}", 0);
 		GM_addStyle("#rlc-chat.rlc-filter.rlc-filter-"+c+" li.liveupdate.rlc-filter-"+c+" { display:block;}", 0);
 	}
+	// mention highlight
+	GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-mention { display:block; }", 0);
+	GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { font-weight:bold; }", 0);
 
 })();
 /*add css styles, every line must end with \  */
@@ -466,7 +476,6 @@
 } \
 #rlc-sidebar *, #rlc-main * {opacity:1!important}; \
 /*general modifications*/\
-body {min-width:none!important;} \
 #liveupdate-options {\
 	position: absolute;\
 	top:116px;\
@@ -485,7 +494,7 @@ body > .content { display: none!important; }\
 #rlc-main .liveupdate-listing { \
 	max-width: 100%; \
 	overflow-y: scroll;  \
-	height: calc(100vh - 138px); \
+	height: calc(100vh - 170px); \
 	padding:5px;\
 	box-sizing:border-box;\
 	display: flex; \
