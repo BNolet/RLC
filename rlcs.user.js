@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLCS
 // @namespace    http://tampermonkey.net/
-// @version      0.9 Revamp 
+// @version      0.91 Revamp 
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
 // @include      https://www.reddit.com/live/*
@@ -50,12 +50,13 @@ $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
     right:0; \
   display:block; \
 } \
-div#liveupdate-options {position: absolute;bottom: 60px;left: 5px;} \
+#liveupdate-options {position: absolute;top:116px;left: 5px;} \
+.res-nightmode #liveupdate-options {color:white;} \
 .footer-parent, .separator,\
 .liveupdate-listing li.liveupdate ul.buttonrow,\
 body > .content {display: none!important;}\
 .liveupdate .body {max-width: none!important;margin-bottom: 0!important;padding:2px!important;}  \
-#new-update-form .usertext {max-width: 100%;float: left;width: 92%;} \
+#new-update-form .usertext {max-width: 100%;float: left;width: 100%;} \
 .usertext-edit .md {min-width: 100%!important;} \
 div#new-update-form textarea { height:25px;overflow:hidden;  } \
 div#new-update-form { \
@@ -73,7 +74,7 @@ aside.sidebar.side.md-container { \
 ol.liveupdate-listing { \
     max-width: 100%; \
     overflow-y: scroll;  \
-    height: calc(100vh - 130px); \
+    height: calc(100vh - 118px); \
     padding:5px;\
     box-sizing:border-box;\
 } \
@@ -85,7 +86,7 @@ ol.liveupdate-listing { \
     margin-bottom:0;\
     max-width: none;\
 } \
-a.author {\
+.liveupdate-listing a.author {\
     display: block;\
     width: 12%;\
     float: left;\
@@ -113,5 +114,25 @@ ol.liveupdate-listing { \
     padding:0!important;\
     text-align:center;\
     max-width: none;\
+} \
+.usertext-edit.md-container {  position: relative;}  \
+.help-toggle, .reddiquette {display:none!important} \
+#new-update-form .bottom-area { \
+    position: absolute; \
+    top: 4px; \
+    right: 15px; \
+    left: 15px; \
+    text-align: center; \
+    letter-spacing: 1px; \
+} \
+#new-update-form .save-button .btn { \
+    width: 100%; \
+    text-transform: capitalize; \
+} \
+.usertext-edit.md-container { \
+    margin-top: 3px; \
+} \
+.usertext-edit.md-container textarea { \
+    padding:2px; \
 } \
 ");
