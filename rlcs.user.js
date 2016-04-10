@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.01
 // @description  Chat-like functionality for Reddit Live
-// @author       FatherDerp, Stjerneklar
+// @author       FatherDerp, Stjerneklar, nandhp
 // @include      https://www.reddit.com/live/*
 // @exclude      https://www.reddit.com/live/
 // @exclude      https://www.reddit.com/live
