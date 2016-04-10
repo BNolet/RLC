@@ -29,7 +29,11 @@
         'rgba(0,100,0, .1)',
         'rgba(255,20,147, .1)',
         'rgba(184,134,11, .1)',
-     ];
+    ];
+
+    // msg history
+    var messageHistory = [];
+    var messageHistoryIndex = -1;
 
 
      /**
@@ -45,7 +49,7 @@
         var _self = this;
 
         // Default options
-        this.channels = ["~","*",".","%","$","#",";","^","<3",":gov","#rpg","@"];
+        this.channels = ["~",".","%","$",";","^","<3",":gov",":rpg","@"];
         this.mode = 'single';
 
         // internals
@@ -372,6 +376,20 @@
         tabbedChannels.proccessLine(line, $ele);
     }
 
+    // remove channel key from message
+    var remove_channel_key_from_message = function(message){
+        if($("#rlc-chat").attr("data-channel-key")){
+            var offset = $("#rlc-chat").attr("data-channel-key").length;
+            if(offset === 0) return message;
+
+            if(message.indexOf("/me") === 0){
+                return "/me "+ message.slice(offset+5);
+            }else{
+                return message.slice(offset+1);
+            }
+        }
+        return message;
+    }
 
     // boot
     $(document).ready(function() {
@@ -383,13 +401,6 @@
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
         $("#nightSwitchToggle").click();   
 
-        //enter key handling
-        $(document).keydown(function(e){
-            if (e.keyCode == 13) {
-                e.preventDefault();
-                  $(".save-button .btn").click();  
-            }
-        });   
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
             event.preventDefault();
@@ -437,6 +448,45 @@
                     $("body").removeClass("dark-background");
                 }
             },false);
+
+
+        var text_area = $(".usertext-edit.md-container textarea");
+
+
+        // On post message, add it to historu
+        $(".save-button .btn").click(function(){
+            var user_last_message = text_area.val();
+
+            // if message history is to long, clear it out
+            if(messageHistory.length === 25){
+                messageHistory = messageHistory.shift();
+            } 
+            messageHistory.push(remove_channel_key_from_message(user_last_message));
+            messageHistoryIndex = messageHistory.length;
+        });
+
+        // up for last message send, down for prev (if moving between em)
+        text_area.on('keydown', function(e) {
+
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                  $(".save-button .btn").click();  
+            }else if(e.keyCode == 38) {
+                e.preventDefault();
+                messageHistoryIndex--;
+                if(messageHistoryIndex > -1){
+                    $(this).val(messageHistory[messageHistoryIndex]);
+                } 
+            }else if(e.keyCode == 40){
+                e.preventDefault();
+                if(messageHistoryIndex <= messageHistory.length){
+                    messageHistoryIndex++;
+                    $(this).val(messageHistory[messageHistoryIndex]);
+                }else{
+                    $(this).val('');
+                }
+            }
+        });
 
     });
 
