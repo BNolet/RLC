@@ -50,7 +50,7 @@ $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
     right:0; \
   display:block; \
 } \
-div#liveupdate-options {color:white;position: absolute;bottom: 60px;left: 5px;} \
+div#liveupdate-options {position: absolute;bottom: 60px;left: 5px;} \
 .footer-parent, .separator,\
 .liveupdate-listing li.liveupdate ul.buttonrow,\
 body > .content {display: none!important;}\
@@ -114,12 +114,4 @@ ol.liveupdate-listing { \
     text-align:center;\
     max-width: none;\
 } \
-aside.sidebar #discussions li {background:#404040;} \
-.md a {color:#5ED7FF!important;} \
-.sidebar a {color:#5ED7FF!important;} \
-body.loggedin.liveupdate-app {background:#404040;color:white;} \
-div.content{background:#404040;color:white;} \
-div.md{color:white;} \
-aside.sidebar {background:#404040;!important} \
-h2{color:white!important} \
 ");
