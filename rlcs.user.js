@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         RLCS
+// @name         FukBird
 // @namespace    http://tampermonkey.net/
 // @version      1.01
 // @description  Chat-like functionality for Reddit Live
