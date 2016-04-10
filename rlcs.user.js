@@ -466,6 +466,7 @@
 } \
 #rlc-sidebar *, #rlc-main * {opacity:1!important}; \
 /*general modifications*/\
+body {min-width:none!important;} \
 #liveupdate-options {\
 	position: absolute;\
 	top:116px;\
