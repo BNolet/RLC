@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLCS
 // @namespace    http://tampermonkey.net/
-// @version      1.0 
+// @version      1.01
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar
 // @include      https://www.reddit.com/live/*
@@ -19,6 +19,7 @@ $(document).ready(function() {
     $('#liveupdate-header').prependTo('#rlc-sidebar');
     $('#liveupdate-options').prependTo('#rlc-sidebar');
     $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
+    $("#nightSwitchToggle").click();    
     $(document).keydown(function(e){
       if (e.keyCode == 13) {
           $(".save-button .btn").click();  
@@ -49,6 +50,7 @@ $(document).ready(function() {
     top: 63px; \
     right:0; \
 } \
+#rlc-sidebar *, #rlc-main * {opacity:1!important}; \
 /*general modifications*/\
 #liveupdate-options {\
     position: absolute;\
