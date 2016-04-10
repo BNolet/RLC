@@ -25,4 +25,6 @@ screenshot, latest version:
 
 http://imgur.com/bJCiVwq
 
+For best results use with Reddit Enhancement Suit in Night Mode (used in screenshot)
+
 come hang out in https://www.reddit.com/live/wpytzw1guzg2 to help out
