@@ -540,8 +540,11 @@
     width: 70%; \
     height: 100%; \
     position: fixed; \
-    top: 63px; \
-    left:0; \
+    top: 70px;\
+    left: 0px;\
+    padding-left: 3px;\
+    box-sizing: border-box;\
+    padding-right: 3px;\
 } \
 #rlc-sidebar { \
     width: 30%; \
@@ -549,6 +552,9 @@
     position: fixed; \
     top: 63px; \
     right:0; \
+    padding: 0px 10px;\
+    box-sizing: border-box;\
+    overflow-y: scroll;\
 } \
 /*general modifications*/\
 #liveupdate-options {\
@@ -558,7 +564,8 @@
 } \
 .res-nightmode #liveupdate-options {color:white;}\
 /* hard removal */\
-.footer-parent, \
+.footer-parent,\
+#liveupdate-options, \
 #rlc-main .liveupdate-listing .separator,\
 #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,\
 #rlc-main .liveupdate-listing li.liveupdate time:before,\
