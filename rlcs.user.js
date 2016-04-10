@@ -307,9 +307,6 @@
             // redraw tabs
             this.drawTabs();
 
-            // we have history, so parse it
-            this.reScanChannels();
-
             // start ticker
             setInterval(this.tick, 1000);
         }
@@ -363,7 +360,13 @@
             $ele.addClass("user-mention");
         }
 
-        // whatever else
+        // /me support
+        if(line.indexOf("/me") === 0){
+            $ele.addClass("user-narration");
+            var first_line = $msg.find("p").first();
+            console.log(first_line);
+            first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
+        }
 
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
@@ -396,9 +399,15 @@
             $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
         });
 
-
+        // make settings container
         $("<div id='rlc-settings'><strong>Options</strong></div>").insertAfter($("#liveupdate-statusbar"));
-    
+        
+        // rescan existing chat for messages
+        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+            handle_new_message($(item));
+        });
+
+
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
             if ($(e.target).is('li.liveupdate')) {
@@ -446,13 +455,19 @@
     GM_addStyle(".res-nightmode #filter_tabs  .rlc-filters > span.selected,.res-nightmode #filter_tabs .rlc-filters > span:hover,.res-nightmode #filter_tabs > span.all.selected,.res-nightmode #filter_tabs > span.all:hover {background: rgb(34, 34, 34)}", 0);
 
     GM_addStyle("#rlc-settings {padding: 20px 10px; text-align: left;}", 0);
-    GM_addStyle("#rlc-settings strong {display:block;font-weight:bold;}", 0);
+    GM_addStyle("#rlc-settings strong {display:block;font-weight:bold;padding-bottom:5px;font-size: 1.2em;}", 0);
+    GM_addStyle("#rlc-settings label {display: block; padding-bottom:5px}", 0);
+    GM_addStyle("#rlc-settings label input {margin-right:5px; vertical-align: middle;}", 0);
     GM_addStyle(".rlc-channel-add  {padding:5px; display:none;}", 0);
     GM_addStyle(".rlc-channel-add input {padding: 2.5px; }", 0);
     GM_addStyle(".rlc-channel-add .channel-mode {float:right; font-size:1.2em;padding:5px;}", 0);
     GM_addStyle(".rlc-channel-add .channel-mode span {cursor:pointer}", 0);
     GM_addStyle(".rlc-channel-add  {padding:5px; display:none;}", 0);
 
+    // /me styles
+    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-narration > a { display:none; }", 0);
+    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { font-style: italic; }", 0);
+    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-narration .body a { display:none; }", 0);
 
     // filter for channel
     GM_addStyle("#rlc-chat.rlc-filter li.liveupdate { display:none; }", 0);
