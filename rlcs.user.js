@@ -423,13 +423,13 @@
 
 	// Styles for filter tabs
 	GM_addStyle("body {overflow:hidden;}",0);
-	GM_addStyle("#filter_tabs {width:100%; display: table; table-layout: fixed; background:#d7d7d2; border-bottom:1px solid #efefed;}",0);
+	GM_addStyle("#filter_tabs {width:100%; display: table; table-layout: fixed; background:black;color:white; border-bottom:1px solid #efefed;}",0);
 	GM_addStyle("#filter_tabs > span {width:90%; display: table-cell;}",0);
-	GM_addStyle("#filter_tabs > span.all, #filter_tabs > span.more {width:60px; text-align:center; vertical-align:middle; cursor:pointer;}",0);
-	GM_addStyle("#filter_tabs > span.all.selected, #filter_tabs > span.all.selected:hover {background: #fff;}", 0);
+	GM_addStyle("#filter_tabs > span.all, #filter_tabs > span.more {width:60px; text-align:center; vertical-align:middle; cursor:pointer;background:black;color:white;}",0);
+	GM_addStyle("#filter_tabs > span.all.selected, #filter_tabs > span.all.selected:hover {background:#40403f;color:white;}", 0);
 	GM_addStyle("#filter_tabs .rlc-filters { display: table; width:100%;table-layout: fixed; '}", 0);
 	GM_addStyle("#filter_tabs .rlc-filters > span { padding: 5px 2px;text-align: center; display: table-cell; cursor: pointer;width:2%; vertical-align: middle; font-size: 1.1em;}", 0);
-	GM_addStyle("#filter_tabs .rlc-filters > span.selected, #filter_tabs .rlc-filters > span:hover { background: #fff;}", 0);
+	GM_addStyle("#filter_tabs .rlc-filters > span.selected, #filter_tabs .rlc-filters > span:hover { background: grey;}", 0);
 	GM_addStyle("#filter_tabs .rlc-filters > span > span {pointer-events: none;}", 0);
 	// nightmode
 	GM_addStyle(".res-nightmode #filter_tabs {background: rgb(51, 51, 51);}", 0);
@@ -584,4 +584,12 @@ aside.sidebar.side.md-container { \
 	text-align:center;\
 	max-width: none;\
 } \
+       aside.sidebar #discussions li {background:#404040;} \
+        .md a {color:#5ED7FF!important;} \
+        .sidebar a {color:#5ED7FF!important;} \
+        body.loggedin.liveupdate-app {background:#404040;color:white;} \
+        div.content{background:#404040;color:white;} \
+        div.md{color:white;} \
+        aside.sidebar {background:#404040;!important} \
+        h2{color:white!important} \
 ");
