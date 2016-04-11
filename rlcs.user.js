@@ -667,6 +667,7 @@ aside.sidebar.side.md-container { \
     text-align:center;\
     max-width: none;\
 } \
+#rlc-main iframe { display:none!important;}\
 .dark-background aside.sidebar #discussions li {background:#404040;} \
 .dark-background .md a {color:#5ED7FF!important;} \
 .dark-background .sidebar a {color:#5ED7FF!important;} \
