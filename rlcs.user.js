@@ -555,7 +555,7 @@
     right:0; \
     padding: 0px 10px;\
     box-sizing: border-box;\
-    overflow-y: scroll;\
+    overflow-y: auto;;\
 } \
 /*general modifications*/\
 #liveupdate-options {\
@@ -576,7 +576,7 @@ body > .content { display: none!important; }\
 /*chat window*/\
 #rlc-main .liveupdate-listing { \
     max-width: 100%; \
-    overflow-y: scroll;  \
+    overflow-y: auto;;  \
     height: calc(100vh - 170px); \
     padding:5px;\
     box-sizing:border-box;\
