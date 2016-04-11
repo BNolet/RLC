@@ -399,7 +399,7 @@
         $('#liveupdate-header').prependTo('#rlc-sidebar');
         $('#liveupdate-options').prependTo('#rlc-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
-        $("#nightSwitchToggle").click();   
+        $("#rlc-main iframe").remove();
 
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
