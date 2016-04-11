@@ -673,5 +673,6 @@ aside.sidebar.side.md-container { \
 .dark-background div.content{background:#404040;color:white;} \
 .dark-background div.md{color:white;} \
 .dark-background aside.sidebar {background:#404040!important;} \
-.dark-background h2{color:white!important} \
+.dark-background blockquote, .dark-background h2{color:white!important} \
+.dark-background code {color:black;} \
 ");
