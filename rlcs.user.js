@@ -458,7 +458,7 @@
 
             // if message history is to long, clear it out
             if(messageHistory.length === 25){
-                messageHistory = messageHistory.shift();
+                messageHistory.shift();
             } 
             messageHistory.push(remove_channel_key_from_message(user_last_message));
             messageHistoryIndex = messageHistory.length;
