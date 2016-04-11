@@ -468,12 +468,11 @@
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
             if (e.keyCode == 13) {
-                if (e.shiftKey) {  }
-                else {
+                
                 e.preventDefault();
                   $(this).val($(".usertext-edit textarea").val() + ' ');
                   $(".save-button .btn").click();  
-                }
+                
             }
             else if(e.keyCode == 38) {
                 e.preventDefault();
