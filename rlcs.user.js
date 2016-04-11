@@ -49,7 +49,7 @@
         var _self = this;
 
         // Default options
-        this.channels = ["%chat",":trivia",":pol",":gov",":rpg",":dev"];
+        this.channels = [":chat",":trivia",":pol",":rpg"];
         this.mode = 'single';
 
         // internals
