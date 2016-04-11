@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -470,6 +470,7 @@
 
             if (e.keyCode == 13) {
                 e.preventDefault();
+                  $(this).val($(".usertext-edit textarea").val() + ' ');
                   $(".save-button .btn").click();  
             }else if(e.keyCode == 38) {
                 e.preventDefault();
@@ -666,10 +667,6 @@ aside.sidebar.side.md-container { \
     text-align:center;\
     max-width: none;\
 } \
-     #rlc-main iframe { \
-    height: 32px; \
-} \
-#rlc-main iframe:hover {  height: 64px; } \
 .dark-background aside.sidebar #discussions li {background:#404040;} \
 .dark-background .md a {color:#5ED7FF!important;} \
 .dark-background .sidebar a {color:#5ED7FF!important;} \
