@@ -427,7 +427,7 @@
             }
         });
 
-        tabbedChannels.init($('<div id="filter_tabs"></div>').insertAfter(".liveupdate-listing"));
+        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore(".liveupdate-listing"));
 
         // Colours on or off
 
@@ -467,18 +467,22 @@
 
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
-
             if (e.keyCode == 13) {
+                if (e.shiftKey) {  }
+                else {
                 e.preventDefault();
                   $(this).val($(".usertext-edit textarea").val() + ' ');
                   $(".save-button .btn").click();  
-            }else if(e.keyCode == 38) {
+                }
+            }
+            else if(e.keyCode == 38) {
                 e.preventDefault();
                 messageHistoryIndex--;
                 if(messageHistoryIndex > -1){
                     $(this).val(messageHistory[messageHistoryIndex]);
                 } 
-            }else if(e.keyCode == 40){
+            }
+            else if(e.keyCode == 40){
                 e.preventDefault();
                 if(messageHistoryIndex <= messageHistory.length){
                     messageHistoryIndex++;
@@ -487,6 +491,7 @@
                     $(this).val('');
                 }
             }
+            
         });
 
     });
@@ -538,7 +543,7 @@
       GM_addStyle(" \
 /* Custom elements */\
 #rlc-main { \
-    width: 70%; \
+    width: 80%; \
     height: 100%; \
     position: fixed; \
     top: 70px;\
@@ -548,7 +553,7 @@
     padding-right: 3px;\
 } \
 #rlc-sidebar { \
-    width: 30%; \
+    width: 20%; \
     height: 100%; \
     position: fixed; \
     top: 63px; \
@@ -565,6 +570,8 @@
 } \
 .res-nightmode #liveupdate-options {color:white;}\
 /* hard removal */\
+#discussions, \
+#contributors, \
 .footer-parent,\
 #liveupdate-options, \
 #rlc-main .liveupdate-listing .separator,\
@@ -625,7 +632,8 @@ body > .content { display: none!important; }\
 .usertext-edit .md {min-width: 100%!important;} \
 div#new-update-form textarea { \
     height:45px;\
-    overflow:hidden;  \
+    overflow:auto;  \
+    resize: none; \
 } \
 div#new-update-form { \
     width: 100%; \
@@ -677,4 +685,17 @@ aside.sidebar.side.md-container { \
 .dark-background aside.sidebar {background:#404040!important;} \
 .dark-background blockquote, .dark-background h2{color:white!important} \
 .dark-background code {color:black;} \
+@media only screen and (max-width: 1300px)  { \
+    #rlc-main {width:75%} \
+    #rlc-sidebar {width:25%} \
+    #rlc-main .liveupdate-listing .liveupdate time { \
+        width:15% \
+    } \
+    #rlc-main .liveupdate-listing .liveupdate .author { \
+        width:15% \
+    } \
+    #rlc-main .liveupdate-listing .liveupdate .body div.md { \
+        width:85%; \
+    } \
+} \
 ");
