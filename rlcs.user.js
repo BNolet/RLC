@@ -376,9 +376,8 @@
 
 
      // channel removal support
-
-            var moddedmessage = remove_channel_key_from_message($msg.text())
-            first_line.html(moddedmessage);
+     //var moddedmessage = remove_channel_key_from_message($msg.text())
+     //first_line.html(moddedmessage);
 
     }
 
