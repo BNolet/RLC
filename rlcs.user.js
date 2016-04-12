@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.25
+// @version      1.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -542,7 +542,6 @@
         GM_addStyle("#rlc-chat.rlc-filter.rlc-filter-"+c+" li.liveupdate.rlc-filter-"+c+" { display:block;}", 0);
     }
     // mention highlight
-    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-mention { display:block; }", 0);
     GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { font-weight:bold; }", 0);
 
 })();
