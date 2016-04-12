@@ -7,7 +7,10 @@ Formerly RLCS (Reddit Live Chat Simplifier)
 
 This is a script made for the reddit "live" feature. It makes chatting a little simpler. 
 
-![Screenshot](http://i.imgur.com/dTO7Pli.jpg)
+![Screenshot - Day](http://i.imgur.com/p0QvJUA.jpg)
+![Screenshot - Night](http://i.imgur.com/dTO7Pli.jpg)
+
+
 
 To use this script, install tampermonkey which can be found [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en) and then clicking the link for the script.
 
