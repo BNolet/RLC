@@ -476,6 +476,7 @@
         text_area.on('keydown', function(e) {
             if (e.keyCode == 13) {
                 if (e.shiftKey) {  }
+                else if (text_area.val() === "" ) { e.preventDefault();  }
                 else {
                 e.preventDefault();
                   $(this).val($(".usertext-edit textarea").val() + ' ');
