@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.25
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -355,6 +355,7 @@
         var $msg = $ele.find(".body .md");
         var $usr = $ele.find(".body .author");
         var line = $msg.text().toLowerCase();
+        var first_line = $msg.find("p").first();
 
         // Spam fuilter
 
@@ -366,13 +367,19 @@
         // /me support
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
-            var first_line = $msg.find("p").first();
-            console.log(first_line);
+            //console.log(first_line);
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
-        }
+        }            
 
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
+
+
+     // channel removal support
+
+            var moddedmessage = remove_channel_key_from_message($msg.text())
+            first_line.html(moddedmessage);
+
     }
 
     // remove channel key from message
@@ -384,6 +391,7 @@
             if(message.indexOf("/me") === 0){
                 return "/me "+ message.slice(offset+5);
             }else{
+                console.log("slice: " + offset);
                 return message.slice(offset+1);
             }
         }
@@ -452,7 +460,7 @@
         var text_area = $(".usertext-edit.md-container textarea");
 
 
-        // On post message, add it to historu
+        // On post message, add it to history
         $(".save-button .btn").click(function(){
             var user_last_message = text_area.val();
 
