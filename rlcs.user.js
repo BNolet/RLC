@@ -545,7 +545,7 @@
     width: 80%; \
     height: 100%; \
     position: fixed; \
-    top: 70px;\
+    top: 65px;\
     left: 0px;\
     padding-left: 3px;\
     box-sizing: border-box;\
@@ -569,8 +569,6 @@
 } \
 .res-nightmode #liveupdate-options {color:white;}\
 /* hard removal */\
-#discussions, \
-#contributors, \
 .footer-parent,\
 #liveupdate-options, \
 #rlc-main .liveupdate-listing .separator,\
@@ -578,12 +576,13 @@
 #rlc-main .liveupdate-listing li.liveupdate time:before,\
 .help-toggle, \
 .reddiquette,\
+#contributors, \
 body > .content { display: none!important; }\
 /*chat window*/\
 #rlc-main .liveupdate-listing { \
     max-width: 100%; \
     overflow-y: auto;;  \
-    height: calc(100vh - 170px); \
+    height: calc(100vh - 162px); \
     padding:5px;\
     box-sizing:border-box;\
     display: flex; \
