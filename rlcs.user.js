@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.41
+// @version      1.42
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -508,7 +508,6 @@
 
     });
 
-
     // filter for channel
     GM_addStyle("#rlc-chat.rlc-filter li.liveupdate { display:none; }", 0);
     var color;
@@ -549,13 +548,6 @@ body { \
     box-sizing: border-box; \
     overflow-y: auto; \
     ;} \
- \
-/*general modifications*/ \
-#liveupdate-options { \
-    position: absolute; \
-    top: 116px; \
-    left: 5px; \
-} \
  \
 /* hard removal */ \
 .footer-parent,#liveupdate-options, #rlc-main .liveupdate-listing .separator,#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,#rlc-main .liveupdate-listing li.liveupdate time:before,.help-toggle, .reddiquette,#contributors, body > .content { \
@@ -743,11 +735,11 @@ aside.sidebar.side.md-container { \
     height: 16px; \
     z-index: 100; \
     border-radius: 5px 0px 0px 0px; \
-    background: #262626; \
     box-sizing: border-box; \
     padding-top: 2px; \
     cursor: pointer; \
 } \
+.res-nightmode #rlc-togglesidebar { background: #262626; }\
  \
 #rlc-settings { \
     position: absolute; \
@@ -756,11 +748,11 @@ aside.sidebar.side.md-container { \
     height: 16px; \
     z-index: 100; \
     width: 237px; \
-    background: #262626; \
     box-sizing: border-box; \
     padding-top: 1px; \
     cursor: pointer; \
 } \
+.res-nightmode #rlc-settings {   color:white; background: #262626; } \
  \
 #rlc-settings strong { \
     float: left; \
@@ -794,11 +786,11 @@ aside.sidebar.side.md-container { \
     width: 100%; \
     display: table; \
     table-layout: fixed; \
-    background: black; \
-    color: white; \
     border-bottom: 1px solid #efefed; \
 } \
- \
+.res-nightmode #filter_tabs { \
+    color: white; \
+} \
 #filter_tabs > span { \
     width: 90%; \
     display: table-cell; \
@@ -809,11 +801,12 @@ aside.sidebar.side.md-container { \
     text-align: center; \
     vertical-align: middle; \
     cursor: pointer; \
-    background: black; \
+} \
+.res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more  { \
     color: white; \
 } \
  \
-#filter_tabs > span.all.selected, #filter_tabs > span.all.selected:hover { \
+#filter_tabs > span.all.selected:hover { \
     background: #40403f; \
     color: white; \
 } \
