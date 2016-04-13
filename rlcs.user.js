@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.46
+// @version      1.47
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -128,7 +128,6 @@
                 if(typeof this.channels[i] === 'undefined') continue;
                 html += '<span data-filter="' + i + '" data-filter-name="'+ this.channels[i] +'">' + this.channels[i] + ' (<span>0</span>)</span> '; 
             }
-            console.log(html)
             this.$el.find(".rlc-filters").html(html);
         };
 
@@ -403,6 +402,7 @@
     $(document).ready(function() {
         $("body").append('<div id="rlc-main"><div id="rlc-chat"></div><div id="rlc-messagebox"><div id="mousesubmitblocker"></div></div></div>');
         $("body").append('<div id="rlc-sidebar"></div><div id="rlc-togglesidebar" class="noselect">Toggle Sidebar</div>');
+        $("body").append('<div id="rlc-toggleoptions" class="noselect">Toggle Options</div>');
         $('.liveupdate-listing').appendTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#liveupdate-header').prependTo('#rlc-sidebar');
@@ -420,7 +420,7 @@
         });
 
         // make settings container
-        $("<div id='rlc-settings' class='noselect'><strong>Options</strong></div>").insertAfter($("#rlc-sidebar"));
+        $("<div id='rlc-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#rlc-sidebar"));
         
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
@@ -482,6 +482,10 @@
         $("#rlc-togglesidebar").click(function(){
             $("body").toggleClass("rlc-hidesidebar");
         });
+        
+        $("#rlc-toggleoptions").click(function(){
+            $("body").toggleClass("rlc-showoptions");
+        });
 
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
@@ -533,7 +537,7 @@ body { \
     overflow: hidden; \
 } \
  \
-/* Custom elements */ \
+/* custom containers  */ \
 #rlc-main { \
     width: 80%; \
     height: 100%; \
@@ -553,10 +557,64 @@ body { \
     overflow-y: auto; \
     padding-top: 20px; \
     overflow-x: hidden; \
-    } \
+} \
  \
 /* hard removal */ \
-.footer-parent,#liveupdate-options, #rlc-main .liveupdate-listing .separator,#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,#rlc-main .liveupdate-listing li.liveupdate time:before,.help-toggle, .reddiquette,#contributors, body > .content { \
+body > .content { \
+    display: none!important; \
+} \
+ \
+.footer-parent { \
+    display: none!important; \
+} \
+ \
+.rlc-showoptions #rlc-settings  { \
+    display: block; \
+} \
+#rlc-settings  { \
+    display: none; \
+} \
+#liveupdate-options { \
+    display: none!important; \
+} \
+ \
+#rlc-main .liveupdate-listing .separator { \
+    display: none!important; \
+} \
+ \
+#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow { \
+    display: none!important; \
+} \
+ \
+#rlc-main .liveupdate-listing li.liveupdate time:before { \
+    display: none!important; \
+} \
+ \
+.help-toggle { \
+    display: none!important; \
+} \
+ \
+.reddiquette { \
+    display: none!important; \
+} \
+ \
+#contributors { \
+    display: none!important; \
+} \
+ \
+#rlc-main iframe { \
+    display: none!important; \
+} \
+ \
+#liveupdate-resources > h2 { \
+    display: none; \
+} \
+ \
+.channelname { \
+    display: none; \
+} \
+ \
+.rlc-filter .channelname { \
     display: none!important; \
 } \
  \
@@ -612,6 +670,42 @@ body { \
     float: right; \
     margin-bottom: 0; \
     max-width: none; \
+} \
+ \
+#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
+    font-weight: bold; \
+} \
+ \
+.liveupdate .msginfo { \
+    width: 18%; \
+} \
+ \
+/* narration */ \
+#rlc-main #rlc-chat li.liveupdate.user-narration > a { \
+    display: none; \
+} \
+ \
+#rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
+    display: none; \
+} \
+ \
+#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
+    font-style: italic; \
+} \
+ \
+div#rlc-messagebox { \
+    position: relative; \
+} \
+ \
+/*prevent users from actually pressing the submit button*/ \
+div#mousesubmitblocker { \
+    position: absolute; \
+    top: 49px; \
+    width: 100%; \
+    height: 24px; \
+    background: transparent; \
+    z-index: 1; \
+    cursor: not-allowed; \
 } \
  \
 /*message input and send button*/ \
@@ -685,64 +779,33 @@ aside.sidebar.side.md-container { \
     max-width: none; \
 } \
  \
-#rlc-main iframe { \
+/*togglesidebar*/ \
+.rlc-hidesidebar #rlc-sidebar, .rlc-hidesidebar #rlc-toggleoptions { \
     display: none!important; \
 } \
  \
-.dark-background aside.sidebar #discussions li { \
-    background: #404040; \
-} \
- \
-.dark-background .md a { \
-    color: #5ED7FF!important; \
-} \
- \
-.dark-background .sidebar a { \
-    color: #5ED7FF!important; \
-} \
- \
-.dark-background.loggedin.liveupdate-app { \
-    background: #404040; \
-    color: white; \
-} \
- \
-.dark-background div.content { \
-    background: #404040; \
-    color: white; \
-} \
- \
-.dark-background div.md { \
-    color: white; \
-} \
- \
-.dark-background aside.sidebar { \
-    background: #404040!important; \
-} \
- \
-.dark-background blockquote, .dark-background h2 { \
-    color: white!important \
-} \
- \
-.dark-background code { \
-    color: black; \
-} \
- \
-.rlc-filter .channelname { \
-    display: none; \
-} \
- \
-.rlc-hidesidebar #rlc-sidebar { \
-    display: none!important \
-} \
- \
+/*hide sidebar toggle class*/  \
 .rlc-hidesidebar #rlc-main { \
-    width: 100%; \
+    width: 100%!important; \
 } \
  \
 #rlc-togglesidebar { \
     position: absolute; \
-    top: 46px; \
-    right: 235px; \
+    top: 66px; \
+    right: 18px; \
+    width: 85px; \
+    padding-left: 5px; \
+    height: 16px; \
+    z-index: 100; \
+    border-radius: 5px 0px 0px 0px; \
+    box-sizing: border-box; \
+    padding-top: 2px; \
+    cursor: pointer; \
+} \
+#rlc-toggleoptions { \
+    position: absolute; \
+    top: 66px; \
+    right: 104px; \
     width: 85px; \
     padding-left: 5px; \
     height: 16px; \
@@ -757,15 +820,16 @@ aside.sidebar.side.md-container { \
     background: #262626; \
 } \
  \
+/*settings*/ \
 #rlc-settings { \
     position: absolute; \
-    top: 46px; \
-    right: 0px; \
-    height: 16px; \
+    top: 0; \
+    right: 0; \
+    height: 100%; \
     z-index: 100; \
-    width: 237px; \
+    width: 100%; \
     box-sizing: border-box; \
-    padding-top: 1px; \
+    padding-top: 45px; \
     cursor: pointer; \
 } \
  \
@@ -790,14 +854,7 @@ aside.sidebar.side.md-container { \
     vertical-align: middle; \
 } \
  \
-#liveupdate-resources > h2 { \
-    display: none; \
-} \
- \
-#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
-    font-weight: bold; \
-} \
- \
+/*filter tabs*/ \
 #filter_tabs { \
     width: 100%; \
     display: table; \
@@ -831,11 +888,9 @@ aside.sidebar.side.md-container { \
 } \
  \
 .res-nightmode #filter_tabs > span.all:hover, .res-nightmode #filter_tabs > span.more:hover { \
-    background:white ; \
+    background: white ; \
     color: #40403f; \
 } \
- \
- \
  \
 #filter_tabs .rlc-filters { \
     display: table; \
@@ -861,10 +916,23 @@ aside.sidebar.side.md-container { \
     pointer-events: none; \
 } \
  \
-// nightmode .res-nightmode #filter_tabs { \
+.res-nightmode #filter_tabs { \
     background: rgb(51, 51, 51); \
 } \
  \
+#filter_tabs span div > span:nth-child(odd) { \
+    background: rgba(128,128,128,0.3); \
+} \
+ \
+#filter_tabs > span.all { \
+    padding: 0px 30px; \
+} \
+ \
+#filter_tabs > span.more { \
+    padding: 0px 30px 0px 30px; \
+} \
+ \
+/* add channels interface */ \
 .rlc-channel-add { \
     padding: 5px; \
     display: none; \
@@ -889,22 +957,7 @@ aside.sidebar.side.md-container { \
     display: none; \
 } \
  \
-// /me styles #rlc-main #rlc-chat li.liveupdate.user-narration > a { \
-    display: none; \
-} \
- \
-#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
-    font-style: italic; \
-} \
- \
-#rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
-    display: none; \
-} \
- \
-.liveupdate .msginfo { \
-    width: 18%; \
-} \
- \
+/* class to prevent selection for divs acting as buttons */ \
 .noselect { \
     -webkit-touch-callout: none; \
     /* iOS Safari */ \
@@ -918,41 +971,42 @@ aside.sidebar.side.md-container { \
     /* IE/Edge */ \
 } \
  \
-div#rlc-messagebox { \
-    position: relative; \
+/* dark background */ \
+.dark-background aside.sidebar #discussions li { \
+    background: #404040; \
 } \
  \
-div#mousesubmitblocker { \
-    position: absolute; \
-    top: 49px; \
-    width: 100%; \
-    height: 24px; \
-    background: transparent; \
-    z-index: 1; \
-    cursor: not-allowed; \
+.dark-background .md a { \
+    color: #5ED7FF!important; \
 } \
  \
-#filter_tabs span div > span:nth-child(odd) { \
-    background: rgba(128,128,128,0.3); \
+.dark-background .sidebar a { \
+    color: #5ED7FF!important; \
 } \
  \
-#filter_tabs > span.all { \
-    padding: 0px 30px; \
-} \
-#filter_tabs > span.more { \
-    padding: 0px 30px 0px 30px; \
+.dark-background.liveupdate-app { \
+    background: #404040; \
+    color: white; \
 } \
  \
-.channelname { \
-    display: none; \
+.dark-background div.content { \
+    background: #404040; \
+    color: white; \
 } \
  \
+.dark-background div.md { \
+    color: white; \
+} \
  \
-div#liveupdate-statusbar { \
-    position: absolute; \
-    top: 0; \
-    width: 100%; \
-    padding: 2px 0px 1px 0px; \
+.dark-background aside.sidebar { \
+    background: #404040!important; \
+} \
+ \
+.dark-background blockquote, .dark-background h2 { \
+    color: white!important \
+} \
+ \
+.dark-background code { \
+    color: black; \
 } \
 ");
-
