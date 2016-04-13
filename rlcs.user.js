@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -228,6 +228,7 @@
                 if(typeof channel === 'undefined') continue;
 
                 if(text.indexOf(channel) === 0){
+                    $element.find("a").append("<div class='channelname'>"+channel+"</div>");
                     $element.addClass("rlc-filter-" + idx +" in-channel");
                     this.unread_counts[idx]++;
                     return;
@@ -358,8 +359,6 @@
         var line = $msg.text().toLowerCase();
         var first_line = $msg.find("p").first();
 
-        // Spam fuilter
-
         // Highlight mentions
         if(line.indexOf(robin_user) !== -1){
             $ele.addClass("user-mention");
@@ -375,10 +374,9 @@
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
 
-
      // channel removal support
-     //var moddedmessage = remove_channel_key_from_message($msg.text())
-     //first_line.html(moddedmessage);
+      //  console.log(remove_channel_key_from_message(first_line.text()));
+       // $msg.html(remove_channel_key_from_message(first_line.text()));
 
     }
 
@@ -400,7 +398,7 @@
 
     // boot
     $(document).ready(function() {
-        $("body").append('<div id="rlc-main"><div id="rlc-chat"></div><div id="rlc-messagebox"></div></div><div id="rlc-sidebar"></div>');
+        $("body").append('<div id="rlc-main"><div id="rlc-chat"></div><div id="rlc-messagebox"></div></div><div id="rlc-sidebar"></div><div id="rlc-togglesidebar">Toggle Sidebar</div>');
         $('.liveupdate-listing').appendTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#liveupdate-header').prependTo('#rlc-sidebar');
@@ -418,7 +416,7 @@
         });
 
         // make settings container
-        $("<div id='rlc-settings'><strong>Options</strong></div>").insertAfter($("#liveupdate-statusbar"));
+        $("<div id='rlc-settings'><strong>Options</strong></div>").insertAfter($("#rlc-sidebar"));
         
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
@@ -472,6 +470,10 @@
             messageHistoryIndex = messageHistory.length;
         });
 
+        $("#rlc-togglesidebar").click(function(){
+            $("body").toggleClass("rlc-hidesidebar");
+        });
+
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
             if (e.keyCode == 13) {
@@ -504,34 +506,6 @@
 
     });
 
-    // Styles for filter tabs
-    GM_addStyle("body {overflow:hidden;}",0);
-    GM_addStyle("#filter_tabs {width:100%; display: table; table-layout: fixed; background:black;color:white; border-bottom:1px solid #efefed;}",0);
-    GM_addStyle("#filter_tabs > span {width:90%; display: table-cell;}",0);
-    GM_addStyle("#filter_tabs > span.all, #filter_tabs > span.more {width:60px; text-align:center; vertical-align:middle; cursor:pointer;background:black;color:white;}",0);
-    GM_addStyle("#filter_tabs > span.all.selected, #filter_tabs > span.all.selected:hover {background:#40403f;color:white;}", 0);
-    GM_addStyle("#filter_tabs .rlc-filters { display: table; width:100%;table-layout: fixed; '}", 0);
-    GM_addStyle("#filter_tabs .rlc-filters > span { padding: 5px 2px;text-align: center; display: table-cell; cursor: pointer;width:2%; vertical-align: middle; font-size: 1.1em;}", 0);
-    GM_addStyle("#filter_tabs .rlc-filters > span.selected, #filter_tabs .rlc-filters > span:hover { background: grey;}", 0);
-    GM_addStyle("#filter_tabs .rlc-filters > span > span {pointer-events: none;}", 0);
-    // nightmode
-    GM_addStyle(".res-nightmode #filter_tabs {background: rgb(51, 51, 51);}", 0);
-    GM_addStyle(".res-nightmode #filter_tabs  .rlc-filters > span.selected,.res-nightmode #filter_tabs .rlc-filters > span:hover,.res-nightmode #filter_tabs > span.all.selected,.res-nightmode #filter_tabs > span.all:hover {background: rgb(34, 34, 34)}", 0);
-
-    GM_addStyle("#rlc-settings {padding: 20px 10px; text-align: left;}", 0);
-    GM_addStyle("#rlc-settings strong {display:block;font-weight:bold;padding-bottom:5px;font-size: 1.2em;}", 0);
-    GM_addStyle("#rlc-settings label {display: block; padding-bottom:5px}", 0);
-    GM_addStyle("#rlc-settings label input {margin-right:5px; vertical-align: middle;}", 0);
-    GM_addStyle(".rlc-channel-add  {padding:5px; display:none;}", 0);
-    GM_addStyle(".rlc-channel-add input {padding: 2.5px; }", 0);
-    GM_addStyle(".rlc-channel-add .channel-mode {float:right; font-size:1.2em;padding:5px;}", 0);
-    GM_addStyle(".rlc-channel-add .channel-mode span {cursor:pointer}", 0);
-    GM_addStyle(".rlc-channel-add  {padding:5px; display:none;}", 0);
-
-    // /me styles
-    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-narration > a { display:none; }", 0);
-    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { font-style: italic; }", 0);
-    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-narration .body a { display:none; }", 0);
 
     // filter for channel
     GM_addStyle("#rlc-chat.rlc-filter li.liveupdate { display:none; }", 0);
@@ -542,166 +516,397 @@
         GM_addStyle("#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-"+c+" { background: "+color+";}", 0);
         GM_addStyle("#rlc-chat.rlc-filter.rlc-filter-"+c+" li.liveupdate.rlc-filter-"+c+" { display:block;}", 0);
     }
-    // mention highlight
-    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { font-weight:bold; }", 0);
 
 })();
 /*add css styles, every line must end with \  */
       GM_addStyle(" \
+/*prevent body scroll to avoid loading history*/\
+body {\
+    overflow: hidden;\
+}\
 /* Custom elements */\
-#rlc-main { \
-    width: 80%; \
-    height: 100%; \
-    position: fixed; \
+#rlc-main {\
+    width: 80%;\
+    height: 100%;\
+    position: fixed;\
     top: 65px;\
     left: 0px;\
     padding-left: 3px;\
     box-sizing: border-box;\
     padding-right: 3px;\
-} \
-#rlc-sidebar { \
-    width: 20%; \
-    height: 100%; \
-    position: fixed; \
-    top: 63px; \
-    right:0; \
+}\
+\
+#rlc-sidebar {\
+    width: 20%;\
+    height: 100%;\
+    position: fixed;\
+    top: 63px;\
+    right: 0;\
     padding: 0px 10px;\
     box-sizing: border-box;\
-    overflow-y: auto;;\
-} \
+    overflow-y: auto;\
+    ;}\
+\
 /*general modifications*/\
 #liveupdate-options {\
     position: absolute;\
-    top:116px;\
+    top: 116px;\
     left: 5px;\
-} \
-.res-nightmode #liveupdate-options {color:white;}\
+}\
+\
 /* hard removal */\
-.footer-parent,\
-#liveupdate-options, \
-#rlc-main .liveupdate-listing .separator,\
-#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,\
-#rlc-main .liveupdate-listing li.liveupdate time:before,\
-.help-toggle, \
-.reddiquette,\
-#contributors, \
-body > .content { display: none!important; }\
+.footer-parent,#liveupdate-options, #rlc-main .liveupdate-listing .separator,#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,#rlc-main .liveupdate-listing li.liveupdate time:before,.help-toggle, .reddiquette,#contributors, body > .content {\
+    display: none!important;\
+}\
+\
 /*chat window*/\
-#rlc-main .liveupdate-listing { \
-    max-width: 100%; \
-    overflow-y: auto;;  \
-    height: calc(100vh - 162px); \
-    padding:5px;\
-    box-sizing:border-box;\
-    display: flex; \
-    flex-direction: column-reverse; \
-} \
+#rlc-main .liveupdate-listing {\
+    max-width: 100%;\
+    overflow-y: auto;\
+    ; height: calc(100vh - 162px);\
+    padding: 5px;\
+    box-sizing: border-box;\
+    display: flex;\
+    flex-direction: column-reverse;\
+}\
+\
 #rlc-main .liveupdate-listing .liveupdate .body {\
     max-width: none!important;\
     margin-bottom: 0!important;\
-    padding:2px!important;\
-}  \
-#rlc-main .liveupdate-listing .liveupdate {  \
-    border-top:1px solid grey;\
-    padding-top:2px; \
-    height: auto!important; \
-    overflow:visible!important;\
-} \
+    padding: 2px!important;\
+}\
+\
+#rlc-main .liveupdate-listing .liveupdate {\
+    border-top: 1px solid grey;\
+    padding-top: 2px;\
+    height: auto!important;\
+    overflow: visible!important;\
+}\
+\
 #rlc-main .liveupdate-listing a.author {\
     display: block;\
     width: 12%;\
     float: left;\
     margin: 0;\
     text-align: right;\
-    color:#0079d3;\
-    } \
+    color: #0079d3;\
+}\
+\
 #rlc-main .liveupdate-listing .liveupdate time {\
     padding: 0;\
     width: 12%;\
-    float:left;\
+    float: left;\
     margin: 0;\
     text-align: right;\
-} \
+}\
+\
 #rlc-main .liveupdate-listing .liveupdate .body div.md {\
     width: 86%;\
     display: block;\
     float: right;\
-    margin-bottom:0;\
+    margin-bottom: 0;\
     max-width: none;\
-} \
+}\
+\
 /*message input and send button*/\
 #new-update-form .usertext {\
     max-width: 100%;\
     float: left;\
     width: 100%;\
-} \
-.usertext-edit .md {min-width: 100%!important;} \
-div#new-update-form textarea { \
-    height:45px;\
-    overflow:auto;  \
-    resize: none; \
-} \
-div#new-update-form { \
-    width: 100%; \
-    margin: 0; \
-} \
-.usertext-edit.md-container { \
-    max-width: 100%; \
-    margin: 0; \
-} \
-.usertext-edit.md-container {  position: relative;}  \
-#new-update-form .bottom-area { \
-    position: absolute; \
-    top: 4px; \
-    right: 15px; \
-    left: 15px; \
-    text-align: center; \
-    letter-spacing: 1px; \
-} \
-#new-update-form .save-button .btn { \
-    width: 100%; \
-    text-transform: capitalize; \
-} \
-.usertext-edit.md-container { \
-    margin-top: 3px; \
-} \
-.usertext-edit.md-container textarea { \
-    padding:2px; \
-} \
+}\
+\
+.usertext-edit .md {\
+    min-width: 100%!important;\
+}\
+\
+div#new-update-form textarea {\
+    height: 45px;\
+    overflow: auto;\
+    resize: none;\
+}\
+\
+div#new-update-form {\
+    width: 100%;\
+    margin: 0;\
+}\
+\
+.usertext-edit.md-container {\
+    max-width: 100%;\
+    margin: 0;\
+}\
+\
+.usertext-edit.md-container {\
+    position: relative;\
+}\
+\
+#new-update-form .bottom-area {\
+    position: absolute;\
+    top: 4px;\
+    right: 15px;\
+    left: 15px;\
+    text-align: center;\
+    letter-spacing: 1px;\
+}\
+\
+#new-update-form .save-button .btn {\
+    width: 100%;\
+    text-transform: capitalize;\
+}\
+\
+.usertext-edit.md-container {\
+    margin-top: 3px;\
+}\
+\
+.usertext-edit.md-container textarea {\
+    padding: 2px;\
+}\
+\
 /*sidebar*/\
-aside.sidebar.side.md-container { \
-    max-width:100%;\
-    width:98%;\
-    opacity:1; \
-} \
+aside.sidebar.side.md-container {\
+    max-width: 100%;\
+    width: 98%;\
+    opacity: 1;\
+}\
+\
 #liveupdate-header {\
     width: 100%;\
-    margin:0!important;\
-    padding:0!important;\
-    text-align:center;\
+    margin: 0!important;\
+    padding: 0!important;\
+    text-align: center;\
     max-width: none;\
-} \
-#rlc-main iframe { display:none!important;}\
-.dark-background aside.sidebar #discussions li {background:#404040;} \
-.dark-background .md a {color:#5ED7FF!important;} \
-.dark-background .sidebar a {color:#5ED7FF!important;} \
-.dark-background.loggedin.liveupdate-app {background:#404040;color:white;} \
-.dark-background div.content{background:#404040;color:white;} \
-.dark-background div.md{color:white;} \
-.dark-background aside.sidebar {background:#404040!important;} \
-.dark-background blockquote, .dark-background h2{color:white!important} \
-.dark-background code {color:black;} \
-@media only screen and (max-width: 1300px)  { \
-    #rlc-main {width:75%} \
-    #rlc-sidebar {width:25%} \
-    #rlc-main .liveupdate-listing .liveupdate time { \
-        width:15% \
-    } \
-    #rlc-main .liveupdate-listing .liveupdate .author { \
-        width:15% \
-    } \
-    #rlc-main .liveupdate-listing .liveupdate .body div.md { \
-        width:85%; \
-    } \
-} \
+}\
+\
+#rlc-main iframe {\
+    display: none!important;\
+}\
+\
+.dark-background aside.sidebar #discussions li {\
+    background: #404040;\
+}\
+\
+.dark-background .md a {\
+    color: #5ED7FF!important;\
+}\
+\
+.dark-background .sidebar a {\
+    color: #5ED7FF!important;\
+}\
+\
+.dark-background.loggedin.liveupdate-app {\
+    background: #404040;\
+    color: white;\
+}\
+\
+.dark-background div.content {\
+    background: #404040;\
+    color: white;\
+}\
+\
+.dark-background div.md {\
+    color: white;\
+}\
+\
+.dark-background aside.sidebar {\
+    background: #404040!important;\
+}\
+\
+.dark-background blockquote, .dark-background h2 {\
+    color: white!important\
+}\
+\
+.dark-background code {\
+    color: black;\
+}\
+\
+\
+\
+.rlc-filter .channelname {\
+    display: none;\
+}\
+\
+.rlc-hidesidebar #rlc-sidebar {\
+    display: none!important\
+}\
+\
+.rlc-hidesidebar #rlc-main {\
+    width:100%;\
+}\
+\
+\
+#rlc-togglesidebar {\
+    position: absolute;\
+    top: 46px;\
+    right: 292px;\
+    width: 85px;\
+    padding-left: 5px;\
+    height: 16px;\
+    z-index: 100;\
+    border-radius: 5px 0px 0px 0px;\
+    background: #262626;\
+    box-sizing: border-box;\
+    padding-top: 2px;\
+    cursor: pointer;\
+}\
+\
+#rlc-settings {\
+    position: absolute;\
+    top: 46px;\
+    right: 0px;\
+    padding-left:5px;\
+    height: 16px;\
+    z-index: 100;\
+    width:290px;\
+    background: #262626;\
+    box-sizing: border-box;\
+    padding-top: 1px;\
+    cursor: pointer;\
+    }\
+\
+#rlc-settings strong {\
+    float:left;\
+    font-weight: bold;\
+    font-size: 1.2em;\
+}\
+\
+#rlc-settings label {\
+    float:left;\
+    padding-left:5px\
+}\
+\
+#rlc-settings label input {\
+    vertical-align: middle;\
+}\
+\
+\
+#liveupdate-resources > h2 {\
+    display: none;\
+}\
+#liveupdate-resources {\
+    padding-top:5px\
+}\
+\
+#rlc-main #rlc-chat li.liveupdate.user-mention .body .md {\
+    font-weight: bold;\
+}\
+\
+#filter_tabs {\
+    width: 100%;\
+    display: table;\
+    table-layout: fixed;\
+    background: black;\
+    color: white;\
+    border-bottom: 1px solid #efefed;\
+}\
+\
+#filter_tabs > span {\
+    width: 90%;\
+    display: table-cell;\
+}\
+\
+#filter_tabs > span.all, #filter_tabs > span.more {\
+    width: 60px;\
+    text-align: center;\
+    vertical-align: middle;\
+    cursor: pointer;\
+    background: black;\
+    color: white;\
+}\
+\
+#filter_tabs > span.all.selected, #filter_tabs > span.all.selected:hover {\
+    background: #40403f;\
+    color: white;\
+}\
+\
+#filter_tabs .rlc-filters {\
+    display: table;\
+    width: 100%;\
+    table-layout: fixed;\
+}\
+\
+#filter_tabs .rlc-filters > span {\
+    padding: 5px 2px;\
+    text-align: center;\
+    display: table-cell;\
+    cursor: pointer;\
+    width: 2%;\
+    vertical-align: middle;\
+    font-size: 1.1em;\
+}\
+\
+#filter_tabs .rlc-filters > span.selected, #filter_tabs .rlc-filters > span:hover {\
+    background: grey;\
+}\
+\
+#filter_tabs .rlc-filters > span > span {\
+    pointer-events: none;\
+}\
+\
+// nightmode .res-nightmode #filter_tabs {\
+    background: rgb(51, 51, 51);\
+}\
+\
+.res-nightmode #filter_tabs .rlc-filters > span.selected,.res-nightmode #filter_tabs .rlc-filters > span:hover,.res-nightmode #filter_tabs > span.all.selected,.res-nightmode #filter_tabs > span.all:hover {\
+    background: rgb(34, 34, 34)\
+}\
+\
+\
+\
+.rlc-channel-add {\
+    padding: 5px;\
+    display: none;\
+}\
+\
+.rlc-channel-add input {\
+    padding: 2.5px;\
+}\
+\
+.rlc-channel-add .channel-mode {\
+    float: right;\
+    font-size: 1.2em;\
+    padding: 5px;\
+}\
+\
+.rlc-channel-add .channel-mode span {\
+    cursor: pointer\
+}\
+\
+.rlc-channel-add {\
+    padding: 5px;\
+    display: none;\
+}\
+\
+// /me styles #rlc-main #rlc-chat li.liveupdate.user-narration > a {\
+    display: none;\
+}\
+\
+#rlc-main #rlc-chat li.liveupdate.user-narration .body .md {\
+    font-style: italic;\
+}\
+\
+#rlc-main #rlc-chat li.liveupdate.user-narration .body a {\
+    display: none;\
+}\
+\
+/*mobile*/\
+@media only screen and (max-width: 1300px) {\
+    #rlc-main {\
+        width:75%\
+    }\
+\
+    #rlc-sidebar {\
+        width: 25%\
+    }\
+\
+    #rlc-main .liveupdate-listing .liveupdate time {\
+        width: 15%\
+    }\
+\
+    #rlc-main .liveupdate-listing .liveupdate .author {\
+        width: 15%\
+    }\
+\
+    #rlc-main .liveupdate-listing .liveupdate .body div.md {\
+        width: 85%;\
+    }\
+}\
 ");
