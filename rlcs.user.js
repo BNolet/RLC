@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.45
+// @version      1.5
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -545,7 +545,7 @@ body { \
  \
 #rlc-sidebar { \
     width: 20%; \
-    height: 91%; \
+    height: calc(100vh - 63px); \
     position: fixed; \
     top: 63px; \
     right: 0; \
@@ -955,3 +955,4 @@ div#liveupdate-statusbar { \
     padding: 2px 0px 1px 0px; \
 } \
 ");
+
