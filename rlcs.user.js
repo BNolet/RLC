@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.44
+// @version      1.45
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -401,7 +401,7 @@
 
     // boot
     $(document).ready(function() {
-        $("body").append('<div id="rlc-main"><div id="mousesubmitblocker"></div><div id="rlc-chat"></div><div id="rlc-messagebox"></div></div>');
+        $("body").append('<div id="rlc-main"><div id="rlc-chat"></div><div id="rlc-messagebox"><div id="mousesubmitblocker"></div></div></div>');
         $("body").append('<div id="rlc-sidebar"></div><div id="rlc-togglesidebar" class="noselect">Toggle Sidebar</div>');
         $('.liveupdate-listing').appendTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
@@ -532,8 +532,8 @@
 body { \
     overflow: hidden; \
 } \
-
- \/* Custom elements */ \
+ \
+/* Custom elements */ \
 #rlc-main { \
     width: 80%; \
     height: 100%; \
@@ -542,8 +542,8 @@ body { \
     left: 0px; \
     box-sizing: border-box; \
 } \
-
- \#rlc-sidebar { \
+ \
+#rlc-sidebar { \
     width: 20%; \
     height: 91%; \
     position: fixed; \
@@ -554,13 +554,13 @@ body { \
     padding-top: 20px; \
     overflow-x: hidden; \
     } \
-
- \/* hard removal */ \
+ \
+/* hard removal */ \
 .footer-parent,#liveupdate-options, #rlc-main .liveupdate-listing .separator,#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,#rlc-main .liveupdate-listing li.liveupdate time:before,.help-toggle, .reddiquette,#contributors, body > .content { \
     display: none!important; \
 } \
-
- \/*chat window*/ \
+ \
+/*chat window*/ \
 #rlc-main .liveupdate-listing { \
     max-width: 100%; \
     overflow-y: auto; \
@@ -570,26 +570,26 @@ body { \
     display: flex; \
     flex-direction: column-reverse; \
 } \
-
- \#rlc-main .liveupdate-listing .liveupdate .body a { \
+ \
+#rlc-main .liveupdate-listing .liveupdate .body a { \
     font-size: 13px!important; \
 } \
-
- \#rlc-main .liveupdate-listing .liveupdate .body { \
+ \
+#rlc-main .liveupdate-listing .liveupdate .body { \
     max-width: none!important; \
     margin-bottom: 0!important; \
     padding: 3px 0px!important; \
     font-size: 12px!important; \
 } \
-
- \#rlc-main .liveupdate-listing .liveupdate { \
+ \
+#rlc-main .liveupdate-listing .liveupdate { \
     border-top: 1px solid grey; \
     padding-top: 0px; \
     height: auto!important; \
     overflow: visible!important; \
 } \
-
- \#rlc-main .liveupdate-listing a.author { \
+ \
+#rlc-main .liveupdate-listing a.author { \
     display: block; \
     float: left; \
     width: 100%; \
@@ -597,55 +597,55 @@ body { \
     text-align: right; \
     color: #0079d3; \
 } \
-
- \#rlc-main .liveupdate-listing .liveupdate time { \
+ \
+#rlc-main .liveupdate-listing .liveupdate time { \
     padding: 0; \
     float: left; \
     width: 100%; \
     margin: 0; \
     text-align: right; \
 } \
-
- \#rlc-main .liveupdate-listing .liveupdate .body div.md { \
+ \
+#rlc-main .liveupdate-listing .liveupdate .body div.md { \
     width: 80%; \
     display: block; \
     float: right; \
     margin-bottom: 0; \
     max-width: none; \
 } \
-
- \/*message input and send button*/ \
+ \
+/*message input and send button*/ \
 #new-update-form .usertext { \
     max-width: 100%; \
     float: left; \
     width: 100%; \
 } \
-
- \.usertext-edit .md { \
+ \
+.usertext-edit .md { \
     min-width: 100%!important; \
 } \
-
- \div#new-update-form textarea { \
+ \
+div#new-update-form textarea { \
     height: 45px; \
     overflow: auto; \
     resize: none; \
 } \
-
- \div#new-update-form { \
+ \
+div#new-update-form { \
     width: 100%; \
     margin: 0; \
 } \
-
- \.usertext-edit.md-container { \
+ \
+.usertext-edit.md-container { \
     max-width: 100%; \
     margin: 0; \
 } \
-
- \.usertext-edit.md-container { \
+ \
+.usertext-edit.md-container { \
     position: relative; \
 } \
-
- \#new-update-form .bottom-area { \
+ \
+#new-update-form .bottom-area { \
     position: absolute; \
     top: 4px; \
     right: 15px; \
@@ -653,21 +653,21 @@ body { \
     text-align: center; \
     letter-spacing: 1px; \
 } \
-
- \#new-update-form .save-button .btn { \
+ \
+#new-update-form .save-button .btn { \
     width: 100%; \
     text-transform: capitalize; \
 } \
-
- \.usertext-edit.md-container { \
+ \
+.usertext-edit.md-container { \
     margin-top: 3px; \
 } \
-
- \.usertext-edit.md-container textarea { \
+ \
+.usertext-edit.md-container textarea { \
     padding: 2px; \
 } \
-
- \/*sidebar*/ \
+ \
+/*sidebar*/ \
 aside.sidebar.side.md-container { \
     max-width: 100%; \
     width: 100%; \
@@ -676,70 +676,70 @@ aside.sidebar.side.md-container { \
     padding: 0px 10px; \
     box-sizing: border-box; \
 } \
-
- \#liveupdate-header { \
+ \
+#liveupdate-header { \
     width: 100%; \
     margin: 0!important; \
     padding: 0!important; \
     text-align: center; \
     max-width: none; \
 } \
-
- \#rlc-main iframe { \
+ \
+#rlc-main iframe { \
     display: none!important; \
 } \
-
- \.dark-background aside.sidebar #discussions li { \
+ \
+.dark-background aside.sidebar #discussions li { \
     background: #404040; \
 } \
-
- \.dark-background .md a { \
+ \
+.dark-background .md a { \
     color: #5ED7FF!important; \
 } \
-
- \.dark-background .sidebar a { \
+ \
+.dark-background .sidebar a { \
     color: #5ED7FF!important; \
 } \
-
- \.dark-background.loggedin.liveupdate-app { \
+ \
+.dark-background.loggedin.liveupdate-app { \
     background: #404040; \
     color: white; \
 } \
-
- \.dark-background div.content { \
+ \
+.dark-background div.content { \
     background: #404040; \
     color: white; \
 } \
-
- \.dark-background div.md { \
+ \
+.dark-background div.md { \
     color: white; \
 } \
-
- \.dark-background aside.sidebar { \
+ \
+.dark-background aside.sidebar { \
     background: #404040!important; \
 } \
-
- \.dark-background blockquote, .dark-background h2 { \
+ \
+.dark-background blockquote, .dark-background h2 { \
     color: white!important \
 } \
-
- \.dark-background code { \
+ \
+.dark-background code { \
     color: black; \
 } \
-
- \.rlc-filter .channelname { \
+ \
+.rlc-filter .channelname { \
     display: none; \
 } \
-
- \.rlc-hidesidebar #rlc-sidebar { \
+ \
+.rlc-hidesidebar #rlc-sidebar { \
     display: none!important \
 } \
-
- \.rlc-hidesidebar #rlc-main { \
+ \
+.rlc-hidesidebar #rlc-main { \
     width: 100%; \
 } \
-
- \#rlc-togglesidebar { \
+ \
+#rlc-togglesidebar { \
     position: absolute; \
     top: 46px; \
     right: 235px; \
@@ -752,12 +752,12 @@ aside.sidebar.side.md-container { \
     padding-top: 2px; \
     cursor: pointer; \
 } \
-
- \.res-nightmode #rlc-togglesidebar { \
+ \
+.res-nightmode #rlc-togglesidebar { \
     background: #262626; \
 } \
-
- \#rlc-settings { \
+ \
+#rlc-settings { \
     position: absolute; \
     top: 46px; \
     right: 0px; \
@@ -768,82 +768,82 @@ aside.sidebar.side.md-container { \
     padding-top: 1px; \
     cursor: pointer; \
 } \
-
- \.res-nightmode #rlc-settings { \
+ \
+.res-nightmode #rlc-settings { \
     color: white; \
     background: #262626; \
 } \
-
- \#rlc-settings strong { \
+ \
+#rlc-settings strong { \
     float: left; \
     font-weight: bold; \
     font-size: 1.2em; \
     display: none; \
 } \
-
- \#rlc-settings label { \
+ \
+#rlc-settings label { \
     float: left; \
     padding-left: 5px \
 } \
-
- \#rlc-settings label input { \
+ \
+#rlc-settings label input { \
     vertical-align: middle; \
 } \
-
- \#liveupdate-resources > h2 { \
+ \
+#liveupdate-resources > h2 { \
     display: none; \
 } \
-
- \#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
+ \
+#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
     font-weight: bold; \
 } \
-
- \#filter_tabs { \
+ \
+#filter_tabs { \
     width: 100%; \
     display: table; \
     table-layout: fixed; \
     border-bottom: 1px solid #5f99cf; \
 } \
-
- \.res-nightmode #filter_tabs { \
+ \
+.res-nightmode #filter_tabs { \
     color: white; \
 } \
-
- \#filter_tabs > span { \
+ \
+#filter_tabs > span { \
     width: 90%; \
     display: table-cell; \
 } \
-
- \#filter_tabs > span.all, #filter_tabs > span.more { \
+ \
+#filter_tabs > span.all, #filter_tabs > span.more { \
     width: 60px; \
     text-align: center; \
     vertical-align: middle; \
     cursor: pointer; \
 } \
-
- \.res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more { \
+ \
+.res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more { \
     color: white; \
 } \
-
- \#filter_tabs > span.all.selected:hover { \
+ \
+#filter_tabs > span.all.selected:hover { \
     background: #40403f; \
     color: white; \
 } \
-
- \.res-nightmode #filter_tabs > span.all:hover, .res-nightmode #filter_tabs > span.more:hover { \
+ \
+.res-nightmode #filter_tabs > span.all:hover, .res-nightmode #filter_tabs > span.more:hover { \
     background:white ; \
     color: #40403f; \
 } \
-
  \
  \
- \#filter_tabs .rlc-filters { \
+ \
+#filter_tabs .rlc-filters { \
     display: table; \
     width: 100%; \
     table-layout: fixed; \
 } \
-
- \#filter_tabs .rlc-filters > span { \
+ \
+#filter_tabs .rlc-filters > span { \
     padding: 5px 2px; \
     text-align: center; \
     display: table-cell; \
@@ -852,60 +852,60 @@ aside.sidebar.side.md-container { \
     vertical-align: middle; \
     font-size: 1.1em; \
 } \
-
- \#filter_tabs .rlc-filters > span.selected, #filter_tabs .rlc-filters > span:hover { \
+ \
+#filter_tabs .rlc-filters > span.selected, #filter_tabs .rlc-filters > span:hover { \
     background: grey; \
 } \
-
- \#filter_tabs .rlc-filters > span > span { \
+ \
+#filter_tabs .rlc-filters > span > span { \
     pointer-events: none; \
 } \
-
- \// nightmode .res-nightmode #filter_tabs { \
+ \
+// nightmode .res-nightmode #filter_tabs { \
     background: rgb(51, 51, 51); \
 } \
-
- \.rlc-channel-add { \
+ \
+.rlc-channel-add { \
     padding: 5px; \
     display: none; \
 } \
-
- \.rlc-channel-add input { \
+ \
+.rlc-channel-add input { \
     padding: 2.5px; \
 } \
-
- \.rlc-channel-add .channel-mode { \
+ \
+.rlc-channel-add .channel-mode { \
     float: right; \
     font-size: 1.2em; \
     padding: 5px; \
 } \
-
- \.rlc-channel-add .channel-mode span { \
+ \
+.rlc-channel-add .channel-mode span { \
     cursor: pointer \
 } \
-
- \.rlc-channel-add { \
+ \
+.rlc-channel-add { \
     padding: 5px; \
     display: none; \
 } \
-
- \// /me styles #rlc-main #rlc-chat li.liveupdate.user-narration > a { \
+ \
+// /me styles #rlc-main #rlc-chat li.liveupdate.user-narration > a { \
     display: none; \
 } \
-
- \#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
+ \
+#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
     font-style: italic; \
 } \
-
- \#rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
+ \
+#rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
     display: none; \
 } \
-
- \.liveupdate .msginfo { \
+ \
+.liveupdate .msginfo { \
     width: 18%; \
 } \
-
- \.noselect { \
+ \
+.noselect { \
     -webkit-touch-callout: none; \
     /* iOS Safari */ \
     -webkit-user-select: none; \
@@ -916,15 +916,13 @@ aside.sidebar.side.md-container { \
     /* Firefox */ \
     -ms-user-select: none; \
     /* IE/Edge */ \
-    user-select: none; \
-    /* non-prefixed version, currently                                   not supported by any browser */ \
 } \
-
- \div#rlc-messagebox { \
+ \
+div#rlc-messagebox { \
     position: relative; \
 } \
-
- \div#mousesubmitblocker { \
+ \
+div#mousesubmitblocker { \
     position: absolute; \
     top: 49px; \
     width: 100%; \
@@ -933,24 +931,24 @@ aside.sidebar.side.md-container { \
     z-index: 1; \
     cursor: not-allowed; \
 } \
-
- \#filter_tabs span div > span:nth-child(odd) { \
+ \
+#filter_tabs span div > span:nth-child(odd) { \
     background: rgba(128,128,128,0.3); \
 } \
-
- \#filter_tabs > span.all { \
+ \
+#filter_tabs > span.all { \
     padding: 0px 30px; \
 } \
 #filter_tabs > span.more { \
     padding: 0px 30px 0px 30px; \
 } \
-
- \.channelname { \
+ \
+.channelname { \
     display: none; \
 } \
-
  \
- \div#liveupdate-statusbar { \
+ \
+div#liveupdate-statusbar { \
     position: absolute; \
     top: 0; \
     width: 100%; \
