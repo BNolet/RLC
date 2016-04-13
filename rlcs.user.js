@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.42
+// @version      1.43
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -128,6 +128,7 @@
                 if(typeof this.channels[i] === 'undefined') continue;
                 html += '<span data-filter="' + i + '" data-filter-name="'+ this.channels[i] +'">' + this.channels[i] + ' (<span>0</span>)</span> '; 
             }
+            console.log(html)
             this.$el.find(".rlc-filters").html(html);
         };
 
@@ -400,7 +401,8 @@
 
     // boot
     $(document).ready(function() {
-        $("body").append('<div id="rlc-main"><div id="rlc-chat"></div><div id="rlc-messagebox"></div></div><div id="rlc-sidebar"></div><div id="rlc-togglesidebar" class="noselect">Toggle Sidebar</div>');
+        $("body").append('<div id="rlc-main"><div id="mousesubmitblocker"></div><div id="rlc-chat"></div><div id="rlc-messagebox"></div></div>');
+        $("body").append('<div id="rlc-sidebar"></div><div id="rlc-togglesidebar" class="noselect">Toggle Sidebar</div>');
         $('.liveupdate-listing').appendTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#liveupdate-header').prependTo('#rlc-sidebar');
@@ -472,6 +474,11 @@
             messageHistoryIndex = messageHistory.length;
         });
 
+        // submit button manual usage prevention notification handler
+        $("#mousesubmitblocker").click(function(){
+            alert("Please use Enter");
+        });
+
         $("#rlc-togglesidebar").click(function(){
             $("body").toggleClass("rlc-hidesidebar");
         });
@@ -531,23 +538,22 @@ body { \
     width: 80%; \
     height: 100%; \
     position: fixed; \
-    top: 65px; \
+    top: 63px; \
     left: 0px; \
-    padding-left: 3px; \
     box-sizing: border-box; \
-    padding-right: 3px; \
 } \
  \
 #rlc-sidebar { \
     width: 20%; \
-    height: 100%; \
+    height: 91%; \
     position: fixed; \
     top: 63px; \
     right: 0; \
-    padding: 0px 10px; \
     box-sizing: border-box; \
     overflow-y: auto; \
-    ;} \
+    padding-top: 20px; \
+    overflow-x: hidden; \
+    } \
  \
 /* hard removal */ \
 .footer-parent,#liveupdate-options, #rlc-main .liveupdate-listing .separator,#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,#rlc-main .liveupdate-listing li.liveupdate time:before,.help-toggle, .reddiquette,#contributors, body > .content { \
@@ -564,7 +570,11 @@ body { \
     display: flex; \
     flex-direction: column-reverse; \
 } \
-#rlc-main .liveupdate-listing .liveupdate .body a {     font-size: 13px!important;} \
+ \
+#rlc-main .liveupdate-listing .liveupdate .body a { \
+    font-size: 13px!important; \
+} \
+ \
 #rlc-main .liveupdate-listing .liveupdate .body { \
     max-width: none!important; \
     margin-bottom: 0!important; \
@@ -660,8 +670,11 @@ div#new-update-form { \
 /*sidebar*/ \
 aside.sidebar.side.md-container { \
     max-width: 100%; \
-    width: 98%; \
+    width: 100%; \
     opacity: 1; \
+    margin: 0; \
+    padding: 0px 10px; \
+    box-sizing: border-box; \
 } \
  \
 #liveupdate-header { \
@@ -739,7 +752,10 @@ aside.sidebar.side.md-container { \
     padding-top: 2px; \
     cursor: pointer; \
 } \
-.res-nightmode #rlc-togglesidebar { background: #262626; }\
+ \
+.res-nightmode #rlc-togglesidebar { \
+    background: #262626; \
+} \
  \
 #rlc-settings { \
     position: absolute; \
@@ -752,7 +768,11 @@ aside.sidebar.side.md-container { \
     padding-top: 1px; \
     cursor: pointer; \
 } \
-.res-nightmode #rlc-settings {   color:white; background: #262626; } \
+ \
+.res-nightmode #rlc-settings { \
+    color: white; \
+    background: #262626; \
+} \
  \
 #rlc-settings strong { \
     float: left; \
@@ -774,10 +794,6 @@ aside.sidebar.side.md-container { \
     display: none; \
 } \
  \
-#liveupdate-resources { \
-    padding-top: 5px \
-} \
- \
 #rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
     font-weight: bold; \
 } \
@@ -786,11 +802,13 @@ aside.sidebar.side.md-container { \
     width: 100%; \
     display: table; \
     table-layout: fixed; \
-    border-bottom: 1px solid #efefed; \
+    border-bottom: 1px solid #5f99cf; \
 } \
+ \
 .res-nightmode #filter_tabs { \
     color: white; \
 } \
+ \
 #filter_tabs > span { \
     width: 90%; \
     display: table-cell; \
@@ -802,7 +820,8 @@ aside.sidebar.side.md-container { \
     vertical-align: middle; \
     cursor: pointer; \
 } \
-.res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more  { \
+ \
+.res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more { \
     color: white; \
 } \
  \
@@ -810,6 +829,13 @@ aside.sidebar.side.md-container { \
     background: #40403f; \
     color: white; \
 } \
+ \
+.res-nightmode #filter_tabs > span.all:hover, .res-nightmode #filter_tabs > span.more:hover { \
+    background:white ; \
+    color: #40403f; \
+} \
+ \
+ \
  \
 #filter_tabs .rlc-filters { \
     display: table; \
@@ -837,10 +863,6 @@ aside.sidebar.side.md-container { \
  \
 // nightmode .res-nightmode #filter_tabs { \
     background: rgb(51, 51, 51); \
-} \
- \
-.res-nightmode #filter_tabs .rlc-filters > span.selected,.res-nightmode #filter_tabs .rlc-filters > span:hover,.res-nightmode #filter_tabs > span.all.selected,.res-nightmode #filter_tabs > span.all:hover { \
-    background: rgb(34, 34, 34) \
 } \
  \
 .rlc-channel-add { \
@@ -879,18 +901,56 @@ aside.sidebar.side.md-container { \
     display: none; \
 } \
  \
- \
 .liveupdate .msginfo { \
     width: 18%; \
 } \
  \
 .noselect { \
-  -webkit-touch-callout: none; /* iOS Safari */ \
-  -webkit-user-select: none;   /* Chrome/Safari/Opera */ \
-  -khtml-user-select: none;    /* Konqueror */ \
-  -moz-user-select: none;      /* Firefox */ \
-  -ms-user-select: none;       /* IE/Edge */ \
-  user-select: none;           /* non-prefixed version, currently \
-                                  not supported by any browser */ \
+    -webkit-touch-callout: none; \
+    /* iOS Safari */ \
+    -webkit-user-select: none; \
+    /* Chrome/Safari/Opera */ \
+    -khtml-user-select: none; \
+    /* Konqueror */ \
+    -moz-user-select: none; \
+    /* Firefox */ \
+    -ms-user-select: none; \
+} \
+ \
+div#rlc-messagebox { \
+    position: relative; \
+} \
+ \
+div#mousesubmitblocker { \
+    position: absolute; \
+    top: 49px; \
+    width: 100%; \
+    height: 24px; \
+    background: transparent; \
+    z-index: 1; \
+    cursor: not-allowed; \
+} \
+ \
+#filter_tabs span div > span:nth-child(odd) { \
+    background: rgba(128,128,128,0.3); \
+} \
+ \
+#filter_tabs > span.all { \
+    padding: 0px 30px; \
+} \
+#filter_tabs > span.more { \
+    padding: 0px 30px 0px 30px; \
+} \
+ \
+.channelname { \
+    display: none; \
+} \
+ \
+ \
+div#liveupdate-statusbar { \
+    position: absolute; \
+    top: 0; \
+    width: 100%; \
+    padding: 2px 0px 1px 0px; \
 } \
 ");
