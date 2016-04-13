@@ -9,6 +9,7 @@
 // @exclude      https://www.reddit.com/live
 // @exclude      https://www.reddit.com/live/*/edit*
 // @exclude      https://www.reddit.com/live/*/contributors*
+// @exclude      https://*.reddit.com/live/create*
 // @require      http://code.jquery.com/jquery-latest.js
 // @grant   GM_addStyle
 // @grant       GM_setValue
