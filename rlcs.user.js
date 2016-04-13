@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -356,6 +356,7 @@
         var $msg = $ele.find(".body .md");
         var $usr = $ele.find(".body .author");
         var line = $msg.text().toLowerCase();
+        var first_line = $msg.find("p").first();
 
         // Spam fuilter
 
@@ -367,13 +368,18 @@
         // /me support
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
-            var first_line = $msg.find("p").first();
-            console.log(first_line);
+            //console.log(first_line);
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
-        }
+        }            
 
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
+
+
+     // channel removal support
+     //var moddedmessage = remove_channel_key_from_message($msg.text())
+     //first_line.html(moddedmessage);
+
     }
 
     // remove channel key from message
@@ -385,6 +391,7 @@
             if(message.indexOf("/me") === 0){
                 return "/me "+ message.slice(offset+5);
             }else{
+                console.log("slice: " + offset);
                 return message.slice(offset+1);
             }
         }
@@ -453,7 +460,7 @@
         var text_area = $(".usertext-edit.md-container textarea");
 
 
-        // On post message, add it to historu
+        // On post message, add it to history
         $(".save-button .btn").click(function(){
             var user_last_message = text_area.val();
 
@@ -469,6 +476,7 @@
         text_area.on('keydown', function(e) {
             if (e.keyCode == 13) {
                 if (e.shiftKey) {  }
+                else if (text_area.val() === "" ) { e.preventDefault();  }
                 else {
                 e.preventDefault();
                   $(this).val($(".usertext-edit textarea").val() + ' ');
@@ -535,7 +543,6 @@
         GM_addStyle("#rlc-chat.rlc-filter.rlc-filter-"+c+" li.liveupdate.rlc-filter-"+c+" { display:block;}", 0);
     }
     // mention highlight
-    GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-mention { display:block; }", 0);
     GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { font-weight:bold; }", 0);
 
 })();
@@ -546,7 +553,7 @@
     width: 80%; \
     height: 100%; \
     position: fixed; \
-    top: 70px;\
+    top: 65px;\
     left: 0px;\
     padding-left: 3px;\
     box-sizing: border-box;\
@@ -570,8 +577,6 @@
 } \
 .res-nightmode #liveupdate-options {color:white;}\
 /* hard removal */\
-#discussions, \
-#contributors, \
 .footer-parent,\
 #liveupdate-options, \
 #rlc-main .liveupdate-listing .separator,\
@@ -579,12 +584,13 @@
 #rlc-main .liveupdate-listing li.liveupdate time:before,\
 .help-toggle, \
 .reddiquette,\
+#contributors, \
 body > .content { display: none!important; }\
 /*chat window*/\
 #rlc-main .liveupdate-listing { \
     max-width: 100%; \
     overflow-y: auto;;  \
-    height: calc(100vh - 170px); \
+    height: calc(100vh - 162px); \
     padding:5px;\
     box-sizing:border-box;\
     display: flex; \
