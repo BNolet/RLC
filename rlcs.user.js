@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.51
+// @version      1.52
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -231,6 +231,12 @@
                     $element.find("a").append("<div class='channelname'>"+channel+"</div>");
                     $element.addClass("fuk-filter-" + idx +" in-channel");
                     this.unread_counts[idx]++;
+
+                    var $newele = $element.find(".body .md"); 
+                    var first_line = $newele.find("p").first();
+                    var $msgnochannel = '<p>' + remove_channel_key_from_message(first_line.text()) +'</p>';
+                    $element.find(".body .md").html($msgnochannel);
+
                     return;
                 }
             }
@@ -367,7 +373,6 @@
         // /me support
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
-            //console.log(first_line);
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }            
 
@@ -376,13 +381,6 @@
 
         $usr.after($ele.find("time"))
         $ele.find(".author, time").wrapAll("<div class='msginfo'>");
-     // channel removal support
-        console.log("fl:"+first_line.text());
-        var $msgnochannel = '<p>' + remove_channel_key_from_message(first_line.text()) +'</p>';
-        console.log("msg_no:"+$msgnochannel);
-        console.log("msg:"+$msg.html());
-        $msg.html($msgnochannel);
-
     }
 
     // remove channel key from message
@@ -394,7 +392,6 @@
             if(message.indexOf("/me") === 0){
                 return "/me "+ message.slice(offset+5);
             }else{
-                console.log("slice: " + offset);
                 return message.slice(offset+1);
             }
         }
@@ -440,6 +437,7 @@
 
         // rescan existing chat for messages
         $("#fuk-chat").find("li.liveupdate").each(function(idx,item){
+            
             handle_new_message($(item));
         });
 
