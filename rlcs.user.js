@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.54
+// @version      1.55
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -228,12 +228,12 @@
                 if(typeof channel === 'undefined') continue;
 
                 if(text.indexOf(channel) === 0){
-                    $element.append("<div class='channelname'>"+channel+"</div>");
+                    $element.find(".msginfo").append("<div class='channelname'>"+channel+"</div>");
                     $element.addClass("fuk-filter-" + idx +" in-channel");
                     this.unread_counts[idx]++;
 
+                    // remove channel name in messages
                     var newele = $element.find(".body .md p").html().replace(channel,'');
-                    console.log(newele);
                     $element.find(".body .md p").html(newele);
 
                     return;
@@ -375,11 +375,13 @@
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }            
 
+        $usr.after($ele.find("time"))
+        $ele.find(".author, time").wrapAll("<div class='msginfo'>");
+        
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
 
-        $usr.after($ele.find("time"))
-        $ele.find(".author, time").wrapAll("<div class='msginfo'>");
+
     }
 
     // remove channel key from message
@@ -1002,5 +1004,11 @@ body:not(.res) div#header-bottom-right:after {  \
 .dark-background #fuk-settings, .dark-background #fuk-settingsbar { \
     color: black; \
 } \
-.channelname {display:none;} \
+.channelname {display:block; \
+                      width: 100%;\
+    text-align: right;\
+                  } \
+.fuk-filter .channelname {\
+    display: none; \
+}\
 ");
