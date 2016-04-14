@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.53
+// @version      1.54
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -1002,4 +1002,5 @@ body:not(.res) div#header-bottom-right:after {  \
 .dark-background #fuk-settings, .dark-background #fuk-settingsbar { \
     color: black; \
 } \
+.channelname {display:none;} \
 ");
