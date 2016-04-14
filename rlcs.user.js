@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.49
+// @version      1.50
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -812,7 +812,7 @@ aside.sidebar.side.md-container { \
     } \
  \
 .res-nightmode #fuk-togglesidebar, .res-nightmode #fuk-settingsbar { \
-    background: #262626; color:white;\
+    background: #262626; color:white!important;\
 } \
  \
 /*settings*/ \
@@ -830,7 +830,7 @@ aside.sidebar.side.md-container { \
 } \
  \
 .res-nightmode #fuk-settings { \
-    color: white; \
+    color: white!important; \
     background: #262626; \
 } \
  \
