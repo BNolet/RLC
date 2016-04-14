@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.47
+// @version      1.48
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -11,7 +11,7 @@
 // @exclude      https://www.reddit.com/live/*/contributors*
 // @exclude      https://*.reddit.com/live/create*
 // @require      http://code.jquery.com/jquery-latest.js
-// @grant   GM_addStyle
+// @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
 // ==/UserScript==
@@ -37,7 +37,7 @@
     var messageHistoryIndex = -1;
 
      /**
-     * Quickly hacked to play nice with RLCS
+     * Quickly hacked to play nice with fuk
      *
      * Pull tabber out in to semi-stand alone module
      * Big thanks to netnerd01 for his pre-work on this
@@ -67,7 +67,7 @@
             var channel = $(e.target).data("filter");
             if(channel===null)return; // no a channel
 
-            if(!$("#rlc-chat").hasClass("rlc-filter-" + channel)){
+            if(!$("#fuk-chat").hasClass("fuk-filter-" + channel)){
                 _self.enable_channel(channel);
                 $(e.target).addClass("selected");
                 // clear unread counter
@@ -90,8 +90,8 @@
                 this.disable_all_channels();
             }
 
-            $("#rlc-chat").addClass("rlc-filter rlc-filter-" + channel_id);
-            $("#rlc-chat").attr("data-channel-key", this.channels[channel_id]);
+            $("#fuk-chat").addClass("fuk-filter fuk-filter-" + channel_id);
+            $("#fuk-chat").attr("data-channel-key", this.channels[channel_id]);
             this.currentRooms++;
             // unselect show all 
             _self.$el.find("span.all").removeClass("selected");
@@ -99,7 +99,7 @@
 
         // disable a channel
         this.disable_channel = function(channel_id){    
-            $("#rlc-chat").removeClass("rlc-filter-" + channel_id);
+            $("#fuk-chat").removeClass("fuk-filter-" + channel_id);
             this.currentRooms--;
 
             // no rooms selcted, run "show all"
@@ -107,14 +107,14 @@
                 this.disable_all_channels();
             }else{
                 // Grab next channel name if u leave a room in multi mode
-                $("#rlc-chat").attr("data-channel-key", $(".rlc-filters span.selected").first().data("filter-name"));
+                $("#fuk-chat").attr("data-channel-key", $(".fuk-filters span.selected").first().data("filter-name"));
             }
         };
 
         // turn all channels off
         this.disable_all_channels = function(e){
-            $("#rlc-chat").attr("class", _self.defaultRoomClasses).attr("data-channel-key","");
-            _self.$el.find(".rlc-filters > span").removeClass("selected");
+            $("#fuk-chat").attr("class", _self.defaultRoomClasses).attr("data-channel-key","");
+            _self.$el.find(".fuk-filters > span").removeClass("selected");
             this.currentRooms = 0;
 
             _self.$el.find("span.all").addClass("selected");
@@ -128,12 +128,12 @@
                 if(typeof this.channels[i] === 'undefined') continue;
                 html += '<span data-filter="' + i + '" data-filter-name="'+ this.channels[i] +'">' + this.channels[i] + ' (<span>0</span>)</span> '; 
             }
-            this.$el.find(".rlc-filters").html(html);
+            this.$el.find(".fuk-filters").html(html);
         };
 
         // After creation of a new channel, go find if any content (not matched by a channel already) is relevant
         this.reScanChannels = function(){
-            $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+            $("#fuk-chat").find("li.liveupdate").each(function(idx,item){
                 var line = $(item).find(".body .md").text().toLowerCase();
                 tabbedChannels.proccessLine(line, $(item), true);
             });
@@ -178,7 +178,7 @@
         this.saveChannelList = function(){
             // clean array before save
             var channels = this.channels.filter(function (item) { return item != undefined });
-            GM_setValue("rlc-enhance-channels", channels);
+            GM_setValue("fuk-enhance-channels", channels);
         };
 
         // Change chat mode
@@ -191,7 +191,7 @@
             _self.disable_all_channels();
 
             // Update mode setting
-            GM_setValue("rlc-enhance-mode", _self.mode);
+            GM_setValue("fuk-enhance-mode", _self.mode);
         };
 
         this.updateChannelMatchCache = function(){
@@ -216,7 +216,7 @@
                 $element.removeClass("in-channel");
 
                 for(i=0; i <= this.channels.length; i++){
-                    $element.removeClass("rlc-filter-" + i);
+                    $element.removeClass("fuk-filter-" + i);
                 }
             }
 
@@ -229,7 +229,7 @@
 
                 if(text.indexOf(channel) === 0){
                     $element.find("a").append("<div class='channelname'>"+channel+"</div>");
-                    $element.addClass("rlc-filter-" + idx +" in-channel");
+                    $element.addClass("fuk-filter-" + idx +" in-channel");
                     this.unread_counts[idx]++;
                     return;
                 }
@@ -238,9 +238,9 @@
 
         // If in one channel, auto add channel keys
         this.submit_helper = function(){
-            if($("#rlc-chat").hasClass("rlc-filter")){
+            if($("#fuk-chat").hasClass("fuk-filter")){
                 // auto add channel key
-                var channel_key = $("#rlc-chat").attr("data-channel-key");
+                var channel_key = $("#fuk-chat").attr("data-channel-key");
 
                 if($("#new-update-form textarea").val().indexOf("/me") === 0){
                     $("#new-update-form textarea").val("/me " + channel_key + " " + $("#new-update-form textarea").val().substr(3));
@@ -253,7 +253,7 @@
 
         // Update everuything
         this.tick = function(){
-            _self.$el.find(".rlc-filters span").each(function(){
+            _self.$el.find(".fuk-filters span").each(function(){
                 if($(this).hasClass("selected")) return;
                 $(this).find("span").text(_self.unread_counts[$(this).data("filter")]);
             });
@@ -262,11 +262,11 @@
         // Init tab zone
         this.init = function($el){
             // Load channels
-            if(GM_getValue("rlc-enhance-channels")){
-                this.channels = GM_getValue("rlc-enhance-channels");
+            if(GM_getValue("fuk-enhance-channels")){
+                this.channels = GM_getValue("fuk-enhance-channels");
             }
-            if(GM_getValue("rlc-enhance-mode")){
-                this.mode = GM_getValue("rlc-enhance-mode");
+            if(GM_getValue("fuk-enhance-mode")){
+                this.mode = GM_getValue("fuk-enhance-mode");
             }
 
             // init counters
@@ -281,14 +281,14 @@
             this.$el = $el;
 
             // Create inital markup
-            this.$el.html("<span class='all selected'>Everything</span><span><div class='rlc-filters'></div></span><span class='more'>[Options]</span>");
-            this.$opt = $("<div class='rlc-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
+            this.$el.html("<span class='all selected'>Everything</span><span><div class='fuk-filters'></div></span><span class='more'>[Options]</span>");
+            this.$opt = $("<div class='fuk-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
 
             // Attach events
-            this.$el.find(".rlc-filters").click(this.toggle_channel);
+            this.$el.find(".fuk-filters").click(this.toggle_channel);
             this.$el.find("span.all").click(this.disable_all_channels);
-            this.$el.find("span.more").click(function(){ $(".rlc-channel-add").slideToggle(); });
-            this.$el.find(".rlc-filters").bind("contextmenu", function(e){
+            this.$el.find("span.more").click(function(){ $(".fuk-channel-add").slideToggle(); });
+            this.$el.find(".fuk-filters").bind("contextmenu", function(e){
                 e.preventDefault();
                 e.stopPropagation();
                 var chan_id = $(e.target).data("filter");
@@ -307,7 +307,7 @@
             $(".save-button .btn").click(this.submit_helper);
             
             // store default room class
-            this.defaultRoomClasses = $("#rlc-chat").attr("class") ? $("#rlc-chat").attr("class") : '';
+            this.defaultRoomClasses = $("#fuk-chat").attr("class") ? $("#fuk-chat").attr("class") : '';
 
             // redraw tabs
             this.drawTabs();
@@ -319,7 +319,7 @@
     // create persistant option
     function createOption(name, click_action, default_state){
         var checked_markup;
-        var key = "rlc-enhance-" + name.replace(/\W/g, '');
+        var key = "fuk-enhance-" + name.replace(/\W/g, '');
         var state = (typeof default_state !== "undefined") ? default_state : false;
 
         // try and state if setting is defined
@@ -341,7 +341,7 @@
             click_action(checked, $(this));
         });
         // add to dom
-        $("#rlc-settings").append($option);
+        $("#fuk-settings").append($option);
         // init
         click_action(state, $option)
     };
@@ -384,8 +384,8 @@
 
     // remove channel key from message
     var remove_channel_key_from_message = function(message){
-        if($("#rlc-chat").attr("data-channel-key")){
-            var offset = $("#rlc-chat").attr("data-channel-key").length;
+        if($("#fuk-chat").attr("data-channel-key")){
+            var offset = $("#fuk-chat").attr("data-channel-key").length;
             if(offset === 0) return message;
 
             if(message.indexOf("/me") === 0){
@@ -400,15 +400,26 @@
 
     // boot
     $(document).ready(function() {
-        $("body").append('<div id="rlc-main"><div id="rlc-chat"></div><div id="rlc-messagebox"><div id="mousesubmitblocker"></div></div></div>');
-        $("body").append('<div id="rlc-sidebar"></div><div id="rlc-togglesidebar" class="noselect">Toggle Sidebar</div>');
-        $("body").append('<div id="rlc-toggleoptions" class="noselect">Toggle Options</div>');
-        $('.liveupdate-listing').appendTo('#rlc-chat');
-        $('#new-update-form').appendTo('#rlc-messagebox');
-        $('#liveupdate-header').prependTo('#rlc-sidebar');
-        $('#liveupdate-options').prependTo('#rlc-sidebar');
-        $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
-        $("#rlc-main iframe").remove();
+        $("body").append('  \
+                    <div id="fuk-main">   \
+                            <div id="fuk-chat"></div> \
+                            <div id="fuk-messagebox"> \
+                                <div id="mousesubmitblocker"></div> \
+                            </div> \
+                    </div> \
+                    <div id="fuk-sidebar"></div> \
+                    <div id="fuk-settingsbar"> \
+                            <div id="fuk-togglesidebar" class="noselect">Toggle Sidebar</div> \
+                            <div id="fuk-toggleoptions" class="noselect">Toggle Options</div> \
+                    </div> \
+        '); 
+
+        $('.liveupdate-listing').appendTo('#fuk-chat');
+        $('#new-update-form').appendTo('#fuk-messagebox');
+        $('#liveupdate-header').prependTo('#fuk-sidebar');
+        $('#liveupdate-options').prependTo('#fuk-sidebar');
+        $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
+        $("#fuk-main iframe").remove();
 
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
@@ -420,10 +431,10 @@
         });
 
         // make settings container
-        $("<div id='rlc-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#rlc-sidebar"));
+        $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
         
         // rescan existing chat for messages
-        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+        $("#fuk-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item));
         });
 
@@ -442,9 +453,9 @@
 
         createOption("Use channel colors", function(checked, ele){
             if(checked){
-                $("#rlc-main").addClass("show-colors");
+                $("#fuk-main").addClass("show-colors");
             }else{
-                $("#rlc-main").removeClass("show-colors");
+                $("#fuk-main").removeClass("show-colors");
             }
             // correct scroll after spam filter change
             _scroll_to_bottom();
@@ -474,17 +485,12 @@
             messageHistoryIndex = messageHistory.length;
         });
 
-        // submit button manual usage prevention notification handler
-        $("#mousesubmitblocker").click(function(){
-            alert("Please use Enter");
-        });
-
-        $("#rlc-togglesidebar").click(function(){
-            $("body").toggleClass("rlc-hidesidebar");
+        $("#fuk-togglesidebar").click(function(){
+            $("body").toggleClass("fuk-hidesidebar");
         });
         
-        $("#rlc-toggleoptions").click(function(){
-            $("body").toggleClass("rlc-showoptions");
+        $("#fuk-toggleoptions").click(function(){
+            $("body").toggleClass("fuk-showoptions");
         });
 
         // up for last message send, down for prev (if moving between em)
@@ -513,22 +519,19 @@
                 }else{
                     $(this).val('');
                 }
-            }
-            
+            }   
         });
-
     });
 
     // filter for channel
-    GM_addStyle("#rlc-chat.rlc-filter li.liveupdate { display:none; }", 0);
+    GM_addStyle("#fuk-chat.fuk-filter li.liveupdate { display:none; }", 0);
     var color;
     for(var c=0;c<35;c++){
         color = colors[(c % (colors.length))];
 
-        GM_addStyle("#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-"+c+" { background: "+color+";}", 0);
-        GM_addStyle("#rlc-chat.rlc-filter.rlc-filter-"+c+" li.liveupdate.rlc-filter-"+c+" { display:block;}", 0);
+        GM_addStyle("#fuk-main.show-colors #fuk-chat li.liveupdate.fuk-filter-"+c+" { background: "+color+";}", 0);
+        GM_addStyle("#fuk-chat.fuk-filter.fuk-filter-"+c+" li.liveupdate.fuk-filter-"+c+" { display:block;}", 0);
     }
-
 })();
 /*add css styles, every line must end with \  */
       GM_addStyle(" \
@@ -538,7 +541,7 @@ body { \
 } \
  \
 /* custom containers  */ \
-#rlc-main { \
+#fuk-main { \
     width: 80%; \
     height: 100%; \
     position: fixed; \
@@ -547,7 +550,7 @@ body { \
     box-sizing: border-box; \
 } \
  \
-#rlc-sidebar { \
+#fuk-sidebar { \
     width: 20%; \
     height: calc(100vh - 63px); \
     position: fixed; \
@@ -568,25 +571,27 @@ body > .content { \
     display: none!important; \
 } \
  \
-.rlc-showoptions #rlc-settings  { \
+.fuk-showoptions #fuk-settings { \
     display: block; \
 } \
-#rlc-settings  { \
+ \
+#fuk-settings { \
     display: none; \
 } \
+ \
 #liveupdate-options { \
     display: none!important; \
 } \
  \
-#rlc-main .liveupdate-listing .separator { \
+#fuk-main .liveupdate-listing .separator { \
     display: none!important; \
 } \
  \
-#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow { \
+#fuk-main .liveupdate-listing li.liveupdate ul.buttonrow { \
     display: none!important; \
 } \
  \
-#rlc-main .liveupdate-listing li.liveupdate time:before { \
+#fuk-main .liveupdate-listing li.liveupdate time:before { \
     display: none!important; \
 } \
  \
@@ -602,7 +607,7 @@ body > .content { \
     display: none!important; \
 } \
  \
-#rlc-main iframe { \
+#fuk-main iframe { \
     display: none!important; \
 } \
  \
@@ -614,40 +619,41 @@ body > .content { \
     display: none; \
 } \
  \
-.rlc-filter .channelname { \
+.fuk-filter .channelname { \
     display: none!important; \
 } \
  \
 /*chat window*/ \
-#rlc-main .liveupdate-listing { \
+#fuk-main .liveupdate-listing { \
     max-width: 100%; \
     overflow-y: auto; \
-    ; height: calc(100vh - 162px); \
+    height: calc(100vh - 160px); \
     padding: 0px; \
     box-sizing: border-box; \
     display: flex; \
     flex-direction: column-reverse; \
 } \
  \
-#rlc-main .liveupdate-listing .liveupdate .body a { \
+#fuk-main .liveupdate-listing .liveupdate .body a { \
     font-size: 13px!important; \
 } \
  \
-#rlc-main .liveupdate-listing .liveupdate .body { \
+#fuk-main .liveupdate-listing .liveupdate .body { \
     max-width: none!important; \
     margin-bottom: 0!important; \
     padding: 3px 0px!important; \
     font-size: 12px!important; \
+    /* vertical-align: middle; */ \
 } \
  \
-#rlc-main .liveupdate-listing .liveupdate { \
+#fuk-main .liveupdate-listing .liveupdate { \
     border-top: 1px solid grey; \
     padding-top: 0px; \
     height: auto!important; \
     overflow: visible!important; \
 } \
  \
-#rlc-main .liveupdate-listing a.author { \
+#fuk-main .liveupdate-listing a.author { \
     display: block; \
     float: left; \
     width: 100%; \
@@ -656,7 +662,7 @@ body > .content { \
     color: #0079d3; \
 } \
  \
-#rlc-main .liveupdate-listing .liveupdate time { \
+#fuk-main .liveupdate-listing .liveupdate time { \
     padding: 0; \
     float: left; \
     width: 100%; \
@@ -664,36 +670,36 @@ body > .content { \
     text-align: right; \
 } \
  \
-#rlc-main .liveupdate-listing .liveupdate .body div.md { \
-    width: 80%; \
+#fuk-main .liveupdate-listing .liveupdate .body div.md { \
+    width: 82%; \
     display: block; \
     float: right; \
     margin-bottom: 0; \
     max-width: none; \
 } \
  \
-#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
+#fuk-main #fuk-chat li.liveupdate.user-mention .body .md { \
     font-weight: bold; \
 } \
  \
 .liveupdate .msginfo { \
-    width: 18%; \
+    width: 15%; \
 } \
  \
 /* narration */ \
-#rlc-main #rlc-chat li.liveupdate.user-narration > a { \
+#fuk-main #fuk-chat li.liveupdate.user-narration > a { \
     display: none; \
 } \
  \
-#rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
+#fuk-main #fuk-chat li.liveupdate.user-narration .body a { \
     display: none; \
 } \
  \
-#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
+#fuk-main #fuk-chat li.liveupdate.user-narration .body .md { \
     font-style: italic; \
 } \
  \
-div#rlc-messagebox { \
+div#fuk-messagebox { \
     position: relative; \
 } \
  \
@@ -780,48 +786,37 @@ aside.sidebar.side.md-container { \
 } \
  \
 /*togglesidebar*/ \
-.rlc-hidesidebar #rlc-sidebar, .rlc-hidesidebar #rlc-toggleoptions { \
+.fuk-hidesidebar #fuk-sidebar { \
     display: none!important; \
 } \
  \
-/*hide sidebar toggle class*/  \
-.rlc-hidesidebar #rlc-main { \
+/*hide sidebar toggle class*/ \
+.fuk-hidesidebar #fuk-main { \
     width: 100%!important; \
 } \
  \
-#rlc-togglesidebar { \
-    position: absolute; \
-    top: 66px; \
-    right: 18px; \
-    width: 85px; \
-    padding-left: 5px; \
-    height: 16px; \
-    z-index: 100; \
-    border-radius: 5px 0px 0px 0px; \
-    box-sizing: border-box; \
-    padding-top: 2px; \
-    cursor: pointer; \
-} \
-#rlc-toggleoptions { \
-    position: absolute; \
-    top: 66px; \
-    right: 104px; \
-    width: 85px; \
-    padding-left: 5px; \
-    height: 16px; \
-    z-index: 100; \
-    border-radius: 5px 0px 0px 0px; \
-    box-sizing: border-box; \
-    padding-top: 2px; \
-    cursor: pointer; \
-} \
+#fuk-togglesidebar {float: right;} \
  \
-.res-nightmode #rlc-togglesidebar { \
-    background: #262626; \
+#fuk-settingsbar { \
+    right: 0px; \
+    top: 44px; \
+    position: absolute; \
+    width: 20%; \
+    height: 17px; \
+    z-index: 100; \
+    border-radius: 3px; \
+    padding: 2px 8px; \
+    cursor: pointer; \
+    box-sizing: border-box; \
+   background: white; \
+    } \
+ \
+.res-nightmode #fuk-togglesidebar, .res-nightmode #fuk-settingsbar { \
+    background: #262626; color:white;\
 } \
  \
 /*settings*/ \
-#rlc-settings { \
+#fuk-settings { \
     position: absolute; \
     top: 0; \
     right: 0; \
@@ -831,29 +826,43 @@ aside.sidebar.side.md-container { \
     box-sizing: border-box; \
     padding-top: 45px; \
     cursor: pointer; \
+    background:white; \
 } \
  \
-.res-nightmode #rlc-settings { \
+.res-nightmode #fuk-settings { \
     color: white; \
     background: #262626; \
 } \
  \
-#rlc-settings strong { \
+#fuk-settings strong { \
     float: left; \
     font-weight: bold; \
     font-size: 1.2em; \
     display: none; \
 } \
  \
-#rlc-settings label { \
+#fuk-settings label { \
     float: left; \
     padding-left: 5px \
 } \
  \
-#rlc-settings label input { \
+#fuk-settings label input { \
     vertical-align: middle; \
 } \
  \
+body:not(.res) div#header-bottom-right { \
+    bottom: initial; \
+    top: 21px; \
+    border-radius: 7px; \
+    right: 1px; \
+} \
+ \
+body:not(.res) div#header-bottom-right:after {  \
+    content:'Redit Enhancement Suite recommended'; \
+    position:fixed; \
+    top:25px; \
+    right:280px; \
+} \
 /*filter tabs*/ \
 #filter_tabs { \
     width: 100%; \
@@ -892,13 +901,13 @@ aside.sidebar.side.md-container { \
     color: #40403f; \
 } \
  \
-#filter_tabs .rlc-filters { \
+#filter_tabs .fuk-filters { \
     display: table; \
     width: 100%; \
     table-layout: fixed; \
 } \
  \
-#filter_tabs .rlc-filters > span { \
+#filter_tabs .fuk-filters > span { \
     padding: 5px 2px; \
     text-align: center; \
     display: table-cell; \
@@ -908,11 +917,11 @@ aside.sidebar.side.md-container { \
     font-size: 1.1em; \
 } \
  \
-#filter_tabs .rlc-filters > span.selected, #filter_tabs .rlc-filters > span:hover { \
+#filter_tabs .fuk-filters > span.selected, #filter_tabs .fuk-filters > span:hover { \
     background: grey; \
 } \
  \
-#filter_tabs .rlc-filters > span > span { \
+#filter_tabs .fuk-filters > span > span { \
     pointer-events: none; \
 } \
  \
@@ -933,26 +942,26 @@ aside.sidebar.side.md-container { \
 } \
  \
 /* add channels interface */ \
-.rlc-channel-add { \
+.fuk-channel-add { \
     padding: 5px; \
     display: none; \
 } \
  \
-.rlc-channel-add input { \
+.fuk-channel-add input { \
     padding: 2.5px; \
 } \
  \
-.rlc-channel-add .channel-mode { \
+.fuk-channel-add .channel-mode { \
     float: right; \
     font-size: 1.2em; \
     padding: 5px; \
 } \
  \
-.rlc-channel-add .channel-mode span { \
+.fuk-channel-add .channel-mode span { \
     cursor: pointer \
 } \
  \
-.rlc-channel-add { \
+.fuk-channel-add { \
     padding: 5px; \
     display: none; \
 } \
@@ -975,37 +984,29 @@ aside.sidebar.side.md-container { \
 .dark-background aside.sidebar #discussions li { \
     background: #404040; \
 } \
- \
 .dark-background .md a { \
     color: #5ED7FF!important; \
 } \
- \
 .dark-background .sidebar a { \
     color: #5ED7FF!important; \
 } \
- \
 .dark-background.liveupdate-app { \
     background: #404040; \
     color: white; \
 } \
- \
 .dark-background div.content { \
     background: #404040; \
     color: white; \
 } \
- \
 .dark-background div.md { \
     color: white; \
 } \
- \
 .dark-background aside.sidebar { \
     background: #404040!important; \
 } \
- \
 .dark-background blockquote, .dark-background h2 { \
     color: white!important \
 } \
- \
 .dark-background code { \
     color: black; \
 } \
