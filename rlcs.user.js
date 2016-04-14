@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.50
+// @version      1.51
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -377,8 +377,11 @@
         $usr.after($ele.find("time"))
         $ele.find(".author, time").wrapAll("<div class='msginfo'>");
      // channel removal support
-      //  console.log(remove_channel_key_from_message(first_line.text()));
-       // $msg.html(remove_channel_key_from_message(first_line.text()));
+        console.log("fl:"+first_line.text());
+        var $msgnochannel = '<p>' + remove_channel_key_from_message(first_line.text()) +'</p>';
+        console.log("msg_no:"+$msgnochannel);
+        console.log("msg:"+$msg.html());
+        $msg.html($msgnochannel);
 
     }
 
@@ -421,6 +424,9 @@
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
         $("#fuk-main iframe").remove();
 
+        // make settings container
+        $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
+
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
             event.preventDefault();
@@ -430,14 +436,12 @@
             $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
         });
 
-        // make settings container
-        $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
-        
+        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore(".liveupdate-listing"));
+
         // rescan existing chat for messages
         $("#fuk-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item));
         });
-
 
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
@@ -447,10 +451,7 @@
             }
         });
 
-        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore(".liveupdate-listing"));
-
         // Colours on or off
-
         createOption("Use channel colors", function(checked, ele){
             if(checked){
                 $("#fuk-main").addClass("show-colors");
