@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.52
+// @version      1.53
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -228,14 +228,13 @@
                 if(typeof channel === 'undefined') continue;
 
                 if(text.indexOf(channel) === 0){
-                    $element.find("a").append("<div class='channelname'>"+channel+"</div>");
+                    $element.append("<div class='channelname'>"+channel+"</div>");
                     $element.addClass("fuk-filter-" + idx +" in-channel");
                     this.unread_counts[idx]++;
 
-                    var $newele = $element.find(".body .md"); 
-                    var first_line = $newele.find("p").first();
-                    var $msgnochannel = '<p>' + remove_channel_key_from_message(first_line.text()) +'</p>';
-                    $element.find(".body .md").html($msgnochannel);
+                    var newele = $element.find(".body .md p").html().replace(channel,'');
+                    console.log(newele);
+                    $element.find(".body .md p").html(newele);
 
                     return;
                 }
@@ -613,15 +612,6 @@ body > .content { \
 #liveupdate-resources > h2 { \
     display: none; \
 } \
- \
-.channelname { \
-    display: none; \
-} \
- \
-.fuk-filter .channelname { \
-    display: none!important; \
-} \
- \
 /*chat window*/ \
 #fuk-main .liveupdate-listing { \
     max-width: 100%; \
