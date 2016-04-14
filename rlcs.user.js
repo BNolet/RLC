@@ -1010,4 +1010,7 @@ body:not(.res) div#header-bottom-right:after {  \
 .dark-background code { \
     color: black; \
 } \
+.dark-background #fuk-settings, .dark-background #fuk-settingsbar { \
+    color: black; \
+} \
 ");
