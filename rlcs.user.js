@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.58
+// @version      1.59
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -421,6 +421,8 @@
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
         $("#fuk-main iframe").remove();        
 
+        _scroll_to_bottom();
+        
         // make settings container
         $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
 
@@ -439,6 +441,7 @@
         $("#fuk-chat").find("li.liveupdate").each(function(idx,item){
             
             handle_new_message($(item));
+            
         });
 
         // Detect new content being added
@@ -446,6 +449,7 @@
             if ($(e.target).is('li.liveupdate')) {
                 // Apply changes to line
                 handle_new_message($(e.target));
+                _scroll_to_bottom();
             }
         });
 
@@ -634,6 +638,7 @@ body > .content { \
     box-sizing: border-box; \
     display: flex; \
     flex-direction: column-reverse;     \
+    min-height: 100%; \
 } \
 div#fuk-chat { \
     overflow-y: auto; \
