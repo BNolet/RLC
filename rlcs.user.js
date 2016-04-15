@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.60
+// @version      1.61
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -228,7 +228,7 @@
                 if(typeof channel === 'undefined') continue;
 
                 if(text.indexOf(channel) === 0){
-                    $element.find(".msginfo").append("<div class='channelname'>"+channel+"</div>");
+                    $element.find(".body .msginfo time").before("<span class='channelname'>&nbsp;in <span class='channelnamecolor'>"+channel+"</span></span>");
                     $element.addClass("fuk-filter-" + idx +" in-channel");
                     this.unread_counts[idx]++;
 
@@ -637,9 +637,10 @@ body > .content { \
     padding: 0px; \
     box-sizing: border-box; \
     display: flex; \
-    flex-direction: column-reverse;     \
+    flex-direction: column-reverse; \
     min-height: 100%; \
 } \
+ \
 div#fuk-chat { \
     overflow-y: auto; \
     height: calc(100vh - 136px); \
@@ -675,10 +676,11 @@ div#fuk-chat { \
  \
 #fuk-main .liveupdate-listing .liveupdate time { \
     padding: 0; \
-    float: left; \
-    width: 100%; \
+    float: right; \
+    width: auto; \
     margin: 0; \
     text-align: right; \
+    text-indent: 0; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body div.md { \
@@ -1039,10 +1041,13 @@ body:not(.res) div#header-bottom-right:after { \
 } \
  \
 .channelname { \
-    display: block; \
-    width: 100%; \
-    text-align: right; \
+    float: right; \
+    font-size: 10px; \
+    color: #888;\
 } \
+span.channelnamecolor {\
+    color: rgb(181, 181, 181);\
+}\
  \
 .fuk-filter .channelname { \
     display: none; \
