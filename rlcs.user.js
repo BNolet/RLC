@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.57
+// @version      1.58
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -354,7 +354,7 @@
 
     // Scroll chat back to bottom
     var _scroll_to_bottom = function(){
-        $(".liveupdate-listing").scrollTop($(".liveupdate-listing")[0].scrollHeight);
+        $("#fuk-chat").scrollTop($("#fuk-chat")[0].scrollHeight);
     };
 
     var handle_new_message = function($ele){
@@ -417,12 +417,9 @@
 
         $('.liveupdate-listing').appendTo('#fuk-chat');
         $('#new-update-form').appendTo('#fuk-messagebox');
-        $('#liveupdate-header').prependTo('#fuk-sidebar');
-        $('ol.liveupdate-listing').wrapInner("<div id='fuk-flexcontainer'></div>");
-        
+        $('#liveupdate-header').prependTo('#fuk-sidebar');        
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
-        $("#fuk-main iframe").remove();
-        
+        $("#fuk-main iframe").remove();        
 
         // make settings container
         $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
@@ -633,10 +630,14 @@ body > .content { \
 /*chat window*/ \
 #fuk-main .liveupdate-listing { \
     max-width: 100%; \
-    overflow-y: auto; \
-    height: calc(100vh - 160px); \
     padding: 0px; \
     box-sizing: border-box; \
+    display: flex; \
+    flex-direction: column-reverse;     \
+} \
+div#fuk-chat { \
+    overflow-y: auto; \
+    height: calc(100vh - 136px); \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body a { \
@@ -878,6 +879,7 @@ body:not(.res) div#header-bottom-right:after { \
     display: table; \
     table-layout: fixed; \
     border-bottom: 1px solid #5f99cf; \
+position: absolute; \
 } \
  \
 .res-nightmode #filter_tabs { \
@@ -973,6 +975,9 @@ body:not(.res) div#header-bottom-right:after { \
 .fuk-channel-add { \
     padding: 5px; \
     display: none; \
+    position: absolute; \
+    top: 24px; \
+    background: black; \
 } \
  \
 /* class to prevent selection for divs acting as buttons */ \
@@ -1041,11 +1046,4 @@ body:not(.res) div#header-bottom-right:after { \
 .fuk-filter .channelname { \
     display: none; \
 } \
- \
- \
-div#fuk-flexcontainer { \
-    display: flex; \
-    flex-direction: column-reverse;     \
-} \
 ");
-v
