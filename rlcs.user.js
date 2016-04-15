@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.55
+// @version      1.56
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -469,6 +469,14 @@
                 }
             },false);
 
+           createOption("Allow body scroll", function(checked, ele){
+                if(checked){
+                    $("body").addClass("allowHistoryScroll");
+                }else{
+                    $("body").removeClass("allowHistoryScroll");
+                }
+            },false);
+
 
         var text_area = $(".usertext-edit.md-container textarea");
 
@@ -536,10 +544,8 @@
 /*add css styles, every line must end with \  */
       GM_addStyle(" \
 /*prevent body scroll to avoid loading history*/ \
-body { \
-    overflow: hidden; \
-} \
- \
+body { overflow: hidden; } \
+.allowHistoryScroll {height:102%;overflow-y:scroll;} \
 /* custom containers  */ \
 #fuk-main { \
     width: 80%; \
