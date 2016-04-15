@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.66
+// @version      1.67
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -779,6 +779,7 @@ div#new-update-form { \
 div#fuk-sendmessage { \
     width: 15%; \
     height: 45px; \
+    color:grey; \
     text-align: center; \
     float: right; \
     display: inline-block; \
