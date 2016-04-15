@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.62
+// @version      1.63
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -360,6 +360,9 @@
     var handle_new_message = function($ele){
         // add any proccessing for new messages in here
         var $msg = $ele.find(".body .md");
+        
+        $msg.find("a").attr("target","_blank");
+        
         var $usr = $ele.find(".body .author");
         var line = $msg.text().toLowerCase();
         var first_line = $msg.find("p").first();
@@ -377,6 +380,7 @@
 
         $usr.after($ele.find("time"))
         $ele.find(".author, time").wrapAll("<div class='msginfo'>");
+       
         
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
@@ -420,8 +424,8 @@
         $('#liveupdate-header').prependTo('#fuk-sidebar');        
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
         $("#fuk-main iframe").remove();        
-        $("#fuk-main").attr("target","_blank");
-        $("#fuk-sidebar").attr("target","_blank");
+        $("#fuk-main a").attr("target","_blank");
+          $("#fuk-sidebar a").attr("target","_blank");
         _scroll_to_bottom();
         
         // make settings container
