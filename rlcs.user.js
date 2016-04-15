@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.67
+// @version      1.68
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -354,7 +354,12 @@
 
     // Scroll chat back to bottom
     var _scroll_to_bottom = function(){
-        $("#fuk-chat").scrollTop($("#fuk-chat")[0].scrollHeight);
+        if ($(document.body).hasClass("allowHistoryScroll")) {
+            return false;
+            }
+        else {
+            $("#fuk-chat").scrollTop($("#fuk-chat")[0].scrollHeight);
+        }
     };
 
     var handle_new_message = function($ele){
