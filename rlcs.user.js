@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.61
+// @version      1.62
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -420,7 +420,8 @@
         $('#liveupdate-header').prependTo('#fuk-sidebar');        
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
         $("#fuk-main iframe").remove();        
-
+        $("#fuk-main").attr("target","_blank");
+        $("#fuk-sidebar").attr("target","_blank");
         _scroll_to_bottom();
         
         // make settings container
