@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.65
+// @version      1.66
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -606,6 +606,10 @@ body > .content { \
     display: none; \
 } \
  \
+#discussions { \
+    display: none; \
+} \
+ \
 #liveupdate-options { \
     display: none!important; \
 } \
@@ -786,10 +790,12 @@ div#fuk-sendmessage { \
     cursor: pointer; \
     border-left: none; \
 } \
+ \
 .res-nightmode div#fuk-sendmessage { \
     background: #333333; \
     border: 1px solid #4C4C4C; \
- } \
+} \
+ \
 /*sidebar*/ \
 aside.sidebar.side.md-container { \
     max-width: 100%; \
@@ -846,7 +852,7 @@ aside.sidebar.side.md-container { \
     position: absolute; \
     top: 0; \
     right: 0; \
-    height: 100%; \
+    height: 20%; \
     z-index: 100; \
     width: 100%; \
     box-sizing: border-box; \
@@ -882,6 +888,7 @@ body:not(.res) div#header-bottom-right { \
     border-radius: 7px; \
     right: 1px; \
 } \
+ \
 /*filter tabs*/ \
 #filter_tabs { \
     width: 100%; \
@@ -1055,6 +1062,7 @@ span.channelnamecolor { \
 .fuk-filter .channelname { \
     display: none; \
 } \
+ \
 .save-button { \
     display: none; \
 } \
