@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.63
+// @version      1.64
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -408,9 +408,7 @@
         $("body").append('  \
                     <div id="fuk-main">   \
                             <div id="fuk-chat"></div> \
-                            <div id="fuk-messagebox"> \
-                                <div id="mousesubmitblocker"></div> \
-                            </div> \
+                            <div id="fuk-messagebox"> </div> \
                     </div> \
                     <div id="fuk-sidebar"></div> \
                     <div id="fuk-settingsbar"> \
@@ -421,12 +419,16 @@
 
         $('.liveupdate-listing').appendTo('#fuk-chat');
         $('#new-update-form').appendTo('#fuk-messagebox');
+        $('#new-update-form').append('<div id="fuk-sendmessage">Send Message</div>');
         $('#liveupdate-header').prependTo('#fuk-sidebar');        
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
         $("#fuk-main iframe").remove();        
         $("#fuk-main a").attr("target","_blank");
           $("#fuk-sidebar a").attr("target","_blank");
         _scroll_to_bottom();
+        
+        $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
+        $(".usertext-edit textarea").focus();
         
         // make settings container
         $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
@@ -507,6 +509,10 @@
         
         $("#fuk-toggleoptions").click(function(){
             $("body").toggleClass("fuk-showoptions");
+        });
+
+        $("#fuk-sendmessage").click(function(){
+            $(".save-button .btn").click();  
         });
 
         // up for last message send, down for prev (if moving between em)
@@ -648,7 +654,7 @@ body > .content { \
  \
 div#fuk-chat { \
     overflow-y: auto; \
-    height: calc(100vh - 136px); \
+    height: calc(100vh - 133px); \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body a { \
@@ -721,22 +727,11 @@ div#fuk-messagebox { \
     position: relative; \
 } \
  \
-/*prevent users from actually pressing the submit button*/ \
-div#mousesubmitblocker { \
-    position: absolute; \
-    top: 49px; \
-    width: 100%; \
-    height: 24px; \
-    background: transparent; \
-    z-index: 1; \
-    cursor: not-allowed; \
-} \
- \
 /*message input and send button*/ \
 #new-update-form .usertext { \
-    max-width: 100%; \
+    max-width: 85%; \
     float: left; \
-    width: 100%; \
+    width: 85%; \
 } \
  \
 .usertext-edit .md { \
@@ -777,12 +772,20 @@ div#new-update-form { \
     text-transform: capitalize; \
 } \
  \
-.usertext-edit.md-container { \
-    margin-top: 3px; \
-} \
- \
-.usertext-edit.md-container textarea { \
-    padding: 2px; \
+div#fuk-sendmessage { \
+    width: 15%; \
+    height: 45px; \
+    text-align: center; \
+    float: right; \
+    display: inline-block; \
+    padding-top: 15px; \
+    border: 1px solid #4C4C4C; \
+    box-sizing: border-box; \
+    margin-top: 0px; \
+    font-size: 1.3em; \
+    background: #333333; \
+    cursor: pointer; \
+    border-left: none; \
 } \
  \
 /*sidebar*/ \
@@ -1048,13 +1051,17 @@ body:not(.res) div#header-bottom-right:after { \
 .channelname { \
     float: right; \
     font-size: 10px; \
-    color: #888;\
+    color: #888; \
 } \
-span.channelnamecolor {\
-    color: rgb(181, 181, 181);\
-}\
+ \
+span.channelnamecolor { \
+    color: rgb(181, 181, 181); \
+} \
  \
 .fuk-filter .channelname { \
+    display: none; \
+} \
+.save-button { \
     display: none; \
 } \
 ");
