@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.68
+// @version      1.69
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -585,7 +585,7 @@ body { \
 #fuk-sidebar { \
     width: 20%; \
     height: calc(100vh - 63px); \
-    position: fixed; \
+    position: absolute; \
     top: 63px; \
     right: 0; \
     box-sizing: border-box; \
