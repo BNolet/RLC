@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.56
+// @version      1.57
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -418,9 +418,11 @@
         $('.liveupdate-listing').appendTo('#fuk-chat');
         $('#new-update-form').appendTo('#fuk-messagebox');
         $('#liveupdate-header').prependTo('#fuk-sidebar');
-        $('#liveupdate-options').prependTo('#fuk-sidebar');
+        $('ol.liveupdate-listing').wrapInner("<div id='fuk-flexcontainer'></div>");
+        
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
         $("#fuk-main iframe").remove();
+        
 
         // make settings container
         $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
@@ -544,8 +546,15 @@
 /*add css styles, every line must end with \  */
       GM_addStyle(" \
 /*prevent body scroll to avoid loading history*/ \
-body { overflow: hidden; } \
-.allowHistoryScroll {height:102%;overflow-y:scroll;} \
+body { \
+    overflow: hidden; \
+} \
+ \
+.allowHistoryScroll { \
+    height: 102%; \
+    overflow-y: scroll; \
+} \
+ \
 /* custom containers  */ \
 #fuk-main { \
     width: 80%; \
@@ -620,6 +629,7 @@ body > .content { \
 #liveupdate-resources > h2 { \
     display: none; \
 } \
+ \
 /*chat window*/ \
 #fuk-main .liveupdate-listing { \
     max-width: 100%; \
@@ -627,8 +637,6 @@ body > .content { \
     height: calc(100vh - 160px); \
     padding: 0px; \
     box-sizing: border-box; \
-    display: flex; \
-    flex-direction: column-reverse; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body a { \
@@ -792,7 +800,9 @@ aside.sidebar.side.md-container { \
     width: 100%!important; \
 } \
  \
-#fuk-togglesidebar {float: right;} \
+#fuk-togglesidebar { \
+    float: right; \
+} \
  \
 #fuk-settingsbar { \
     right: 0px; \
@@ -805,11 +815,12 @@ aside.sidebar.side.md-container { \
     padding: 2px 8px; \
     cursor: pointer; \
     box-sizing: border-box; \
-   background: white; \
-    } \
+    background: white; \
+} \
  \
 .res-nightmode #fuk-togglesidebar, .res-nightmode #fuk-settingsbar { \
-    background: #262626; color:white!important;\
+    background: #262626; \
+    color: white!important; \
 } \
  \
 /*settings*/ \
@@ -823,7 +834,7 @@ aside.sidebar.side.md-container { \
     box-sizing: border-box; \
     padding-top: 45px; \
     cursor: pointer; \
-    background:white; \
+    background: white; \
 } \
  \
 .res-nightmode #fuk-settings { \
@@ -854,12 +865,13 @@ body:not(.res) div#header-bottom-right { \
     right: 1px; \
 } \
  \
-body:not(.res) div#header-bottom-right:after {  \
-    content:'Redit Enhancement Suite recommended'; \
-    position:fixed; \
-    top:25px; \
-    right:280px; \
+body:not(.res) div#header-bottom-right:after { \
+    content: 'Redit Enhancement Suite recommended'; \
+    position: fixed; \
+    top: 25px; \
+    right: 280px; \
 } \
+ \
 /*filter tabs*/ \
 #filter_tabs { \
     width: 100%; \
@@ -981,40 +993,59 @@ body:not(.res) div#header-bottom-right:after {  \
 .dark-background aside.sidebar #discussions li { \
     background: #404040; \
 } \
+ \
 .dark-background .md a { \
     color: #5ED7FF!important; \
 } \
+ \
 .dark-background .sidebar a { \
     color: #5ED7FF!important; \
 } \
+ \
 .dark-background.liveupdate-app { \
     background: #404040; \
     color: white; \
 } \
+ \
 .dark-background div.content { \
     background: #404040; \
     color: white; \
 } \
+ \
 .dark-background div.md { \
     color: white; \
 } \
+ \
 .dark-background aside.sidebar { \
     background: #404040!important; \
 } \
+ \
 .dark-background blockquote, .dark-background h2 { \
     color: white!important \
 } \
+ \
 .dark-background code { \
     color: black; \
 } \
+ \
 .dark-background #fuk-settings, .dark-background #fuk-settingsbar { \
     color: black; \
 } \
-.channelname {display:block; \
-                      width: 100%;\
-    text-align: right;\
-                  } \
-.fuk-filter .channelname {\
+ \
+.channelname { \
+    display: block; \
+    width: 100%; \
+    text-align: right; \
+} \
+ \
+.fuk-filter .channelname { \
     display: none; \
-}\
+} \
+ \
+ \
+div#fuk-flexcontainer { \
+    display: flex; \
+    flex-direction: column-reverse;     \
+} \
 ");
+v
