@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.69
+// @version      1.70
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -1071,5 +1071,13 @@ span.channelnamecolor { \
  \
 .save-button { \
     display: none; \
+} \
+div#fuk-main:after { \
+    content:"If you can see this you need an invite to send messages, check the sidebar."; \
+    width:100%; \
+    text-align:center; \
+    display:block;   \
+    margin-top:10px;   \
+    color:grey; \
 } \
 ");
