@@ -783,7 +783,7 @@ div#fuk-sendmessage { \
     box-sizing: border-box; \
     margin-top: 0px; \
     font-size: 1.3em; \
-    background: #333333; \
+    background: #E5E4E2; \
     cursor: pointer; \
     border-left: none; \
 } \
