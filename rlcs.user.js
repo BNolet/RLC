@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.77
+// @version      1.78
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -393,6 +393,9 @@
 
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
+        
+        //remove seperator 
+        $(".liveupdate-listing .separator").remove();
 
         // Active Channels Monitoring
         updateMostActiveChannels(line);
@@ -1177,12 +1180,17 @@ div#fuk-toggleoptions { \
  \
 /* dark background */ \
 .dark-background { \
-background:#404040; \
-color:white; \
+    background: #404040; \
+    color: white; \
 } \
-.dark-background textarea {background:transparent;} \
  \
-.dark-background .side {background:transparent;} \
+.dark-background textarea { \
+    background: transparent; \
+} \
+ \
+.dark-background .side { \
+    background: transparent; \
+} \
  \
 /* misc fixes */ \
 /*prevent body scroll to avoid loading history*/ \
@@ -1247,15 +1255,9 @@ body > .content { \
 } \
  \
 .fuk-compact div#fuk-sidebar { \
-    top: 25px; \
-    height: calc(100vh - 25px); \
+    top: 0px; \
+    height: calc(100vh); \
     padding-top: 0; \
-} \
- \
-.fuk-compact div#fuk-settingsbar { \
-    top: 3px; \
-    right: 20px; \
-    width: 175px; \
 } \
  \
 .fuk-compact div#new-update-form textarea { \
@@ -1283,9 +1285,13 @@ body > .content { \
  \
 .fuk-compact #fuk-main .liveupdate-listing a.author { \
     position: absolute; \
-    left: 45px; \
+    left: 110px; \
     right: initial!important; \
     width: auto; \
+} \
+ \
+.simpleTimestamps.fuk-compact #fuk-main .liveupdate-listing a.author { \
+    left: 50px; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing { \
@@ -1293,14 +1299,22 @@ body > .content { \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md { \
-    width: 75%; \
+    width: 66%; \
 } \
  \
-.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md {color:white!important;} \
+.simpleTimestamps.fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md {  \
+    width:72%; \
+}      \
+ \
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md { \
+    color: white!important; \
+} \
  \
 .dark-background div#header-bottom-left { \
-background:grey;  \
+    background: grey; \
 } \
  \
-.dark-background .liveupdate-listing li.liveupdate .body div.md p:last-of-type {color:white;} \
+.dark-background .liveupdate-listing li.liveupdate .body div.md p:last-of-type { \
+    color: white; \
+} \
 ");
