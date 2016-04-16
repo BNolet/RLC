@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.71
+// @version      1.72
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -49,7 +49,7 @@
         var _self = this;
 
         // Default options
-        this.channels = [":chat",":trivia",":pol",":rpg"];
+        this.channels = [":general", ":offtopic"];
         this.mode = 'single';
 
         // internals
@@ -103,7 +103,7 @@
             this.currentRooms--;
 
             // no rooms selcted, run "show all"
-            if(this.currentRooms == 0){
+            if(this.currentRooms === 0){
                 this.disable_all_channels();
             }else{
                 // Grab next channel name if u leave a room in multi mode
@@ -137,7 +137,7 @@
                 var line = $(item).find(".body .md").text().toLowerCase();
                 tabbedChannels.proccessLine(line, $(item), true);
             });
-        }
+        };
 
         // Add new channel
         this.addChannel = function(new_channel){
@@ -177,7 +177,7 @@
         // save channel list
         this.saveChannelList = function(){
             // clean array before save
-            var channels = this.channels.filter(function (item) { return item != undefined });
+            var channels = this.channels.filter(function (item) { return item !== undefined; });
             GM_setValue("fuk-enhance-channels", channels);
         };
 
@@ -205,7 +205,7 @@
             // sorted array of channel name indexs
 
             this.channelMatchingCache = order;
-        }
+        };
 
         // Procces each chat line to create text
         this.proccessLine = function(text, $element, rescan){
@@ -304,7 +304,7 @@
             this.$opt.find(".channel-mode span").click(this.changeChannelMode);
             this.$opt.find("button").click(function(){
                 var new_chan = _self.$opt.find("input[name='add-channel']").val();
-                if(new_chan != '') _self.addChannel(new_chan);
+                if(new_chan !== '') _self.addChannel(new_chan);
                 _self.$opt.find("input[name='add-channel']").val('');
             });
             
@@ -319,7 +319,7 @@
 
             // start ticker
             setInterval(this.tick, 1000);
-        }
+        };
     };
     // create persistant option
     function createOption(name, click_action, default_state){
@@ -348,8 +348,8 @@
         // add to dom
         $("#fuk-settings").append($option);
         // init
-        click_action(state, $option)
-    };
+        click_action(state, $option);
+    }
 
 
     // Scroll chat back to bottom
@@ -383,7 +383,7 @@
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }            
 
-        $usr.after($ele.find("time"))
+        $usr.after($ele.find("time"));
         $ele.find(".author, time").wrapAll("<div class='msginfo'>");
        
         
@@ -391,7 +391,7 @@
         tabbedChannels.proccessLine(line, $ele);
 
 
-    }
+    };
 
     // remove channel key from message
     var remove_channel_key_from_message = function(message){
@@ -406,7 +406,7 @@
             }
         }
         return message;
-    }
+    };
 
     // boot
     $(document).ready(function() {
@@ -562,16 +562,6 @@
 })();
 /*add css styles, every line must end with \  */
       GM_addStyle(" \
-/*prevent body scroll to avoid loading history*/ \
-body { \
-    overflow: hidden; \
-} \
- \
-.allowHistoryScroll { \
-    height: 102%; \
-    overflow-y: scroll; \
-} \
- \
 /* custom containers  */ \
 #fuk-main { \
     width: 80%; \
@@ -594,64 +584,11 @@ body { \
     overflow-x: hidden; \
 } \
  \
-/* hard removal */ \
-body > .content { \
-    display: none!important; \
-} \
- \
-.footer-parent { \
-    display: none!important; \
-} \
- \
-.fuk-showoptions #fuk-settings { \
-    display: block; \
-} \
- \
-#fuk-settings { \
-    display: none; \
-} \
- \
-#discussions { \
-    display: none; \
-} \
- \
-#liveupdate-options { \
-    display: none!important; \
-} \
- \
-#fuk-main .liveupdate-listing .separator { \
-    display: none!important; \
-} \
- \
-#fuk-main .liveupdate-listing li.liveupdate ul.buttonrow { \
-    display: none!important; \
-} \
- \
-#fuk-main .liveupdate-listing li.liveupdate time:before { \
-    display: none!important; \
-} \
- \
-.help-toggle { \
-    display: none!important; \
-} \
- \
-.reddiquette { \
-    display: none!important; \
-} \
- \
-#contributors { \
-    display: none!important; \
-} \
- \
+/*chat window*/ \
 #fuk-main iframe { \
     display: none!important; \
 } \
  \
-#liveupdate-resources > h2 { \
-    display: none; \
-} \
- \
-/*chat window*/ \
 #fuk-main .liveupdate-listing { \
     max-width: 100%; \
     padding: 0px; \
@@ -675,7 +612,6 @@ div#fuk-chat { \
     margin-bottom: 0!important; \
     padding: 3px 0px!important; \
     font-size: 12px!important; \
-    /* vertical-align: middle; */ \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate { \
@@ -732,11 +668,26 @@ div#fuk-chat { \
     font-style: italic; \
 } \
  \
+/* channel name */ \
+.channelname { \
+    float: right; \
+    font-size: 10px; \
+    color: #888; \
+} \
+ \
+span.channelnamecolor { \
+    color: rgb(181, 181, 181); \
+} \
+ \
+.fuk-filter .channelname { \
+    display: none; \
+} \
+ \
+/* message input and send button */ \
 div#fuk-messagebox { \
     position: relative; \
 } \
  \
-/*message input and send button*/ \
 #new-update-form .usertext { \
     max-width: 85%; \
     float: left; \
@@ -784,7 +735,7 @@ div#new-update-form { \
 div#fuk-sendmessage { \
     width: 15%; \
     height: 45px; \
-    color:grey; \
+    color: grey; \
     text-align: center; \
     float: right; \
     display: inline-block; \
@@ -802,7 +753,20 @@ div#fuk-sendmessage { \
     border: 1px solid #4C4C4C; \
 } \
  \
-/*sidebar*/ \
+.save-button { \
+    display: none; \
+} \
+ \
+div#fuk-main:after { \
+    content: 'If you can see this you need an invite to send messages, check the sidebar.'; \
+    width: 100%; \
+    text-align: center; \
+    display: block; \
+    margin-top: 10px; \
+    color: grey; \
+} \
+ \
+/* sidebar */ \
 aside.sidebar.side.md-container { \
     max-width: 100%; \
     width: 100%; \
@@ -820,6 +784,21 @@ aside.sidebar.side.md-container { \
     max-width: none; \
 } \
  \
+#discussions { \
+    display: none; \
+} \
+.reddiquette { \
+    display: none!important; \
+} \
+ \
+#contributors { \
+    display: none!important; \
+} \
+ \
+#liveupdate-resources > h2 { \
+    display: none; \
+} \
+ \
 /*togglesidebar*/ \
 .fuk-hidesidebar #fuk-sidebar { \
     display: none!important; \
@@ -834,24 +813,7 @@ aside.sidebar.side.md-container { \
     float: right; \
 } \
  \
-#fuk-settingsbar { \
-    right: 0px; \
-    top: 44px; \
-    position: absolute; \
-    width: 20%; \
-    height: 17px; \
-    z-index: 100; \
-    border-radius: 3px; \
-    padding: 2px 8px; \
-    cursor: pointer; \
-    box-sizing: border-box; \
-    background: white; \
-} \
  \
-.res-nightmode #fuk-togglesidebar, .res-nightmode #fuk-settingsbar { \
-    background: #262626; \
-    color: white!important; \
-} \
  \
 /*settings*/ \
 #fuk-settings { \
@@ -893,6 +855,47 @@ body:not(.res) div#header-bottom-right { \
     top: 21px; \
     border-radius: 7px; \
     right: 1px; \
+} \
+ \
+.fuk-showoptions #fuk-settings { \
+    display: block; \
+} \
+ \
+#fuk-settings { \
+    display: none; \
+} \
+ \
+#fuk-settingsbar { \
+    right: 0px; \
+    top: 44px; \
+    position: absolute; \
+    width: 20%; \
+    height: 17px; \
+    z-index: 100; \
+    border-radius: 3px; \
+    padding: 2px 8px; \
+    cursor: pointer; \
+    box-sizing: border-box; \
+    background: white; \
+} \
+ \
+.res-nightmode #fuk-togglesidebar, .res-nightmode #fuk-settingsbar { \
+    background: #262626; \
+    color: white!important; \
+} \
+ \
+/* class to prevent selection for divs acting as buttons */ \
+.noselect { \
+    -webkit-touch-callout: none; \
+    /* iOS Safari */ \
+    -webkit-user-select: none; \
+    /* Chrome/Safari/Opera */ \
+    -khtml-user-select: none; \
+    /* Konqueror */ \
+    -moz-user-select: none; \
+    /* Firefox */ \
+    -ms-user-select: none; \
+    /* IE/Edge */ \
 } \
  \
 /*filter tabs*/ \
@@ -998,20 +1001,6 @@ body:not(.res) div#header-bottom-right { \
     display: none; \
 } \
  \
-/* class to prevent selection for divs acting as buttons */ \
-.noselect { \
-    -webkit-touch-callout: none; \
-    /* iOS Safari */ \
-    -webkit-user-select: none; \
-    /* Chrome/Safari/Opera */ \
-    -khtml-user-select: none; \
-    /* Konqueror */ \
-    -moz-user-select: none; \
-    /* Firefox */ \
-    -ms-user-select: none; \
-    /* IE/Edge */ \
-} \
- \
 /* dark background */ \
 .dark-background aside.sidebar #discussions li { \
     background: #404040; \
@@ -1055,29 +1044,45 @@ body:not(.res) div#header-bottom-right { \
     color: black; \
 } \
  \
-.channelname { \
-    float: right; \
-    font-size: 10px; \
-    color: #888; \
+/* misc fixes */  \
+ \
+/*prevent body scroll to avoid loading history*/ \
+body { \
+    overflow: hidden; \
 } \
  \
-span.channelnamecolor { \
-    color: rgb(181, 181, 181); \
+/* option classes */ \
+.allowHistoryScroll { \
+    height: 102%; \
+    overflow-y: scroll; \
 } \
  \
-.fuk-filter .channelname { \
-    display: none; \
+/* hard removal */ \
+body > .content { \
+    display: none!important; \
 } \
  \
-.save-button { \
-    display: none; \
+.footer-parent { \
+    display: none!important; \
 } \
-div#fuk-main:after { \
-    content:'If you can see this you need an invite to send messages, check the sidebar.'; \
-    width:100%; \
-    text-align:center; \
-    display:block;   \
-    margin-top:10px;   \
-    color:grey; \
+ \
+#liveupdate-options { \
+    display: none!important; \
+} \
+ \
+#fuk-main .liveupdate-listing .separator { \
+    display: none!important; \
+} \
+ \
+#fuk-main .liveupdate-listing li.liveupdate ul.buttonrow { \
+    display: none!important; \
+} \
+ \
+#fuk-main .liveupdate-listing li.liveupdate time:before { \
+    display: none!important; \
+} \
+ \
+.help-toggle { \
+    display: none!important; \
 } \
 ");
