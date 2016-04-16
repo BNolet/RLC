@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.81
+// @version      1.82 
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -780,7 +780,6 @@ div#fuk-chat { \
     font-size: 12px; \
     padding-top: 1px; \
 } \
- \
 #fuk-main .liveupdate-listing .liveupdate .body { \
     max-width: none; \
     margin-bottom: 0; \
@@ -798,7 +797,6 @@ div#fuk-chat { \
 } \
  \
 #fuk-main .liveupdate-listing a.author { \
-    color: grey; \
     width: 120px; \
     display: block; \
     float: left; \
@@ -908,7 +906,8 @@ div#fuk-sendmessage { \
 .res-nightmode div#fuk-sendmessage { \
     border: 1px solid #4C4C4C; \
 } \
- \
+.res-nightmode .channelname, .res-nightmode #fuk-main .liveupdate-listing a.author { color:#ccc; } \
+\
 .save-button { \
     display: none; \
 } \
@@ -1019,7 +1018,9 @@ div#fuk-main:after { \
     margin: 0; \
     padding-top: 2px; \
     padding-bottom: 0; \
+    color:inherit; \
 } \
+.liveupdate-listing li.liveupdate a.author { color:initial;} \
 ");
 
       GM_addStyle(" /* Sidebar */ \
@@ -1158,6 +1159,7 @@ div#fuk-toggleoptions { \
  \
 .dark-background textarea { \
     background: transparent; \
+    color:white; \
 } \
  \
 .dark-background .side { \
@@ -1252,22 +1254,7 @@ body > .content { \
     display: none!important; \
 } \
  \
-.fuk-compact #fuk-main .liveupdate-listing a.author { \
-} \
- \
-.simpleTimestamps.fuk-compact #fuk-main .liveupdate-listing a.author { \
-} \
- \
-.fuk-compact #fuk-main .liveupdate-listing { \
-} \
- \
-.fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md { \
-} \
- \
-.simpleTimestamps.fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md { \
-} \
- \
-.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, textarea { \
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md { \
     color: white!important; \
 } \
  \
