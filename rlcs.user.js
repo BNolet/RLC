@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.75
+// @version      1.77
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -93,12 +93,12 @@
             $("#fuk-chat").addClass("fuk-filter fuk-filter-" + channel_id);
             $("#fuk-chat").attr("data-channel-key", this.channels[channel_id]);
             this.currentRooms++;
-            // unselect show all 
+            // unselect show all
             _self.$el.find("span.all").removeClass("selected");
         };
 
         // disable a channel
-        this.disable_channel = function(channel_id){    
+        this.disable_channel = function(channel_id){
             $("#fuk-chat").removeClass("fuk-filter-" + channel_id);
             this.currentRooms--;
 
@@ -126,7 +126,7 @@
             html = '';
             for(var i in this.channels){
                 if(typeof this.channels[i] === 'undefined') continue;
-                html += '<span data-filter="' + i + '" data-filter-name="'+ this.channels[i] +'">' + this.channels[i] + ' (<span>0</span>)</span> '; 
+                html += '<span data-filter="' + i + '" data-filter-name="'+ this.channels[i] +'">' + this.channels[i] + ' (<span>0</span>)</span> ';
             }
             this.$el.find(".fuk-filters").html(html);
         };
@@ -219,10 +219,10 @@
                     $element.removeClass("fuk-filter-" + i);
                 }
             }
-            
+
             //replace default timestamps with text
             var  shorttime = $element.find(".body .msginfo time").attr( "title" ).split(" ");
-            $element.find(".body .msginfo").append("<span class='simpletime'>"+shorttime[3]+"</span>"); 
+            $element.find(".body .msginfo").append("<span class='simpletime'>"+shorttime[3]+"</span>");
 
             // Scann for channel identifiers
             for(i=0; i< this.channelMatchingCache.length; i++){ // sorted so longer get picked out before shorter ones (sub channel matching)
@@ -311,10 +311,10 @@
                 if(new_chan !== '') _self.addChannel(new_chan);
                 _self.$opt.find("input[name='add-channel']").val('');
             });
-            
+
 
             $(".save-button .btn").click(this.submit_helper);
-            
+
             // store default room class
             this.defaultRoomClasses = $("#fuk-chat").attr("class") ? $("#fuk-chat").attr("class") : '';
 
@@ -539,8 +539,9 @@
                             <div id="fuk-togglesidebar" class="noselect">Toggle Sidebar</div> \
                             <div id="fuk-toggleoptions" class="noselect">Toggle Options</div> \
                          </div> \
+                        <div id="fuk-settings" class="noselect"><strong>Options</strong></div> \
                     </div> \
-        '); 
+        ');
 
         $('.liveupdate-listing').appendTo('#fuk-chat');
         $('#new-update-form').appendTo('#fuk-messagebox');
@@ -548,38 +549,22 @@
         $('#liveupdate-header').appendTo('#fuk-sidebar');
         $("<div id='channelsTable'><div>Most Active Channels</div><br/><div id='activeChannelsTable'></div><br/></div>").appendTo("#fuk-sidebar"); // Active Channel Discovery Table
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
-        $("#fuk-main iframe").remove();        
+        $("#fuk-main iframe").remove();
         $("#fuk-main a").attr("target","_blank");
-          $("#fuk-sidebar a").attr("target","_blank");
+        $("#fuk-sidebar a").attr("target","_blank");
         _scroll_to_bottom();
-        
-        
-        var myVersion = GM_info.script.version; 
-        console.log ('Version: ' + myVersion);
-        $("#fuk-settingsbar").append('FukBird Version: ' + myVersion); 
-        
+
+
+        $("#fuk-settingsbar").prepend('<div id="versionnumber">FukBird Version: ' + GM_info.script.version + '</div>');
+
         $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
         $(".usertext-edit textarea").focus();
-
-        // make settings container
-        $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
-
-        //right click author names in chat to copy to messagebox
-        $('body').on('contextmenu', ".liveupdate .author", function (event) {
-            event.preventDefault();
-            var username = String($(this).text()).trim();
-            var source = String($(".usertext-edit.md-container textarea").val());
-            // Focus textarea and set the value of textarea
-            $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
-        });
 
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#fuk-chat"));
 
         // rescan existing chat for messages
         $("#fuk-chat").find("li.liveupdate").each(function(idx,item){
-            
-            handle_new_message($(item));
-            
+                   handle_new_message($(item));
         });
 
         // Detect new content being added
@@ -591,6 +576,77 @@
             }
         });
 
+
+        var text_area = $(".usertext-edit.md-container textarea");
+
+        //right click author names in chat to copy to messagebox
+        $('body').on('contextmenu', ".liveupdate .author", function (event) {
+            event.preventDefault();
+            var username = String($(this).text()).trim();
+            var source = String($(".usertext-edit.md-container textarea").val());
+            // Focus textarea and set the value of textarea
+            $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
+        });
+
+
+        // On post message, add it to history
+        $(".save-button .btn").click(function(){
+            var user_last_message = text_area.val();
+
+            // if message history is to long, clear it out
+            if(messageHistory.length === 25){
+                messageHistory.shift();
+            }
+            messageHistory.push(remove_channel_key_from_message(user_last_message));
+            messageHistoryIndex = messageHistory.length;
+        });
+
+        $("#fuk-togglesidebar").click(function(){
+            $("body").toggleClass("fuk-hidesidebar");
+        });
+
+        $("#fuk-chatsidebartoggle").click(function(){
+            $("body").toggleClass("fuk-hidesidebar");
+        });
+
+        $("#fuk-toggleoptions").click(function(){
+            $("body").toggleClass("fuk-showoptions");
+        });
+
+        $("#fuk-sendmessage").click(function(){
+            $(".save-button .btn").click();
+        });
+
+        // up for last message send, down for prev (if moving between em)
+        text_area.on('keydown', function(e) {
+            if (e.keyCode == 13) {
+                if (e.shiftKey) {  }
+                else if (text_area.val() === "" ) { e.preventDefault();  }
+                else {
+                e.preventDefault();
+                  $(this).val($(".usertext-edit textarea").val() + ' ');
+                  $(".save-button .btn").click();
+                }
+            }
+            else if(e.keyCode == 38) {
+                e.preventDefault();
+                messageHistoryIndex--;
+                if(messageHistoryIndex > -1){
+                    $(this).val(messageHistory[messageHistoryIndex]);
+                }
+            }
+            else if(e.keyCode == 40){
+                e.preventDefault();
+                if(messageHistoryIndex <= messageHistory.length){
+                    messageHistoryIndex++;
+                    $(this).val(messageHistory[messageHistoryIndex]);
+                }else{
+                    $(this).val('');
+                }
+            }
+        });
+
+        // Options
         // Colours on or off
         createOption("Use channel colors", function(checked, ele){
             if(checked){
@@ -602,7 +658,7 @@
             _scroll_to_bottom();
         },false);
 
-         createOption("Use dark background", function(checked, ele){
+        createOption("Use dark background", function(checked, ele){
                 if(checked){
                     $("body").addClass("dark-background");
                 }else{
@@ -610,7 +666,7 @@
                 }
             },false);
 
-           createOption("Allow body scroll", function(checked, ele){
+        createOption("Allow body scroll", function(checked, ele){
                 if(checked){
                     $("body").addClass("allowHistoryScroll");
                 }else{
@@ -618,7 +674,7 @@
                 }
             },false);
 
-           createOption("Simplify timestamps", function(checked, ele){
+        createOption("Simplify timestamps", function(checked, ele){
                 if(checked){
                     $("body").addClass("simpleTimestamps");
                 }else{
@@ -627,7 +683,7 @@
                _scroll_to_bottom();
             },false);
 
-         createOption("Compact mode", function(checked, ele){
+        createOption("Compact mode", function(checked, ele){
                 if(checked){
                     $("body").addClass("fuk-compact");
                 }else{
@@ -636,78 +692,6 @@
                _scroll_to_bottom();
             },false);
 
-         createOption("Active Channel Discovery", function(checked, ele){
-                if(checked){
-                    startChannels();
-                    $("#channelsTable").show();
-                    console.log("Starting Channel Discovery Display Update");
-                }else{
-                    stopChannels();
-                    $("#channelsTable").hide();
-                    console.log("Stopping Channel Discovery Display Update");
-                }
-               _scroll_to_bottom();
-            },false);
-
-        var text_area = $(".usertext-edit.md-container textarea");
-
-
-        // On post message, add it to history
-        $(".save-button .btn").click(function(){
-            var user_last_message = text_area.val();
-
-            // if message history is to long, clear it out
-            if(messageHistory.length === 25){
-                messageHistory.shift();
-            } 
-            messageHistory.push(remove_channel_key_from_message(user_last_message));
-            messageHistoryIndex = messageHistory.length;
-        });
-
-        $("#fuk-togglesidebar").click(function(){
-            $("body").toggleClass("fuk-hidesidebar");
-        });
-        
-        $("#fuk-chatsidebartoggle").click(function(){
-            $("body").toggleClass("fuk-hidesidebar");
-        });
-        
-        $("#fuk-toggleoptions").click(function(){
-            $("body").toggleClass("fuk-showoptions");
-        });
-
-        $("#fuk-sendmessage").click(function(){
-            $(".save-button .btn").click();  
-        });
-
-        // up for last message send, down for prev (if moving between em)
-        text_area.on('keydown', function(e) {
-            if (e.keyCode == 13) {
-                if (e.shiftKey) {  }
-                else if (text_area.val() === "" ) { e.preventDefault();  }
-                else {
-                e.preventDefault();
-                  $(this).val($(".usertext-edit textarea").val() + ' ');
-                  $(".save-button .btn").click();  
-                }
-            }
-            else if(e.keyCode == 38) {
-                e.preventDefault();
-                messageHistoryIndex--;
-                if(messageHistoryIndex > -1){
-                    $(this).val(messageHistory[messageHistoryIndex]);
-                } 
-            }
-            else if(e.keyCode == 40){
-                e.preventDefault();
-                if(messageHistoryIndex <= messageHistory.length){
-                    messageHistoryIndex++;
-                    $(this).val(messageHistory[messageHistoryIndex]);
-                }else{
-                    $(this).val('');
-                }
-            }   
-        });
     });
 
     var color;
@@ -779,7 +763,6 @@ div#fuk-chat { \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate { \
-    border-top: 1px solid grey; \
     padding-top: 0px; \
     height: auto!important; \
     overflow: visible!important; \
@@ -791,7 +774,7 @@ div#fuk-chat { \
     width: 100%; \
     margin: 0; \
     text-align: right; \
-    color: #0079d3; \
+    color: grey; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate time, #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
@@ -832,16 +815,16 @@ div#fuk-chat { \
 #fuk-main #fuk-chat li.liveupdate.user-narration .body .md { \
     font-style: italic; \
 } \
- \
+#fuk-main .liveupdate-listing .liveupdate:nth-child(odd) { \
+    background: rgba(128,128,128,0.2); \
+} \
 /* channel name */ \
 .channelname { \
     float: right; \
     font-size: 10px; \
-    color: #888; \
 } \
  \
 span.channelnamecolor { \
-    color: rgb(181, 181, 181); \
 } \
  \
 .fuk-filter .channelname { \
@@ -900,7 +883,6 @@ div#new-update-form { \
 div#fuk-sendmessage { \
     width: 15%; \
     height: 45px; \
-    color: grey; \
     text-align: center; \
     float: right; \
     display: inline-block; \
@@ -908,13 +890,12 @@ div#fuk-sendmessage { \
     box-sizing: border-box; \
     margin-top: 0px; \
     font-size: 1.3em; \
-    background: #E5E4E2; \
     cursor: pointer; \
-    border-left: none; \
+   border: 1px solid #A9A9A9;; \
+ border-left: 0; \
 } \
  \
 .res-nightmode div#fuk-sendmessage { \
-    background: #333333; \
     border: 1px solid #4C4C4C; \
 } \
  \
@@ -928,7 +909,6 @@ div#fuk-main:after { \
     text-align: center; \
     display: block; \
     margin-top: 10px; \
-    color: grey; \
 } \
  \
 /*filter tabs*/ \
@@ -936,11 +916,9 @@ div#fuk-main:after { \
     width: 100%; \
     display: table; \
     table-layout: fixed; \
-    border-bottom: 1px solid #5f99cf; \
 } \
  \
 .res-nightmode #filter_tabs { \
-    color: white; \
 } \
  \
 #filter_tabs > span { \
@@ -956,17 +934,12 @@ div#fuk-main:after { \
 } \
  \
 .res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more { \
-    color: white; \
 } \
  \
 #filter_tabs > span.all.selected:hover { \
-    background: #40403f; \
-    color: white; \
 } \
  \
 .res-nightmode #filter_tabs > span.all:hover, .res-nightmode #filter_tabs > span.more:hover { \
-    background: white ; \
-    color: #40403f; \
 } \
  \
 #filter_tabs .fuk-filters { \
@@ -986,7 +959,6 @@ div#fuk-main:after { \
 } \
  \
 #filter_tabs .fuk-filters > span.selected, #filter_tabs .fuk-filters > span:hover { \
-    background: grey; \
 } \
  \
 #filter_tabs .fuk-filters > span > span { \
@@ -994,11 +966,9 @@ div#fuk-main:after { \
 } \
  \
 .res-nightmode #filter_tabs { \
-    background: rgb(51, 51, 51); \
 } \
  \
 #filter_tabs span div > span:nth-child(odd) { \
-    background: rgba(128,128,128,0.3); \
 } \
  \
 #filter_tabs > span.all { \
@@ -1041,7 +1011,6 @@ div#fuk-main:after { \
     position: absolute; \
     top: 0; \
     right: 0; \
-    border-bottom: 1px solid #5F99CF; \
     box-sizing: border-box; \
     padding: 5px; \
     cursor:pointer; \
@@ -1100,26 +1069,27 @@ aside.sidebar.side.md-container { \
 } \
  \
 #fuk-togglesidebar { \
-    float: right; \
+    float: left; \
     cursor: pointer; \
+} \
+div#versionnumber { \
+    width: 100%; \
+    display: block; \
+    float: left; \
+    text-align: center; \
 } \
  \
 /*settings*/ \
 #fuk-settings { \
-    position: absolute; \
-    top: 20px; \
     right: 0; \
     height: auto; \
     z-index: 100; \
     padding: 6px; \
     width: 100%; \
     box-sizing: border-box; \
-    background: white; \
 } \
  \
 .res-nightmode #fuk-settings { \
-    color: white!important; \
-    background: #262626; \
 } \
  \
 #fuk-settings strong { \
@@ -1165,12 +1135,9 @@ body:not(.res) div#header-bottom-right { \
     border-radius: 3px; \
     padding: 6px 6px; \
     box-sizing: border-box; \
-    background: white; \
 } \
  \
 .res-nightmode #fuk-togglesidebar, .res-nightmode #fuk-settingsbar { \
-    background: #262626; \
-    color: white!important; \
 } \
  \
 div#fuk-toggleoptions { \
@@ -1194,48 +1161,15 @@ div#fuk-toggleoptions { \
     -ms-user-select: none; \
     /* IE/Edge */ \
 } \
+ \
 /* dark background */ \
-.dark-background aside.sidebar #discussions li { \
-    background: #404040; \
+.dark-background { \
+background:#404040; \
+color:white; \
 } \
+.dark-background textarea {background:transparent;} \
  \
-.dark-background .md a { \
-    color: #5ED7FF!important; \
-} \
- \
-.dark-background .sidebar a { \
-    color: #5ED7FF!important; \
-} \
- \
-.dark-background.liveupdate-app { \
-    background: #404040; \
-    color: white; \
-} \
- \
-.dark-background div.content { \
-    background: #404040; \
-    color: white; \
-} \
- \
-.dark-background div.md { \
-    color: white; \
-} \
- \
-.dark-background aside.sidebar { \
-    background: #404040!important; \
-} \
- \
-.dark-background blockquote, .dark-background h2 { \
-    color: white!important \
-} \
- \
-.dark-background code { \
-    color: black; \
-} \
- \
-.dark-background #fuk-settings, .dark-background #fuk-settingsbar { \
-    color: black; \
-} \
+.dark-background .side {background:transparent;} \
  \
 /* misc fixes */ \
 /*prevent body scroll to avoid loading history*/ \
@@ -1290,6 +1224,7 @@ body > .content { \
 .help-toggle { \
     display: none!important; \
 } \
+ \
 .fuk-compact div#header { \
     display: none; \
 } \
@@ -1323,28 +1258,36 @@ body > .content { \
     height: calc(100vh - 50px); \
 } \
  \
-.fuk-compact .debuginfo {display:none!important;} \
+.fuk-compact .debuginfo { \
+    display: none!important; \
+} \
  \
-.fuk-compact #fuk-main .liveupdate-listing .liveupdate time,  \
-.fuk-compact #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
-padding:3px 4px!important; \
-position:absolute; \
-left:5px; \
+.fuk-compact #fuk-main .liveupdate-listing .liveupdate time, .fuk-compact #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
+    padding: 3px 4px!important; \
+    position: absolute; \
+    left: 5px; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing a.author { \
-position:absolute; \
-left:45px; \
-right:initial!important; \
-width:auto; \
+    position: absolute; \
+    left: 45px; \
+    right: initial!important; \
+    width: auto; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing { \
-position:relative; \
+    position: relative; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md { \
     width: 75%; \
 } \
+ \
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md {color:white!important;} \
+ \
+.dark-background div#header-bottom-left { \
+background:grey;  \
+} \
+ \
+.dark-background .liveupdate-listing li.liveupdate .body div.md p:last-of-type {color:white;} \
 ");
-
