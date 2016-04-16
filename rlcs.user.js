@@ -504,6 +504,15 @@
                 }
                _scroll_to_bottom();
             },false);
+        
+         createOption("Compact mode", function(checked, ele){
+                if(checked){
+                    $("body").addClass("fuk-compact");
+                }else{
+                    $("body").removeClass("fuk-compact");
+                }
+               _scroll_to_bottom();
+            },false);
 
         var text_area = $(".usertext-edit.md-container textarea");
 
@@ -562,8 +571,6 @@
         });
     });
 
-    // filter for channel
-    GM_addStyle("#fuk-chat.fuk-filter li.liveupdate { display:none; }", 0);
     var color;
     for(var c=0;c<35;c++){
         color = colors[(c % (colors.length))];
@@ -572,9 +579,8 @@
         GM_addStyle("#fuk-chat.fuk-filter.fuk-filter-"+c+" li.liveupdate.fuk-filter-"+c+" { display:block;}", 0);
     }
 })();
-/*add css styles, every line must end with \  */
-      GM_addStyle(" \
-/* custom containers  */ \
+
+GM_addStyle(" /* Custom Containers */ \
 #fuk-main { \
     width: 80%; \
     height: 100%; \
@@ -596,6 +602,10 @@
     overflow-x: hidden; \
 } \
  \
+");
+
+GM_addStyle(" /* Main chat window  */ \
+#fuk-chat.fuk-filter li.liveupdate { display:none; } \
 /*chat window*/ \
 #fuk-main iframe { \
     display: none!important; \
@@ -716,7 +726,6 @@ div#new-update-form textarea { \
     height: 45px; \
     overflow: auto; \
     resize: none; \
-    //text-align: center; \
 } \
  \
 div#new-update-form { \
@@ -780,7 +789,112 @@ div#fuk-main:after { \
     margin-top: 10px; \
     color: grey; \
 } \
+/*filter tabs*/ \
+#filter_tabs { \
+    width: 100%; \
+    display: table; \
+    table-layout: fixed; \
+    border-bottom: 1px solid #5f99cf; \
+} \
  \
+.res-nightmode #filter_tabs { \
+    color: white; \
+} \
+ \
+#filter_tabs > span { \
+    width: 90%; \
+    display: table-cell; \
+} \
+ \
+#filter_tabs > span.all, #filter_tabs > span.more { \
+    width: 60px; \
+    text-align: center; \
+    vertical-align: middle; \
+    cursor: pointer; \
+} \
+ \
+.res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more { \
+    color: white; \
+} \
+ \
+#filter_tabs > span.all.selected:hover { \
+    background: #40403f; \
+    color: white; \
+} \
+ \
+.res-nightmode #filter_tabs > span.all:hover, .res-nightmode #filter_tabs > span.more:hover { \
+    background: white ; \
+    color: #40403f; \
+} \
+ \
+#filter_tabs .fuk-filters { \
+    display: table; \
+    width: 100%; \
+    table-layout: fixed; \
+} \
+ \
+#filter_tabs .fuk-filters > span { \
+    padding: 5px 2px; \
+    text-align: center; \
+    display: table-cell; \
+    cursor: pointer; \
+    width: 2%; \
+    vertical-align: middle; \
+    font-size: 1.1em; \
+} \
+ \
+#filter_tabs .fuk-filters > span.selected, #filter_tabs .fuk-filters > span:hover { \
+    background: grey; \
+} \
+ \
+#filter_tabs .fuk-filters > span > span { \
+    pointer-events: none; \
+} \
+ \
+.res-nightmode #filter_tabs { \
+    background: rgb(51, 51, 51); \
+} \
+ \
+#filter_tabs span div > span:nth-child(odd) { \
+    background: rgba(128,128,128,0.3); \
+} \
+ \
+#filter_tabs > span.all { \
+    padding: 0px 30px; \
+} \
+ \
+#filter_tabs > span.more { \
+    padding: 0px 30px 0px 30px; \
+} \
+ \
+/* add channels interface */ \
+.fuk-channel-add { \
+    padding: 5px; \
+    display: none; \
+} \
+ \
+.fuk-channel-add input { \
+    padding: 2.5px; \
+} \
+ \
+.fuk-channel-add .channel-mode { \
+    float: right; \
+    font-size: 1.2em; \
+    padding: 5px; \
+} \
+ \
+.fuk-channel-add .channel-mode span { \
+    cursor: pointer \
+} \
+ \
+.fuk-channel-add { \
+    padding: 5px; \
+    display: none; \
+} \
+ \
+");
+
+      GM_addStyle(" /* Sidebar */ \
 /* sidebar */ \
 aside.sidebar.side.md-container { \
     max-width: 100%; \
@@ -898,6 +1012,9 @@ body:not(.res) div#header-bottom-right { \
     color: white!important; \
 } \
  \
+");
+
+      GM_addStyle(" /* Meta Rules */ \
 /* class to prevent selection for divs acting as buttons */ \
 .noselect { \
     -webkit-touch-callout: none; \
@@ -911,110 +1028,6 @@ body:not(.res) div#header-bottom-right { \
     -ms-user-select: none; \
     /* IE/Edge */ \
 } \
- \
-/*filter tabs*/ \
-#filter_tabs { \
-    width: 100%; \
-    display: table; \
-    table-layout: fixed; \
-    border-bottom: 1px solid #5f99cf; \
-} \
- \
-.res-nightmode #filter_tabs { \
-    color: white; \
-} \
- \
-#filter_tabs > span { \
-    width: 90%; \
-    display: table-cell; \
-} \
- \
-#filter_tabs > span.all, #filter_tabs > span.more { \
-    width: 60px; \
-    text-align: center; \
-    vertical-align: middle; \
-    cursor: pointer; \
-} \
- \
-.res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more { \
-    color: white; \
-} \
- \
-#filter_tabs > span.all.selected:hover { \
-    background: #40403f; \
-    color: white; \
-} \
- \
-.res-nightmode #filter_tabs > span.all:hover, .res-nightmode #filter_tabs > span.more:hover { \
-    background: white ; \
-    color: #40403f; \
-} \
- \
-#filter_tabs .fuk-filters { \
-    display: table; \
-    width: 100%; \
-    table-layout: fixed; \
-} \
- \
-#filter_tabs .fuk-filters > span { \
-    padding: 5px 2px; \
-    text-align: center; \
-    display: table-cell; \
-    cursor: pointer; \
-    width: 2%; \
-    vertical-align: middle; \
-    font-size: 1.1em; \
-} \
- \
-#filter_tabs .fuk-filters > span.selected, #filter_tabs .fuk-filters > span:hover { \
-    background: grey; \
-} \
- \
-#filter_tabs .fuk-filters > span > span { \
-    pointer-events: none; \
-} \
- \
-.res-nightmode #filter_tabs { \
-    background: rgb(51, 51, 51); \
-} \
- \
-#filter_tabs span div > span:nth-child(odd) { \
-    background: rgba(128,128,128,0.3); \
-} \
- \
-#filter_tabs > span.all { \
-    padding: 0px 30px; \
-} \
- \
-#filter_tabs > span.more { \
-    padding: 0px 30px 0px 30px; \
-} \
- \
-/* add channels interface */ \
-.fuk-channel-add { \
-    padding: 5px; \
-    display: none; \
-} \
- \
-.fuk-channel-add input { \
-    padding: 2.5px; \
-} \
- \
-.fuk-channel-add .channel-mode { \
-    float: right; \
-    font-size: 1.2em; \
-    padding: 5px; \
-} \
- \
-.fuk-channel-add .channel-mode span { \
-    cursor: pointer \
-} \
- \
-.fuk-channel-add { \
-    padding: 5px; \
-    display: none; \
-} \
- \
 /* dark background */ \
 .dark-background aside.sidebar #discussions li { \
     background: #404040; \
@@ -1111,4 +1124,61 @@ body > .content { \
 .help-toggle { \
     display: none!important; \
 } \
+.fuk-compact div#header { \
+    display: none; \
+} \
+ \
+.fuk-compact div#fuk-main { \
+    top: 0; \
+} \
+ \
+.fuk-compact div#fuk-sidebar { \
+    top: 25px; \
+    height: calc(100vh - 25px); \
+    padding-top: 0; \
+} \
+ \
+.fuk-compact div#fuk-settingsbar { \
+    top: 3px; \
+    right: 20px; \
+    width: 175px; \
+} \
+ \
+.fuk-compact div#new-update-form textarea { \
+    height: 26px; \
+} \
+ \
+.fuk-compact div#fuk-sendmessage { \
+    height: 26px; \
+    padding-top: 4px; \
+} \
+ \
+.fuk-compact div#fuk-chat { \
+    height: calc(100vh - 50px); \
+} \
+ \
+.fuk-compact .debuginfo {display:none!important;} \
+ \
+.fuk-compact #fuk-main .liveupdate-listing .liveupdate time,  \
+.fuk-compact #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
+padding:3px 4px!important; \
+position:absolute; \
+left:5px; \
+} \
+ \
+.fuk-compact #fuk-main .liveupdate-listing a.author { \
+position:absolute; \
+left:45px; \
+right:initial!important; \
+width:auto; \
+} \
+ \
+.fuk-compact #fuk-main .liveupdate-listing { \
+position:relative; \
+} \
+ \
+.fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md { \
+    width: 75%; \
+} \
 ");
+
