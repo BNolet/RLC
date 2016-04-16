@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.78
+// @version      1.79
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -707,6 +707,15 @@
                }
               _scroll_to_bottom();
            },false);
+           
+           createOption("Custom Scroll Bars", function(checked, ele){
+               if(checked){
+                    $("body").addClass("fuk-customscrollbars");
+                }else{
+                    $("body").removeClass("fuk-customscrollbars");
+                }
+               _scroll_to_bottom();
+           },false);
 
     });
 
@@ -1288,6 +1297,7 @@ body > .content { \
     left: 110px; \
     right: initial!important; \
     width: auto; \
+padding-top:3px; \
 } \
  \
 .simpleTimestamps.fuk-compact #fuk-main .liveupdate-listing a.author { \
@@ -1316,5 +1326,27 @@ body > .content { \
  \
 .dark-background .liveupdate-listing li.liveupdate .body div.md p:last-of-type { \
     color: white; \
+} \
+/* Let's get this party started */ \
+.customscrollbars ::-webkit-scrollbar { \
+    width: 8px; \
+} \
+  \
+/* Track */ \
+.customscrollbars ::-webkit-scrollbar-track { \
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  \
+    -webkit-border-radius: 10px; \
+    border-radius: 10px; \
+} \
+  \
+/* Handle */ \
+.customscrollbars ::-webkit-scrollbar-thumb { \
+    -webkit-border-radius: 10px; \
+    border-radius: 10px; \
+    background: rgba(255,0,0,0.8);  \
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);  \
+} \
+.customscrollbars ::-webkit-scrollbar-thumb:window-inactive { \
+    background: rgba(255,0,0,0.4);  \
 } \
 ");
