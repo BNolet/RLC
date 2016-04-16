@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.79
+// @version      1.80
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -221,8 +221,8 @@
             }
 
             //replace default timestamps with text
-            var  shorttime = $element.find(".body .msginfo time").attr( "title" ).split(" ");
-            $element.find(".body .msginfo").append("<span class='simpletime'>"+shorttime[3]+"</span>");
+            var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
+            $element.find(".body").prepend("<div class='simpletime'>"+shorttime[3]+"</div>");
 
             // Scann for channel identifiers
             for(i=0; i< this.channelMatchingCache.length; i++){ // sorted so longer get picked out before shorter ones (sub channel matching)
@@ -232,7 +232,7 @@
                 if(typeof channel === 'undefined') continue;
 
                 if(text.indexOf(channel) === 0){
-                    $element.find(".body .msginfo time").before("<span class='channelname'>&nbsp;in <span class='channelnamecolor'>"+channel+"</span></span>");
+                    $element.find(".body").append("<a class='channelname'>&nbsp;in"+channel+"</a>");
                     $element.addClass("fuk-filter-" + idx +" in-channel");
                     this.unread_counts[idx]++;
 
@@ -387,9 +387,10 @@
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }
 
-        $usr.after($ele.find("time"));
-        $ele.find(".author, time").wrapAll("<div class='msginfo'>");
-
+        $usr.before($ele.find("time"));
+        
+        //remove the /u/
+        $usr.text($usr.text().replace("/u/", ""));
 
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
@@ -751,8 +752,7 @@ GM_addStyle(" /* Custom Containers */ \
  \
 ");
 
-GM_addStyle(" /* Main chat window  */ \
-/* Main chat window  */ \
+GM_addStyle("/* Main chat window  */ \
 #fuk-chat.fuk-filter li.liveupdate { \
     display: none; \
 } \
@@ -777,55 +777,41 @@ div#fuk-chat { \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body a { \
-    font-size: 13px!important; \
+    font-size: 12px; \
+    padding-top: 1px; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body { \
-    max-width: none!important; \
-    margin-bottom: 0!important; \
-    padding: 3px 0px!important; \
-    font-size: 12px!important; \
+    max-width: none; \
+    margin-bottom: 0; \
+    padding: 0px; \
+    font-size: 12px; \
+    overflow: auto; \
+    display: block; \
+    box-sizing: border-box; \
+    padding: 4px; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate { \
-    padding-top: 0px; \
     height: auto!important; \
     overflow: visible!important; \
 } \
  \
 #fuk-main .liveupdate-listing a.author { \
+    color: grey; \
+    width: 120px; \
     display: block; \
     float: left; \
-    width: 100%; \
-    margin: 0; \
-    text-align: right; \
-    color: grey; \
-} \
- \
-#fuk-main .liveupdate-listing .liveupdate time, #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
-    padding: 0; \
-    float: right; \
-    width: auto; \
-    margin: 0; \
-    text-align: right; \
-    text-indent: 0; \
-    font-size: 10px; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body div.md { \
-    width: 82%; \
-    display: block; \
     float: right; \
-    margin-bottom: 0; \
+    width: calc(100% - 340px); \
     max-width: none; \
 } \
  \
 #fuk-main #fuk-chat li.liveupdate.user-mention .body .md { \
     font-weight: bold; \
-} \
- \
-.liveupdate .msginfo { \
-    width: 15%; \
 } \
  \
 /* narration */ \
@@ -840,14 +826,13 @@ div#fuk-chat { \
 #fuk-main #fuk-chat li.liveupdate.user-narration .body .md { \
     font-style: italic; \
 } \
+ \
 #fuk-main .liveupdate-listing .liveupdate:nth-child(odd) { \
     background: rgba(128,128,128,0.2); \
 } \
+ \
 /* channel name */ \
-.channelname { \
-    float: right; \
-    font-size: 10px; \
-} \
+.channelname {color: grey!important;width: 90px;display: block;float: left;} \
  \
 span.channelnamecolor { \
 } \
@@ -916,8 +901,8 @@ div#fuk-sendmessage { \
     margin-top: 0px; \
     font-size: 1.3em; \
     cursor: pointer; \
-   border: 1px solid #A9A9A9;; \
- border-left: 0; \
+    border: 1px solid #A9A9A9; \
+    ; border-left: 0; \
 } \
  \
 .res-nightmode div#fuk-sendmessage { \
@@ -943,9 +928,6 @@ div#fuk-main:after { \
     table-layout: fixed; \
 } \
  \
-.res-nightmode #filter_tabs { \
-} \
- \
 #filter_tabs > span { \
     width: 90%; \
     display: table-cell; \
@@ -956,15 +938,6 @@ div#fuk-main:after { \
     text-align: center; \
     vertical-align: middle; \
     cursor: pointer; \
-} \
- \
-.res-nightmode #filter_tabs > span.all, .res-nightmode #filter_tabs > span.more { \
-} \
- \
-#filter_tabs > span.all.selected:hover { \
-} \
- \
-.res-nightmode #filter_tabs > span.all:hover, .res-nightmode #filter_tabs > span.more:hover { \
 } \
  \
 #filter_tabs .fuk-filters { \
@@ -983,17 +956,8 @@ div#fuk-main:after { \
     font-size: 1.1em; \
 } \
  \
-#filter_tabs .fuk-filters > span.selected, #filter_tabs .fuk-filters > span:hover { \
-} \
- \
 #filter_tabs .fuk-filters > span > span { \
     pointer-events: none; \
-} \
- \
-.res-nightmode #filter_tabs { \
-} \
- \
-#filter_tabs span div > span:nth-child(odd) { \
 } \
  \
 #filter_tabs > span.all { \
@@ -1038,13 +1002,23 @@ div#fuk-main:after { \
     right: 0; \
     box-sizing: border-box; \
     padding: 5px; \
-    cursor:pointer; \
+    cursor: pointer; \
 } \
  \
-#fuk-chatsidebartoggle:hover { background:grey; } \
+#fuk-chatsidebartoggle:hover { \
+    background: grey; \
+} \
  \
 .fuk-hidesidebar #fuk-chatsidebartoggle { \
     display: block; \
+} \
+ \
+#fuk-main time.live-timestamp { \
+    text-indent: 0; \
+    width: 100px; \
+    margin: 0; \
+    padding-top: 2px; \
+    padding-bottom: 0; \
 } \
 ");
 
@@ -1094,7 +1068,7 @@ aside.sidebar.side.md-container { \
 } \
  \
 #fuk-togglesidebar { \
-    float: left; \
+    float: right; \
     cursor: pointer; \
 } \
 div#versionnumber { \
@@ -1116,14 +1090,6 @@ div#versionnumber { \
  \
 .res-nightmode #fuk-settings { \
 } \
- \
-#fuk-settings strong { \
-    float: left; \
-    font-weight: bold; \
-    font-size: 1.2em; \
-    display: none; \
-} \
- \
 #fuk-settings label { \
     float: left; \
     padding: 5px; \
@@ -1162,11 +1128,8 @@ body:not(.res) div#header-bottom-right { \
     box-sizing: border-box; \
 } \
  \
-.res-nightmode #fuk-togglesidebar, .res-nightmode #fuk-settingsbar { \
-} \
- \
 div#fuk-toggleoptions { \
-    float: right; \
+    float: left; \
     padding-right: 6px; \
     cursor: pointer; \
 } \
@@ -1213,7 +1176,10 @@ body { \
  \
 .simpleTimestamps #fuk-main .liveupdate-listing .liveupdate .simpletime { \
     display: block; \
-    padding-top: 1px; \
+    float: left; \
+    width: 60px; \
+    padding-left:20px; \
+padding-top:2px; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .simpletime { \
@@ -1286,37 +1252,22 @@ body > .content { \
     display: none!important; \
 } \
  \
-.fuk-compact #fuk-main .liveupdate-listing .liveupdate time, .fuk-compact #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
-    padding: 3px 4px!important; \
-    position: absolute; \
-    left: 5px; \
-} \
- \
 .fuk-compact #fuk-main .liveupdate-listing a.author { \
-    position: absolute; \
-    left: 110px; \
-    right: initial!important; \
-    width: auto; \
-padding-top:3px; \
 } \
  \
 .simpleTimestamps.fuk-compact #fuk-main .liveupdate-listing a.author { \
-    left: 50px; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing { \
-    position: relative; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md { \
-    width: 66%; \
 } \
  \
-.simpleTimestamps.fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md {  \
-    width:72%; \
-}      \
+.simpleTimestamps.fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md { \
+} \
  \
-.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md { \
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, textarea { \
     color: white!important; \
 } \
  \
@@ -1327,26 +1278,28 @@ padding-top:3px; \
 .dark-background .liveupdate-listing li.liveupdate .body div.md p:last-of-type { \
     color: white; \
 } \
+ \
 /* Let's get this party started */ \
 .customscrollbars ::-webkit-scrollbar { \
     width: 8px; \
 } \
-  \
+ \
 /* Track */ \
 .customscrollbars ::-webkit-scrollbar-track { \
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  \
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); \
     -webkit-border-radius: 10px; \
     border-radius: 10px; \
 } \
-  \
+ \
 /* Handle */ \
 .customscrollbars ::-webkit-scrollbar-thumb { \
     -webkit-border-radius: 10px; \
     border-radius: 10px; \
-    background: rgba(255,0,0,0.8);  \
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);  \
+    background: rgba(255,0,0,0.8); \
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); \
 } \
+ \
 .customscrollbars ::-webkit-scrollbar-thumb:window-inactive { \
-    background: rgba(255,0,0,0.4);  \
+    background: rgba(255,0,0,0.4); \
 } \
 ");
