@@ -702,6 +702,7 @@ div#new-update-form textarea { \
     height: 45px; \
     overflow: auto; \
     resize: none; \
+    text-align:center; \
 } \
  \
 div#new-update-form { \
