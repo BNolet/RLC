@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.75
 // @description  Chat-like functionality for Reddit Live
-// @author       FatherDerp, Stjerneklar, thybag
+// @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
 // @exclude      https://www.reddit.com/live/
 // @exclude      https://www.reddit.com/live
@@ -291,7 +291,7 @@
 
             // Create inital markup
             this.$el.html("<span class='all selected'>Everything</span><span><div class='fuk-filters'></div></span><span class='more'>[Options]</span>");
-            this.$opt = $("<div class='fuk-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
+            this.$opt = $("<br/><div class='fuk-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
 
             // Attach events
             this.$el.find(".fuk-filters").click(this.toggle_channel);
@@ -371,7 +371,7 @@
         var $msg = $ele.find(".body .md");
         // target blank all messages
         $msg.find("a").attr("target","_blank");
-        
+
         var $usr = $ele.find(".body .author");
         var line = $msg.text().toLowerCase();
         var first_line = $msg.find("p").first();
@@ -385,17 +385,131 @@
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
-        }            
+        }
 
         $usr.after($ele.find("time"));
         $ele.find(".author, time").wrapAll("<div class='msginfo'>");
-       
-        
+
+
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
 
+        // Active Channels Monitoring
+        updateMostActiveChannels(line);
+
 
     };
+
+    /*
+     START OF ACTIVE CHANNEL DISCOVERY SECTION
+     (Transplanted from https://github.com/5a1t/parrot repo to which the section was originally contributed to by LTAcosta )
+    */
+
+    // Monitor the most active channels.
+    var activeChannelsQueue = [];
+    var activeChannelsCounts = {};
+    function updateMostActiveChannels(messageText)
+    {
+        var chanName = messageText;
+
+        if (!chanName)
+            return;
+
+        // To simplify things, we're going to start by only handling channels that start with punctuation.
+        //if (!chanName.match(/^[!"#$%&\\'()\*+,\-\.\/:;<=>?@\[\]\^_`{|}~]/)) return;
+        if (!chanName.match(/^[:]/)) return;
+
+        // possible channels is the first word of each line
+        index = chanName.indexOf(" ");
+        if (index >= 0)
+            chanName = chanName.substring(0, index);
+
+        // Guards against empty lines, or channames not being processed
+        if (!chanName || chanName == messageText)
+            return;
+
+        chanName = chanName.toLowerCase();
+        activeChannelsQueue.unshift(chanName);
+
+        if (!activeChannelsCounts[chanName]) {
+            activeChannelsCounts[chanName] = 0;
+        }
+        activeChannelsCounts[chanName]++;
+
+        if (activeChannelsQueue.length > 2000){
+            var oldChanName = activeChannelsQueue.pop(); // should this be shift() instead to ensure FIFO movement?
+            activeChannelsCounts[oldChanName]--;
+        }
+
+        //console.log("activeChannelsQueue "+activeChannelsQueue);
+        //console.log("activeChannelsCounts" + activeChannelsCounts);
+    }
+
+    function updateChannels()
+    {
+        // Sort the channels
+        var channels = [];
+        for(var channel in activeChannelsCounts){
+            if (activeChannelsCounts[channel] >= 1){ // Sort only those with equal or more than 1 sighting
+                channels.push(channel);
+            }
+        }
+
+        channels.sort(function(a,b) {return activeChannelsCounts[b] - activeChannelsCounts[a];});
+
+        /* Build the html table for display in #activeChannelsTable div. */
+        var html = "<table>\r\n" +
+                   "<thead>\r\n" +
+                   "<tr><th>#</th><th>Channel Name</th><th>Join Channel</th></tr>\r\n" +
+                   "</thead>\r\n" +
+                   "<tbody>\r\n";
+
+        var limit = 50;
+        if (channels.length < limit)
+            limit = channels.length;
+
+        for (var i = 0; i < limit; i++) {
+            html += "<tr><td>" + (i+1) + "</td><td>" + channels[i] + "</td><td><div class=\"channelBtn robin-chat--vote\">Join Channel</div></td></tr>\r\n";
+        }
+
+        html += "</tbody>\r\n" +
+                "</table>\r\n" +
+                '<br/>';
+
+        $("#activeChannelsTable").html(html);
+
+        $(".channelBtn").on("click", function joinChannel() {
+            /* // Originally for parrot, please modify to work with FukBird
+            var channel = $(this).parent().prev().contents().text();
+            var channels = getChannelList();
+
+            if (channel && $.inArray(channel, channels) < 0) {
+                settings.channel += "," + channel;
+                Settings.save(settings);
+                buildDropdown();
+                resetChannels();
+            }
+            */
+        });
+    }
+
+    var channelsInterval = 0;
+    function startChannels() {
+        stopChannels();
+        channelsInterval = setInterval(updateChannels, 10000);
+        updateChannels();
+    }
+
+    function stopChannels() {
+    if (channelsInterval){
+            clearInterval(channelsInterval);
+            channelsInterval = 0;
+        }
+    }
+
+    /*
+    END OF ACTIVE CHANNEL DISCOVERY SECTION
+    */
 
     // remove channel key from message
     var remove_channel_key_from_message = function(message){
@@ -431,7 +545,8 @@
         $('.liveupdate-listing').appendTo('#fuk-chat');
         $('#new-update-form').appendTo('#fuk-messagebox');
         $('#new-update-form').append('<div id="fuk-sendmessage">Send Message</div>');
-        $('#liveupdate-header').appendTo('#fuk-sidebar');        
+        $('#liveupdate-header').appendTo('#fuk-sidebar');
+        $("<div id='channelsTable'><div>Most Active Channels</div><br/><div id='activeChannelsTable'></div><br/></div>").appendTo("#fuk-sidebar"); // Active Channel Discovery Table
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
         $("#fuk-main iframe").remove();        
         $("#fuk-main a").attr("target","_blank");
@@ -445,7 +560,7 @@
         
         $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
         $(".usertext-edit textarea").focus();
-        
+
         // make settings container
         $("<div id='fuk-settings' class='noselect'><strong>Options</strong></div>").appendTo($("#fuk-sidebar"));
 
@@ -511,12 +626,25 @@
                 }
                _scroll_to_bottom();
             },false);
-        
+
          createOption("Compact mode", function(checked, ele){
                 if(checked){
                     $("body").addClass("fuk-compact");
                 }else{
                     $("body").removeClass("fuk-compact");
+                }
+               _scroll_to_bottom();
+            },false);
+
+         createOption("Active Channel Discovery", function(checked, ele){
+                if(checked){
+                    startChannels();
+                    $("#channelsTable").show();
+                    console.log("Starting Channel Discovery Display Update");
+                }else{
+                    stopChannels();
+                    $("#channelsTable").hide();
+                    console.log("Stopping Channel Discovery Display Update");
                 }
                _scroll_to_bottom();
             },false);
