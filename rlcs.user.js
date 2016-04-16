@@ -692,6 +692,19 @@
                _scroll_to_bottom();
             },false);
 
+        createOption("Active Channel Discovery", function(checked, ele){
+               if(checked){
+                   startChannels();
+                   $("#channelsTable").show();
+                   console.log("Starting Channel Discovery Display Update");
+               }else{
+                   stopChannels();
+                   $("#channelsTable").hide();
+                   console.log("Stopping Channel Discovery Display Update");
+               }
+              _scroll_to_bottom();
+           },false);
+
     });
 
     var color;
