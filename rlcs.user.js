@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.72
+// @version      1.73
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -219,6 +219,10 @@
                     $element.removeClass("fuk-filter-" + i);
                 }
             }
+            
+            //replace default timestamps with text
+            var  shorttime = $element.find(".body .msginfo time").attr( "title" ).split(" ");
+            $element.find(".body .msginfo").append("<span class='simpletime'>"+shorttime[3]+"</span>"); 
 
             // Scann for channel identifiers
             for(i=0; i< this.channelMatchingCache.length; i++){ // sorted so longer get picked out before shorter ones (sub channel matching)
@@ -365,7 +369,7 @@
     var handle_new_message = function($ele){
         // add any proccessing for new messages in here
         var $msg = $ele.find(".body .md");
-        
+        // target blank all messages
         $msg.find("a").attr("target","_blank");
         
         var $usr = $ele.find(".body .author");
@@ -492,6 +496,14 @@
                 }
             },false);
 
+           createOption("Simplify timestamps", function(checked, ele){
+                if(checked){
+                    $("body").addClass("simpleTimestamps");
+                }else{
+                    $("body").removeClass("simpleTimestamps");
+                }
+               _scroll_to_bottom();
+            },false);
 
         var text_area = $(".usertext-edit.md-container textarea");
 
@@ -630,13 +642,15 @@ div#fuk-chat { \
     color: #0079d3; \
 } \
  \
-#fuk-main .liveupdate-listing .liveupdate time { \
+#fuk-main .liveupdate-listing .liveupdate time, \
+#fuk-main .liveupdate-listing .liveupdate .msginfo span { \
     padding: 0; \
     float: right; \
     width: auto; \
     margin: 0; \
     text-align: right; \
     text-indent: 0; \
+    font-size: 10px; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body div.md { \
@@ -702,7 +716,7 @@ div#new-update-form textarea { \
     height: 45px; \
     overflow: auto; \
     resize: none; \
-    text-align:center; \
+    text-align: center; \
 } \
  \
 div#new-update-form { \
@@ -788,6 +802,7 @@ aside.sidebar.side.md-container { \
 #discussions { \
     display: none; \
 } \
+ \
 .reddiquette { \
     display: none!important; \
 } \
@@ -813,8 +828,6 @@ aside.sidebar.side.md-container { \
 #fuk-togglesidebar { \
     float: right; \
 } \
- \
- \
  \
 /*settings*/ \
 #fuk-settings { \
@@ -1045,11 +1058,23 @@ body:not(.res) div#header-bottom-right { \
     color: black; \
 } \
  \
-/* misc fixes */  \
- \
+/* misc fixes */ \
 /*prevent body scroll to avoid loading history*/ \
 body { \
     overflow: hidden; \
+} \
+ \
+.simpleTimestamps #fuk-main .liveupdate-listing .liveupdate time { \
+    display: none; \
+} \
+ \
+.simpleTimestamps #fuk-main .liveupdate-listing .liveupdate .simpletime { \
+    display: block; \
+    padding-top: 1px; \
+} \
+ \
+#fuk-main .liveupdate-listing .liveupdate .simpletime { \
+    display: none; \
 } \
  \
 /* option classes */ \
