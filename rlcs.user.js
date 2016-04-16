@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.82 
+// @version      1.83 
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -1157,7 +1157,7 @@ div#fuk-toggleoptions { \
     color: white; \
 } \
  \
-.dark-background textarea { \
+.dark-background textarea, .dark-background #fuk-main .liveupdate-listing a.author { \
     background: transparent; \
     color:white; \
 } \
