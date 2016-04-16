@@ -291,7 +291,7 @@
 
             // Create inital markup
             this.$el.html("<span class='all selected'>Everything</span><span><div class='fuk-filters'></div></span><span class='more'>[Options]</span>");
-            this.$opt = $("<br/><div class='fuk-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
+            this.$opt = $("<div class='fuk-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
 
             // Attach events
             this.$el.find(".fuk-filters").click(this.toggle_channel);
