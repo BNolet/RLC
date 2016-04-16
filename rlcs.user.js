@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.76
+// @version      1.77
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -658,6 +658,7 @@ div#fuk-chat { \
     width: 100%; \
     margin: 0; \
     text-align: right; \
+    color: grey; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate time, #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
@@ -1044,8 +1045,16 @@ div#fuk-toggleoptions { \
     -ms-user-select: none; \
     /* IE/Edge */ \
 } \
+ \
 /* dark background */ \
-.dark-background {} \
+.dark-background { \
+background:#404040; \
+color:white; \
+} \
+.dark-background textarea {background:transparent;} \
+ \
+.dark-background .side {background:transparent;} \
+ \
 /* misc fixes */ \
 /*prevent body scroll to avoid loading history*/ \
 body { \
@@ -1099,6 +1108,7 @@ body > .content { \
 .help-toggle { \
     display: none!important; \
 } \
+ \
 .fuk-compact div#header { \
     display: none; \
 } \
@@ -1132,27 +1142,36 @@ body > .content { \
     height: calc(100vh - 50px); \
 } \
  \
-.fuk-compact .debuginfo {display:none!important;} \
+.fuk-compact .debuginfo { \
+    display: none!important; \
+} \
  \
-.fuk-compact #fuk-main .liveupdate-listing .liveupdate time,  \
-.fuk-compact #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
-padding:3px 4px!important; \
-position:absolute; \
-left:5px; \
+.fuk-compact #fuk-main .liveupdate-listing .liveupdate time, .fuk-compact #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
+    padding: 3px 4px!important; \
+    position: absolute; \
+    left: 5px; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing a.author { \
-position:absolute; \
-left:45px; \
-right:initial!important; \
-width:auto; \
+    position: absolute; \
+    left: 45px; \
+    right: initial!important; \
+    width: auto; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing { \
-position:relative; \
+    position: relative; \
 } \
  \
 .fuk-compact #fuk-main .liveupdate-listing .liveupdate .body div.md { \
     width: 75%; \
 } \
+ \
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md {color:white!important;} \
+ \
+.dark-background div#header-bottom-left { \
+background:grey;  \
+} \
+ \
+.dark-background .liveupdate-listing li.liveupdate .body div.md p:last-of-type {color:white;} \
 ");
