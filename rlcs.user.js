@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.83 
+// @version      1.84
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -1136,7 +1136,7 @@ div#fuk-toggleoptions { \
 } \
 ");
 
-      GM_addStyle(" /* Meta Rules */ \
+      GM_addStyle("/* Meta Rules */ \
 /* class to prevent selection for divs acting as buttons */ \
 .noselect { \
     -webkit-touch-callout: none; \
@@ -1159,7 +1159,7 @@ div#fuk-toggleoptions { \
  \
 .dark-background textarea, .dark-background #fuk-main .liveupdate-listing a.author { \
     background: transparent; \
-    color:white; \
+    color: white; \
 } \
  \
 .dark-background .side { \
@@ -1180,8 +1180,8 @@ body { \
     display: block; \
     float: left; \
     width: 60px; \
-    padding-left:20px; \
-padding-top:2px; \
+    padding-left: 20px; \
+    padding-top: 2px; \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .simpletime { \
@@ -1262,7 +1262,7 @@ body > .content { \
     background: grey; \
 } \
  \
-.dark-background .liveupdate-listing li.liveupdate .body div.md p:last-of-type { \
+.dark-background .liveupdate-listing li.liveupdate .body div.md p { \
     color: white; \
 } \
  \
@@ -1278,8 +1278,7 @@ body > .content { \
  \
 /* Handle */ \
 .fuk-customscrollbars ::-webkit-scrollbar-thumb { \
- background-color: #4C4C4C; \
- border: 1px solid #262626; \
+    background-color: #4C4C4C; \
+    border: 1px solid #262626; \
 } \
- \
 ");
