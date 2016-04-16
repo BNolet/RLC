@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.74
+// @version      1.75
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag
 // @include      https://www.reddit.com/live/*
@@ -418,23 +418,30 @@
                     <div id="fuk-main">   \
                             <div id="fuk-chat"></div> \
                             <div id="fuk-messagebox"> </div> \
+                            <div id="fuk-chatsidebartoggle">></div> \
                     </div> \
-                    <div id="fuk-sidebar"></div> \
-                    <div id="fuk-settingsbar"> \
+                    <div id="fuk-sidebar"> \
+                         <div id="fuk-settingsbar"> \
                             <div id="fuk-togglesidebar" class="noselect">Toggle Sidebar</div> \
                             <div id="fuk-toggleoptions" class="noselect">Toggle Options</div> \
+                         </div> \
                     </div> \
         '); 
 
         $('.liveupdate-listing').appendTo('#fuk-chat');
         $('#new-update-form').appendTo('#fuk-messagebox');
         $('#new-update-form').append('<div id="fuk-sendmessage">Send Message</div>');
-        $('#liveupdate-header').prependTo('#fuk-sidebar');        
+        $('#liveupdate-header').appendTo('#fuk-sidebar');        
         $('.main-content aside.sidebar').appendTo('#fuk-sidebar');
         $("#fuk-main iframe").remove();        
         $("#fuk-main a").attr("target","_blank");
           $("#fuk-sidebar a").attr("target","_blank");
         _scroll_to_bottom();
+        
+        
+        var myVersion = GM_info.script.version; 
+        console.log ('Version: ' + myVersion);
+        $("#fuk-settingsbar").append('FukBird Version: ' + myVersion); 
         
         $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
         $(".usertext-edit textarea").focus();
@@ -533,6 +540,10 @@
             $("body").toggleClass("fuk-hidesidebar");
         });
         
+        $("#fuk-chatsidebartoggle").click(function(){
+            $("body").toggleClass("fuk-hidesidebar");
+        });
+        
         $("#fuk-toggleoptions").click(function(){
             $("body").toggleClass("fuk-showoptions");
         });
@@ -598,14 +609,17 @@ GM_addStyle(" /* Custom Containers */ \
     right: 0; \
     box-sizing: border-box; \
     overflow-y: auto; \
-    padding-top: 20px; \
     overflow-x: hidden; \
 } \
  \
 ");
 
 GM_addStyle(" /* Main chat window  */ \
-#fuk-chat.fuk-filter li.liveupdate { display:none; } \
+/* Main chat window  */ \
+#fuk-chat.fuk-filter li.liveupdate { \
+    display: none; \
+} \
+ \
 /*chat window*/ \
 #fuk-main iframe { \
     display: none!important; \
@@ -652,8 +666,7 @@ div#fuk-chat { \
     color: #0079d3; \
 } \
  \
-#fuk-main .liveupdate-listing .liveupdate time, \
-#fuk-main .liveupdate-listing .liveupdate .msginfo span { \
+#fuk-main .liveupdate-listing .liveupdate time, #fuk-main .liveupdate-listing .liveupdate .msginfo span { \
     padding: 0; \
     float: right; \
     width: auto; \
@@ -789,6 +802,7 @@ div#fuk-main:after { \
     margin-top: 10px; \
     color: grey; \
 } \
+ \
 /*filter tabs*/ \
 #filter_tabs { \
     width: 100%; \
@@ -892,12 +906,30 @@ div#fuk-main:after { \
     display: none; \
 } \
  \
+#fuk-chatsidebartoggle { \
+    display: none; \
+    height: 24px; \
+    width: 17px; \
+    position: absolute; \
+    top: 0; \
+    right: 0; \
+    border-bottom: 1px solid #5F99CF; \
+    box-sizing: border-box; \
+    padding: 5px; \
+    cursor:pointer; \
+} \
+ \
+#fuk-chatsidebartoggle:hover { background:grey; } \
+ \
+.fuk-hidesidebar #fuk-chatsidebartoggle { \
+    display: block; \
+} \
 ");
 
       GM_addStyle(" /* Sidebar */ \
-/* sidebar */ \
+/* Sidebar */ \
 aside.sidebar.side.md-container { \
-    max-width: 100%; \
+   \
     width: 100%; \
     opacity: 1; \
     margin: 0; \
@@ -941,19 +973,19 @@ aside.sidebar.side.md-container { \
  \
 #fuk-togglesidebar { \
     float: right; \
+    cursor: pointer; \
 } \
  \
 /*settings*/ \
 #fuk-settings { \
     position: absolute; \
-    top: 0; \
+    top: 20px; \
     right: 0; \
-    height: 20%; \
+    height: auto; \
     z-index: 100; \
+    padding: 6px; \
     width: 100%; \
     box-sizing: border-box; \
-    padding-top: 45px; \
-    cursor: pointer; \
     background: white; \
 } \
  \
@@ -971,7 +1003,10 @@ aside.sidebar.side.md-container { \
  \
 #fuk-settings label { \
     float: left; \
-    padding-left: 5px \
+    padding: 5px; \
+    box-sizing: border-box; \
+    cursor: pointer; \
+    width: 100%; \
 } \
  \
 #fuk-settings label input { \
@@ -996,13 +1031,11 @@ body:not(.res) div#header-bottom-right { \
 #fuk-settingsbar { \
     right: 0px; \
     top: 44px; \
-    position: absolute; \
-    width: 20%; \
+    width: 100%; \
     height: 17px; \
     z-index: 100; \
     border-radius: 3px; \
-    padding: 2px 8px; \
-    cursor: pointer; \
+    padding: 6px 6px; \
     box-sizing: border-box; \
     background: white; \
 } \
@@ -1012,6 +1045,11 @@ body:not(.res) div#header-bottom-right { \
     color: white!important; \
 } \
  \
+div#fuk-toggleoptions { \
+    float: right; \
+    padding-right: 6px; \
+    cursor: pointer; \
+} \
 ");
 
       GM_addStyle(" /* Meta Rules */ \
