@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.80
+// @version      1.81
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -1280,26 +1280,19 @@ body > .content { \
 } \
  \
 /* Let's get this party started */ \
-.customscrollbars ::-webkit-scrollbar { \
-    width: 8px; \
+.fuk-customscrollbars ::-webkit-scrollbar { \
+    width: 10px; \
 } \
  \
 /* Track */ \
-.customscrollbars ::-webkit-scrollbar-track { \
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); \
-    -webkit-border-radius: 10px; \
-    border-radius: 10px; \
+.fuk-customscrollbars ::-webkit-scrollbar-track { \
+    background-color: #262626; \
 } \
  \
 /* Handle */ \
-.customscrollbars ::-webkit-scrollbar-thumb { \
-    -webkit-border-radius: 10px; \
-    border-radius: 10px; \
-    background: rgba(255,0,0,0.8); \
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); \
+.fuk-customscrollbars ::-webkit-scrollbar-thumb { \
+ background-color: #4C4C4C; \
+ border: 1px solid #262626; \
 } \
  \
-.customscrollbars ::-webkit-scrollbar-thumb:window-inactive { \
-    background: rgba(255,0,0,0.4); \
-} \
 ");
