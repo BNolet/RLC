@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.0.2
+// @version      2.0.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -1293,7 +1293,8 @@ body > .content { \
     height: calc(100vh - 49px); \
 } \
  \
-.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md { \
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, \
+.dark-background .md blockquote p { \
     color: white!important; \
 } \
  \
