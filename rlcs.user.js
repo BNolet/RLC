@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.86
+// @version      1.87
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -302,7 +302,7 @@
             // Attach events
             this.$el.find(".fuk-filters").click(this.toggle_channel);
             this.$el.find("span.all").click(this.disable_all_channels);
-            this.$el.find("span.more").click(function(){ $(".fuk-channel-add").slideToggle(); });
+            this.$el.find("span.more").click(function(){ $(".fuk-channel-add").toggle(); $("body").toggleClass("fuk-addchanmenu"); });
             this.$el.find(".fuk-filters").bind("contextmenu", function(e){
                 e.preventDefault();
                 e.stopPropagation();
@@ -787,7 +787,7 @@ body {min-width: 0;} \
  \
 div#fuk-chat { \
     overflow-y: auto; \
-    height: calc(100vh - 133px); \
+    height: calc(100vh - 131px); \
 } \
  \
 #fuk-main .liveupdate-listing .liveupdate .body a { \
@@ -1284,12 +1284,18 @@ body > .content { \
 } \
  \
 .fuk-compact div#fuk-chat { \
-    height: calc(100vh - 50px); \
+    height: calc(100vh - 49px); \
 } \
+.fuk-compact.fuk-addchanmenu div#fuk-chat {height:calc(100vh - 83px)} \
+.fuk-compact.fuk-showoptions div#fuk-chat {height:calc(100vh - 87px)} \
+.fuk-compact.fuk-addchanmenu.fuk-showoptions div#fuk-chat {height:calc(100vh - 121px)} \
  \
 .fuk-compact .debuginfo { \
     display: none!important; \
 } \
+.fuk-addchanmenu div#fuk-chat {height:calc(100vh - 165px)} \
+.fuk-showoptions div#fuk-chat {height:calc(100vh - 169px)} \
+.fuk-addchanmenu.fuk-showoptions div#fuk-chat {height:calc(100vh - 203px)} \
  \
 .dark-background aside.sidebar .md, .dark-background #liveupdate-description .md { \
     color: white!important; \
