@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FukBird
 // @namespace    http://tampermonkey.net/
-// @version      1.85
+// @version      1.86
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -222,7 +222,13 @@
 
             //replace default timestamps with text
             var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
-            $element.find(".body").prepend("<div class='simpletime'>"+shorttime[3]+"</div>");
+            
+            if ($element.find(".simpletime").length) {
+                
+            }
+            else { 
+            $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+"</div>");                
+            }
 
             // Scann for channel identifiers
             for(i=0; i< this.channelMatchingCache.length; i++){ // sorted so longer get picked out before shorter ones (sub channel matching)
