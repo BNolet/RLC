@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2
+// @version      2.0.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -20,9 +20,16 @@
     var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
     // Channel Colours
     var colors = [
-        'rgba(255,0,0,0.1)','rgba(0,255,0,0.1)','rgba(0,0,255,0.1)','rgba(0,255,255,0.1)',
-        'rgba(255,0,255,0.1)','rgba(255,255,0,0.1)','rgba(211,211,211, .1)','rgba(0,100,0, .1)',
-        'rgba(255,20,147, .1)','rgba(184,134,11, .1)'
+        'rgba(255,0,0,0.1)',
+        'rgba(0,255,0,0.1)',
+        'rgba(0,0,255,0.1)',
+        'rgba(0,255,255,0.1)',
+        'rgba(255,0,255,0.1)',
+        'rgba(255,255,0,0.1)',
+        'rgba(211,211,211, .1)',
+        'rgba(0,100,0, .1)',
+        'rgba(255,20,147, .1)',
+        'rgba(184,134,11, .1)',
     ];
 
     // msg history
@@ -988,7 +995,6 @@ div#rlc-main:after { \
 } \
  \
 /* add channels interface */ \
- \
 .rlc-channel-add input { \
     padding: 2.5px; \
 } \
@@ -1008,9 +1014,9 @@ div#rlc-main:after { \
     display: none; \
     position: absolute; \
     top: 24px; \
-    background: grey; \
+    background: #FCFCFC; \
     left: 0px; \
-right: 20%; \
+    right: 20%; \
 } \
  \
 #rlc-chatsidebartoggle { \
@@ -1142,7 +1148,7 @@ body:not(.res) div#header-bottom-right { \
     table-layout: fixed; \
     border: 1px solid grey; \
     position: absolute; \
-    background: #404040; \
+    background: #FFFFFF; \
 } \
  \
 #rlc-settings { \
@@ -1313,5 +1319,19 @@ body > .content { \
 .rlc-customscrollbars ::-webkit-scrollbar-thumb { \
     background-color: #4C4C4C; \
     border: 1px solid #262626; \
+} \
+.dark-background div#rlc-settings { \
+    background: #404040; \
+} \
+ \
+.dark-background .rlc-channel-add { \
+    background: grey; \
+} \
+ \
+.dark-background .rlc-channel-add input { \
+    background: #404040; \
+    border: 0; \
+    padding: 3px 4px 4px 4px; \
+    color: white; \
 } \
 ");
