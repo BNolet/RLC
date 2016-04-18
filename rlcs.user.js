@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.3.0
+// @version      2.3.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -66,6 +66,7 @@
                 //check if timestamp is recent enough?
             }
         }
+        $( ".usertext-edit textarea" ).autocomplete( "option", "source", updateArray );
         
     }
 
@@ -742,12 +743,14 @@
             $(".save-button .btn").click();
         });
 
-        processActiveUsersList();
         
+        console.log(updateArray);
         $('.usertext-edit textarea').autocomplete({
         source: updateArray,
         autoFocus: true,
         });
+        
+        processActiveUsersList();
         
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
@@ -934,9 +937,10 @@ div#rlc-chat { \
 } \
  \
 #rlc-main .liveupdate-listing a.author { \
-    width: 180px; \
+    width: 110px; \
     display: block; \
     float: left; \
+    text-align: right; \
 } \
  \
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
