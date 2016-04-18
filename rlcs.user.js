@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.2.0
+// @version      2.2.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -56,7 +56,7 @@
         var updateArray = [];
         for(i=0; i <= activeUserArray.length; i++){
               if (updateArray.indexOf(activeUserArray[i]) === -1 && activeUserArray[i] !== undefined) {
-                updateArray.push(activeUserArray[i])
+                updateArray.push(activeUserArray[i]);
                 $("#rlc-activeusers ul").append("<li>"+activeUserArray[i] + " @ " + activeUserTimes[i]+"</li>");              
             } else if (updateArray.indexOf(activeUserArray[i]) > -1) {
                 //add message counter value
@@ -242,7 +242,15 @@
         this.proccessLine = function(text, $element, rescan){
             var i, idx, channel;
             var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
-            var militarytime = convertTo24Hour(shorttime[3] + " " + shorttime[4].toLowerCase());
+            var amPm = shorttime[4].toLowerCase(); 
+            if (amPm === "am" || amPm === "pm" ) { 
+                var shortimefull = shorttime[3] + " " + amPm;
+              }
+            else {
+                amPm = " ";
+            }
+            
+            var militarytime = convertTo24Hour(shorttime[3] + " " + amPm);
 
             // If rescanning, clear any existing "channel" classes
             if(typeof rescan !== 'undefined' && rescan === true){
@@ -259,7 +267,7 @@
                 activeUserTimes.push(militarytime);
             
                 //add simplified timestamps 
-                $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " " +shorttime[4].toLowerCase()+"</div>");
+                $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
             }
 
             // Scann for channel identifiers
@@ -1295,8 +1303,8 @@ display: none; \
 .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate .simpletime { \
 display: block; \
 float: left; \
-width: 60px; \
-padding-left: 20px; \
+width: 70px; \
+padding-left: 10px; \
 padding-top: 2px; \
 } \
 \
