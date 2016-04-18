@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.2.2
+// @version      2.2.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -1114,6 +1114,7 @@ div#rlc-sendmessage { \
     background: #FCFCFC; \
     left: 0px; \
     right: 20%; \
+    z-index: 1000; \
 } \
  \
 #rlc-main time.live-timestamp { \
