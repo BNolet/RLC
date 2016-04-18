@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.2.1
+// @version      2.2.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -591,7 +591,6 @@
 <div id="rlc-main">   \
 <div id="rlc-chat"></div> \
 <div id="rlc-messagebox"> </div> \
-<div id="rlc-chatsidebartoggle">></div> \
 </div> \
 <div id="rlc-sidebar"> \
 </div> \
@@ -648,6 +647,7 @@
 </div> \
 </div> \
 ');
+        
         $('.liveupdate-listing').appendTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
@@ -662,7 +662,11 @@
         $("#rlc-main a").attr("target","_blank");
         $("#rlc-sidebar a").attr("target","_blank");
         $("#rlc-readmebar a").attr("target","_blank");
-
+        
+        if($(".usertext-edit textarea").length) { }
+        else { $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>"); }
+       
+        
         $("<div id='channelsTable'> \
 <div>Most Active Channels</div><br/> \
 <div id='activeChannelsTable'></div><br/> \
@@ -842,421 +846,414 @@
     }
 })();
 
-GM_addStyle("/*-------------------------------- Custom Containers ------------------------------------- */ \
+GM_addStyle(" /*-------------------------------- Custom Containers ------------------------------------- */ \
 body { \
-min-width: 0; \
+    min-width: 0; \
 } \
-\
+ \
 #rlc-main { \
-width: 80%; \
-height: 100%; \
-box-sizing: border-box; \
-float: left; \
+    width: 80%; \
+    height: 100%; \
+    box-sizing: border-box; \
+    float: left; \
+    position: relative; \
 } \
-\
+ \
 #rlc-sidebar, #rlc-readmebar { \
-width: 20%; \
-float: right; \
-height: calc(100vh - 87px); \
-box-sizing: border-box; \
-overflow-y: auto; \
-overflow-x: hidden; \
+    width: 20%; \
+    float: right; \
+    height: calc(100vh - 87px); \
+    box-sizing: border-box; \
+    overflow-y: auto; \
+    overflow-x: hidden; \
 } \
-\
+ \
 #rlc-topmenu { \
-width: 100%; \
-box-sizing: border-box; \
-border-bottom: 1px solid grey; \
-position: relative; \
+    width: 100%; \
+    box-sizing: border-box; \
+    border-bottom: 1px solid grey; \
+    position: relative; \
 } \
-\
+ \
 /*  /*------------------------------------ Main Chat -----------------------------------------------------*/ \
 #rlc-chat.rlc-filter li.liveupdate { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 /*chat window*/ \
 #rlc-main iframe { \
-display: none!important; \
+    display: none!important; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing { \
-max-width: 100%; \
-padding: 0px; \
-box-sizing: border-box; \
-display: flex; \
-flex-direction: column-reverse; \
-min-height: 100%; \
+    max-width: 100%; \
+    padding: 0px; \
+    box-sizing: border-box; \
+    display: flex; \
+    flex-direction: column-reverse; \
+    min-height: 100%; \
 } \
-\
+ \
 div#rlc-chat { \
-overflow-y: auto; \
-height: calc(100vh - 131px); \
+    overflow-y: auto; \
+    height: calc(100vh - 131px); \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate .body a { \
-font-size: 12px; \
-padding-top: 1px; \
+    font-size: 12px; \
+    padding-top: 1px; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate .body { \
-max-width: none; \
-margin-bottom: 0; \
-padding: 0px; \
-font-size: 12px; \
-overflow: visible; \
-display: block; \
-box-sizing: border-box; \
+    max-width: none; \
+    margin-bottom: 0; \
+    padding: 0px; \
+    font-size: 12px; \
+    overflow: visible; \
+    display: block; \
+    box-sizing: border-box; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate { \
-height: auto!important; \
-overflow: visible!important; \
-padding: 4px; \
+    height: auto!important; \
+    overflow: visible!important; \
+    padding: 4px; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing a.author { \
-width: 180px; \
-display: block; \
-float: left; \
+    width: 180px; \
+    display: block; \
+    float: left; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
-float: right; \
-width: calc(100% - 340px); \
-max-width: none; \
+    float: right; \
+    width: calc(100% - 340px); \
+    max-width: none; \
 } \
-\
+ \
 #rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
-font-weight: bold; \
+    font-weight: bold; \
 } \
-\
+ \
 /* narration */ \
 #rlc-main #rlc-chat li.liveupdate.user-narration > a { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 #rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 #rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
-font-style: italic; \
+    font-style: italic; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate:nth-child(odd) { \
-background: rgba(128,128,128,0.2); \
+    background: rgba(128,128,128,0.2); \
 } \
-\
+ \
 /* channel name */ \
 .channelname { \
-color: grey!important; \
-width: 90px; \
-display: block; \
-float: left; \
+    color: grey!important; \
+    width: 90px; \
+    display: block; \
+    float: left; \
 } \
-\
+ \
 span.channelnamecolor { \
 } \
-\
+ \
 .rlc-filter .channelname { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 /* message input and send button */ \
 div#rlc-messagebox { \
-position: relative; \
+    position: relative; \
 } \
-\
+ \
 #new-update-form .usertext { \
-max-width: 85%; \
-float: left; \
-width: 85%; \
+    max-width: 85%; \
+    float: left; \
+    width: 85%; \
 } \
-\
+ \
 .usertext-edit .md { \
-min-width: 100%!important; \
+    min-width: 100%!important; \
 } \
-\
+ \
 div#new-update-form textarea { \
-height: 45px; \
-overflow: auto; \
-resize: none; \
+    height: 45px; \
+    overflow: auto; \
+    resize: none; \
 } \
-\
+ \
 div#new-update-form { \
-width: 100%; \
-margin: 0; \
+    width: 100%; \
+    margin: 0; \
 } \
-\
+ \
 .usertext-edit.md-container { \
-max-width: 100%; \
-margin: 0; \
+    max-width: 100%; \
+    margin: 0; \
 } \
-\
+ \
 .usertext-edit.md-container { \
-position: relative; \
+    position: relative; \
 } \
-\
+ \
 #new-update-form .bottom-area { \
-position: absolute; \
-top: 4px; \
-right: 15px; \
-left: 15px; \
-text-align: center; \
-letter-spacing: 1px; \
+    position: absolute; \
+    top: 4px; \
+    right: 15px; \
+    left: 15px; \
+    text-align: center; \
+    letter-spacing: 1px; \
 } \
-\
+ \
 #new-update-form .save-button .btn { \
-width: 100%; \
-text-transform: capitalize; \
+    width: 100%; \
+    text-transform: capitalize; \
 } \
-\
+ \
 div#rlc-sendmessage { \
-width: 15%; \
-height: 45px; \
-text-align: center; \
-float: right; \
-display: inline-block; \
-padding-top: 15px; \
-box-sizing: border-box; \
-margin-top: 0px; \
-font-size: 1.3em; \
-cursor: pointer; \
-border: 1px solid #A9A9A9; \
-; border-left: 0; \
+    width: 15%; \
+    height: 45px; \
+    text-align: center; \
+    float: right; \
+    display: inline-block; \
+    padding-top: 15px; \
+    box-sizing: border-box; \
+    margin-top: 0px; \
+    font-size: 1.3em; \
+    cursor: pointer; \
+    border: 1px solid #A9A9A9; \
+    ; border-left: 0; \
 } \
-\
+ \
 .res-nightmode div#rlc-sendmessage { \
-border: 1px solid #4C4C4C; \
+    border: 1px solid #4C4C4C; \
 } \
-\
+ \
 .res-nightmode .channelname, .res-nightmode #rlc-main .liveupdate-listing a.author { \
-color: #ccc; \
+    color: #ccc; \
 } \
-\
+ \
 .save-button { \
-display: none; \
+    display: none; \
 } \
-\
-div#rlc-main:after { \
-content: 'If you can see this you need an invite to send messages, check the sidebar.'; \
-width: 100%; \
-text-align: center; \
-display: block; \
-margin-top: 10px; \
-} \
-\
+ \
 /*filter tabs*/ \
 #filter_tabs { \
-width: 80%; \
-display: table; \
-table-layout: fixed; \
+    width: 80%; \
+    display: table; \
+    table-layout: fixed; \
 } \
-\
+ \
 #filter_tabs > span { \
-width: 90%; \
-display: table-cell; \
+    width: 90%; \
+    display: table-cell; \
 } \
-\
+ \
 #filter_tabs > span.all, #filter_tabs > span.more { \
-width: 60px; \
-text-align: center; \
-vertical-align: middle; \
-cursor: pointer; \
+    width: 60px; \
+    text-align: center; \
+    vertical-align: middle; \
+    cursor: pointer; \
 } \
-\
+ \
 #filter_tabs .rlc-filters { \
-display: table; \
-width: 100%; \
-table-layout: fixed; \
+    display: table; \
+    width: 100%; \
+    table-layout: fixed; \
 } \
-\
+ \
 #filter_tabs .rlc-filters > span { \
-padding: 5px 2px; \
-text-align: center; \
-display: table-cell; \
-cursor: pointer; \
-width: 2%; \
-vertical-align: middle; \
-font-size: 1.1em; \
+    padding: 5px 2px; \
+    text-align: center; \
+    display: table-cell; \
+    cursor: pointer; \
+    width: 2%; \
+    vertical-align: middle; \
+    font-size: 1.1em; \
 } \
-\
+ \
 #filter_tabs .rlc-filters > span > span { \
-pointer-events: none; \
+    pointer-events: none; \
 } \
-\
+ \
 #filter_tabs > span.all { \
-padding: 0px 30px; \
+    padding: 0px 30px; \
 } \
-\
+ \
 #filter_tabs > span.more { \
-padding: 0px 30px 0px 30px; \
+    padding: 0px 30px 0px 30px; \
 } \
-\
+ \
 /* add channels interface */ \
 .rlc-channel-add input { \
-padding: 2.5px; \
+    padding: 2.5px; \
 } \
-\
+ \
 .rlc-channel-add .channel-mode { \
-float: right; \
-font-size: 1.2em; \
-padding: 5px; \
+    float: right; \
+    font-size: 1.2em; \
+    padding: 5px; \
 } \
-\
+ \
 .rlc-channel-add .channel-mode span { \
-cursor: pointer \
+    cursor: pointer \
 } \
-\
+ \
 .rlc-channel-add { \
-padding: 5px; \
-display: none; \
-position: absolute; \
-top: 24px; \
-background: #FCFCFC; \
-left: 0px; \
-right: 20%; \
+    padding: 5px; \
+    display: none; \
+    position: absolute; \
+    top: 24px; \
+    background: #FCFCFC; \
+    left: 0px; \
+    right: 20%; \
 } \
-\
+ \
 #rlc-main time.live-timestamp { \
-text-indent: 0; \
-width: 100px; \
-margin: 0; \
-padding-top: 2px; \
-padding-bottom: 0; \
-color: inherit; \
+    text-indent: 0; \
+    width: 100px; \
+    margin: 0; \
+    padding-top: 2px; \
+    padding-bottom: 0; \
+    color: inherit; \
 } \
-\
+ \
 .liveupdate-listing li.liveupdate a.author { \
-color: initial; \
+    color: initial; \
 } \
-\
+ \
 /*------------------------------------ Sidebar -----------------------------------------------------*/ \
 aside.sidebar.side.md-container { \
-width: 100%; \
-opacity: 1; \
-margin: 0; \
-padding: 0px 10px; \
-box-sizing: border-box; \
+    width: 100%; \
+    opacity: 1; \
+    margin: 0; \
+    padding: 0px 10px; \
+    box-sizing: border-box; \
 } \
-\
+ \
 #liveupdate-header { \
-width: 100%; \
-margin: 0!important; \
-padding: 0!important; \
-text-align: center; \
-max-width: none; \
-overflow: hidden; \
+    width: 100%; \
+    margin: 0!important; \
+    padding: 0!important; \
+    text-align: center; \
+    max-width: none; \
+    overflow: hidden; \
 } \
-\
+ \
 #discussions { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 .reddiquette { \
-display: none!important; \
+    display: none!important; \
 } \
-\
+ \
 #contributors { \
-display: none!important; \
+    display: none!important; \
 } \
-\
+ \
 #liveupdate-resources > h2 { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 /*togglesidebar*/ \
 .rlc-hidesidebar #rlc-sidebar { \
-display: none!important; \
+    display: none!important; \
 } \
-\
+ \
 /*hide sidebar toggle class*/ \
 .rlc-hidesidebar #rlc-main { \
-width: 100%!important; \
+    width: 100%!important; \
 } \
-\
+ \
 #rlc-togglesidebar { \
-display: table-cell; \
-cursor: pointer; \
+    display: table-cell; \
+    cursor: pointer; \
 } \
-\
+ \
 div#versionnumber { \
-display: table-cell; \
-cursor: help; \
+    display: table-cell; \
+    cursor: help; \
 } \
-\
+ \
 /*settings*/ \
 #rlc-settings { \
-right: 0; \
-height: auto; \
-z-index: 100; \
-/* padding: 6px; */ \
-width: 100%; \
-box-sizing: border-box; \
+    right: 0; \
+    height: auto; \
+    z-index: 100; \
+    /* padding: 6px; */ \
+    width: 100%; \
+    box-sizing: border-box; \
 } \
-\
+ \
 .res-nightmode #rlc-settings { \
 } \
-\
+ \
 #rlc-settings label { \
-padding: 6px; \
-box-sizing: border-box; \
-cursor: pointer; \
-display: table-cell; \
-text-align: center; \
-border-right: 1px solid grey; \
+    padding: 6px; \
+    box-sizing: border-box; \
+    cursor: pointer; \
+    display: table-cell; \
+    text-align: center; \
+    border-right: 1px solid grey; \
 } \
-\
+ \
 #rlc-settings label:last-of-type { \
-border-right: 0px; \
+    border-right: 0px; \
 } \
-\
+ \
 #rlc-settings label input { \
-vertical-align: sub; \
-margin-right: 1px; \
+    vertical-align: sub; \
+    margin-right: 1px; \
 } \
-\
+ \
 body:not(.res) div#header-bottom-right { \
-bottom: initial; \
-top: 21px; \
-border-radius: 7px; \
-right: 1px; \
+    bottom: initial; \
+    top: 21px; \
+    border-radius: 7px; \
+    right: 1px; \
 } \
-\
+ \
 .rlc-showoptions #rlc-settings { \
-display: table; \
-table-layout: fixed; \
-border: 1px solid grey; \
-position: absolute; \
-background: #FFFFFF; \
+    display: table; \
+    table-layout: fixed; \
+    border: 1px solid grey; \
+    position: absolute; \
+    background: #FFFFFF; \
 } \
-\
+ \
 #rlc-settings { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 #rlc-settingsbar { \
-width: 20%; \
-height: 24px; \
-box-sizing: border-box; \
-float: right; \
-display: table; \
-table-layout: fixed; \
+    width: 20%; \
+    height: 24px; \
+    box-sizing: border-box; \
+    float: right; \
+    display: table; \
+    table-layout: fixed; \
 } \
-\
+ \
 div#rlc-toggleoptions { \
-display: table-cell; \
-cursor: pointer; \
+    display: table-cell; \
+    cursor: pointer; \
 } \
-\
+ \
 #hsts_pixel, .debuginfo { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 div#rlc-settingsbar div { \
-padding-top: 6px; \
-text-align: center; \
+    padding-top: 6px; \
+    text-align: center; \
 } \
 ");
 
@@ -1452,4 +1449,6 @@ margin-right: 10px; \
     width: 100%; \
     font-size: 1.2em; \
 } \
+.dark-background pre {    background: transparent;} \
+#rlc-readmebar {display:none;} \
 ");
