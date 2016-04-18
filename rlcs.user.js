@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.4.0
+// @version      2.4.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -32,6 +32,10 @@
         'rgba(255,20,147, .1)',
         'rgba(184,134,11, .1)',
     ];
+
+    var player = document.createElement('audio');
+    player.src = 'https://dl.dropbox.com/u/7079101/coin.mp3';
+    player.preload = "auto";
 
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
@@ -273,6 +277,15 @@
             
                 //add simplified timestamps 
                 $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
+            
+                 //mention sound effect player
+                 if(text.indexOf(robin_user) !== -1){
+                     if ($("body").hasClass("rlc-notificationsound")) { 
+                    player.play();
+                    }
+                }
+
+
             }
 
             // Scann for channel identifiers
@@ -418,9 +431,7 @@
             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
     };
-    var player = document.createElement('audio');
-    player.src = 'https://dl.dropbox.com/u/7079101/coin.mp3';
-    player.preload = "auto";
+
     var handle_new_message = function($ele){
         // add any proccessing for new messages in here
         var $msg = $ele.find(".body .md");
@@ -434,7 +445,6 @@
         // Highlight mentions
         if(line.indexOf(robin_user) !== -1){
             $ele.addClass("user-mention");
-            player.play();
         }
 
         // /me support
@@ -788,7 +798,7 @@
 
         // Options
         // Colours on or off
-        createOption("Use channel colors", function(checked, ele){
+        createOption("Channel colors", function(checked, ele){
             if(checked){
                 $("#rlc-main").addClass("show-colors");
             }else{
@@ -798,7 +808,7 @@
             _scroll_to_bottom();
         },false);
 
-        createOption("Use dark background", function(checked, ele){
+        createOption("Dark Mode", function(checked, ele){
             if(checked){
                 $("body").addClass("dark-background");
             }else{
@@ -806,7 +816,7 @@
             }
         },false);
 
-        createOption("Allow body scroll", function(checked, ele){
+        createOption("History Mode(Experimental)", function(checked, ele){
             if(checked){
                 $("body").addClass("allowHistoryScroll");
             }else{
@@ -814,7 +824,7 @@
             }
         },false);
 
-        createOption("Simplify timestamps", function(checked, ele){
+        createOption("Simple Timestamps", function(checked, ele){
             if(checked){
                 $("body").addClass("simpleTimestamps");
             }else{
@@ -823,7 +833,7 @@
             _scroll_to_bottom();
         },false);
 
-        createOption("Compact mode", function(checked, ele){
+        createOption("Compact Mode", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-compact");
             }else{
@@ -831,7 +841,7 @@
             }
             _scroll_to_bottom();
         },false);
-
+        /*
         createOption("Active Channel Discovery BETA", function(checked, ele){
             if(checked){
                 startChannels();
@@ -843,17 +853,16 @@
                 console.log("Stopping Channel Discovery Display Update");
             }
             _scroll_to_bottom();
-        },false);
+        },false);*/
 
-        createOption("Custom Scroll Bars", function(checked, ele){
+        createOption("Notification Sound", function(checked, ele){
             if(checked){
-                $("body").addClass("rlc-customscrollbars");
+                $("body").addClass("rlc-notificationsound");
             }else{
-                $("body").removeClass("rlc-customscrollbars");
+                $("body").removeClass("rlc-notificationsound");
             }
             _scroll_to_bottom();
         },false);
-
     });
 
     var color;
