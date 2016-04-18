@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.2.3
+// @version      2.3.0
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -11,6 +11,7 @@
 // @exclude      https://www.reddit.com/live/*/contributors*
 // @exclude      https://*.reddit.com/live/create*
 // @require      http://code.jquery.com/jquery-latest.js
+// @require      http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
@@ -50,19 +51,22 @@
     // Active user array
     var activeUserArray = [];
     var activeUserTimes = [];
-
+    
+    var updateArray = [];
+    
     function processActiveUsersList() { 
         $("#rlc-activeusers ul").empty();
-        var updateArray = [];
+        updateArray = [];
         for(i=0; i <= activeUserArray.length; i++){
               if (updateArray.indexOf(activeUserArray[i]) === -1 && activeUserArray[i] !== undefined) {
                 updateArray.push(activeUserArray[i]);
-                $("#rlc-activeusers ul").append("<li>"+activeUserArray[i] + " @ " + activeUserTimes[i]+"</li>");              
+                $("#rlc-activeusers ul").append("<li>"+activeUserArray[i] + " @ " + activeUserTimes[i]+"</li>"); 
             } else if (updateArray.indexOf(activeUserArray[i]) > -1) {
                 //add message counter value
                 //check if timestamp is recent enough?
             }
-        }           
+        }
+        
     }
 
 
@@ -450,7 +454,8 @@
         updateMostActiveChannels(line);
         
     };
-
+ 
+    
     /*
      START OF ACTIVE CHANNEL DISCOVERY SECTION
      (Transplanted from https://github.com/5a1t/parrot repo to which the section was originally contributed to by LTAcosta )
@@ -692,6 +697,7 @@
             }
         });
 
+        $(".usertext-edit.md-container textarea").attr("tabindex","0");
         var text_area = $(".usertext-edit.md-container textarea");
 
         //right click author names in chat to copy to messagebox
@@ -737,13 +743,20 @@
         });
 
         processActiveUsersList();
-
+        
+        $('.usertext-edit textarea').autocomplete({
+        source: updateArray,
+        autoFocus: true,
+        });
+        
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
+            if (e.keyCode == 9) {e.preventDefault();}
             if (e.keyCode == 13) {
                 if (e.shiftKey) {  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
                 else {
+                    if(text_area.val().indexOf("/settings") === 0 || text_area.val().indexOf("/edit") === 0 ){$(this).val(''); window.location.href = "edit";  }
                     e.preventDefault();
                     $(this).val($(".usertext-edit textarea").val() + ' ');
                     $(".save-button .btn").click();
@@ -1451,5 +1464,20 @@ margin-right: 10px; \
     font-size: 1.2em; \
 } \
 .dark-background pre {    background: transparent;} \
-#rlc-readmebar {display:none;} \
+#rlc-readmebar, .ui-helper-hidden-accessible {display:none;} \
+ul.ui-autocomplete { \
+    position: fixed!important; \
+    bottom: 30px; \
+    border-radius:0px; \
+    left:0px!important; \
+    background:grey; \
+    width:300px!important; \
+    opacity:0.8; \
+    z-index:1000; \
+    top: initial!important; \
+    font-size:1.2em; \
+} \
+ul.ui-autocomplete a {  \
+     color:black!important; \
+} \
 ");
