@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.0.4
+// @version      2.0.5
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -328,7 +328,7 @@
             this.drawTabs();
 
             // start ticker
-            setInterval(this.tick, 1000);
+            setInterval(this.tick, 10000);
         };
     };
     // create persistant option
@@ -1335,5 +1335,16 @@ body > .content { \
     border: 0; \
     padding: 3px 4px 4px 4px; \
     color: white; \
+} \
+a#header-img:after { \
+    content: ' '; \
+    display: block; \
+    background: url('https://i.imgur.com/3t4bSRD.png'); \
+    height: 30px; \
+    width: 30px; \
+    position: relative; \
+    top: -16px; \
+    background-size: cover; \
+    left: 2px; \
 } \
 ");
