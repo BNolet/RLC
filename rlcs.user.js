@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.0.6
+// @version      2.1.0
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -36,7 +36,7 @@
     var messageHistory = [];
     var messageHistoryIndex = -1;
 
-     /**
+    /**
      * Quickly hacked to play nice with rlc
      *
      * Pull tabber out in to semi-stand alone module
@@ -197,7 +197,7 @@
         this.updateChannelMatchCache = function(){
             var order = this.channels.slice(0);
             order.sort(function(a, b){
-              return b.length - a.length; // ASC -> a - b; DESC -> b - a
+                return b.length - a.length; // ASC -> a - b; DESC -> b - a
             });
             for(var i in order){
                 order[i] = this.channels.indexOf(order[i]);
@@ -222,12 +222,12 @@
 
             //replace default timestamps with text
             var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
-            
+
             if ($element.find(".simpletime").length) {
-                
+
             }
             else { 
-            $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+"</div>");                
+                $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+"</div>");                
             }
 
             // Scann for channel identifiers
@@ -366,7 +366,7 @@
     var _scroll_to_bottom = function(){
         if ($(document.body).hasClass("allowHistoryScroll")) {
             return false;
-            }
+        }
         else {
             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
@@ -394,13 +394,13 @@
         }
 
         $usr.before($ele.find("time"));
-        
+
         //remove the /u/
         $usr.text($usr.text().replace("/u/", ""));
 
         // Track channels
         tabbedChannels.proccessLine(line, $ele);
-        
+
         //remove seperator 
         $(".liveupdate-listing .separator").remove();
 
@@ -469,10 +469,10 @@
 
         /* Build the html table for display in #activeChannelsTable div. */
         var html = "<table>\r\n" +
-                   "<thead>\r\n" +
-                   "<tr><th>#</th><th>Channel Name</th><th>Join Channel</th></tr>\r\n" +
-                   "</thead>\r\n" +
-                   "<tbody>\r\n";
+            "<thead>\r\n" +
+            "<tr><th>#</th><th>Channel Name</th><th>Join Channel</th></tr>\r\n" +
+            "</thead>\r\n" +
+            "<tbody>\r\n";
 
         var limit = 50;
         if (channels.length < limit)
@@ -483,8 +483,8 @@
         }
 
         html += "</tbody>\r\n" +
-                "</table>\r\n" +
-                '<br/>';
+            "</table>\r\n" +
+            '<br/>';
 
         $("#activeChannelsTable").html(html);
 
@@ -511,7 +511,7 @@
     }
 
     function stopChannels() {
-    if (channelsInterval){
+        if (channelsInterval){
             clearInterval(channelsInterval);
             channelsInterval = 0;
         }
@@ -539,52 +539,104 @@
     // boot
     $(document).ready(function() {
         $("body").append('  \
-                    <div id="rlc-topmenu"> \
-                         <div id="rlc-settingsbar"> \
-                            <div id="versionnumber" class="noselect">v.' + GM_info.script.version + '</div> \
-                            <div id="rlc-togglesidebar" class="noselect">[Sidebar]</div> \
-                            <div id="rlc-toggleoptions" class="noselect">[Options]</div> \
-                         </div> \
-                    <div id="rlc-settings"></div> \
-                    </div>  \
-                    <div id="rlc-main">   \
-                            <div id="rlc-chat"></div> \
-                            <div id="rlc-messagebox"> </div> \
-                            <div id="rlc-chatsidebartoggle">></div> \
-                    </div> \
-                    <div id="rlc-sidebar"> \
-                    </div> \
-        ');
-
+<div id="rlc-topmenu"> \
+<div id="rlc-settingsbar"> \
+<div id="versionnumber" title="Toggle Reddit Live Chat Readme">v.' + GM_info.script.version + '</div> \
+<div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">[Sidebar]</div> \
+<div id="rlc-toggleoptions" title="Toggle Options" class="noselect">[Options]</div> \
+</div> \
+<div id="rlc-settings"></div> \
+</div>  \
+<div id="rlc-main">   \
+<div id="rlc-chat"></div> \
+<div id="rlc-messagebox"> </div> \
+<div id="rlc-chatsidebartoggle">></div> \
+</div> \
+<div id="rlc-sidebar"> \
+</div> \
+<div id="rlc-readmebar"> \
+<div class="md"> \
+    <strong style="font-size:1.2em">RLC Readme</strong><br> \
+    <small>click version number restore sidebar</small> \
+    <p> \
+    <strong>Primary devs: <br> \
+    <a target="_blank" href="/u/Stjerneklar" rel="nofollow">/u/Stjerneklar</a>  \
+    and <a target="_blank" href="/u/FatherDerp" rel="nofollow">/u/FatherDerp</a> \
+    </strong> \
+    </p> \
+ \
+    <p>Full credits available in Github commit log</p> \
+ \
+    <hr> \
+ \
+    <p>Check the sidebar for invite info, which is required to post</p> \
+ \
+    <hr> \
+ \
+    <h4><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update RLC to latest version</a></h4> \
+ \
+    <hr> \
+ \
+    <h3><a target="_blank" href="https://github.com/BNolet/RLC/" rel="nofollow">RLC Github: Project home, Issue tracking, Readme</a></h3> \
+ \
+    <hr> \
+ \
+    <h3><a target="_blank" href="https://www.reddit.com/r/fukbird/" rel="nofollow">RLC subreddit</a></h3> \
+ \
+    <hr> \
+ \
+    <p><strong>Feature highlights:</strong></p> \
+ \
+    <ul> \
+        <li>Chat room layout &amp; message flow</li> \
+        <li>Send message with <strong>Enter</strong> key</li> \
+        <li>Press <strong>Up</strong> for message history</li> \
+        <li><strong>Right click</strong> names to copy to textbox</li> \
+        <li>Channels(including tabs, creation, deletion, single/multi views)</li> \
+        <li>Much more (mentions, markdown, /me, embeds turned to links)</li> \
+    </ul> \
+ \
+    <hr> \
+ \
+    <p><strong>Known issues:</strong></p> \
+ \
+    <ul> \
+        <li>Developed in Chrome, sometimes tested on firefox(please report problems with screenshots)</li> \
+        <li>Post history loading is experimental and not implemented in a very user friendly way, but does work.</li> \
+    </ul> \
+</div> \
+</div> \
+');
         $('.liveupdate-listing').appendTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
-        
+
         $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
         $(".usertext-edit textarea").focus();
-        
+
         $('#liveupdate-header').appendTo('#rlc-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
-        
+
         $("#rlc-main iframe").remove();
         $("#rlc-main a").attr("target","_blank");
         $("#rlc-sidebar a").attr("target","_blank");
-        
+        $("#rlc-readmebar a").attr("target","_blank");
+
         $("<div id='channelsTable'> \
-            <div>Most Active Channels</div><br/> \
-            <div id='activeChannelsTable'></div><br/> \
-         </div>").appendTo("#rlc-sidebar"); // Active Channel Discovery Table
+<div>Most Active Channels</div><br/> \
+<div id='activeChannelsTable'></div><br/> \
+</div>").appendTo("#rlc-sidebar"); // Active Channel Discovery Table
 
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertAfter("#rlc-settingsbar"));
-        
-        
+
+
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-                   handle_new_message($(item));
+            handle_new_message($(item));
         });
 
         _scroll_to_bottom();
-        
+
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
             if ($(e.target).is('li.liveupdate')) {
@@ -630,6 +682,10 @@
             $("body").toggleClass("rlc-showoptions");
         });
 
+        $("#versionnumber").click(function(){
+            $("body").toggleClass("rlc-showreadmebar");
+        });
+
         $("#rlc-sendmessage").click(function(){
             $(".save-button .btn").click();
         });
@@ -640,9 +696,9 @@
                 if (e.shiftKey) {  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
                 else {
-                e.preventDefault();
-                  $(this).val($(".usertext-edit textarea").val() + ' ');
-                  $(".save-button .btn").click();
+                    e.preventDefault();
+                    $(this).val($(".usertext-edit textarea").val() + ' ');
+                    $(".save-button .btn").click();
                 }
             }
             else if(e.keyCode == 38) {
@@ -676,60 +732,60 @@
         },false);
 
         createOption("Use dark background", function(checked, ele){
-                if(checked){
-                    $("body").addClass("dark-background");
-                }else{
-                    $("body").removeClass("dark-background");
-                }
-            },false);
+            if(checked){
+                $("body").addClass("dark-background");
+            }else{
+                $("body").removeClass("dark-background");
+            }
+        },false);
 
         createOption("Allow body scroll", function(checked, ele){
-                if(checked){
-                    $("body").addClass("allowHistoryScroll");
-                }else{
-                    $("body").removeClass("allowHistoryScroll");
-                }
-            },false);
+            if(checked){
+                $("body").addClass("allowHistoryScroll");
+            }else{
+                $("body").removeClass("allowHistoryScroll");
+            }
+        },false);
 
         createOption("Simplify timestamps", function(checked, ele){
-                if(checked){
-                    $("body").addClass("simpleTimestamps");
-                }else{
-                    $("body").removeClass("simpleTimestamps");
-                }
-               _scroll_to_bottom();
-            },false);
+            if(checked){
+                $("body").addClass("simpleTimestamps");
+            }else{
+                $("body").removeClass("simpleTimestamps");
+            }
+            _scroll_to_bottom();
+        },false);
 
         createOption("Compact mode", function(checked, ele){
-                if(checked){
-                    $("body").addClass("rlc-compact");
-                }else{
-                    $("body").removeClass("rlc-compact");
-                }
-               _scroll_to_bottom();
-            },false);
+            if(checked){
+                $("body").addClass("rlc-compact");
+            }else{
+                $("body").removeClass("rlc-compact");
+            }
+            _scroll_to_bottom();
+        },false);
 
         createOption("Active Channel Discovery BETA", function(checked, ele){
-               if(checked){
-                   startChannels();
-                   $("#channelsTable").show();
-                   console.log("Starting Channel Discovery Display Update");
-               }else{
-                   stopChannels();
-                   $("#channelsTable").hide();
-                   console.log("Stopping Channel Discovery Display Update");
-               }
-              _scroll_to_bottom();
-           },false);
-           
-           createOption("Custom Scroll Bars", function(checked, ele){
-               if(checked){
-                    $("body").addClass("rlc-customscrollbars");
-                }else{
-                    $("body").removeClass("rlc-customscrollbars");
-                }
-               _scroll_to_bottom();
-           },false);
+            if(checked){
+                startChannels();
+                $("#channelsTable").show();
+                console.log("Starting Channel Discovery Display Update");
+            }else{
+                stopChannels();
+                $("#channelsTable").hide();
+                console.log("Stopping Channel Discovery Display Update");
+            }
+            _scroll_to_bottom();
+        },false);
+
+        createOption("Custom Scroll Bars", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-customscrollbars");
+            }else{
+                $("body").removeClass("rlc-customscrollbars");
+            }
+            _scroll_to_bottom();
+        },false);
 
     });
 
@@ -744,607 +800,602 @@
 
 GM_addStyle("/*-------------------------------- Custom Containers ------------------------------------- */ \
 body { \
-    min-width: 0; \
+min-width: 0; \
 } \
- \
+\
 #rlc-main { \
-    width: 80%; \
-    height: 100%; \
-    box-sizing: border-box; \
-    float: left; \
+width: 80%; \
+height: 100%; \
+box-sizing: border-box; \
+float: left; \
 } \
- \
-#rlc-sidebar { \
-    width: 20%; \
-    float: right; \
-    height: calc(100vh - 87px); \
-    box-sizing: border-box; \
-    overflow-y: auto; \
-    overflow-x: hidden; \
+\
+#rlc-sidebar, #rlc-readmebar { \
+width: 20%; \
+float: right; \
+height: calc(100vh - 87px); \
+box-sizing: border-box; \
+overflow-y: auto; \
+overflow-x: hidden; \
 } \
- \
+\
 #rlc-topmenu { \
-    width: 100%; \
-    box-sizing: border-box; \
-    border-bottom: 1px solid grey; \
-    position: relative; \
+width: 100%; \
+box-sizing: border-box; \
+border-bottom: 1px solid grey; \
+position: relative; \
 } \
- \
+\
 /*  /*------------------------------------ Main Chat -----------------------------------------------------*/ \
 #rlc-chat.rlc-filter li.liveupdate { \
-    display: none; \
+display: none; \
 } \
- \
+\
 /*chat window*/ \
 #rlc-main iframe { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 #rlc-main .liveupdate-listing { \
-    max-width: 100%; \
-    padding: 0px; \
-    box-sizing: border-box; \
-    display: flex; \
-    flex-direction: column-reverse; \
-    min-height: 100%; \
+max-width: 100%; \
+padding: 0px; \
+box-sizing: border-box; \
+display: flex; \
+flex-direction: column-reverse; \
+min-height: 100%; \
 } \
- \
+\
 div#rlc-chat { \
-    overflow-y: auto; \
-    height: calc(100vh - 131px); \
+overflow-y: auto; \
+height: calc(100vh - 131px); \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate .body a { \
-    font-size: 12px; \
-    padding-top: 1px; \
+font-size: 12px; \
+padding-top: 1px; \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate .body { \
-    max-width: none; \
-    margin-bottom: 0; \
-    padding: 0px; \
-    font-size: 12px; \
-    overflow: visible; \
-    display: block; \
-    box-sizing: border-box; \
+max-width: none; \
+margin-bottom: 0; \
+padding: 0px; \
+font-size: 12px; \
+overflow: visible; \
+display: block; \
+box-sizing: border-box; \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate { \
-    height: auto!important; \
-    overflow: visible!important; \
-    padding: 4px; \
+height: auto!important; \
+overflow: visible!important; \
+padding: 4px; \
 } \
- \
+\
 #rlc-main .liveupdate-listing a.author { \
-    width: 180px; \
-    display: block; \
-    float: left; \
+width: 180px; \
+display: block; \
+float: left; \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
-    float: right; \
-    width: calc(100% - 340px); \
-    max-width: none; \
+float: right; \
+width: calc(100% - 340px); \
+max-width: none; \
 } \
- \
+\
 #rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
-    font-weight: bold; \
+font-weight: bold; \
 } \
- \
+\
 /* narration */ \
 #rlc-main #rlc-chat li.liveupdate.user-narration > a { \
-    display: none; \
+display: none; \
 } \
- \
+\
 #rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
-    display: none; \
+display: none; \
 } \
- \
+\
 #rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
-    font-style: italic; \
+font-style: italic; \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate:nth-child(odd) { \
-    background: rgba(128,128,128,0.2); \
+background: rgba(128,128,128,0.2); \
 } \
- \
+\
 /* channel name */ \
 .channelname { \
-    color: grey!important; \
-    width: 90px; \
-    display: block; \
-    float: left; \
+color: grey!important; \
+width: 90px; \
+display: block; \
+float: left; \
 } \
- \
+\
 span.channelnamecolor { \
 } \
- \
+\
 .rlc-filter .channelname { \
-    display: none; \
+display: none; \
 } \
- \
+\
 /* message input and send button */ \
 div#rlc-messagebox { \
-    position: relative; \
+position: relative; \
 } \
- \
+\
 #new-update-form .usertext { \
-    max-width: 85%; \
-    float: left; \
-    width: 85%; \
+max-width: 85%; \
+float: left; \
+width: 85%; \
 } \
- \
+\
 .usertext-edit .md { \
-    min-width: 100%!important; \
+min-width: 100%!important; \
 } \
- \
+\
 div#new-update-form textarea { \
-    height: 45px; \
-    overflow: auto; \
-    resize: none; \
+height: 45px; \
+overflow: auto; \
+resize: none; \
 } \
- \
+\
 div#new-update-form { \
-    width: 100%; \
-    margin: 0; \
+width: 100%; \
+margin: 0; \
 } \
- \
+\
 .usertext-edit.md-container { \
-    max-width: 100%; \
-    margin: 0; \
+max-width: 100%; \
+margin: 0; \
 } \
- \
+\
 .usertext-edit.md-container { \
-    position: relative; \
+position: relative; \
 } \
- \
+\
 #new-update-form .bottom-area { \
-    position: absolute; \
-    top: 4px; \
-    right: 15px; \
-    left: 15px; \
-    text-align: center; \
-    letter-spacing: 1px; \
+position: absolute; \
+top: 4px; \
+right: 15px; \
+left: 15px; \
+text-align: center; \
+letter-spacing: 1px; \
 } \
- \
+\
 #new-update-form .save-button .btn { \
-    width: 100%; \
-    text-transform: capitalize; \
+width: 100%; \
+text-transform: capitalize; \
 } \
- \
+\
 div#rlc-sendmessage { \
-    width: 15%; \
-    height: 45px; \
-    text-align: center; \
-    float: right; \
-    display: inline-block; \
-    padding-top: 15px; \
-    box-sizing: border-box; \
-    margin-top: 0px; \
-    font-size: 1.3em; \
-    cursor: pointer; \
-    border: 1px solid #A9A9A9; \
-    ; border-left: 0; \
+width: 15%; \
+height: 45px; \
+text-align: center; \
+float: right; \
+display: inline-block; \
+padding-top: 15px; \
+box-sizing: border-box; \
+margin-top: 0px; \
+font-size: 1.3em; \
+cursor: pointer; \
+border: 1px solid #A9A9A9; \
+; border-left: 0; \
 } \
- \
+\
 .res-nightmode div#rlc-sendmessage { \
-    border: 1px solid #4C4C4C; \
+border: 1px solid #4C4C4C; \
 } \
- \
+\
 .res-nightmode .channelname, .res-nightmode #rlc-main .liveupdate-listing a.author { \
-    color: #ccc; \
+color: #ccc; \
 } \
- \
+\
 .save-button { \
-    display: none; \
+display: none; \
 } \
- \
+\
 div#rlc-main:after { \
-    content: 'If you can see this you need an invite to send messages, check the sidebar.'; \
-    width: 100%; \
-    text-align: center; \
-    display: block; \
-    margin-top: 10px; \
+content: 'If you can see this you need an invite to send messages, check the sidebar.'; \
+width: 100%; \
+text-align: center; \
+display: block; \
+margin-top: 10px; \
 } \
- \
+\
 /*filter tabs*/ \
 #filter_tabs { \
-    width: 80%; \
-    display: table; \
-    table-layout: fixed; \
+width: 80%; \
+display: table; \
+table-layout: fixed; \
 } \
- \
+\
 #filter_tabs > span { \
-    width: 90%; \
-    display: table-cell; \
+width: 90%; \
+display: table-cell; \
 } \
- \
+\
 #filter_tabs > span.all, #filter_tabs > span.more { \
-    width: 60px; \
-    text-align: center; \
-    vertical-align: middle; \
-    cursor: pointer; \
+width: 60px; \
+text-align: center; \
+vertical-align: middle; \
+cursor: pointer; \
 } \
- \
+\
 #filter_tabs .rlc-filters { \
-    display: table; \
-    width: 100%; \
-    table-layout: fixed; \
+display: table; \
+width: 100%; \
+table-layout: fixed; \
 } \
- \
+\
 #filter_tabs .rlc-filters > span { \
-    padding: 5px 2px; \
-    text-align: center; \
-    display: table-cell; \
-    cursor: pointer; \
-    width: 2%; \
-    vertical-align: middle; \
-    font-size: 1.1em; \
+padding: 5px 2px; \
+text-align: center; \
+display: table-cell; \
+cursor: pointer; \
+width: 2%; \
+vertical-align: middle; \
+font-size: 1.1em; \
 } \
- \
+\
 #filter_tabs .rlc-filters > span > span { \
-    pointer-events: none; \
+pointer-events: none; \
 } \
- \
+\
 #filter_tabs > span.all { \
-    padding: 0px 30px; \
+padding: 0px 30px; \
 } \
- \
+\
 #filter_tabs > span.more { \
-    padding: 0px 30px 0px 30px; \
+padding: 0px 30px 0px 30px; \
 } \
- \
+\
 /* add channels interface */ \
 .rlc-channel-add input { \
-    padding: 2.5px; \
+padding: 2.5px; \
 } \
- \
+\
 .rlc-channel-add .channel-mode { \
-    float: right; \
-    font-size: 1.2em; \
-    padding: 5px; \
+float: right; \
+font-size: 1.2em; \
+padding: 5px; \
 } \
- \
+\
 .rlc-channel-add .channel-mode span { \
-    cursor: pointer \
+cursor: pointer \
 } \
- \
+\
 .rlc-channel-add { \
-    padding: 5px; \
-    display: none; \
-    position: absolute; \
-    top: 24px; \
-    background: #FCFCFC; \
-    left: 0px; \
-    right: 20%; \
+padding: 5px; \
+display: none; \
+position: absolute; \
+top: 24px; \
+background: #FCFCFC; \
+left: 0px; \
+right: 20%; \
 } \
- \
-#rlc-chatsidebartoggle { \
-    display: none; \
-    height: 24px; \
-    width: 17px; \
-    position: absolute; \
-    top: 0; \
-    right: 0; \
-    box-sizing: border-box; \
-    padding: 5px; \
-    cursor: pointer; \
-} \
- \
-#rlc-chatsidebartoggle:hover { \
-    background: grey; \
-} \
- \
-.rlc-hidesidebar #rlc-chatsidebartoggle { \
-    display: block; \
-} \
- \
+\
 #rlc-main time.live-timestamp { \
-    text-indent: 0; \
-    width: 100px; \
-    margin: 0; \
-    padding-top: 2px; \
-    padding-bottom: 0; \
-    color: inherit; \
+text-indent: 0; \
+width: 100px; \
+margin: 0; \
+padding-top: 2px; \
+padding-bottom: 0; \
+color: inherit; \
 } \
- \
+\
 .liveupdate-listing li.liveupdate a.author { \
-    color: initial; \
+color: initial; \
 } \
- \
+\
 /*------------------------------------ Sidebar -----------------------------------------------------*/ \
 aside.sidebar.side.md-container { \
-    width: 100%; \
-    opacity: 1; \
-    margin: 0; \
-    padding: 0px 10px; \
-    box-sizing: border-box; \
+width: 100%; \
+opacity: 1; \
+margin: 0; \
+padding: 0px 10px; \
+box-sizing: border-box; \
 } \
- \
+\
 #liveupdate-header { \
-    width: 100%; \
-    margin: 0!important; \
-    padding: 0!important; \
-    text-align: center; \
-    max-width: none; \
-    overflow: hidden; \
+width: 100%; \
+margin: 0!important; \
+padding: 0!important; \
+text-align: center; \
+max-width: none; \
+overflow: hidden; \
 } \
- \
+\
 #discussions { \
-    display: none; \
+display: none; \
 } \
- \
+\
 .reddiquette { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 #contributors { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 #liveupdate-resources > h2 { \
-    display: none; \
+display: none; \
 } \
- \
+\
 /*togglesidebar*/ \
 .rlc-hidesidebar #rlc-sidebar { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 /*hide sidebar toggle class*/ \
 .rlc-hidesidebar #rlc-main { \
-    width: 100%!important; \
+width: 100%!important; \
 } \
- \
+\
 #rlc-togglesidebar { \
-    display: table-cell; \
-    cursor: pointer; \
+display: table-cell; \
+cursor: pointer; \
 } \
- \
+\
 div#versionnumber { \
-    display: table-cell; \
+display: table-cell; \
+cursor: help; \
 } \
- \
+\
 /*settings*/ \
 #rlc-settings { \
-    right: 0; \
-    height: auto; \
-    z-index: 100; \
-    /* padding: 6px; */ \
-    width: 100%; \
-    box-sizing: border-box; \
+right: 0; \
+height: auto; \
+z-index: 100; \
+/* padding: 6px; */ \
+width: 100%; \
+box-sizing: border-box; \
 } \
- \
+\
 .res-nightmode #rlc-settings { \
 } \
- \
+\
 #rlc-settings label { \
-    padding: 6px; \
-    box-sizing: border-box; \
-    cursor: pointer; \
-    display: table-cell; \
-    text-align: center; \
-    border-right: 1px solid grey; \
+padding: 6px; \
+box-sizing: border-box; \
+cursor: pointer; \
+display: table-cell; \
+text-align: center; \
+border-right: 1px solid grey; \
 } \
- \
+\
 #rlc-settings label:last-of-type { \
-    border-right: 0px; \
+border-right: 0px; \
 } \
- \
+\
 #rlc-settings label input { \
-    vertical-align: sub; \
-    margin-right: 1px; \
+vertical-align: sub; \
+margin-right: 1px; \
 } \
- \
+\
 body:not(.res) div#header-bottom-right { \
-    bottom: initial; \
-    top: 21px; \
-    border-radius: 7px; \
-    right: 1px; \
+bottom: initial; \
+top: 21px; \
+border-radius: 7px; \
+right: 1px; \
 } \
- \
+\
 .rlc-showoptions #rlc-settings { \
-    display: table; \
-    table-layout: fixed; \
-    border: 1px solid grey; \
-    position: absolute; \
-    background: #FFFFFF; \
+display: table; \
+table-layout: fixed; \
+border: 1px solid grey; \
+position: absolute; \
+background: #FFFFFF; \
 } \
- \
+\
 #rlc-settings { \
-    display: none; \
+display: none; \
 } \
- \
+\
 #rlc-settingsbar { \
-    width: 20%; \
-    height: 24px; \
-    box-sizing: border-box; \
-    float: right; \
-    display: table; \
-    table-layout: fixed; \
+width: 20%; \
+height: 24px; \
+box-sizing: border-box; \
+float: right; \
+display: table; \
+table-layout: fixed; \
 } \
- \
+\
 div#rlc-toggleoptions { \
-    display: table-cell; \
-    cursor: pointer; \
+display: table-cell; \
+cursor: pointer; \
 } \
- \
+\
 #hsts_pixel, .debuginfo { \
-    display: none; \
+display: none; \
 } \
- \
+\
 div#rlc-settingsbar div { \
-    padding-top: 6px; \
-    text-align: center; \
+padding-top: 6px; \
+text-align: center; \
 } \
 ");
 
-      GM_addStyle("/* ------------------------------------ meta -----------------------------------------------------*/ \
+GM_addStyle("/* ------------------------------------ meta -----------------------------------------------------*/ \
 /* class to prevent selection for divs acting as buttons */ \
 .noselect { \
-    -webkit-touch-callout: none; \
-    /* iOS Safari */ \
-    -webkit-user-select: none; \
-    /* Chrome/Safari/Opera */ \
-    -khtml-user-select: none; \
-    /* Konqueror */ \
-    -moz-user-select: none; \
-    /* Firefox */ \
-    -ms-user-select: none; \
-    /* IE/Edge */ \
+-webkit-touch-callout: none; \
+/* iOS Safari */ \
+-webkit-user-select: none; \
+/* Chrome/Safari/Opera */ \
+-khtml-user-select: none; \
+/* Konqueror */ \
+-moz-user-select: none; \
+/* Firefox */ \
+-ms-user-select: none; \
+/* IE/Edge */ \
 } \
- \
+\
 /* dark background */ \
 .dark-background { \
-    background: #404040; \
-    color: white; \
+background: #404040; \
+color: white; \
 } \
- \
+\
 .dark-background textarea, .dark-background #rlc-main .liveupdate-listing a.author { \
-    background: transparent; \
-    color: white; \
+background: transparent; \
+color: white; \
 } \
- \
+\
 .dark-background .side { \
-    background: transparent; \
+background: transparent; \
 } \
- \
+\
 /* misc fixes */ \
 /*prevent body scroll to avoid loading history*/ \
 body { \
-    overflow: hidden; \
+overflow: hidden; \
 } \
- \
+\
 .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time { \
-    display: none; \
+display: none; \
 } \
- \
+\
 .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate .simpletime { \
-    display: block; \
-    float: left; \
-    width: 60px; \
-    padding-left: 20px; \
-    padding-top: 2px; \
+display: block; \
+float: left; \
+width: 60px; \
+padding-left: 20px; \
+padding-top: 2px; \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate .simpletime { \
-    display: none; \
+display: none; \
 } \
- \
+\
 /* option classes */ \
 .allowHistoryScroll { \
-    height: 102%; \
-    overflow-y: scroll; \
+height: 102%; \
+overflow-y: scroll; \
 } \
- \
+\
 /* hard removal */ \
 body > .content { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 .footer-parent { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 #liveupdate-options { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 #rlc-main .liveupdate-listing .separator { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 #rlc-main .liveupdate-listing li.liveupdate time:before { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 .help-toggle { \
-    display: none!important; \
+display: none!important; \
 } \
- \
+\
 .rlc-compact div#header { \
+display: none; \
+} \
+\
+.rlc-compact div#rlc-main { \
+top: 0; \
+} \
+\
+.rlc-compact div#rlc-sidebar,.rlc-compact #rlc-readmebar { \
+top: 0px; \
+height: calc(100vh - 24px); \
+padding-top: 0; \
+} \
+\
+.rlc-compact div#new-update-form textarea { \
+height: 26px; \
+} \
+\
+.rlc-compact div#rlc-sendmessage { \
+height: 26px; \
+padding-top: 4px; \
+} \
+\
+.rlc-compact div#rlc-chat { \
+height: calc(100vh - 49px); \
+} \
+\
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, \
+.dark-background .md blockquote p { \
+color: white!important; \
+} \
+\
+.dark-background div#header-bottom-left { \
+background: grey; \
+} \
+\
+.dark-background .liveupdate-listing li.liveupdate .body div.md { \
+color: white; \
+} \
+\
+/* Let's get this party started */ \
+.rlc-customscrollbars ::-webkit-scrollbar { \
+width: 10px; \
+} \
+\
+/* Track */ \
+.rlc-customscrollbars ::-webkit-scrollbar-track { \
+background-color: #262626; \
+} \
+\
+/* Handle */ \
+.rlc-customscrollbars ::-webkit-scrollbar-thumb { \
+background-color: #4C4C4C; \
+border: 1px solid #262626; \
+} \
+\
+.dark-background div#rlc-settings { \
+background: #404040; \
+} \
+\
+.dark-background .rlc-channel-add { \
+background: grey; \
+} \
+\
+.dark-background .rlc-channel-add input { \
+background: #404040; \
+border: 0; \
+padding: 3px 4px 4px 4px; \
+color: white; \
+} \
+#liveupdate-statusbar.live .state:before { \
+background: url('https://i.imgur.com/3t4bSRD.png'); \
+background-size: cover; \
+border-radius: 2px; \
+height: 1.35em; \
+width: 1.35em; \
+margin-top: -1px; \
+margin-bottom: -4px; \
+margin-right: 10px; \
+} \
+.rlc-showreadmebar #rlc-sidebar { \
     display: none; \
 } \
  \
-.rlc-compact div#rlc-main { \
-    top: 0; \
-} \
- \
-.rlc-compact div#rlc-sidebar { \
-    top: 0px; \
-    height: calc(100vh - 24px); \
-    padding-top: 0; \
-} \
- \
-.rlc-compact div#new-update-form textarea { \
-    height: 26px; \
-} \
- \
-.rlc-compact div#rlc-sendmessage { \
-    height: 26px; \
-    padding-top: 4px; \
-} \
- \
-.rlc-compact div#rlc-chat { \
-    height: calc(100vh - 49px); \
-} \
- \
-.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, \
-.dark-background .md blockquote p { \
-    color: white!important; \
-} \
- \
-.dark-background div#header-bottom-left { \
-    background: grey; \
-} \
- \
-.dark-background .liveupdate-listing li.liveupdate .body div.md { \
-    color: white; \
-} \
- \
-/* Let's get this party started */ \
-.rlc-customscrollbars ::-webkit-scrollbar { \
-    width: 10px; \
-} \
- \
-/* Track */ \
-.rlc-customscrollbars ::-webkit-scrollbar-track { \
-    background-color: #262626; \
-} \
- \
-/* Handle */ \
-.rlc-customscrollbars ::-webkit-scrollbar-thumb { \
-    background-color: #4C4C4C; \
-    border: 1px solid #262626; \
-} \
- \
-.dark-background div#rlc-settings { \
-    background: #404040; \
-} \
- \
-.dark-background .rlc-channel-add { \
-    background: grey; \
-} \
- \
-.dark-background .rlc-channel-add input { \
-    background: #404040; \
-    border: 0; \
-    padding: 3px 4px 4px 4px; \
-    color: white; \
-} \
-a#header-img:after { \
-    content: ' '; \
+.rlc-showreadmebar #rlc-readmebar { \
     display: block; \
-    background: url('https://i.imgur.com/3t4bSRD.png'); \
-    height: 30px; \
-    width: 30px; \
-    position: relative; \
-    top: -16px; \
-    background-size: cover; \
-    left: 2px; \
 } \
+.rlc-showreadmebar #rlc-readmebar { \
+    display: block; \
+    padding: 10px; \
+    box-sizing: border-box; \
+    font-size:1.18em; \
+} \
+ \
+.dark-background.rlc-showreadmebar #rlc-readmebar .md {color:white;} \
 ");
