@@ -32,9 +32,40 @@
         'rgba(184,134,11, .1)',
     ];
 
+    function convertTo24Hour(time) {
+        var hours = parseInt(time.substr(0, 2));
+        if(time.indexOf('am') != -1 && hours == 12) {
+            time = time.replace('12', '0');
+        }
+        if(time.indexOf('pm')  != -1 && hours < 12) {
+            time = time.replace(hours, (hours + 12));
+        }
+        return time.replace(/(am|pm)/, '');
+    }  
+
     // msg history
     var messageHistory = [];
     var messageHistoryIndex = -1;
+    
+    // Active user array
+    var activeUserArray = [];
+    var activeUserTimes = [];
+
+    function processActiveUsersList() { 
+        $("#rlc-activeusers ul").empty();
+        var updateArray = [];
+        for(i=0; i <= activeUserArray.length; i++){
+              if (updateArray.indexOf(activeUserArray[i]) === -1 && activeUserArray[i] !== undefined) {
+                updateArray.push(activeUserArray[i])
+                $("#rlc-activeusers ul").append("<li>"+activeUserArray[i] + " @ " + activeUserTimes[i]+"</li>");              
+            } else if (updateArray.indexOf(activeUserArray[i]) > -1) {
+                //add message counter value
+                //check if timestamp is recent enough?
+            }
+        }           
+    }
+
+
 
     /**
      * Quickly hacked to play nice with rlc
@@ -210,6 +241,8 @@
         // Procces each chat line to create text
         this.proccessLine = function(text, $element, rescan){
             var i, idx, channel;
+            var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
+            var militarytime = convertTo24Hour(shorttime[3] + " " + shorttime[4].toLowerCase());
 
             // If rescanning, clear any existing "channel" classes
             if(typeof rescan !== 'undefined' && rescan === true){
@@ -219,15 +252,14 @@
                     $element.removeClass("rlc-filter-" + i);
                 }
             }
-
-            //replace default timestamps with text
-            var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
-
-            if ($element.find(".simpletime").length) {
-
-            }
+            // if we are handling new messages
             else { 
-                $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+"</div>");                
+                //add info to activeuserarray
+                activeUserArray.push($element.find(".body .author").text());
+                activeUserTimes.push(militarytime);
+            
+                //add simplified timestamps 
+                $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " " +shorttime[4].toLowerCase()+"</div>");
             }
 
             // Scann for channel identifiers
@@ -238,7 +270,7 @@
                 if(typeof channel === 'undefined') continue;
 
                 if(text.indexOf(channel) === 0){
-                    $element.find(".body").append("<a class='channelname'>&nbsp;in"+channel+"</a>");
+                    $element.find(".body").append("<a class='channelname'>&nbsp;in&nbsp;"+channel+"</a>");
                     $element.addClass("rlc-filter-" + idx +" in-channel");
                     this.unread_counts[idx]++;
 
@@ -272,6 +304,8 @@
                 if($(this).hasClass("selected")) return;
                 $(this).find("span").text(_self.unread_counts[$(this).data("filter")]);
             });
+            //update the active user list
+            processActiveUsersList();
         };
 
         // Init tab zone
@@ -406,8 +440,7 @@
 
         // Active Channels Monitoring
         updateMostActiveChannels(line);
-
-
+        
     };
 
     /*
@@ -560,8 +593,8 @@
     <small>click version number restore sidebar</small> \
     <p> \
     <strong>Primary devs: <br> \
-    <a target="_blank" href="/u/Stjerneklar" rel="nofollow">/u/Stjerneklar</a>  \
-    and <a target="_blank" href="/u/FatherDerp" rel="nofollow">/u/FatherDerp</a> \
+    <a target="_blank" href="/u/Stjerneklar" rel="nofollow">/u/Stjerneklar</a>&nbsp;(EU)  \
+    <br> <a target="_blank" href="/u/FatherDerp" rel="nofollow">/u/FatherDerp</a>&nbsp;(NA) \
     </strong> \
     </p> \
  \
@@ -629,6 +662,7 @@
 
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertAfter("#rlc-settingsbar"));
 
+        $("#rlc-sidebar").append("<div id='rlc-activeusers'><strong>Recent User Activity</strong><br><ul></ul></div>");
 
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
@@ -689,6 +723,8 @@
         $("#rlc-sendmessage").click(function(){
             $(".save-button .btn").click();
         });
+
+        processActiveUsersList();
 
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
@@ -1398,4 +1434,14 @@ margin-right: 10px; \
 } \
  \
 .dark-background.rlc-showreadmebar #rlc-readmebar .md {color:white;} \
+#rlc-activeusers {  \
+    display: inline-block; \
+    width: 100%; \
+    padding: 10px; \
+    font-size: 1.2em; \
+} \
+#rlc-activeusers li {  \
+    width: 100%; \
+    font-size: 1.2em; \
+} \
 ");
