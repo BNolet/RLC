@@ -418,7 +418,9 @@
             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
     };
-
+    var player = document.createElement('audio');
+    player.src = 'https://dl.dropbox.com/u/7079101/coin.mp3';
+    player.preload = "auto";
     var handle_new_message = function($ele){
         // add any proccessing for new messages in here
         var $msg = $ele.find(".body .md");
@@ -432,6 +434,7 @@
         // Highlight mentions
         if(line.indexOf(robin_user) !== -1){
             $ele.addClass("user-mention");
+            player.play();
         }
 
         // /me support
