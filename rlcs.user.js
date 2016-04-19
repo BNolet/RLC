@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.5.3
+// @version      2.5.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -718,6 +718,8 @@
         $('.usertext-edit textarea').autocomplete({
             source: updateArray,
             autoFocus: true,
+            delay: 0,
+            minLength: 2
         });
         
         processActiveUsersList();
