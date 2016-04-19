@@ -195,28 +195,15 @@
         }
 
         // emote support
+        var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly",":|":"smile",":o":"shocked"};
         if (!$("body").hasClass("rlc-noemotes")) {
-            if(line.indexOf(":)") !== -1){
-                first_line.html(first_line.html().replace(":)", "<span class='mrPumpkin mp_smile'></span>")); 
-            }
-            if(line.indexOf(":(") !== -1){
-                if(line.indexOf(":((") !== -1){
-                    first_line.html(first_line.html().replace(":((", "<span class='mrPumpkin mp_angry'></span>")); 
+            $.each(emojiList,function(emoji,replace){
+                if(line.indexOf(emoji) != -1){
+                   first_line.html(first_line.html().replace(emoji, "<span class='mrPumpkin mp_"+replace+"'></span>")); 
                 }
-                else { 
-                    first_line.html(first_line.html().replace(":(", "<span class='mrPumpkin mp_frown'></span>")); 
-                }
-            }
-            if(line.indexOf(":s") !== -1){
-                first_line.html(first_line.html().replace(":s", "<span class='mrPumpkin mp_silly'></span>")); 
-            }
-            if(line.indexOf(":|") !== -1){
-                first_line.html(first_line.html().replace(":|", "<span class='mrPumpkin mp_meh'></span>")); 
-            }
-            if(line.indexOf(":o") !== -1){
-                first_line.html(first_line.html().replace(":o", "<span class='mrPumpkin mp_shocked'></span>")); 
-            }
+            });
         }
+            
         // insert time
         $usr.before($ele.find("time"));
 
