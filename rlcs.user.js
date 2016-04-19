@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.5.1
+// @version      2.6.6
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -1441,26 +1441,24 @@ body { \
 } \
  \
 .mp_frown { \
-    background-position-x: -24px; \
+    background-position: -24px 0; \
 } \
  \
 .mp_silly { \
-    background-position-x: -48px; \
+    background-position: -48px 0; \
 } \
  \
 .mp_meh { \
-    background-position-y: -24px; \
+    background-position: 0 -24px; \
 } \
  \
 .mp_angry { \
-    background-position-x: -48px; \
-    background-position-y: -24px; \
+    background-position: -48px -24px; \
 } \
  \
 .mp_shocked { \
-    background-position-x: -24px; \
-    background-position-y: -24px; \
-} \
+    background-position: -24px -24px; \
+    } \
  \
 /* narration */ \
 #rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
