@@ -1,16 +1,10 @@
-# FukBird
+# RLC - Reddit Live Chat 
 
-Its not a robin, its not a parrot, its not a bird at all.
-where my fukbirds at?
-
-Formerly RLCS (Reddit Live Chat Simplifier)
+Formerly FukBird (Formerly RLCS (Reddit Live Chat Simplifier))
 
 This is a script made for the reddit "live" feature. It makes chatting a little simpler. 
 
-![Screenshot - Day](http://i.imgur.com/p0QvJUA.jpg)
-![Screenshot - Night](http://i.imgur.com/dTO7Pli.jpg)
-
-
+![Screenshot](http://imgur.com/ZmI5AWx)
 
 To use this script, install tampermonkey which can be found [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en) and then clicking the link for the script.
 
