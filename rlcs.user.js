@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.4.1
+// @version      2.4.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -880,6 +880,16 @@
 		        Notification.requestPermission();
 	        }
         },false);
+
+                createOption("Custom Scroll Bars", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-customscrollbars");
+            }else{
+                $("body").removeClass("rlc-customscrollbars");
+            }
+            _scroll_to_bottom();
+        },false);
+        
     });
 
     var color;
