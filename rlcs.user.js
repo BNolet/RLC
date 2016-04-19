@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.5.5
+// @version      2.5.6
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -242,6 +242,12 @@
 
             var militarytime = convertTo24Hour(shorttime[3] + " " + amPm);
 
+            //add simplified timestamps
+                if($element.find(".body .simpletime").length) { }
+                else  {
+                    $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
+                }
+            
             // If rescanning, clear any existing "channel" classes
             if(typeof rescan !== 'undefined' && rescan === true){
                 $element.removeClass("in-channel");
@@ -256,12 +262,10 @@
                 var $usr = $element.find(".body .author");
                 activeUserArray.push($usr.text());
                 activeUserTimes.push(militarytime);
-
-                //add simplified timestamps
-                $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
-
+                
                  //mention sound effect player
                  if(text.indexOf(robin_user) !== -1){
+                     console.log("soundeffect!");
                      if ($("body").hasClass("rlc-notificationsound")) {
                          player.play();
                      }
@@ -419,7 +423,7 @@
         }
     };
 
-    var handle_new_message = function($ele){
+    var handle_new_message = function($ele, rescan){
         // add any proccessing for new messages in here
         var $msg = $ele.find(".body .md");
         // target blank all messages
@@ -446,7 +450,7 @@
         $usr.text($usr.text().replace("/u/", ""));
 
         // Track channels
-        tabbedChannels.proccessLine(line, $ele);
+        tabbedChannels.proccessLine(line, $ele, rescan);
 
         //remove seperator 
         $(".liveupdate-listing .separator").remove();
@@ -666,7 +670,7 @@
 
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-            handle_new_message($(item));
+            handle_new_message($(item), true);
         });
 
         _scroll_to_bottom();    //done adding content, scroll to bottom
@@ -675,7 +679,7 @@
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
             if ($(e.target).is('li.liveupdate')) {
                 // Apply changes to line
-                handle_new_message($(e.target));
+                handle_new_message($(e.target), false);
                 _scroll_to_bottom();
             }
         });
@@ -769,11 +773,11 @@
             if(checked){
                 startChannels();
                 $("#channelsTable").show();
-                console.log("Starting Channel Discovery Display Update");
+                //console.log("Starting Channel Discovery Display Update");
             }else{
                 stopChannels();
                 $("#channelsTable").hide();
-                console.log("Stopping Channel Discovery Display Update");
+                //console.log("Stopping Channel Discovery Display Update");
             }
             _scroll_to_bottom();
         },false);
