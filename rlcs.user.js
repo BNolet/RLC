@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.5.4
+// @version      2.5.5
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -1406,14 +1406,22 @@ body { \
 } \
  \
 #liveupdate-statusbar.live .state:before { \
-    background: url('https://i.imgur.com/3t4bSRD.png'); \
-    background-size: cover; \
     border-radius: 2px; \
-    height: 1.35em; \
-    width: 1.35em; \
-    margin-top: -1px; \
-    margin-bottom: -4px; \
+    height: 36px; \
+    width: 36px; \
+    margin-top: -8px; \
+    margin-bottom: -11px; \
     margin-right: 10px; \
+    transform: scale(0.77); \
+} \
+#liveupdate-statusbar.reconnecting .state:before { \
+    border-radius: 2px; \
+    height: 36px; \
+    width: 36px; \
+    margin-top: -8px; \
+    margin-bottom: -11px; \
+    margin-right: 10px; \
+    transform: scale(0.77); \
 } \
  \
 .rlc-showreadmebar #rlc-sidebar { \
@@ -1474,5 +1482,10 @@ ul.ui-autocomplete a { \
  \
 .dark-background ul.ui-autocomplete a { \
     color: white!important; \
+} \
+ \
+#liveupdate-statusbar.reconnecting .state:before, #liveupdate-statusbar.live .state:before, .mrPumpkin { \
+    background-image: url('data:image/gif;base64,R0lGODlhbABIAPEAAAAAAP/JDgAAAAAAACH5BAEAAAIALAAAAABsAEgAAAL+lAWpy+0HkZtUxVPziyn4D4bimEDdiKZfiQHqSwIYTJOGW+eejOg6j/PRgMIasQiTBZGvE7O5fKKc0mm0GqJis9ftruvVer8ixU+MFqvM3LI6xQZRHcmGfEmHMu73vX7Bt2L3FxcwN7iGaIinaOVH9pXniOhEkShZOXFJGWQJpwm5KBmD2Qk6+Zg56lYquMrVGtkIy9kHSHhoW4ia63q7WXj4+Dks/Et8bLxLmny1fOnGeuZMDeYYPdaWHbgd2v22BY4lXkUuZf6EzqSOxF7kLgTvI3/WLWjvvU2fs29kPf6vXMBzA9OBKbjCCjBPCpGBO3jwR0MSRj7BKTNlYhb+iTEy8tMopyNGkRSHWCxZkeRGlAlB0qqQyGNKbCOZies3BGE7ne94xvM5D2g9fDjr4DPU49sNe0f0LVWa1GnUbDwkjGFxQ+gnE1qtXNAA1sIFCWE1jCVbtsLZtGbHss2w9i2Fr11jcL1a1WqYqnXXPJXaF85fqoOvFg4zVV/gmEQXn2T672Zkxy7xJpH52NU0mpr5pZHWMmRnbqKO8WKky9woZZVElw7GaNhp0q9YNUs9cLWp2r5S7Z6FO1Nv0y9/qQI+PM5x2cWV/2Ye3FRyybFeE49+Txb06dKT1ykW+3pz2shxk99uPrt21YpY525fbbO2PvJJR6qv/htllYqBjxaF4t9+nPXXWIAGFoggZAcqmKB+CzrYIIEMTghhTuxQlwFjFC7kz0UmVWYIRwOeVtAbPEFEIkz8kZgTZpetuIOI8y2Ejoky2kdVibzNKGGFuHQYYY6eXShgFokhdmQ4hymZ5DhLOtlkOS3gdddeVYaTV1ZybUDXlg3E5SUDEBQAADs=');#liveupdate-statusbar.live .state: before \
+    background-size: contain; \
 } \
 ");
