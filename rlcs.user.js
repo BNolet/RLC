@@ -232,14 +232,14 @@
         this.proccessLine = function(text, $element, rescan){
             var i, idx, channel;
             var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
-            var amPm = shorttime[4].toLowerCase(); 
-            if (amPm === "am" || amPm === "pm" ) { 
+            var amPm = shorttime[4].toLowerCase();
+            if (amPm === "am" || amPm === "pm" ) {
                 var shortimefull = shorttime[3] + " " + amPm;
               }
             else {
                 amPm = " ";
             }
-            
+
             var militarytime = convertTo24Hour(shorttime[3] + " " + amPm);
 
             // If rescanning, clear any existing "channel" classes
@@ -251,19 +251,29 @@
                 }
             }
             // if we are handling new messages
-            else { 
+            else {
                 //add info to activeuserarray
-                activeUserArray.push($element.find(".body .author").text());
+                var $usr = $element.find(".body .author");
+                activeUserArray.push($usr.text());
                 activeUserTimes.push(militarytime);
-            
-                //add simplified timestamps 
+
+                //add simplified timestamps
                 $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
-            
+
                  //mention sound effect player
                  if(text.indexOf(robin_user) !== -1){
-                     if ($("body").hasClass("rlc-notificationsound")) { 
-                    player.play();
-                    }
+                     if ($("body").hasClass("rlc-notificationsound")) {
+                         player.play();
+                     }
+
+                     if(GM_getValue("rlc-enhance-ChromeNotifications")=="true")
+                     {
+                         var n = new Notification('Robin Live Chat',{
+                             icon: "https://i.imgur.com/3t4bSRD.png",
+                             body: $usr.text() + ": " + text,
+                         });
+                     }
+
                 }
 
 
@@ -819,6 +829,14 @@
             }
             _scroll_to_bottom();
         },false);
+
+        createOption("Chrome Notifications", function(checked, ele){
+            if(checked && Notification && !Notification.permission !== "granted")
+	        {
+		        Notification.requestPermission();
+	        }
+        },false);
+
                 createOption("Custom Scroll Bars", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-customscrollbars");
