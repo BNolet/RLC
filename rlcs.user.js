@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.6
+// @version      2.6.7
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -418,6 +418,8 @@
                 var $usr = $element.find(".body .author");
                 activeUserArray.push($usr.text());
                 activeUserTimes.push(militarytime);
+                
+                $usr.attr("target","_blank");
                 
                  //mention sound effect player
                  if(text.indexOf(robin_user) !== -1){
