@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.5.0
+// @version      2.5.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -244,6 +244,7 @@
 
             // If rescanning, clear any existing "channel" classes
             if(typeof rescan !== 'undefined' && rescan === true){
+                                console.log("rescan");
                 $element.removeClass("in-channel");
 
                 for(i=0; i <= this.channels.length; i++){
@@ -252,6 +253,7 @@
             }
             // if we are handling new messages
             else {
+                console.log("no rescan");
                 //add info to activeuserarray
                 var $usr = $element.find(".body .author");
                 activeUserArray.push($usr.text());
@@ -262,12 +264,11 @@
 
                  //mention sound effect player
                  if(text.indexOf(robin_user) !== -1){
+                     console.log("new msg");
                      if ($("body").hasClass("rlc-notificationsound")) {
                          player.play();
                      }
-
-                     if(GM_getValue("rlc-enhance-ChromeNotifications")=="true")
-                     {
+                     if ($("body").hasClass("rlc-notificationchrome")) {
                          var n = new Notification('Robin Live Chat',{
                              icon: "https://i.imgur.com/3t4bSRD.png",
                              body: $usr.text() + ": " + text,
@@ -831,9 +832,13 @@
         },false);
 
         createOption("Chrome Notifications", function(checked, ele){
-            if(checked && Notification && !Notification.permission !== "granted")
-	        {
-		        Notification.requestPermission();
+            if(checked && Notification && !Notification.permission !== "granted"){
+                Notification.requestPermission();
+                if(checked){
+                    $("body").addClass("rlc-notificationchrome");
+                }else{
+                    $("body").removeClass("rlc-notificationchrome");
+                }
 	        }
         },false);
 
