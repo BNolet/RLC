@@ -21,7 +21,8 @@ Come hang out in https://www.reddit.com/live/wpytzw1guzg2 to help out
 * IRC like message history
 * Support for /me messages
 * Highlights when you are mentioned
-* NEW channels ! (thanks to Thybag)
+* Channels 
+* Emotes! - currently supported: :)  :s  :|  :o  :(  :((
 
 ### Known issues
 
