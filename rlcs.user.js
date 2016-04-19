@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.3
+// @version      2.6.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -902,7 +902,15 @@
         GM_addStyle("#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-"+c+" { background: "+color+";}", 0);
         GM_addStyle("#rlc-chat.rlc-filter.rlc-filter-"+c+" li.liveupdate.rlc-filter-"+c+" { display:block;}", 0);
     }
+    
+    
 })();
+
+GM_addStyle(" /* base 64 encoded emote spritesheet */ \
+#liveupdate-statusbar.reconnecting .state:before, #liveupdate-statusbar.live .state:before, .mrPumpkin { \
+    background-image: url('data:image/gif;base64,R0lGODlhbABIAPEAAAAAAP/JDgAAAAAAACH5BAEAAAIALAAAAABsAEgAAAL+lAWpy+0HkZtUxVPziyn4D4bimEDdiKZfiQHqSwIYTJOGW+eejOg6j/PRgMIasQiTBZGvE7O5fKKc0mm0GqJis9ftruvVer8ixU+MFqvM3LI6xQZRHcmGfEmHMu73vX7Bt2L3FxcwN7iGaIinaOVH9pXniOhEkShZOXFJGWQJpwm5KBmD2Qk6+Zg56lYquMrVGtkIy9kHSHhoW4ia63q7WXj4+Dks/Et8bLxLmny1fOnGeuZMDeYYPdaWHbgd2v22BY4lXkUuZf6EzqSOxF7kLgTvI3/WLWjvvU2fs29kPf6vXMBzA9OBKbjCCjBPCpGBO3jwR0MSRj7BKTNlYhb+iTEy8tMopyNGkRSHWCxZkeRGlAlB0qqQyGNKbCOZies3BGE7ne94xvM5D2g9fDjr4DPU49sNe0f0LVWa1GnUbDwkjGFxQ+gnE1qtXNAA1sIFCWE1jCVbtsLZtGbHss2w9i2Fr11jcL1a1WqYqnXXPJXaF85fqoOvFg4zVV/gmEQXn2T672Zkxy7xJpH52NU0mpr5pZHWMmRnbqKO8WKky9woZZVElw7GaNhp0q9YNUs9cLWp2r5S7Z6FO1Nv0y9/qQI+PM5x2cWV/2Ye3FRyybFeE49+Txb06dKT1ykW+3pz2shxk99uPrt21YpY525fbbO2PvJJR6qv/htllYqBjxaF4t9+nPXXWIAGFoggZAcqmKB+CzrYIIEMTghhTuxQlwFjFC7kz0UmVWYIRwOeVtAbPEFEIkz8kZgTZpetuIOI8y2Ejoky2kdVibzNKGGFuHQYYY6eXShgFokhdmQ4hymZ5DhLOtlkOS3gdddeVYaTV1ZybUDXlg3E5SUDEBQAADs='); \
+} \
+");
 
 GM_addStyle("/*-------------------------------- Core - Custom Containers ------------------------------------- */ \
 #rlc-main { \
@@ -1403,9 +1411,9 @@ ul.ui-autocomplete a { \
 ");
 /*------------------------------------------------------MISC-----------------------------------*/
 GM_addStyle("/* MISC */ \
- \
 body { \
     min-width: 0; \
+    overflow: hidden; \
 } \
  \
 /* class to prevent selection for divs acting as buttons */ \
@@ -1439,6 +1447,10 @@ body { \
     background-position-x: -48px; \
 } \
  \
+.mp_meh { \
+    background-position-y: -24px; \
+} \
+ \
 .mp_angry { \
     background-position-x: -48px; \
     background-position-y: -24px; \
@@ -1449,31 +1461,9 @@ body { \
     background-position-y: -24px; \
 } \
  \
-.mp_meh { \
-    background-position-y: -24px; \
-} \
- \
 /* narration */ \
-#rlc-main #rlc-chat li.liveupdate.user-narration > a { \
-    display: none; \
-} \
- \
-#rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
-    display: none; \
-} \
- \
 #rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
     font-style: italic; \
-} \
- \
-/* standalone removal */ \
- \
-#hsts_pixel, .debuginfo { \
-    display: none; \
-} \
- \
-#rlc-main iframe { \
-    display: none!important; \
 } \
  \
 /* Let's get this party started */ \
@@ -1493,25 +1483,12 @@ body { \
 } \
  \
 /* misc fixes */ \
-/*prevent body scroll to avoid loading history*/ \
-body { \
-    overflow: hidden; \
-} \
- \
-.simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time { \
-    display: none; \
-} \
- \
 .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate .simpletime { \
     display: block; \
     float: left; \
     width: 70px; \
     padding-left: 10px; \
     padding-top: 2px; \
-} \
- \
-#rlc-main .liveupdate-listing .liveupdate .simpletime { \
-    display: none; \
 } \
  \
 /* option classes */ \
@@ -1521,55 +1498,7 @@ body { \
 } \
  \
 /* hard removal */ \
-.rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #rlc-main .liveupdate-listing .separator, #liveupdate-options, .footer-parent, body > .content { \
-    display: none!important; \
-} \
- \
-.rlc-filter .channelname { \
+#rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .rlc-showreadmebar #rlc-sidebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #rlc-main .liveupdate-listing .separator, #liveupdate-options, .footer-parent, body > .content { \
     display: none; \
-} \
-.save-button { \
-    display: none; \
-} \
-#rlc-chat.rlc-filter li.liveupdate { \
-    display: none; \
-} \
-#discussions { \
-    display: none; \
-} \
- \
-.reddiquette { \
-    display: none!important; \
-} \
- \
-#contributors { \
-    display: none!important; \
-} \
- \
-#liveupdate-resources > h2 { \
-    display: none; \
-} \
- \
-/*togglesidebar*/ \
-.rlc-hidesidebar #rlc-sidebar { \
-    display: none!important; \
-} \
- \
-#rlc-settings, #rlc-readmebar  { \
-    display: none; \
-} \
- \
-.rlc-showreadmebar #rlc-sidebar { \
-    display: none; \
-} \
-.ui-helper-hidden-accessible { \
-    display: none; \
-} \
- \
- \
-/* base 64 encoded emote spritesheet */ \
-#liveupdate-statusbar.reconnecting .state:before, #liveupdate-statusbar.live .state:before, .mrPumpkin { \
-    background-image: url('data:image/gif;base64,R0lGODlhbABIAPEAAAAAAP/JDgAAAAAAACH5BAEAAAIALAAAAABsAEgAAAL+lAWpy+0HkZtUxVPziyn4D4bimEDdiKZfiQHqSwIYTJOGW+eejOg6j/PRgMIasQiTBZGvE7O5fKKc0mm0GqJis9ftruvVer8ixU+MFqvM3LI6xQZRHcmGfEmHMu73vX7Bt2L3FxcwN7iGaIinaOVH9pXniOhEkShZOXFJGWQJpwm5KBmD2Qk6+Zg56lYquMrVGtkIy9kHSHhoW4ia63q7WXj4+Dks/Et8bLxLmny1fOnGeuZMDeYYPdaWHbgd2v22BY4lXkUuZf6EzqSOxF7kLgTvI3/WLWjvvU2fs29kPf6vXMBzA9OBKbjCCjBPCpGBO3jwR0MSRj7BKTNlYhb+iTEy8tMopyNGkRSHWCxZkeRGlAlB0qqQyGNKbCOZies3BGE7ne94xvM5D2g9fDjr4DPU49sNe0f0LVWa1GnUbDwkjGFxQ+gnE1qtXNAA1sIFCWE1jCVbtsLZtGbHss2w9i2Fr11jcL1a1WqYqnXXPJXaF85fqoOvFg4zVV/gmEQXn2T672Zkxy7xJpH52NU0mpr5pZHWMmRnbqKO8WKky9woZZVElw7GaNhp0q9YNUs9cLWp2r5S7Z6FO1Nv0y9/qQI+PM5x2cWV/2Ye3FRyybFeE49+Txb06dKT1ykW+3pz2shxk99uPrt21YpY525fbbO2PvJJR6qv/htllYqBjxaF4t9+nPXXWIAGFoggZAcqmKB+CzrYIIEMTghhTuxQlwFjFC7kz0UmVWYIRwOeVtAbPEFEIkz8kZgTZpetuIOI8y2Ejoky2kdVibzNKGGFuHQYYY6eXShgFokhdmQ4hymZ5DhLOtlkOS3gdddeVYaTV1ZybUDXlg3E5SUDEBQAADs='); \
-    #liveupdate-statusbar.live .state: before background-size: contain; \
 } \
 ");
