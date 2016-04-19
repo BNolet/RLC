@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.5.6
+// @version      2.6.0
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -444,6 +444,10 @@
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }
 
+        if(line.indexOf(":)") !== -1){
+           first_line.html(first_line.html().replace(":)", "<span class='mrPumpkin mp_smile'></span>")); 
+        }
+            
         $usr.before($ele.find("time"));
 
         //remove the /u/
@@ -866,7 +870,7 @@
     }
 })();
 
-GM_addStyle(" /*-------------------------------- Custom Containers ------------------------------------- */ \
+GM_addStyle("/*-------------------------------- Custom Containers ------------------------------------- */ \
 body { \
     min-width: 0; \
 } \
@@ -951,6 +955,7 @@ div#rlc-chat { \
     float: right; \
     width: calc(100% - 320px); \
     max-width: none; \
+    min-height: 24px; \
 } \
  \
 #rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
@@ -983,7 +988,9 @@ div#rlc-chat { \
     text-align: right; \
 } \
  \
-.simpleTimestamps .channelname {width: 260px;} \
+.simpleTimestamps .channelname { \
+    width: 260px; \
+} \
  \
 .rlc-filter .channelname { \
     display: none; \
@@ -1277,6 +1284,19 @@ div#rlc-toggleoptions { \
 div#rlc-settingsbar div { \
     padding-top: 6px; \
     text-align: center; \
+} \
+ \
+.mrPumpkin.mp_smile { \
+    height: 24px; \
+    width: 24px; \
+    display: inline-block; \
+    background-size:72px; \
+    margin-bottom: -6px!important; \
+    margin-top: -4px!important; \
+} \
+ \
+.dark-background .liveupdate-listing li.liveupdate .body div.md p { \
+    vertical-align: -webkit-baseline-middle; \
 } \
 ");
 
