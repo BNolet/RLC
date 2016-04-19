@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.5
+// @version      2.6.5.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -759,9 +759,9 @@
         
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
+            $(this).val($(".usertext-edit textarea").val().replace("#", ""));
             if (e.keyCode == 9) {e.preventDefault();}
-            if (e.keyCode == 13) {
-                $(this).val($(".usertext-edit textarea").val().replace("#", ""));                  
+            if (e.keyCode == 13) {                  
                 if (e.shiftKey) {  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
                 else {
