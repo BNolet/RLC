@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.4.2
+// @version      2.4.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne
 // @include      https://www.reddit.com/live/*
@@ -10,8 +10,8 @@
 // @exclude      https://www.reddit.com/live/*/edit*
 // @exclude      https://www.reddit.com/live/*/contributors*
 // @exclude      https://*.reddit.com/live/create*
-// @require      http://code.jquery.com/jquery-latest.js
-// @require      http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.3/jquery-ui.js
+// @require      https://code.jquery.com/jquery-2.2.3.min.js
+// @require      https://code.jquery.com/ui/1.10.4/jquery-ui.min.js
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
@@ -21,16 +21,7 @@
     var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
     // Channel Colours
     var colors = [
-        'rgba(255,0,0,0.1)',
-        'rgba(0,255,0,0.1)',
-        'rgba(0,0,255,0.1)',
-        'rgba(0,255,255,0.1)',
-        'rgba(255,0,255,0.1)',
-        'rgba(255,255,0,0.1)',
-        'rgba(211,211,211, .1)',
-        'rgba(0,100,0, .1)',
-        'rgba(255,20,147, .1)',
-        'rgba(184,134,11, .1)',
+        'rgba(255,0,0,0.1)','rgba(0,255,0,0.1)','rgba(0,0,255,0.1)','rgba(0,255,255,0.1)','rgba(255,0,255,0.1)','rgba(255,255,0,0.1)','rgba(211,211,211, .1)','rgba(0,100,0, .1)','rgba(255,20,147, .1)','rgba(184,134,11, .1)'
     ];
 
     var player = document.createElement('audio');
@@ -73,18 +64,8 @@
         $( ".usertext-edit textarea" ).autocomplete( "option", "source", updateArray );
         
     }
-
-
-
-    /**
-     * Quickly hacked to play nice with rlc
-     *
-     * Pull tabber out in to semi-stand alone module
-     * Big thanks to netnerd01 for his pre-work on this
-     *
-     * Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
-     * and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); to each line detected by the system
-     */
+    /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
+     * and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); to each line detected by the system */
     var tabbedChannels = new function(){
         var _self = this;
 
@@ -577,9 +558,7 @@
         }
     }
 
-    /*
-    END OF ACTIVE CHANNEL DISCOVERY SECTION
-    */
+    /*     END OF ACTIVE CHANNEL DISCOVERY SECTION     */
 
     // remove channel key from message
     var remove_channel_key_from_message = function(message){
@@ -599,73 +578,58 @@
     // boot
     $(document).ready(function() {
         $("body").append('  \
-<div id="rlc-topmenu"> \
-<div id="rlc-settingsbar"> \
-<div id="versionnumber" title="Toggle Reddit Live Chat Readme">v.' + GM_info.script.version + '</div> \
-<div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">[Sidebar]</div> \
-<div id="rlc-toggleoptions" title="Toggle Options" class="noselect">[Options]</div> \
-</div> \
-<div id="rlc-settings"></div> \
-</div>  \
-<div id="rlc-main">   \
-<div id="rlc-chat"></div> \
-<div id="rlc-messagebox"> </div> \
-</div> \
-<div id="rlc-sidebar"> \
-</div> \
-<div id="rlc-readmebar"> \
-<div class="md"> \
-    <strong style="font-size:1.2em">RLC Readme</strong><br> \
-    <small>click version number restore sidebar</small> \
-    <p> \
-    <strong>Primary devs: <br> \
-    <a target="_blank" href="/u/Stjerneklar" rel="nofollow">/u/Stjerneklar</a>&nbsp;(EU)  \
-    <br> <a target="_blank" href="/u/FatherDerp" rel="nofollow">/u/FatherDerp</a>&nbsp;(NA) \
-    </strong> \
-    </p> \
- \
-    <p>Full credits available in Github commit log</p> \
- \
-    <hr> \
- \
-    <p>Check the sidebar for invite info, which is required to post</p> \
- \
-    <hr> \
- \
-    <h4><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update RLC to latest version</a></h4> \
- \
-    <hr> \
- \
-    <h3><a target="_blank" href="https://github.com/BNolet/RLC/" rel="nofollow">RLC Github: Project home, Issue tracking, Readme</a></h3> \
- \
-    <hr> \
- \
-    <h3><a target="_blank" href="https://www.reddit.com/r/fukbird/" rel="nofollow">RLC subreddit</a></h3> \
- \
-    <hr> \
- \
-    <p><strong>Feature highlights:</strong></p> \
- \
-    <ul> \
-        <li>Chat room layout &amp; message flow</li> \
-        <li>Send message with <strong>Enter</strong> key</li> \
-        <li>Press <strong>Up</strong> for message history</li> \
-        <li><strong>Right click</strong> names to copy to textbox</li> \
-        <li>Channels(including tabs, creation, deletion, single/multi views)</li> \
-        <li>Much more (mentions, markdown, /me, embeds turned to links)</li> \
-    </ul> \
- \
-    <hr> \
- \
-    <p><strong>Known issues:</strong></p> \
- \
-    <ul> \
-        <li>Developed in Chrome, sometimes tested on firefox(please report problems with screenshots)</li> \
-        <li>Post history loading is experimental and not implemented in a very user friendly way, but does work.</li> \
-    </ul> \
-</div> \
-</div> \
-');
+            <div id="rlc-topmenu"> \
+            <div id="rlc-settingsbar"> \
+            <div id="versionnumber" title="Toggle Reddit Live Chat Readme">v.' + GM_info.script.version + '</div> \
+            <div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">[Sidebar]</div> \
+            <div id="rlc-toggleoptions" title="Toggle Options" class="noselect">[Options]</div> \
+            </div> \
+            <div id="rlc-settings"></div> \
+            </div>  \
+            <div id="rlc-main">   \
+            <div id="rlc-chat"></div> \
+            <div id="rlc-messagebox"> </div> \
+            </div> \
+            <div id="rlc-sidebar"> \
+            </div> \
+            <div id="rlc-readmebar"> \
+            <div class="md"> \
+                <strong style="font-size:1.2em">RLC Readme</strong><br> \
+                <small>click version number restore sidebar</small> \
+                <p> \
+                <strong>Primary devs: <br> \
+                <a target="_blank" href="/u/Stjerneklar" rel="nofollow">/u/Stjerneklar</a>&nbsp;(EU)  \
+                <br> <a target="_blank" href="/u/FatherDerp" rel="nofollow">/u/FatherDerp</a>&nbsp;(NA) \
+                </strong> \
+                </p> \
+                <p>Full credits available in Github commit log</p> \
+                <hr> \
+                <p>Check the sidebar for invite info, which is required to post</p> \
+                <hr> \
+                <h4><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update RLC to latest version</a></h4> \
+                <hr> \
+                <h3><a target="_blank" href="https://github.com/BNolet/RLC/" rel="nofollow">RLC Github: Project home, Issue tracking, Readme</a></h3> \
+                <hr> \
+                <h3><a target="_blank" href="https://www.reddit.com/r/fukbird/" rel="nofollow">RLC subreddit</a></h3> \
+                <hr> \
+                <p><strong>Feature highlights:</strong></p> \
+                <ul> \
+                    <li>Chat room layout &amp; message flow</li> \
+                    <li>Send message with <strong>Enter</strong> key</li> \
+                    <li>Press <strong>Up</strong> for message history</li> \
+                    <li><strong>Right click</strong> names to copy to textbox</li> \
+                    <li>Channels(including tabs, creation, deletion, single/multi views)</li> \
+                    <li>Much more (mentions, markdown, /me, embeds turned to links)</li> \
+                </ul> \
+                <hr> \
+                <p><strong>Known issues:</strong></p> \
+                <ul> \
+                    <li>Developed in Chrome, sometimes tested on firefox(please report problems with screenshots)</li> \
+                    <li>Post history loading is experimental and not implemented in a very user friendly way, but does work.</li> \
+                </ul> \
+            </div> \
+            </div> \
+        '); 
         
         $('.liveupdate-listing').appendTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
@@ -684,12 +648,11 @@
         
         if($(".usertext-edit textarea").length) { }
         else { $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>"); }
-       
         
         $("<div id='channelsTable'> \
-<div>Most Active Channels</div><br/> \
-<div id='activeChannelsTable'></div><br/> \
-</div>").appendTo("#rlc-sidebar"); // Active Channel Discovery Table
+            <div>Most Active Channels</div><br/> \
+            <div id='activeChannelsTable'></div><br/> \
+            </div>").appendTo("#rlc-sidebar"); // Active Channel Discovery Table
 
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertAfter("#rlc-settingsbar"));
 
@@ -700,7 +663,7 @@
             handle_new_message($(item));
         });
 
-        _scroll_to_bottom();
+        _scroll_to_bottom();    //done adding content, scroll to bottom
 
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
@@ -711,7 +674,7 @@
             }
         });
 
-        $(".usertext-edit.md-container textarea").attr("tabindex","0");
+        $(".usertext-edit.md-container textarea").attr("tabindex","0"); //fixes autocomplete
         var text_area = $(".usertext-edit.md-container textarea");
 
         //right click author names in chat to copy to messagebox
@@ -736,31 +699,19 @@
             messageHistoryIndex = messageHistory.length;
         });
 
-        $("#rlc-togglesidebar").click(function(){
-            $("body").toggleClass("rlc-hidesidebar");
-        });
+        $("#rlc-togglesidebar").click(function(){       $("body").toggleClass("rlc-hidesidebar");});
 
-        $("#rlc-chatsidebartoggle").click(function(){
-            $("body").toggleClass("rlc-hidesidebar");
-        });
+        $("#rlc-chatsidebartoggle").click(function(){   $("body").toggleClass("rlc-hidesidebar");});
 
-        $("#rlc-toggleoptions").click(function(){
-            $("body").toggleClass("rlc-showoptions");
-        });
+        $("#rlc-toggleoptions").click(function(){       $("body").toggleClass("rlc-showoptions");});
 
-        $("#versionnumber").click(function(){
-            $("body").toggleClass("rlc-showreadmebar");
-        });
+        $("#versionnumber").click(function(){           $("body").toggleClass("rlc-showreadmebar");});
 
-        $("#rlc-sendmessage").click(function(){
-            $(".save-button .btn").click();
-        });
-
+        $("#rlc-sendmessage").click(function(){         (".save-button .btn").click();});
         
-        console.log(updateArray);
         $('.usertext-edit textarea').autocomplete({
-        source: updateArray,
-        autoFocus: true,
+            source: updateArray,
+            autoFocus: true,
         });
         
         processActiveUsersList();
@@ -772,9 +723,15 @@
                 if (e.shiftKey) {  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
                 else {
-                    if(text_area.val().indexOf("/settings") === 0 || text_area.val().indexOf("/edit") === 0 ){$(this).val(''); window.location.href = "edit";  }
+                    if(text_area.val().indexOf("/edit") === 0 ){   //navigate via slash command to the edit page
+                        $(this).val(''); //prevents message from being sent, e.preventDefault does not seem to in case of redirects
+                        window.location.href = "edit";  
+                    }
+                    // prevent default embed behavior when links are posted 
+                    if(text_area.val().indexOf("http") === 0 || text_area.val().indexOf("www") === 0 ){
+                        $(this).val($(".usertext-edit textarea").val() + ' ');
+                    }
                     e.preventDefault();
-                    $(this).val($(".usertext-edit textarea").val() + ' ');
                     $(".save-button .btn").click();
                 }
             }
@@ -796,8 +753,27 @@
             }
         });
 
-        // Options
-        // Colours on or off
+        // Options 
+        createOption("Active Channel Discovery [BETA]", function(checked, ele){
+            if(checked){
+                startChannels();
+                $("#channelsTable").show();
+                console.log("Starting Channel Discovery Display Update");
+            }else{
+                stopChannels();
+                $("#channelsTable").hide();
+                console.log("Stopping Channel Discovery Display Update");
+            }
+            _scroll_to_bottom();
+        },false);
+
+        createOption("History Mode[Experimental]", function(checked, ele){
+            if(checked){
+                $("body").addClass("allowHistoryScroll");
+            }else{
+                $("body").removeClass("allowHistoryScroll");
+            }
+        },false);
         createOption("Channel colors", function(checked, ele){
             if(checked){
                 $("#rlc-main").addClass("show-colors");
@@ -813,14 +789,6 @@
                 $("body").addClass("dark-background");
             }else{
                 $("body").removeClass("dark-background");
-            }
-        },false);
-
-        createOption("History Mode(Experimental)", function(checked, ele){
-            if(checked){
-                $("body").addClass("allowHistoryScroll");
-            }else{
-                $("body").removeClass("allowHistoryScroll");
             }
         },false);
 
@@ -841,19 +809,7 @@
             }
             _scroll_to_bottom();
         },false);
-        /*
-        createOption("Active Channel Discovery BETA", function(checked, ele){
-            if(checked){
-                startChannels();
-                $("#channelsTable").show();
-                console.log("Starting Channel Discovery Display Update");
-            }else{
-                stopChannels();
-                $("#channelsTable").hide();
-                console.log("Stopping Channel Discovery Display Update");
-            }
-            _scroll_to_bottom();
-        },false);*/
+        
 
         createOption("Notification Sound", function(checked, ele){
             if(checked){
@@ -1299,170 +1255,143 @@ div#rlc-settingsbar div { \
 GM_addStyle("/* ------------------------------------ meta -----------------------------------------------------*/ \
 /* class to prevent selection for divs acting as buttons */ \
 .noselect { \
--webkit-touch-callout: none; \
-/* iOS Safari */ \
--webkit-user-select: none; \
-/* Chrome/Safari/Opera */ \
--khtml-user-select: none; \
-/* Konqueror */ \
--moz-user-select: none; \
-/* Firefox */ \
--ms-user-select: none; \
-/* IE/Edge */ \
+    -webkit-touch-callout: none; \
+    /* iOS Safari */ \
+    -webkit-user-select: none; \
+    /* Chrome/Safari/Opera */ \
+    -khtml-user-select: none; \
+    /* Konqueror */ \
+    -moz-user-select: none; \
+    /* Firefox */ \
+    -ms-user-select: none; \
+    /* IE/Edge */ \
 } \
-\
+ \
 /* dark background */ \
 .dark-background { \
-background: #404040; \
-color: white; \
+    background: #404040; \
+    color: white; \
 } \
-\
+ \
 .dark-background textarea, .dark-background #rlc-main .liveupdate-listing a.author { \
-background: transparent; \
-color: white; \
+    background: transparent; \
+    color: white; \
 } \
-\
+ \
 .dark-background .side { \
-background: transparent; \
+    background: transparent; \
 } \
-\
+ \
 /* misc fixes */ \
 /*prevent body scroll to avoid loading history*/ \
 body { \
-overflow: hidden; \
+    overflow: hidden; \
 } \
-\
+ \
 .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate .simpletime { \
-display: block; \
-float: left; \
-width: 70px; \
-padding-left: 10px; \
-padding-top: 2px; \
+    display: block; \
+    float: left; \
+    width: 70px; \
+    padding-left: 10px; \
+    padding-top: 2px; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate .simpletime { \
-display: none; \
+    display: none; \
 } \
-\
+ \
 /* option classes */ \
 .allowHistoryScroll { \
-height: 102%; \
-overflow-y: scroll; \
+    height: 102%; \
+    overflow-y: scroll; \
 } \
-\
+ \
 /* hard removal */ \
-body > .content { \
-display: none!important; \
+.rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #rlc-main .liveupdate-listing .separator, #liveupdate-options, .footer-parent, body > .content { \
+    display: none!important; \
 } \
-\
-.footer-parent { \
-display: none!important; \
-} \
-\
-#liveupdate-options { \
-display: none!important; \
-} \
-\
-#rlc-main .liveupdate-listing .separator { \
-display: none!important; \
-} \
-\
-#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow { \
-display: none!important; \
-} \
-\
-#rlc-main .liveupdate-listing li.liveupdate time:before { \
-display: none!important; \
-} \
-\
-.help-toggle { \
-display: none!important; \
-} \
-\
-.rlc-compact div#header { \
-display: none; \
-} \
-\
+ \
 .rlc-compact div#rlc-main { \
-top: 0; \
+    top: 0; \
 } \
-\
+ \
 .rlc-compact div#rlc-sidebar,.rlc-compact #rlc-readmebar { \
-top: 0px; \
-height: calc(100vh - 24px); \
-padding-top: 0; \
+    top: 0px; \
+    height: calc(100vh - 24px); \
+    padding-top: 0; \
 } \
-\
+ \
 .rlc-compact div#new-update-form textarea { \
-height: 26px; \
+    height: 26px; \
 } \
-\
+ \
 .rlc-compact div#rlc-sendmessage { \
-height: 26px; \
-padding-top: 4px; \
+    height: 26px; \
+    padding-top: 4px; \
 } \
-\
+ \
 .rlc-compact div#rlc-chat { \
-height: calc(100vh - 49px); \
+    height: calc(100vh - 49px); \
 } \
-\
-.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, \
-.dark-background .md blockquote p { \
-color: white!important; \
+ \
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p { \
+    color: white!important; \
 } \
-\
+ \
 .dark-background div#header-bottom-left { \
-background: grey; \
+    background: grey; \
 } \
-\
+ \
 .dark-background .liveupdate-listing li.liveupdate .body div.md { \
-color: white; \
+    color: white; \
 } \
-\
+ \
 /* Let's get this party started */ \
 .rlc-customscrollbars ::-webkit-scrollbar { \
-width: 10px; \
+    width: 10px; \
 } \
-\
+ \
 /* Track */ \
 .rlc-customscrollbars ::-webkit-scrollbar-track { \
-background-color: #262626; \
+    background-color: #262626; \
 } \
-\
+ \
 /* Handle */ \
 .rlc-customscrollbars ::-webkit-scrollbar-thumb { \
-background-color: #4C4C4C; \
-border: 1px solid #262626; \
+    background-color: #4C4C4C; \
+    border: 1px solid #262626; \
 } \
-\
+ \
 .dark-background div#rlc-settings { \
-background: #404040; \
+    background: #404040; \
 } \
-\
+ \
 .dark-background .rlc-channel-add { \
-background: grey; \
+    background: grey; \
 } \
-\
+ \
 .dark-background .rlc-channel-add input { \
-background: #404040; \
-border: 0; \
-padding: 3px 4px 4px 4px; \
-color: white; \
+    background: #404040; \
+    border: 0; \
+    padding: 3px 4px 4px 4px; \
+    color: white; \
 } \
+ \
 #liveupdate-statusbar.live .state:before { \
-background: url('https://i.imgur.com/3t4bSRD.png'); \
-background-size: cover; \
-border-radius: 2px; \
-height: 1.35em; \
-width: 1.35em; \
-margin-top: -1px; \
-margin-bottom: -4px; \
-margin-right: 10px; \
+    background: url('https://i.imgur.com/3t4bSRD.png'); \
+    background-size: cover; \
+    border-radius: 2px; \
+    height: 1.35em; \
+    width: 1.35em; \
+    margin-top: -1px; \
+    margin-bottom: -4px; \
+    margin-right: 10px; \
 } \
+ \
 .rlc-showreadmebar #rlc-sidebar { \
     display: none; \
 } \
@@ -1470,39 +1399,56 @@ margin-right: 10px; \
 .rlc-showreadmebar #rlc-readmebar { \
     display: block; \
 } \
+ \
 .rlc-showreadmebar #rlc-readmebar { \
     display: block; \
     padding: 10px; \
     box-sizing: border-box; \
-    font-size:1.18em; \
+    font-size: 1.18em; \
 } \
  \
-.dark-background.rlc-showreadmebar #rlc-readmebar .md {color:white;} \
-#rlc-activeusers {  \
+.dark-background.rlc-showreadmebar #rlc-readmebar .md { \
+    color: white; \
+} \
+ \
+#rlc-activeusers { \
     display: inline-block; \
     width: 100%; \
     padding: 10px; \
     font-size: 1.2em; \
 } \
-#rlc-activeusers li {  \
+ \
+#rlc-activeusers li { \
     width: 100%; \
     font-size: 1.2em; \
 } \
-.dark-background pre {    background: transparent;} \
-#rlc-readmebar, .ui-helper-hidden-accessible {display:none;} \
+ \
+.dark-background pre { \
+    background: transparent; \
+} \
+ \
+#rlc-readmebar, .ui-helper-hidden-accessible { \
+    display: none; \
+} \
+ \
 ul.ui-autocomplete { \
     position: fixed!important; \
     bottom: 30px; \
-    border-radius:0px; \
-    left:0px!important; \
-    background:grey; \
-    width:300px!important; \
-    opacity:0.8; \
-    z-index:1000; \
+    border-radius: 0px; \
+    left: 0px!important; \
+    background: grey; \
+    width: 300px!important; \
+    opacity: 0.8; \
+    z-index: 1000; \
     top: initial!important; \
-    font-size:1.2em; \
+    font-size: 1.2em; \
 } \
-ul.ui-autocomplete a {  \
-     color:black!important; \
+ \
+ul.ui-autocomplete a { \
+    color: black!important; \
+} \
+ \
+.dark-background ul.ui-autocomplete a { \
+    color: white!important; \
 } \
 ");
