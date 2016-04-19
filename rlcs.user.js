@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.5.2
+// @version      2.5.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -55,7 +55,7 @@
         for(i=0; i <= activeUserArray.length; i++){
               if (updateArray.indexOf(activeUserArray[i]) === -1 && activeUserArray[i] !== undefined) {
                 updateArray.push(activeUserArray[i]);
-                $("#rlc-activeusers ul").append("<li>"+activeUserArray[i] + " @ " + activeUserTimes[i]+"</li>"); 
+                $("#rlc-activeusers ul").append("<li><span class='activeusersUser'>"+activeUserArray[i] + "</span> @ <span class='activeusersTime'>" + activeUserTimes[i]+"</span></li>"); 
             } else if (updateArray.indexOf(activeUserArray[i]) > -1) {
                 //add message counter value
                 //check if timestamp is recent enough?
@@ -271,9 +271,7 @@
                              body: $usr.text() + ": " + text,
                          });
                      }
-
                 }
-
 
             }
 
@@ -345,7 +343,7 @@
             this.$el = $el;
 
             // Create inital markup
-            this.$el.html("<span class='all selected'>Everything</span><span><div class='rlc-filters'></div></span><span class='more'>[Channels]</span>");
+            this.$el.html("<span class='all selected'>Global</span><span><div class='rlc-filters'></div></span><span class='more'>[Channels]</span>");
             this.$opt = $("<div class='rlc-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
 
             // Attach events
@@ -588,7 +586,7 @@
         $("body").append('  \
             <div id="rlc-topmenu"> \
             <div id="rlc-settingsbar"> \
-            <div id="versionnumber" title="Toggle Reddit Live Chat Readme">v.' + GM_info.script.version + '</div> \
+            <div id="versionnumber" title="Toggle Reddit Live Chat Readme">[?] v.' + GM_info.script.version + ' [?]</div> \
             <div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">[Sidebar]</div> \
             <div id="rlc-toggleoptions" title="Toggle Options" class="noselect">[Options]</div> \
             </div> \
@@ -738,6 +736,9 @@
                     // prevent default embed behavior when links are posted 
                     if(text_area.val().indexOf("http") === 0 || text_area.val().indexOf("www") === 0 ){
                         $(this).val($(".usertext-edit textarea").val() + ' ');
+                    }
+                    if(text_area.val().indexOf("/version") === 0){ 
+                        $(this).val("RLC v."+GM_info.script.version+" has been released. Use the link in the sidebar to update.");
                     }
                     e.preventDefault();
                     $(".save-button .btn").click();
@@ -934,7 +935,7 @@ div#rlc-chat { \
 } \
  \
 #rlc-main .liveupdate-listing a.author { \
-    width: 110px; \
+    width: 180px; \
     display: block; \
     float: left; \
     text-align: right; \
@@ -942,7 +943,7 @@ div#rlc-chat { \
  \
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
     float: right; \
-    width: calc(100% - 340px); \
+    width: calc(100% - 320px); \
     max-width: none; \
 } \
  \
@@ -970,13 +971,13 @@ div#rlc-chat { \
 /* channel name */ \
 .channelname { \
     color: grey!important; \
-    width: 90px; \
+    width: 290px; \
     display: block; \
     float: left; \
+    text-align: right; \
 } \
  \
-span.channelnamecolor { \
-} \
+.simpleTimestamps .channelname {width: 260px;} \
  \
 .rlc-filter .channelname { \
     display: none; \
@@ -1138,6 +1139,7 @@ div#rlc-sendmessage { \
     padding-top: 2px; \
     padding-bottom: 0; \
     color: inherit; \
+    padding-left: 10px; \
 } \
  \
 .liveupdate-listing li.liveupdate a.author { \
