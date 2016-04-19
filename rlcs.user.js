@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.2
+// @version      2.6.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -239,7 +239,7 @@
         var _self = this;
 
         // Default options
-        this.channels = [":general", ":offtopic"];
+        this.channels = ["%general", "%offtopic"];
         this.mode = 'single';
 
         // internals
