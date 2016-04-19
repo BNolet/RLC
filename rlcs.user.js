@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.0
+// @version      2.6.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -444,10 +444,30 @@
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }
 
-        if(line.indexOf(":)") !== -1){
-           first_line.html(first_line.html().replace(":)", "<span class='mrPumpkin mp_smile'></span>")); 
+        // emote support
+        if (!$("body").hasClass("rlc-noemotes")) {
+            if(line.indexOf(":)") !== -1){
+                first_line.html(first_line.html().replace(":)", "<span class='mrPumpkin mp_smile'></span>")); 
+            }
+            if(line.indexOf(":(") !== -1){
+                if(line.indexOf(":((") !== -1){
+                    first_line.html(first_line.html().replace(":((", "<span class='mrPumpkin mp_angry'></span>")); 
+                }
+                else { 
+                    first_line.html(first_line.html().replace(":(", "<span class='mrPumpkin mp_frown'></span>")); 
+                }
+            }
+            if(line.indexOf(":s") !== -1){
+                first_line.html(first_line.html().replace(":s", "<span class='mrPumpkin mp_silly'></span>")); 
+            }
+            if(line.indexOf(":|") !== -1){
+                first_line.html(first_line.html().replace(":|", "<span class='mrPumpkin mp_meh'></span>")); 
+            }
+            if(line.indexOf(":o") !== -1){
+                first_line.html(first_line.html().replace(":o", "<span class='mrPumpkin mp_shocked'></span>")); 
+            }
         }
-            
+        // insert time
         $usr.before($ele.find("time"));
 
         //remove the /u/
@@ -850,7 +870,7 @@
 	        }
         },false);
 
-                createOption("Custom Scroll Bars", function(checked, ele){
+        createOption("Custom Scroll Bars", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-customscrollbars");
             }else{
@@ -858,6 +878,18 @@
             }
             _scroll_to_bottom();
         },false);
+        
+        createOption("No Smileys", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-noemotes");
+            }else{
+                $("body").removeClass("rlc-noemotes");
+            }
+            _scroll_to_bottom();
+        },false);
+        
+        
+        
         
     });
 
@@ -1286,15 +1318,34 @@ div#rlc-settingsbar div { \
     text-align: center; \
 } \
  \
-.mrPumpkin.mp_smile { \
+.mrPumpkin { \
     height: 24px; \
     width: 24px; \
     display: inline-block; \
-    background-size:72px; \
+    background-size: 72px; \
     margin-bottom: -6px!important; \
     margin-top: -4px!important; \
 } \
  \
+.mp_smile { //default  } \
+ \
+.mp_frown { \
+    background-position-x: -24px; \
+} \
+.mp_silly { \
+    background-position-x: -48px; \
+} \
+.mp_angry {  \
+    background-position-x: -48px; \
+    background-position-y: -24px; \
+} \
+.mp_shocked { \
+    background-position-x: -24px; \
+    background-position-y: -24px; \
+} \
+.mp_meh { \
+    background-position-y: -24px; \
+} \
 .dark-background .liveupdate-listing li.liveupdate .body div.md p { \
     vertical-align: -webkit-baseline-middle; \
 } \
