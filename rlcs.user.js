@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.1
+// @version      2.6.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -28,7 +28,96 @@
     player.src = 'https://dl.dropbox.com/u/7079101/coin.mp3';
     player.preload = "auto";
 
-    function convertTo24Hour(time) {
+     // msg history
+    var messageHistory = [];
+    var messageHistoryIndex = -1;
+    
+    // Active user arrays
+    var activeUserArray = [];
+    var activeUserTimes = [];
+    var updateArray = [];
+    
+    // Html for injection, inserted at doc.ready
+    var htmlPayload = '  \
+            <div id="rlc-topmenu"> \
+            <div id="rlc-settingsbar"> \
+            <div id="versionnumber" title="Toggle Reddit Live Chat Readme">[?] v.' + GM_info.script.version + '</div> \
+            <div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">[Sidebar]</div> \
+            <div id="rlc-toggleoptions" title="Toggle Options" class="noselect">[Options]</div> \
+            </div> \
+            <div id="rlc-settings"></div> \
+            </div>  \
+            <div id="rlc-main">   \
+            <div id="rlc-chat"></div> \
+            <div id="rlc-messagebox"> </div> \
+            </div> \
+            <div id="rlc-sidebar"> \
+            </div> \
+            <div id="rlc-readmebar"> \
+            <div class="md"> \
+                <strong style="font-size:1.2em">RLC Readme</strong><br> \
+                <small>click version number restore sidebar</small> \
+                <p> \
+                <strong>Primary devs: <br> \
+                <a target="_blank" href="/u/Stjerneklar" rel="nofollow">/u/Stjerneklar</a>&nbsp;(EU)  \
+                <br> <a target="_blank" href="/u/FatherDerp" rel="nofollow">/u/FatherDerp</a>&nbsp;(NA) \
+                </strong> \
+                </p> \
+                <p>Full credits available in Github commit log</p> \
+                <hr> \
+                <p>Check the sidebar for invite info, which is required to post</p> \
+                <hr> \
+                <h4><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update RLC to latest version</a></h4> \
+                <hr> \
+                <h3><a target="_blank" href="https://github.com/BNolet/RLC/" rel="nofollow">RLC Github: Project home, Issue tracking, Readme</a></h3> \
+                <hr> \
+                <h3><a target="_blank" href="https://www.reddit.com/r/fukbird/" rel="nofollow">RLC subreddit</a></h3> \
+                <hr> \
+                <p><strong>Feature highlights:</strong></p> \
+                <ul> \
+                    <li>Chat room layout &amp; message flow</li> \
+                    <li>Send message with <strong>Enter</strong> key</li> \
+                    <li>Press <strong>Up</strong> for message history</li> \
+                    <li><strong>Right click</strong> names to copy to textbox</li> \
+                    <li>Channels(including tabs, creation, deletion, single/multi views)</li> \
+                    <li>Much more (mentions, markdown, /me, embeds turned to links)</li> \
+                </ul> \
+                <hr> \
+                <p><strong>Known issues:</strong></p> \
+                <ul> \
+                    <li>Developed in Chrome, sometimes tested on firefox(please report problems with screenshots)</li> \
+                    <li>Post history loading is experimental and not implemented in a very user friendly way, but does work.</li> \
+                </ul> \
+            </div> \
+            </div> \
+        ';
+
+    // Scroll chat back to bottom
+    var _scroll_to_bottom = function(){
+        if ($(document.body).hasClass("allowHistoryScroll")) {
+            return false;
+        }
+        else {
+            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
+        }
+    };
+ 
+    // remove channel key from message
+    var remove_channel_key_from_message = function(message){
+        if($("#rlc-chat").attr("data-channel-key")){
+            var offset = $("#rlc-chat").attr("data-channel-key").length;
+            if(offset === 0) return message;
+
+            if(message.indexOf("/me") === 0){
+                return "/me "+ message.slice(offset+5);
+            }else{
+                return message.slice(offset+1);
+            }
+        }
+        return message;
+    };
+
+   function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
         if(time.indexOf('am') != -1 && hours == 12) {
             time = time.replace('12', '0');
@@ -39,16 +128,6 @@
         return time.replace(/(am|pm)/, '');
     }  
 
-    // msg history
-    var messageHistory = [];
-    var messageHistoryIndex = -1;
-    
-    // Active user array
-    var activeUserArray = [];
-    var activeUserTimes = [];
-    
-    var updateArray = [];
-    
     function processActiveUsersList() { 
         $("#rlc-activeusers ul").empty();
         updateArray = [];
@@ -62,9 +141,99 @@
             }
         }
         $( ".usertext-edit textarea" ).autocomplete( "option", "source", updateArray );
-        
     }
-    /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
+
+    // create persistant option
+    function createOption(name, click_action, default_state){
+        var checked_markup;
+        var key = "rlc-enhance-" + name.replace(/\W/g, '');
+        var state = (typeof default_state !== "undefined") ? default_state : false;
+
+        // try and state if setting is defined
+        if(GM_getValue(key)){
+            state = (GM_getValue(key) === 'true') ? true : false;
+        }
+        // markup for state
+        checked_markup = (state === true) ? "checked='checked'" : "";
+        // render option
+        var $option = $("<label><input type='checkbox' "+checked_markup+">"+name+"</label>").click(function(){
+            var checked = $(this).find("input").is(':checked');
+
+            // persist state
+            if(checked != state){
+                GM_setValue(key, checked ? 'true' : 'false'); // true/false stored as strings, to avoid unset matching
+                state = checked;
+            }
+
+            click_action(checked, $(this));
+        });
+        // add to dom
+        $("#rlc-settings").append($option);
+        // init
+        click_action(state, $option);
+    }
+
+        var handle_new_message = function($ele, rescan){
+        // add any proccessing for new messages in here
+        var $msg = $ele.find(".body .md");
+        // target blank all messages
+        $msg.find("a").attr("target","_blank");
+
+        var $usr = $ele.find(".body .author");
+        var line = $msg.text().toLowerCase();
+        var first_line = $msg.find("p").first();
+
+        // Highlight mentions
+        if(line.indexOf(robin_user) !== -1){
+            $ele.addClass("user-mention");
+        }
+
+        // /me support
+        if(line.indexOf("/me") === 0){
+            $ele.addClass("user-narration");
+            first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
+        }
+
+        // emote support
+        if (!$("body").hasClass("rlc-noemotes")) {
+            if(line.indexOf(":)") !== -1){
+                first_line.html(first_line.html().replace(":)", "<span class='mrPumpkin mp_smile'></span>")); 
+            }
+            if(line.indexOf(":(") !== -1){
+                if(line.indexOf(":((") !== -1){
+                    first_line.html(first_line.html().replace(":((", "<span class='mrPumpkin mp_angry'></span>")); 
+                }
+                else { 
+                    first_line.html(first_line.html().replace(":(", "<span class='mrPumpkin mp_frown'></span>")); 
+                }
+            }
+            if(line.indexOf(":s") !== -1){
+                first_line.html(first_line.html().replace(":s", "<span class='mrPumpkin mp_silly'></span>")); 
+            }
+            if(line.indexOf(":|") !== -1){
+                first_line.html(first_line.html().replace(":|", "<span class='mrPumpkin mp_meh'></span>")); 
+            }
+            if(line.indexOf(":o") !== -1){
+                first_line.html(first_line.html().replace(":o", "<span class='mrPumpkin mp_shocked'></span>")); 
+            }
+        }
+        // insert time
+        $usr.before($ele.find("time"));
+
+        //remove the /u/
+        $usr.text($usr.text().replace("/u/", ""));
+
+        // Track channels
+        tabbedChannels.proccessLine(line, $ele, rescan);
+
+        //remove seperator 
+        $(".liveupdate-listing .separator").remove();
+
+        // Active Channels Monitoring
+        updateMostActiveChannels(line);    
+    };
+
+     /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
      * and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); to each line detected by the system */
     var tabbedChannels = new function(){
         var _self = this;
@@ -382,110 +551,8 @@
             setInterval(this.tick, 10000);
         };
     };
-    // create persistant option
-    function createOption(name, click_action, default_state){
-        var checked_markup;
-        var key = "rlc-enhance-" + name.replace(/\W/g, '');
-        var state = (typeof default_state !== "undefined") ? default_state : false;
 
-        // try and state if setting is defined
-        if(GM_getValue(key)){
-            state = (GM_getValue(key) === 'true') ? true : false;
-        }
-        // markup for state
-        checked_markup = (state === true) ? "checked='checked'" : "";
-        // render option
-        var $option = $("<label><input type='checkbox' "+checked_markup+">"+name+"</label>").click(function(){
-            var checked = $(this).find("input").is(':checked');
-
-            // persist state
-            if(checked != state){
-                GM_setValue(key, checked ? 'true' : 'false'); // true/false stored as strings, to avoid unset matching
-                state = checked;
-            }
-
-            click_action(checked, $(this));
-        });
-        // add to dom
-        $("#rlc-settings").append($option);
-        // init
-        click_action(state, $option);
-    }
-
-
-    // Scroll chat back to bottom
-    var _scroll_to_bottom = function(){
-        if ($(document.body).hasClass("allowHistoryScroll")) {
-            return false;
-        }
-        else {
-            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
-        }
-    };
-
-    var handle_new_message = function($ele, rescan){
-        // add any proccessing for new messages in here
-        var $msg = $ele.find(".body .md");
-        // target blank all messages
-        $msg.find("a").attr("target","_blank");
-
-        var $usr = $ele.find(".body .author");
-        var line = $msg.text().toLowerCase();
-        var first_line = $msg.find("p").first();
-
-        // Highlight mentions
-        if(line.indexOf(robin_user) !== -1){
-            $ele.addClass("user-mention");
-        }
-
-        // /me support
-        if(line.indexOf("/me") === 0){
-            $ele.addClass("user-narration");
-            first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
-        }
-
-        // emote support
-        if (!$("body").hasClass("rlc-noemotes")) {
-            if(line.indexOf(":)") !== -1){
-                first_line.html(first_line.html().replace(":)", "<span class='mrPumpkin mp_smile'></span>")); 
-            }
-            if(line.indexOf(":(") !== -1){
-                if(line.indexOf(":((") !== -1){
-                    first_line.html(first_line.html().replace(":((", "<span class='mrPumpkin mp_angry'></span>")); 
-                }
-                else { 
-                    first_line.html(first_line.html().replace(":(", "<span class='mrPumpkin mp_frown'></span>")); 
-                }
-            }
-            if(line.indexOf(":s") !== -1){
-                first_line.html(first_line.html().replace(":s", "<span class='mrPumpkin mp_silly'></span>")); 
-            }
-            if(line.indexOf(":|") !== -1){
-                first_line.html(first_line.html().replace(":|", "<span class='mrPumpkin mp_meh'></span>")); 
-            }
-            if(line.indexOf(":o") !== -1){
-                first_line.html(first_line.html().replace(":o", "<span class='mrPumpkin mp_shocked'></span>")); 
-            }
-        }
-        // insert time
-        $usr.before($ele.find("time"));
-
-        //remove the /u/
-        $usr.text($usr.text().replace("/u/", ""));
-
-        // Track channels
-        tabbedChannels.proccessLine(line, $ele, rescan);
-
-        //remove seperator 
-        $(".liveupdate-listing .separator").remove();
-
-        // Active Channels Monitoring
-        updateMostActiveChannels(line);
-        
-    };
- 
-    
-    /*
+     /*
      START OF ACTIVE CHANNEL DISCOVERY SECTION
      (Transplanted from https://github.com/5a1t/parrot repo to which the section was originally contributed to by LTAcosta )
     */
@@ -594,92 +661,30 @@
 
     /*     END OF ACTIVE CHANNEL DISCOVERY SECTION     */
 
-    // remove channel key from message
-    var remove_channel_key_from_message = function(message){
-        if($("#rlc-chat").attr("data-channel-key")){
-            var offset = $("#rlc-chat").attr("data-channel-key").length;
-            if(offset === 0) return message;
-
-            if(message.indexOf("/me") === 0){
-                return "/me "+ message.slice(offset+5);
-            }else{
-                return message.slice(offset+1);
-            }
-        }
-        return message;
-    };
-
     // boot
     $(document).ready(function() {
-        $("body").append('  \
-            <div id="rlc-topmenu"> \
-            <div id="rlc-settingsbar"> \
-            <div id="versionnumber" title="Toggle Reddit Live Chat Readme">[?] v.' + GM_info.script.version + ' [?]</div> \
-            <div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">[Sidebar]</div> \
-            <div id="rlc-toggleoptions" title="Toggle Options" class="noselect">[Options]</div> \
-            </div> \
-            <div id="rlc-settings"></div> \
-            </div>  \
-            <div id="rlc-main">   \
-            <div id="rlc-chat"></div> \
-            <div id="rlc-messagebox"> </div> \
-            </div> \
-            <div id="rlc-sidebar"> \
-            </div> \
-            <div id="rlc-readmebar"> \
-            <div class="md"> \
-                <strong style="font-size:1.2em">RLC Readme</strong><br> \
-                <small>click version number restore sidebar</small> \
-                <p> \
-                <strong>Primary devs: <br> \
-                <a target="_blank" href="/u/Stjerneklar" rel="nofollow">/u/Stjerneklar</a>&nbsp;(EU)  \
-                <br> <a target="_blank" href="/u/FatherDerp" rel="nofollow">/u/FatherDerp</a>&nbsp;(NA) \
-                </strong> \
-                </p> \
-                <p>Full credits available in Github commit log</p> \
-                <hr> \
-                <p>Check the sidebar for invite info, which is required to post</p> \
-                <hr> \
-                <h4><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update RLC to latest version</a></h4> \
-                <hr> \
-                <h3><a target="_blank" href="https://github.com/BNolet/RLC/" rel="nofollow">RLC Github: Project home, Issue tracking, Readme</a></h3> \
-                <hr> \
-                <h3><a target="_blank" href="https://www.reddit.com/r/fukbird/" rel="nofollow">RLC subreddit</a></h3> \
-                <hr> \
-                <p><strong>Feature highlights:</strong></p> \
-                <ul> \
-                    <li>Chat room layout &amp; message flow</li> \
-                    <li>Send message with <strong>Enter</strong> key</li> \
-                    <li>Press <strong>Up</strong> for message history</li> \
-                    <li><strong>Right click</strong> names to copy to textbox</li> \
-                    <li>Channels(including tabs, creation, deletion, single/multi views)</li> \
-                    <li>Much more (mentions, markdown, /me, embeds turned to links)</li> \
-                </ul> \
-                <hr> \
-                <p><strong>Known issues:</strong></p> \
-                <ul> \
-                    <li>Developed in Chrome, sometimes tested on firefox(please report problems with screenshots)</li> \
-                    <li>Post history loading is experimental and not implemented in a very user friendly way, but does work.</li> \
-                </ul> \
-            </div> \
-            </div> \
-        '); 
+        $("body").append(htmlPayload); 
         
+        // move default elements into custom containers defined in htmlPayload
         $('.liveupdate-listing').appendTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
-
-        $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
-        $(".usertext-edit textarea").focus();
-
         $('#liveupdate-header').appendTo('#rlc-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
 
+        // add placeholder text and focus messagebox
+        $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
+        $(".usertext-edit textarea").focus();
+
+        // remove iframes
         $("#rlc-main iframe").remove();
+        
+        // make links external
         $("#rlc-main a").attr("target","_blank");
         $("#rlc-sidebar a").attr("target","_blank");
         $("#rlc-readmebar a").attr("target","_blank");
         
+        // show hint about invites if there is no messagebox
         if($(".usertext-edit textarea").length) { }
         else { $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>"); }
         
@@ -806,7 +811,7 @@
             _scroll_to_bottom();
         },false);
 
-        createOption("History Mode[Experimental]", function(checked, ele){
+        createOption("History Mode [BETA]", function(checked, ele){
             if(checked){
                 $("body").addClass("allowHistoryScroll");
             }else{
@@ -888,9 +893,6 @@
             _scroll_to_bottom();
         },false);
         
-        
-        
-        
     });
 
     var color;
@@ -902,11 +904,7 @@
     }
 })();
 
-GM_addStyle("/*-------------------------------- Custom Containers ------------------------------------- */ \
-body { \
-    min-width: 0; \
-} \
- \
+GM_addStyle("/*-------------------------------- Core - Custom Containers ------------------------------------- */ \
 #rlc-main { \
     width: 80%; \
     height: 100%; \
@@ -931,14 +929,92 @@ body { \
     position: relative; \
 } \
  \
-/*  /*------------------------------------ Main Chat -----------------------------------------------------*/ \
-#rlc-chat.rlc-filter li.liveupdate { \
-    display: none; \
+/*-------------------------------- Message Input ------------------------------------- */ \
+/* message input and send button */ \
+div#rlc-messagebox { \
+    position: relative; \
 } \
  \
-/*chat window*/ \
-#rlc-main iframe { \
-    display: none!important; \
+#new-update-form .usertext { \
+    max-width: 85%; \
+    float: left; \
+    width: 85%; \
+} \
+ \
+.usertext-edit .md { \
+    min-width: 100%!important; \
+} \
+ \
+div#new-update-form textarea { \
+    height: 45px; \
+    overflow: auto; \
+    resize: none; \
+} \
+ \
+div#new-update-form { \
+    width: 100%; \
+    margin: 0; \
+} \
+ \
+.usertext-edit.md-container { \
+    max-width: 100%; \
+    margin: 0; \
+} \
+ \
+.usertext-edit.md-container { \
+    position: relative; \
+} \
+ \
+#new-update-form .bottom-area { \
+    position: absolute; \
+    top: 4px; \
+    right: 15px; \
+    left: 15px; \
+    text-align: center; \
+    letter-spacing: 1px; \
+} \
+/*-------------------------------- Send button ------------------------------------- */ \
+#new-update-form .save-button .btn { \
+    width: 100%; \
+    text-transform: capitalize; \
+} \
+ \
+div#rlc-sendmessage { \
+    width: 15%; \
+    height: 45px; \
+    text-align: center; \
+    float: right; \
+    display: inline-block; \
+    padding-top: 15px; \
+    box-sizing: border-box; \
+    margin-top: 0px; \
+    font-size: 1.3em; \
+    cursor: pointer; \
+    border: 1px solid #A9A9A9; \
+    ; border-left: 0; \
+} \
+ \
+.res-nightmode div#rlc-sendmessage { \
+    border: 1px solid #4C4C4C; \
+} \
+ \
+.res-nightmode .channelname, .res-nightmode #rlc-main .liveupdate-listing a.author { \
+    color: #ccc; \
+} \
+ \
+/*------------------------------------ Main Chat -----------------------------------------------------*/ \
+#rlc-main time.live-timestamp { \
+    text-indent: 0; \
+    width: 100px; \
+    margin: 0; \
+    padding-top: 2px; \
+    padding-bottom: 0; \
+    color: inherit; \
+    padding-left: 10px; \
+} \
+ \
+.liveupdate-listing li.liveupdate a.author { \
+    color: initial; \
 } \
  \
 #rlc-main .liveupdate-listing { \
@@ -994,19 +1070,6 @@ div#rlc-chat { \
     font-weight: bold; \
 } \
  \
-/* narration */ \
-#rlc-main #rlc-chat li.liveupdate.user-narration > a { \
-    display: none; \
-} \
- \
-#rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
-    display: none; \
-} \
- \
-#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
-    font-style: italic; \
-} \
- \
 #rlc-main .liveupdate-listing .liveupdate:nth-child(odd) { \
     background: rgba(128,128,128,0.2); \
 } \
@@ -1024,87 +1087,8 @@ div#rlc-chat { \
     width: 260px; \
 } \
  \
-.rlc-filter .channelname { \
-    display: none; \
-} \
+/*-------------------------filter tabs------------------------------------*/ \
  \
-/* message input and send button */ \
-div#rlc-messagebox { \
-    position: relative; \
-} \
- \
-#new-update-form .usertext { \
-    max-width: 85%; \
-    float: left; \
-    width: 85%; \
-} \
- \
-.usertext-edit .md { \
-    min-width: 100%!important; \
-} \
- \
-div#new-update-form textarea { \
-    height: 45px; \
-    overflow: auto; \
-    resize: none; \
-} \
- \
-div#new-update-form { \
-    width: 100%; \
-    margin: 0; \
-} \
- \
-.usertext-edit.md-container { \
-    max-width: 100%; \
-    margin: 0; \
-} \
- \
-.usertext-edit.md-container { \
-    position: relative; \
-} \
- \
-#new-update-form .bottom-area { \
-    position: absolute; \
-    top: 4px; \
-    right: 15px; \
-    left: 15px; \
-    text-align: center; \
-    letter-spacing: 1px; \
-} \
- \
-#new-update-form .save-button .btn { \
-    width: 100%; \
-    text-transform: capitalize; \
-} \
- \
-div#rlc-sendmessage { \
-    width: 15%; \
-    height: 45px; \
-    text-align: center; \
-    float: right; \
-    display: inline-block; \
-    padding-top: 15px; \
-    box-sizing: border-box; \
-    margin-top: 0px; \
-    font-size: 1.3em; \
-    cursor: pointer; \
-    border: 1px solid #A9A9A9; \
-    ; border-left: 0; \
-} \
- \
-.res-nightmode div#rlc-sendmessage { \
-    border: 1px solid #4C4C4C; \
-} \
- \
-.res-nightmode .channelname, .res-nightmode #rlc-main .liveupdate-listing a.author { \
-    color: #ccc; \
-} \
- \
-.save-button { \
-    display: none; \
-} \
- \
-/*filter tabs*/ \
 #filter_tabs { \
     width: 80%; \
     display: table; \
@@ -1177,20 +1161,6 @@ div#rlc-sendmessage { \
     z-index: 1000; \
 } \
  \
-#rlc-main time.live-timestamp { \
-    text-indent: 0; \
-    width: 100px; \
-    margin: 0; \
-    padding-top: 2px; \
-    padding-bottom: 0; \
-    color: inherit; \
-    padding-left: 10px; \
-} \
- \
-.liveupdate-listing li.liveupdate a.author { \
-    color: initial; \
-} \
- \
 /*------------------------------------ Sidebar -----------------------------------------------------*/ \
 aside.sidebar.side.md-container { \
     width: 100%; \
@@ -1209,27 +1179,6 @@ aside.sidebar.side.md-container { \
     overflow: hidden; \
 } \
  \
-#discussions { \
-    display: none; \
-} \
- \
-.reddiquette { \
-    display: none!important; \
-} \
- \
-#contributors { \
-    display: none!important; \
-} \
- \
-#liveupdate-resources > h2 { \
-    display: none; \
-} \
- \
-/*togglesidebar*/ \
-.rlc-hidesidebar #rlc-sidebar { \
-    display: none!important; \
-} \
- \
 /*hide sidebar toggle class*/ \
 .rlc-hidesidebar #rlc-main { \
     width: 100%!important; \
@@ -1245,6 +1194,26 @@ div#versionnumber { \
     cursor: help; \
 } \
  \
+#liveupdate-statusbar.live .state:before { \
+    border-radius: 2px; \
+    height: 36px; \
+    width: 36px; \
+    margin-top: -8px; \
+    margin-bottom: -11px; \
+    margin-right: 10px; \
+    transform: scale(0.77); \
+} \
+ \
+#liveupdate-statusbar.reconnecting .state:before { \
+    border-radius: 2px; \
+    height: 36px; \
+    width: 36px; \
+    margin-top: -8px; \
+    margin-bottom: -11px; \
+    margin-right: 10px; \
+    transform: scale(0.77); \
+} \
+ \
 /*settings*/ \
 #rlc-settings { \
     right: 0; \
@@ -1253,9 +1222,6 @@ div#versionnumber { \
     /* padding: 6px; */ \
     width: 100%; \
     box-sizing: border-box; \
-} \
- \
-.res-nightmode #rlc-settings { \
 } \
  \
 #rlc-settings label { \
@@ -1276,6 +1242,7 @@ div#versionnumber { \
     margin-right: 1px; \
 } \
  \
+/* wtf is this? */ \
 body:not(.res) div#header-bottom-right { \
     bottom: initial; \
     top: 21px; \
@@ -1291,8 +1258,15 @@ body:not(.res) div#header-bottom-right { \
     background: #FFFFFF; \
 } \
  \
-#rlc-settings { \
-    display: none; \
+.rlc-showreadmebar #rlc-readmebar { \
+    display: block; \
+} \
+ \
+.rlc-showreadmebar #rlc-readmebar { \
+    display: block; \
+    padding: 10px; \
+    box-sizing: border-box; \
+    font-size: 1.18em; \
 } \
  \
 #rlc-settingsbar { \
@@ -1309,49 +1283,131 @@ div#rlc-toggleoptions { \
     cursor: pointer; \
 } \
  \
-#hsts_pixel, .debuginfo { \
-    display: none; \
-} \
- \
 div#rlc-settingsbar div { \
     padding-top: 6px; \
     text-align: center; \
 } \
  \
-.mrPumpkin { \
-    height: 24px; \
-    width: 24px; \
-    display: inline-block; \
-    background-size: 72px; \
-    margin-bottom: -6px!important; \
-    margin-top: -4px!important; \
+/* Autocomplete */ \
+ul.ui-autocomplete { \
+    position: fixed!important; \
+    bottom: 30px; \
+    border-radius: 0px; \
+    left: 0px!important; \
+    background: grey; \
+    width: 300px!important; \
+    opacity: 0.8; \
+    z-index: 1000; \
+    top: initial!important; \
+    font-size: 1.2em; \
 } \
  \
-.mp_smile { //default  } \
+ul.ui-autocomplete a { \
+    color: black!important; \
+} \
  \
-.mp_frown { \
-    background-position-x: -24px; \
-} \
-.mp_silly { \
-    background-position-x: -48px; \
-} \
-.mp_angry {  \
-    background-position-x: -48px; \
-    background-position-y: -24px; \
-} \
-.mp_shocked { \
-    background-position-x: -24px; \
-    background-position-y: -24px; \
-} \
-.mp_meh { \
-    background-position-y: -24px; \
-} \
+/* Dark Mode */ \
 .dark-background .liveupdate-listing li.liveupdate .body div.md p { \
     vertical-align: -webkit-baseline-middle; \
 } \
+ \
+.dark-background ul.ui-autocomplete a { \
+    color: white!important; \
+} \
+ \
+.dark-background pre { \
+    background: transparent; \
+} \
+ \
+.dark-background.rlc-showreadmebar #rlc-readmebar .md { \
+    color: white; \
+} \
+ \
+.dark-background div#rlc-settings { \
+    background: #404040; \
+} \
+ \
+.dark-background .rlc-channel-add { \
+    background: grey; \
+} \
+ \
+.dark-background .rlc-channel-add input { \
+    background: #404040; \
+    border: 0; \
+    padding: 3px 4px 4px 4px; \
+    color: white; \
+} \
+ \
+.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p { \
+    color: white!important; \
+} \
+ \
+.dark-background div#header-bottom-left { \
+    background: grey; \
+} \
+ \
+.dark-background .liveupdate-listing li.liveupdate .body div.md { \
+    color: white; \
+} \
+ \
+.dark-background { \
+    background: #404040; \
+    color: white; \
+} \
+ \
+.dark-background textarea, .dark-background #rlc-main .liveupdate-listing a.author { \
+    background: transparent; \
+    color: white; \
+} \
+ \
+.dark-background .side { \
+    background: transparent; \
+} \
+ \
+/* active users */ \
+#rlc-activeusers { \
+    display: inline-block; \
+    width: 100%; \
+    padding: 10px; \
+    font-size: 1.2em; \
+} \
+ \
+#rlc-activeusers li { \
+    width: 100%; \
+    font-size: 1.2em; \
+} \
+ \
+/* Compact mode */ \
+.rlc-compact div#rlc-main { \
+    top: 0; \
+} \
+ \
+.rlc-compact div#rlc-sidebar,.rlc-compact #rlc-readmebar { \
+    top: 0px; \
+    height: calc(100vh - 24px); \
+    padding-top: 0; \
+} \
+ \
+.rlc-compact div#new-update-form textarea { \
+    height: 26px; \
+} \
+ \
+.rlc-compact div#rlc-sendmessage { \
+    height: 26px; \
+    padding-top: 4px; \
+} \
+ \
+.rlc-compact div#rlc-chat { \
+    height: calc(100vh - 49px); \
+} \
 ");
-
-GM_addStyle("/* ------------------------------------ meta -----------------------------------------------------*/ \
+/*------------------------------------------------------MISC-----------------------------------*/
+GM_addStyle("/* MISC */ \
+ \
+body { \
+    min-width: 0; \
+} \
+ \
 /* class to prevent selection for divs acting as buttons */ \
 .noselect { \
     -webkit-touch-callout: none; \
@@ -1366,19 +1422,74 @@ GM_addStyle("/* ------------------------------------ meta ----------------------
     /* IE/Edge */ \
 } \
  \
-/* dark background */ \
-.dark-background { \
-    background: #404040; \
-    color: white; \
+.mrPumpkin { \
+    height: 24px; \
+    width: 24px; \
+    display: inline-block; \
+    background-size: 72px; \
+    margin-bottom: -6px!important; \
+    margin-top: -4px!important; \
 } \
  \
-.dark-background textarea, .dark-background #rlc-main .liveupdate-listing a.author { \
-    background: transparent; \
-    color: white; \
+.mp_frown { \
+    background-position-x: -24px; \
 } \
  \
-.dark-background .side { \
-    background: transparent; \
+.mp_silly { \
+    background-position-x: -48px; \
+} \
+ \
+.mp_angry { \
+    background-position-x: -48px; \
+    background-position-y: -24px; \
+} \
+ \
+.mp_shocked { \
+    background-position-x: -24px; \
+    background-position-y: -24px; \
+} \
+ \
+.mp_meh { \
+    background-position-y: -24px; \
+} \
+ \
+/* narration */ \
+#rlc-main #rlc-chat li.liveupdate.user-narration > a { \
+    display: none; \
+} \
+ \
+#rlc-main #rlc-chat li.liveupdate.user-narration .body a { \
+    display: none; \
+} \
+ \
+#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
+    font-style: italic; \
+} \
+ \
+/* standalone removal */ \
+ \
+#hsts_pixel, .debuginfo { \
+    display: none; \
+} \
+ \
+#rlc-main iframe { \
+    display: none!important; \
+} \
+ \
+/* Let's get this party started */ \
+.rlc-customscrollbars ::-webkit-scrollbar { \
+    width: 10px; \
+} \
+ \
+/* Track */ \
+.rlc-customscrollbars ::-webkit-scrollbar-track { \
+    background-color: #262626; \
+} \
+ \
+/* Handle */ \
+.rlc-customscrollbars ::-webkit-scrollbar-thumb { \
+    background-color: #4C4C4C; \
+    border: 1px solid #262626; \
 } \
  \
 /* misc fixes */ \
@@ -1414,153 +1525,51 @@ body { \
     display: none!important; \
 } \
  \
-.rlc-compact div#rlc-main { \
-    top: 0; \
+.rlc-filter .channelname { \
+    display: none; \
+} \
+.save-button { \
+    display: none; \
+} \
+#rlc-chat.rlc-filter li.liveupdate { \
+    display: none; \
+} \
+#discussions { \
+    display: none; \
 } \
  \
-.rlc-compact div#rlc-sidebar,.rlc-compact #rlc-readmebar { \
-    top: 0px; \
-    height: calc(100vh - 24px); \
-    padding-top: 0; \
+.reddiquette { \
+    display: none!important; \
 } \
  \
-.rlc-compact div#new-update-form textarea { \
-    height: 26px; \
+#contributors { \
+    display: none!important; \
 } \
  \
-.rlc-compact div#rlc-sendmessage { \
-    height: 26px; \
-    padding-top: 4px; \
+#liveupdate-resources > h2 { \
+    display: none; \
 } \
  \
-.rlc-compact div#rlc-chat { \
-    height: calc(100vh - 49px); \
+/*togglesidebar*/ \
+.rlc-hidesidebar #rlc-sidebar { \
+    display: none!important; \
 } \
  \
-.dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p { \
-    color: white!important; \
-} \
- \
-.dark-background div#header-bottom-left { \
-    background: grey; \
-} \
- \
-.dark-background .liveupdate-listing li.liveupdate .body div.md { \
-    color: white; \
-} \
- \
-/* Let's get this party started */ \
-.rlc-customscrollbars ::-webkit-scrollbar { \
-    width: 10px; \
-} \
- \
-/* Track */ \
-.rlc-customscrollbars ::-webkit-scrollbar-track { \
-    background-color: #262626; \
-} \
- \
-/* Handle */ \
-.rlc-customscrollbars ::-webkit-scrollbar-thumb { \
-    background-color: #4C4C4C; \
-    border: 1px solid #262626; \
-} \
- \
-.dark-background div#rlc-settings { \
-    background: #404040; \
-} \
- \
-.dark-background .rlc-channel-add { \
-    background: grey; \
-} \
- \
-.dark-background .rlc-channel-add input { \
-    background: #404040; \
-    border: 0; \
-    padding: 3px 4px 4px 4px; \
-    color: white; \
-} \
- \
-#liveupdate-statusbar.live .state:before { \
-    border-radius: 2px; \
-    height: 36px; \
-    width: 36px; \
-    margin-top: -8px; \
-    margin-bottom: -11px; \
-    margin-right: 10px; \
-    transform: scale(0.77); \
-} \
-#liveupdate-statusbar.reconnecting .state:before { \
-    border-radius: 2px; \
-    height: 36px; \
-    width: 36px; \
-    margin-top: -8px; \
-    margin-bottom: -11px; \
-    margin-right: 10px; \
-    transform: scale(0.77); \
+#rlc-settings, #rlc-readmebar  { \
+    display: none; \
 } \
  \
 .rlc-showreadmebar #rlc-sidebar { \
     display: none; \
 } \
- \
-.rlc-showreadmebar #rlc-readmebar { \
-    display: block; \
-} \
- \
-.rlc-showreadmebar #rlc-readmebar { \
-    display: block; \
-    padding: 10px; \
-    box-sizing: border-box; \
-    font-size: 1.18em; \
-} \
- \
-.dark-background.rlc-showreadmebar #rlc-readmebar .md { \
-    color: white; \
-} \
- \
-#rlc-activeusers { \
-    display: inline-block; \
-    width: 100%; \
-    padding: 10px; \
-    font-size: 1.2em; \
-} \
- \
-#rlc-activeusers li { \
-    width: 100%; \
-    font-size: 1.2em; \
-} \
- \
-.dark-background pre { \
-    background: transparent; \
-} \
- \
-#rlc-readmebar, .ui-helper-hidden-accessible { \
+.ui-helper-hidden-accessible { \
     display: none; \
 } \
  \
-ul.ui-autocomplete { \
-    position: fixed!important; \
-    bottom: 30px; \
-    border-radius: 0px; \
-    left: 0px!important; \
-    background: grey; \
-    width: 300px!important; \
-    opacity: 0.8; \
-    z-index: 1000; \
-    top: initial!important; \
-    font-size: 1.2em; \
-} \
  \
-ul.ui-autocomplete a { \
-    color: black!important; \
-} \
- \
-.dark-background ul.ui-autocomplete a { \
-    color: white!important; \
-} \
- \
+/* base 64 encoded emote spritesheet */ \
 #liveupdate-statusbar.reconnecting .state:before, #liveupdate-statusbar.live .state:before, .mrPumpkin { \
-    background-image: url('data:image/gif;base64,R0lGODlhbABIAPEAAAAAAP/JDgAAAAAAACH5BAEAAAIALAAAAABsAEgAAAL+lAWpy+0HkZtUxVPziyn4D4bimEDdiKZfiQHqSwIYTJOGW+eejOg6j/PRgMIasQiTBZGvE7O5fKKc0mm0GqJis9ftruvVer8ixU+MFqvM3LI6xQZRHcmGfEmHMu73vX7Bt2L3FxcwN7iGaIinaOVH9pXniOhEkShZOXFJGWQJpwm5KBmD2Qk6+Zg56lYquMrVGtkIy9kHSHhoW4ia63q7WXj4+Dks/Et8bLxLmny1fOnGeuZMDeYYPdaWHbgd2v22BY4lXkUuZf6EzqSOxF7kLgTvI3/WLWjvvU2fs29kPf6vXMBzA9OBKbjCCjBPCpGBO3jwR0MSRj7BKTNlYhb+iTEy8tMopyNGkRSHWCxZkeRGlAlB0qqQyGNKbCOZies3BGE7ne94xvM5D2g9fDjr4DPU49sNe0f0LVWa1GnUbDwkjGFxQ+gnE1qtXNAA1sIFCWE1jCVbtsLZtGbHss2w9i2Fr11jcL1a1WqYqnXXPJXaF85fqoOvFg4zVV/gmEQXn2T672Zkxy7xJpH52NU0mpr5pZHWMmRnbqKO8WKky9woZZVElw7GaNhp0q9YNUs9cLWp2r5S7Z6FO1Nv0y9/qQI+PM5x2cWV/2Ye3FRyybFeE49+Txb06dKT1ykW+3pz2shxk99uPrt21YpY525fbbO2PvJJR6qv/htllYqBjxaF4t9+nPXXWIAGFoggZAcqmKB+CzrYIIEMTghhTuxQlwFjFC7kz0UmVWYIRwOeVtAbPEFEIkz8kZgTZpetuIOI8y2Ejoky2kdVibzNKGGFuHQYYY6eXShgFokhdmQ4hymZ5DhLOtlkOS3gdddeVYaTV1ZybUDXlg3E5SUDEBQAADs=');#liveupdate-statusbar.live .state: before \
-    background-size: contain; \
+    background-image: url('data:image/gif;base64,R0lGODlhbABIAPEAAAAAAP/JDgAAAAAAACH5BAEAAAIALAAAAABsAEgAAAL+lAWpy+0HkZtUxVPziyn4D4bimEDdiKZfiQHqSwIYTJOGW+eejOg6j/PRgMIasQiTBZGvE7O5fKKc0mm0GqJis9ftruvVer8ixU+MFqvM3LI6xQZRHcmGfEmHMu73vX7Bt2L3FxcwN7iGaIinaOVH9pXniOhEkShZOXFJGWQJpwm5KBmD2Qk6+Zg56lYquMrVGtkIy9kHSHhoW4ia63q7WXj4+Dks/Et8bLxLmny1fOnGeuZMDeYYPdaWHbgd2v22BY4lXkUuZf6EzqSOxF7kLgTvI3/WLWjvvU2fs29kPf6vXMBzA9OBKbjCCjBPCpGBO3jwR0MSRj7BKTNlYhb+iTEy8tMopyNGkRSHWCxZkeRGlAlB0qqQyGNKbCOZies3BGE7ne94xvM5D2g9fDjr4DPU49sNe0f0LVWa1GnUbDwkjGFxQ+gnE1qtXNAA1sIFCWE1jCVbtsLZtGbHss2w9i2Fr11jcL1a1WqYqnXXPJXaF85fqoOvFg4zVV/gmEQXn2T672Zkxy7xJpH52NU0mpr5pZHWMmRnbqKO8WKky9woZZVElw7GaNhp0q9YNUs9cLWp2r5S7Z6FO1Nv0y9/qQI+PM5x2cWV/2Ye3FRyybFeE49+Txb06dKT1ykW+3pz2shxk99uPrt21YpY525fbbO2PvJJR6qv/htllYqBjxaF4t9+nPXXWIAGFoggZAcqmKB+CzrYIIEMTghhTuxQlwFjFC7kz0UmVWYIRwOeVtAbPEFEIkz8kZgTZpetuIOI8y2Ejoky2kdVibzNKGGFuHQYYY6eXShgFokhdmQ4hymZ5DhLOtlkOS3gdddeVYaTV1ZybUDXlg3E5SUDEBQAADs='); \
+    #liveupdate-statusbar.live .state: before background-size: contain; \
 } \
 ");
