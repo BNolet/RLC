@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.4.1
+// @version      2.6.5
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon
 // @include      https://www.reddit.com/live/*
@@ -194,7 +194,29 @@
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }
 
-            
+        // emote support
+        if (!$("body").hasClass("rlc-noemotes")) {
+            if(line.indexOf(":)") !== -1){
+                first_line.html(first_line.html().replace(":)", "<span class='mrPumpkin mp_smile'></span>")); 
+            }
+            if(line.indexOf(":(") !== -1){
+                if(line.indexOf(":((") !== -1){
+                    first_line.html(first_line.html().replace(":((", "<span class='mrPumpkin mp_angry'></span>")); 
+                }
+                else { 
+                    first_line.html(first_line.html().replace(":(", "<span class='mrPumpkin mp_frown'></span>")); 
+                }
+            }
+            if(line.indexOf(":s") !== -1){
+                first_line.html(first_line.html().replace(":s", "<span class='mrPumpkin mp_silly'></span>")); 
+            }
+            if(line.indexOf(":|") !== -1){
+                first_line.html(first_line.html().replace(":|", "<span class='mrPumpkin mp_meh'></span>")); 
+            }
+            if(line.indexOf(":o") !== -1){
+                first_line.html(first_line.html().replace(":o", "<span class='mrPumpkin mp_shocked'></span>")); 
+            }
+        }
         // insert time
         $usr.before($ele.find("time"));
 
@@ -739,6 +761,7 @@
         text_area.on('keydown', function(e) {
             if (e.keyCode == 9) {e.preventDefault();}
             if (e.keyCode == 13) {
+                $(this).val($(".usertext-edit textarea").val().replace("#", ""));                  
                 if (e.shiftKey) {  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
                 else {
