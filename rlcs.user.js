@@ -204,6 +204,7 @@
             });
         }
             
+        first_line.html(first_line.html()+" ");
         // insert time
         $usr.before($ele.find("time"));
 
@@ -757,10 +758,6 @@
                     if(text_area.val().indexOf("/edit") === 0 ){   //navigate via slash command to the edit page
                         $(this).val(''); //prevents message from being sent, e.preventDefault does not seem to in case of redirects
                         window.location.href = "edit";  
-                    }
-                    // prevent default embed behavior when links are posted 
-                    if(text_area.val().indexOf("http") === 0 || text_area.val().indexOf("www") === 0 ){
-                        $(this).val($(".usertext-edit textarea").val() + ' ');
                     }
                     if(text_area.val().indexOf("/version") === 0){ 
                         $(this).val("RLC v."+GM_info.script.version+" has been released. Use the link in the sidebar to update.");
