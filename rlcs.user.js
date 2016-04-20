@@ -37,7 +37,7 @@
     var activeUserTimes = [];
     var updateArray = [];
     
-    var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly",":|":"meh",":o":"shocked"};
+    var emojiList={ ":)":"smile", ":((":"angry", ":(":"frown", ":s":"silly", ":I":"meh", ":|":"meh", ":/":"meh", ":o":"shocked"};
     
     // Html for injection, inserted at doc.ready
     var htmlPayload = '  \
@@ -271,9 +271,10 @@
         // emote support
         if(GM_getValue("rlc-enhance-NoSmileys") === 'false'){            
             $.each(emojiList,function(emoji,replace){
-                if(line.indexOf(emoji) != -1){
+                if(line.toLowerCase().indexOf(emoji.toLowerCase()) != -1 && line.indexOf("http") == -1){
 					if($msg.has("h1").length==0 && $msg.has("li").length==0 && $msg.has("code").length==0 && $msg.has("table").length==0){
-						first_line.html(first_line.html().replace(emoji, "<span class='mrPumpkin mp_"+replace+"'></span>")); 
+						first_line.html(first_line.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
+						first_line.html(first_line.html().split(emoji.toLowerCase()).join("<span class='mrPumpkin mp_"+replace+"'></span>"));
 					}
                 }
             });
