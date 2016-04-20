@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.12
+// @version      2.6.13
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -93,7 +93,7 @@
         ';
 
     /* party time updates */
-    $.fn.makeItRain = function(){
+  /*  $.fn.makeItRain = function(){
 
 		$(this).on('click',function(){
 
@@ -131,7 +131,7 @@
 		}); //end for loop
 
 	}; //end make it rain fn.
-
+*/
     
     
     
@@ -472,10 +472,10 @@
                 
                 $usr.attr("target","_blank");
                 
-                if(text.indexOf("has been released") !== -1){
+                /*if(text.indexOf("has been released") !== -1){
                     $('.state').makeItRain();
                     $(".state").click();
-                 }
+                 }*/
                 
                  //mention sound effect player
                  if(text.indexOf(robin_user) !== -1){
@@ -1560,7 +1560,7 @@ body { \
     display: none; \
 } \
  \
- /* partytime updates */\
+/* /* partytime updates */\
 @keyframes sway { \
   0%{ \
     top:-20px; \
@@ -1748,5 +1748,5 @@ span.billsBillsBills { \
   z-index: 100; \
   -webkit-animation: drop 4s linear; \
   animation: drop 4s linear; \
-   } \
+   }*/ \
 ");
