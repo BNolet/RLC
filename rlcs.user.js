@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.7.2
+// @version      2.7.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -37,7 +37,7 @@
     var activeUserTimes = [];
     var updateArray = [];
     
-    var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly", ":S":"silly", ":l":"meh",  ":|":"meh", ":/":"meh",":o":"shocked",":O":"shocked"};
+    var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly",":|":"meh",":o":"shocked"};
     
     // Html for injection, inserted at doc.ready
     var htmlPayload = '  \
