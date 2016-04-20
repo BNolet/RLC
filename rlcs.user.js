@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.7
+// @version      2.6.8
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -92,6 +92,43 @@
             </div> \
         ';
 
+    /* party time updates */
+    $.fn.makeItRain = function(){
+
+		$(this).on('click',function(){
+
+			var maxBills = 25;
+
+			for (var i = 0; i < maxBills; i++){
+
+			var random = $(window).width();
+
+			var randomPosition = Math.floor(random*Math.random());
+
+			var randomTime = Math.random() * 6;
+			var randomSpeed = (Math.random()*10)+15 ;
+
+			var bills = $("<span class='billsBillsBills'>")
+				.css({
+					left : randomPosition,
+					top: '-150px',
+					"-webkit-animation-delay" : randomTime + "s",
+					"-webkit-animation-duration" : randomSpeed + "s"
+				});
+
+				$(bills).prepend('<span class="mrPumpkin"></span>');
+
+				$('body').append(bills);
+
+			}; // end click function
+
+		}); //end for loop
+
+	}; //end make it rain fn.
+
+    
+    
+    
     // Scroll chat back to bottom
     var _scroll_to_bottom = function(){
         if ($(document.body).hasClass("allowHistoryScroll")) {
@@ -188,6 +225,10 @@
             $ele.addClass("user-mention");
         }
 
+        if(line.indexOf("RLC v.") !== -1){
+            $(".state").click();
+        }
+
         // /me support
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
@@ -203,8 +244,15 @@
                 }
             });
         }
+
+                    /*
+                    // prevent default embed behavior when links are posted 
+                    if(text_area.val().indexOf("http") === 0 || text_area.val().indexOf("www") === 0 ){
+                        $(this).val($(".usertext-edit textarea").val() + ' ');
+                    }*/
             
         first_line.html(first_line.html()+" ");
+
         // insert time
         $usr.before($ele.find("time"));
 
@@ -705,7 +753,8 @@
 
         $(".usertext-edit.md-container textarea").attr("tabindex","0"); //fixes autocomplete
         var text_area = $(".usertext-edit.md-container textarea");
-
+         
+        $('.state').makeItRain();
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
             event.preventDefault();
@@ -1486,4 +1535,115 @@ body { \
 #rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .rlc-showreadmebar #rlc-sidebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #rlc-main .liveupdate-listing .separator, #liveupdate-options, .footer-parent, body > .content { \
     display: none; \
 } \
+ \
+ /* partytime updates */ \
+@-webkit-keyframes sway { \
+  0%{ \
+    top:-20px; \
+    -webkit-transform: rotateX(-20deg); \
+        transform: rotateX(-20deg); \
+  } \
+ \
+  3%{ \
+     margin-left: -2%; \
+         -webkit-transform: rotateX(-80deg); \
+          transform: rotateX(-80deg); \
+  } \
+ \
+  7% { \
+    margin-left:1% \
+     -webkit-transform: rotateX(-170deg); \
+          transform: rotateX(-170deg); \
+  } \
+  10% { \
+    margin-left: 2%; \
+    -webkit-transform: rotateX(-230deg); \
+          transform: rotateX(-230deg); \
+     } \
+   16% { \
+      margin-left: 5%; \
+            -webkit-transform: rotateX(-250deg); \
+          transform: rotateX(-250deg); \
+   } \
+   22% { \
+     margin-left: 3%; \
+          -webkit-transform: rotateX(-280deg); \
+          transform: rotateX(-280deg); \
+   } \
+ \
+  28% { \
+    margin-left: 0%; \
+        -webkit-transform: rotateX(-300deg); \
+          transform: rotateX(-300deg); \
+     } \
+ \
+  35% { \
+    margin-left: 3.5%; \
+      -webkit-transform: rotateX(-310deg); \
+          transform: rotateX(-310deg); \
+  } \
+ \
+  48% { \
+    margin-left: 1%; \
+     -webkit-transform: rotateX(-350deg); \
+          transform: rotateX(-350deg); \
+     } \
+ \
+   58% { \
+    margin-left: 3.5%; \
+     -webkit-transform: rotateX(-310deg); \
+          transform: rotateX(-310deg); \
+   } \
+ \
+   70%{ \
+      margin-left: 0.5%; \
+         -webkit-transform: rotateX(-280deg); \
+          transform: rotateX(-280deg); \
+   } \
+ \
+  83% { \
+    margin-left: -2%; \
+     -webkit-transform: rotateX(-230deg); \
+          transform: rotateX(-230deg); \
+ \
+} \
+ \
+  95% { \
+    margin-left: 2%; \
+  -webkit-transform: rotateX(-200deg); \
+          transform: rotateX(-200deg); \
+     } \
+ \
+  100% { \
+    margin-left: 3%; \
+    top: 100%; }  \
+} \
+ \
+ \
+span.billsBillsBills { \
+  padding: 5px; \
+  display: block; \
+  position: absolute; \
+  z-index: 100; \
+  -webkit-animation: sway 30s ease-out; \
+  animation: sway 30s ease-out; \
+   } \
+ \
+@-webkit-keyframes drop{ \
+  0%{ \
+    top:0%; \
+  } \
+    \
+  100%{ \
+    top: 100%; \
+  } \
+} \
+   span.coinsCoinsCoins{ \
+  padding: 5px; \
+  display: block; \
+  position: absolute; \
+  z-index: 100; \
+  -webkit-animation: drop 4s linear; \
+  animation: drop 4s linear; \
+   } \
 ");
