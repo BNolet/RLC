@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.13
+// @version      2.7
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1769,4 +1769,5 @@ span.billsBillsBills { \
   -webkit-animation: drop 4s linear; \
   animation: drop 4s linear; \
    }*/ \
+aside.sidebar .md h3, aside.sidebar .md h4, aside.sidebar .md h5, aside.sidebar .md h6 { color:inherit;} \
 ");
