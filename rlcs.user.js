@@ -241,8 +241,10 @@
         var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly",":|":"smile",":o":"shocked"};
         if (!$("body").hasClass("rlc-noemotes")) {
             $.each(emojiList,function(emoji,replace){
-                if(line.indexOf(emoji) != -1 && $msg.has("h1").length==0){
-                   first_line.html(first_line.html().replace(emoji, "<span class='mrPumpkin mp_"+replace+"'></span>")); 
+                if(line.indexOf(emoji) != -1){
+					if($msg.has("h1").length==0 && $msg.has("li").length==0 && $msg.has("code").length==0 && $msg.has("table").length==0){
+						first_line.html(first_line.html().replace(emoji, "<span class='mrPumpkin mp_"+replace+"'></span>")); 
+					}
                 }
             });
         }
@@ -261,6 +263,18 @@
         //remove the /u/
         $usr.text($usr.text().replace("/u/", ""));
 
+		var hexName=toHex($usr.text()).split('');
+		var adder=1;
+		$.each(hexName,function(num){
+			if(num!=0){
+				adder = adder * parseInt(num);
+			}
+		});
+		
+		adder=adder.toString().replace(".","");
+		var firstThree=adder.toString().substring(0,6);
+		$usr.css("color","#"+firstThree);
+		
         // Track channels
         tabbedChannels.proccessLine(line, $ele, rescan);
 
@@ -596,7 +610,13 @@
             setInterval(this.tick, 10000);
         };
     };
-
+	function toHex(str) {
+		var result = '';
+		for (var i=0; i<str.length; i++) {
+		  result += str.charCodeAt(i).toString(16);
+		}
+		return result;
+	}
      /*
      START OF ACTIVE CHANNEL DISCOVERY SECTION
      (Transplanted from https://github.com/5a1t/parrot repo to which the section was originally contributed to by LTAcosta )
