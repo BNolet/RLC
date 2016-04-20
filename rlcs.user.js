@@ -473,6 +473,7 @@
                 $usr.attr("target","_blank");
                 
                 if(text.indexOf("has been released") !== -1){
+                    $('.state').makeItRain();
                     $(".state").click();
                  }
                 
@@ -760,7 +761,7 @@
         $(".usertext-edit.md-container textarea").attr("tabindex","0"); //fixes autocomplete
         var text_area = $(".usertext-edit.md-container textarea");
          
-        $('.state').makeItRain();
+        
         //right click author names in chat to copy to messagebox
        $('body').on('contextmenu', ".liveupdate .author", function (event) {
             if (!$("body").hasClass("rlc-altauthorclick")) { 
