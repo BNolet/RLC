@@ -241,8 +241,10 @@
         var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly",":|":"smile",":o":"shocked"};
         if (!$("body").hasClass("rlc-noemotes")) {
             $.each(emojiList,function(emoji,replace){
-                if(line.indexOf(emoji) != -1 && $msg.has("h1").length==0){
-                   first_line.html(first_line.html().replace(emoji, "<span class='mrPumpkin mp_"+replace+"'></span>")); 
+                if(line.indexOf(emoji) != -1){
+					if($msg.has("h1").length==0 && $msg.has("li").length==0 && $msg.has("code").length==0 && $msg.has("table").length==0){
+						first_line.html(first_line.html().replace(emoji, "<span class='mrPumpkin mp_"+replace+"'></span>")); 
+					}
                 }
             });
         }
