@@ -263,6 +263,18 @@
         //remove the /u/
         $usr.text($usr.text().replace("/u/", ""));
 
+		var hexName=toHex($usr.text()).split('');
+		var adder=1;
+		$.each(hexName,function(num){
+			if(num!=0){
+				adder = adder * parseInt(num);
+			}
+		});
+		
+		adder=adder.toString().replace(".","");
+		var firstThree=adder.toString().substring(0,6);
+		$usr.css("color","#"+firstThree);
+		
         // Track channels
         tabbedChannels.proccessLine(line, $ele, rescan);
 
@@ -598,7 +610,13 @@
             setInterval(this.tick, 10000);
         };
     };
-
+	function toHex(str) {
+		var result = '';
+		for (var i=0; i<str.length; i++) {
+		  result += str.charCodeAt(i).toString(16);
+		}
+		return result;
+	}
      /*
      START OF ACTIVE CHANNEL DISCOVERY SECTION
      (Transplanted from https://github.com/5a1t/parrot repo to which the section was originally contributed to by LTAcosta )
