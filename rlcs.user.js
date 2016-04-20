@@ -235,7 +235,7 @@
         var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly",":|":"smile",":o":"shocked"};
         if (!$("body").hasClass("rlc-noemotes")) {
             $.each(emojiList,function(emoji,replace){
-                if(line.indexOf(emoji) != -1){
+                if(line.indexOf(emoji) != -1 && $msg.has("h1").length==0){
                    first_line.html(first_line.html().replace(emoji, "<span class='mrPumpkin mp_"+replace+"'></span>")); 
                 }
             });
@@ -810,7 +810,6 @@
         
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
-            $(this).val($(".usertext-edit textarea").val().replace("#", ""));
             if (e.keyCode == 9) {e.preventDefault();}
             if (e.keyCode == 13) {                  
                 if (e.shiftKey) {  }
