@@ -113,7 +113,13 @@
 					left : randomPosition,
 					top: '-150px',
 					"-webkit-animation-delay" : randomTime + "s",
-					"-webkit-animation-duration" : randomSpeed + "s"
+					"-webkit-animation-duration" : randomSpeed + "s",
+					"-webkit-animation": "sway 30s ease-out",
+					"-webkit-animation-fill-mode": "forwards",
+					"animation-delay" : randomTime + "s",
+					"animation-duration" : randomSpeed + "s",
+					"animation": "sway 30s ease-out",
+					"animation-fill-mode": "forwards"
 				});
 
 				$(bills).prepend('<span class="mrPumpkin"></span>');
@@ -1554,7 +1560,88 @@ body { \
     display: none; \
 } \
  \
- /* partytime updates */ \
+ /* partytime updates */\
+@keyframes sway { \
+  0%{ \
+    top:-20px; \
+    -webkit-transform: rotateX(-20deg); \
+        transform: rotateX(-20deg); \
+  } \
+ \
+  3%{ \
+     margin-left: -2%; \
+         -webkit-transform: rotateX(-80deg); \
+          transform: rotateX(-80deg); \
+  } \
+ \
+  7% { \
+    margin-left:1% \
+     -webkit-transform: rotateX(-170deg); \
+          transform: rotateX(-170deg); \
+  } \
+  10% { \
+    margin-left: 2%; \
+    -webkit-transform: rotateX(-230deg); \
+          transform: rotateX(-230deg); \
+     } \
+   16% { \
+      margin-left: 5%; \
+            -webkit-transform: rotateX(-250deg); \
+          transform: rotateX(-250deg); \
+   } \
+   22% { \
+     margin-left: 3%; \
+          -webkit-transform: rotateX(-280deg); \
+          transform: rotateX(-280deg); \
+   } \
+ \
+  28% { \
+    margin-left: 0%; \
+        -webkit-transform: rotateX(-300deg); \
+          transform: rotateX(-300deg); \
+     } \
+ \
+  35% { \
+    margin-left: 3.5%; \
+      -webkit-transform: rotateX(-310deg); \
+          transform: rotateX(-310deg); \
+  } \
+ \
+  48% { \
+    margin-left: 1%; \
+     -webkit-transform: rotateX(-350deg); \
+          transform: rotateX(-350deg); \
+     } \
+ \
+   58% { \
+    margin-left: 3.5%; \
+     -webkit-transform: rotateX(-310deg); \
+          transform: rotateX(-310deg); \
+   } \
+ \
+   70%{ \
+      margin-left: 0.5%; \
+         -webkit-transform: rotateX(-280deg); \
+          transform: rotateX(-280deg); \
+   } \
+ \
+  83% { \
+    margin-left: -2%; \
+     -webkit-transform: rotateX(-230deg); \
+          transform: rotateX(-230deg); \
+ \
+} \
+ \
+  95% { \
+    margin-left: 2%; \
+  -webkit-transform: rotateX(-200deg); \
+          transform: rotateX(-200deg); \
+     } \
+ \
+  100% { \
+    margin-left: 3%; \
+    top: 100%; }  \
+} \
 @-webkit-keyframes sway { \
   0%{ \
     top:-20px; \
@@ -1643,8 +1730,6 @@ span.billsBillsBills { \
   display: block; \
   position: absolute; \
   z-index: 100; \
-  -webkit-animation: sway 30s ease-out; \
-  animation: sway 30s ease-out; \
    } \
  \
 @-webkit-keyframes drop{ \
