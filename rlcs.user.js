@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.13
+// @version      2.7.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -36,6 +36,8 @@
     var activeUserArray = [];
     var activeUserTimes = [];
     var updateArray = [];
+    
+    var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly", ":S":"silly", ":l":"meh",  ":|":"meh", ":/":"meh",":o":"shocked",":O":"shocked"};
     
     // Html for injection, inserted at doc.ready
     var htmlPayload = '  \
@@ -160,6 +162,36 @@
         return message;
     };
 
+    function LightenDarkenColor(col, amt) {
+  
+    var usePound = false;
+  
+    if (col[0] == "#") {
+        col = col.slice(1);
+        usePound = true;
+    }
+ 
+    var num = parseInt(col,16);
+ 
+    var r = (num >> 16) + amt;
+ 
+    if (r > 255) r = 255;
+    else if  (r < 0) r = 0;
+ 
+    var b = ((num >> 8) & 0x00FF) + amt;
+ 
+    if (b > 255) b = 255;
+    else if  (b < 0) b = 0;
+ 
+    var g = (num & 0x0000FF) + amt;
+ 
+    if (g > 255) g = 255;
+    else if (g < 0) g = 0;
+ 
+    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+  
+}
+    
    function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
         if(time.indexOf('am') != -1 && hours == 12) {
@@ -191,7 +223,6 @@
         var checked_markup;
         var key = "rlc-enhance-" + name.replace(/\W/g, '');
         var state = (typeof default_state !== "undefined") ? default_state : false;
-
         // try and state if setting is defined
         if(GM_getValue(key)){
             state = (GM_getValue(key) === 'true') ? true : false;
@@ -238,8 +269,7 @@
         }
 
         // emote support
-        var emojiList={":)":"smile",":((":"angry",":(":"frown",":s":"silly",":|":"smile",":o":"shocked"};
-        if (!$("body").hasClass("rlc-noemotes")) {
+        if(GM_getValue("rlc-enhance-NoSmileys") === 'false'){            
             $.each(emojiList,function(emoji,replace){
                 if(line.indexOf(emoji) != -1){
 					if($msg.has("h1").length==0 && $msg.has("li").length==0 && $msg.has("code").length==0 && $msg.has("table").length==0){
@@ -248,13 +278,8 @@
                 }
             });
         }
-
-                    /*
-                    // prevent default embed behavior when links are posted 
-                    if(text_area.val().indexOf("http") === 0 || text_area.val().indexOf("www") === 0 ){
-                        $(this).val($(".usertext-edit textarea").val() + ' ');
-                    }*/
-            
+        
+        // prevent embedly iframe link handling
         first_line.html(first_line.html()+" ");
 
         // insert time
@@ -273,7 +298,14 @@
 		
 		adder=adder.toString().replace(".","");
 		var firstThree=adder.toString().substring(0,6);
-		$usr.css("color","#"+firstThree);
+            if( GM_getValue("rlc-enhance-DarkMode") === 'true'){
+                var lightercolor = LightenDarkenColor("#"+firstThree, 150);
+                 $usr.css("color",lightercolor);
+            }
+            else {
+                var darkercolor = LightenDarkenColor("#"+firstThree,60);
+                $usr.css("color",darkercolor);
+            }
 		
         // Track channels
         tabbedChannels.proccessLine(line, $ele, rescan);
@@ -493,7 +525,6 @@
                 
                  //mention sound effect player
                  if(text.indexOf(robin_user) !== -1){
-                     console.log("soundeffect!");
                      if ($("body").hasClass("rlc-notificationsound")) {
                          player.play();
                      }
@@ -817,13 +848,8 @@
         });
 
         $("#rlc-togglesidebar").click(function(){       $("body").toggleClass("rlc-hidesidebar");});
-
-        $("#rlc-chatsidebartoggle").click(function(){   $("body").toggleClass("rlc-hidesidebar");});
-
         $("#rlc-toggleoptions").click(function(){       $("body").toggleClass("rlc-showoptions");});
-
         $("#versionnumber").click(function(){           $("body").toggleClass("rlc-showreadmebar");});
-
         $("#rlc-sendmessage").click(function(){         (".save-button .btn").click();});
         
         $('.usertext-edit textarea').autocomplete({
@@ -1769,4 +1795,5 @@ span.billsBillsBills { \
   -webkit-animation: drop 4s linear; \
   animation: drop 4s linear; \
    }*/ \
+aside.sidebar .md h3, aside.sidebar .md h4, aside.sidebar .md h5, aside.sidebar .md h6 { color:inherit;} \
 ");
