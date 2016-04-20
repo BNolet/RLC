@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.8.1
+// @version      2.6.9
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -756,12 +756,24 @@
          
         $('.state').makeItRain();
         //right click author names in chat to copy to messagebox
-        $('body').on('contextmenu', ".liveupdate .author", function (event) {
+       $('body').on('contextmenu', ".liveupdate .author", function (event) {
+            if (!$("body").hasClass("rlc-altauthorclick")) { 
             event.preventDefault();
             var username = String($(this).text()).trim();
             var source = String($(".usertext-edit.md-container textarea").val());
             // Focus textarea and set the value of textarea
             $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
+            }
+        });
+        
+        $(".liveupdate .author").click(function(event){ 
+            if ($("body").hasClass("rlc-altauthorclick")) { 
+            event.preventDefault();
+            var username = String($(this).text()).trim();
+            var source = String($(".usertext-edit.md-container textarea").val());
+            // Focus textarea and set the value of textarea
+            $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
+            }
         });
 
 
@@ -925,7 +937,13 @@
             }else{
                 $("body").removeClass("rlc-noemotes");
             }
-            _scroll_to_bottom();
+        },false);
+        createOption("Alt. Author click behavior", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-altauthorclick");
+            }else{
+                $("body").removeClass("rlc-altauthorclick");
+            }
         },false);
         
     });
