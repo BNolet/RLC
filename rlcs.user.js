@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.9
+// @version      2.6.11
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -766,7 +766,7 @@
             }
         });
         
-        $(".liveupdate .author").click(function(event){ 
+        $('body').on('click', ".liveupdate .author", function (event) {
             if ($("body").hasClass("rlc-altauthorclick")) { 
             event.preventDefault();
             var username = String($(this).text()).trim();
