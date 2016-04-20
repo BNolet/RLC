@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.6.8
+// @version      2.6.8.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -97,7 +97,7 @@
 
 		$(this).on('click',function(){
 
-			var maxBills = 25;
+			var maxBills = 50;
 
 			for (var i = 0; i < maxBills; i++){
 
@@ -106,7 +106,7 @@
 			var randomPosition = Math.floor(random*Math.random());
 
 			var randomTime = Math.random() * 6;
-			var randomSpeed = (Math.random()*10)+15 ;
+			var randomSpeed = (Math.random()*20)+10 ;
 
 			var bills = $("<span class='billsBillsBills'>")
 				.css({
@@ -223,10 +223,6 @@
         // Highlight mentions
         if(line.indexOf(robin_user) !== -1){
             $ele.addClass("user-mention");
-        }
-
-        if(line.indexOf("RLC v.") !== -1){
-            $(".state").click();
         }
 
         // /me support
@@ -469,6 +465,10 @@
                 activeUserTimes.push(militarytime);
                 
                 $usr.attr("target","_blank");
+                
+                if(text.indexOf("has been released") !== -1){
+                    $(".state").click();
+                 }
                 
                  //mention sound effect player
                  if(text.indexOf(robin_user) !== -1){
