@@ -959,7 +959,7 @@ GM_addStyle(" /* base 64 encoded emote spritesheet */ \
 GM_addStyle("/*-------------------------------- Core - Custom Containers ------------------------------------- */ \
 #rlc-main p { \
     line-height: 24px!important; \
-    font-size:12px;
+    font-size:12px; \
 } \
  \
 #rlc-main { \
