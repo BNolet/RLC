@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.7.4.3
+// @version      2.7.4.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -17,13 +17,14 @@
 // @grant       GM_getValue
 // ==/UserScript==
 (function() {
+    /*----------------------------------------------------------GLOBAL VARIABLES -------------------------------------------------------------------*/
     // Grab users username + play nice with RES
     var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
     // Channel Colours
     var colors = [
         'rgba(255,0,0,0.1)','rgba(0,255,0,0.1)','rgba(0,0,255,0.1)','rgba(0,255,255,0.1)','rgba(255,0,255,0.1)','rgba(255,255,0,0.1)','rgba(211,211,211, .1)','rgba(0,100,0, .1)','rgba(255,20,147, .1)','rgba(184,134,11, .1)'
     ];
-
+    // notification sound
     var player = document.createElement('audio');
     player.src = 'https://dl.dropbox.com/u/7079101/coin.mp3';
     player.preload = "auto";
@@ -37,6 +38,7 @@
     var activeUserTimes = [];
     var updateArray = [];
     
+    // emoji trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
     var emojiList={ ":)":"smile", ":((":"angry", ":(":"frown", ":s":"silly", ":I":"meh", ":|":"meh", ":/":"meh", ":o":"shocked"};
     
     // Html for injection, inserted at doc.ready
@@ -93,49 +95,27 @@
             </div> \
             </div> \
         ';
-
-    /* party time updates */
-  /*  $.fn.makeItRain = function(){
-
-		$(this).on('click',function(){
-
-			var maxBills = 50;
-
-			for (var i = 0; i < maxBills; i++){
-
-			var random = $(window).width();
-
-			var randomPosition = Math.floor(random*Math.random());
-
-			var randomTime = Math.random() * 6;
-			var randomSpeed = (Math.random()*20)+10 ;
-
-			var bills = $("<span class='billsBillsBills'>")
-				.css({
-					left : randomPosition,
-					top: '-150px',
-					"-webkit-animation-delay" : randomTime + "s",
-					"-webkit-animation-duration" : randomSpeed + "s",
-					"-webkit-animation": "sway 30s ease-out",
-					"-webkit-animation-fill-mode": "forwards",
-					"animation-delay" : randomTime + "s",
-					"animation-duration" : randomSpeed + "s",
-					"animation": "sway 30s ease-out",
-					"animation-fill-mode": "forwards"
-				});
-
-				$(bills).prepend('<span class="mrPumpkin"></span>');
-
-				$('body').append(bills);
-
-			}; // end click function
-
-		}); //end for loop
-
-	}; //end make it rain fn.
-*/
+    /*---------------------------------------------------------- Functions -------------------------------------------------------------------*/
+    //convert string to hex (for user colors)
+    function toHex(str) {
+		var result = '';
+		for (var i=0; i<str.length; i++) {
+		  result += str.charCodeAt(i).toString(16);
+		}
+		return result;
+	}
     
-    
+    //timeconverter for active user list
+   function convertTo24Hour(time) {
+        var hours = parseInt(time.substr(0, 2));
+        if(time.indexOf('am') != -1 && hours == 12) {
+            time = time.replace('12', '0');
+        }
+        if(time.indexOf('pm')  != -1 && hours < 12) {
+            time = time.replace(hours, (hours + 12));
+        }
+        return time.replace(/(am|pm)/, '');
+    }      
     
     // Scroll chat back to bottom
     var _scroll_to_bottom = function(){
@@ -161,48 +141,35 @@
         }
         return message;
     };
-
-    function LightenDarkenColor(col, amt) {
-  
-    var usePound = false;
-  
-    if (col[0] == "#") {
-        col = col.slice(1);
-        usePound = true;
-    }
- 
-    var num = parseInt(col,16);
- 
-    var r = (num >> 16) + amt;
- 
-    if (r > 255) r = 255;
-    else if  (r < 0) r = 0;
- 
-    var b = ((num >> 8) & 0x00FF) + amt;
- 
-    if (b > 255) b = 255;
-    else if  (b < 0) b = 0;
- 
-    var g = (num & 0x0000FF) + amt;
- 
-    if (g > 255) g = 255;
-    else if (g < 0) g = 0;
- 
-    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
-  
-}
     
-   function convertTo24Hour(time) {
-        var hours = parseInt(time.substr(0, 2));
-        if(time.indexOf('am') != -1 && hours == 12) {
-            time = time.replace('12', '0');
+    //brighten a color by an amount (for user colors)
+    function LightenDarkenColor(col, amt) {
+        var usePound = false;
+        if (col[0] == "#") {
+            col = col.slice(1);
+            usePound = true;
         }
-        if(time.indexOf('pm')  != -1 && hours < 12) {
-            time = time.replace(hours, (hours + 12));
-        }
-        return time.replace(/(am|pm)/, '');
-    }  
+        var num = parseInt(col,16);
+ 
+        var r = (num >> 16) + amt;
+ 
+        if (r > 255) r = 255;
+        else if  (r < 0) r = 0;
 
+        var b = ((num >> 8) & 0x00FF) + amt;
+
+        if (b > 255) b = 255;
+        else if  (b < 0) b = 0;
+
+        var g = (num & 0x0000FF) + amt;
+
+        if (g > 255) g = 255;
+        else if (g < 0) g = 0;
+
+        return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+
+    }
+    
     function processActiveUsersList() { 
         $("#rlc-activeusers ul").empty();
         updateArray = [];
@@ -642,13 +609,6 @@
             setInterval(this.tick, 10000);
         };
     };
-	function toHex(str) {
-		var result = '';
-		for (var i=0; i<str.length; i++) {
-		  result += str.charCodeAt(i).toString(16);
-		}
-		return result;
-	}
      /*
      START OF ACTIVE CHANNEL DISCOVERY SECTION
      (Transplanted from https://github.com/5a1t/parrot repo to which the section was originally contributed to by LTAcosta )
@@ -865,8 +825,8 @@
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
             if (e.keyCode == 9) {e.preventDefault();}
-            if (e.keyCode == 13) {                  
-                if (e.shiftKey) {  }
+            if (e.keyCode == 13) {
+                if (e.shiftKey) { /* exit enter handling to allow shift+enter newline */  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
                 else {
                     if(text_area.val().indexOf("/edit") === 0 ){   //navigate via slash command to the edit page
@@ -916,7 +876,6 @@
             }
             _scroll_to_bottom();
         },false);
-
         createOption("History Mode [BETA]", function(checked, ele){
             if(checked){
                 $("body").addClass("allowHistoryScroll");
@@ -933,7 +892,6 @@
             // correct scroll after spam filter change
             _scroll_to_bottom();
         },false);
-
         createOption("Dark Mode", function(checked, ele){
             if(checked){
                 $("body").addClass("dark-background");
@@ -941,7 +899,6 @@
                 $("body").removeClass("dark-background");
             }
         },false);
-
         createOption("Simple Timestamps", function(checked, ele){
             if(checked){
                 $("body").addClass("simpleTimestamps");
@@ -950,7 +907,6 @@
             }
             _scroll_to_bottom();
         },false);
-
         createOption("Compact Mode", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-compact");
@@ -958,9 +914,7 @@
                 $("body").removeClass("rlc-compact");
             }
             _scroll_to_bottom();
-        },false);
-        
-
+        },false);  
         createOption("Notification Sound", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-notificationsound");
@@ -969,7 +923,6 @@
             }
             _scroll_to_bottom();
         },false);
-
         createOption("Chrome Notifications", function(checked, ele){
             if(checked && Notification && !Notification.permission !== "granted"){
                 Notification.requestPermission();
@@ -980,7 +933,6 @@
                 }
 	        }
         },false);
-
         createOption("Custom Scroll Bars", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-customscrollbars");
@@ -988,8 +940,7 @@
                 $("body").removeClass("rlc-customscrollbars");
             }
             _scroll_to_bottom();
-        },false);
-        
+        },false);        
         createOption("No Smileys", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-noemotes");
@@ -1003,8 +954,7 @@
             }else{
                 $("body").removeClass("rlc-altauthorclick");
             }
-        },false);
-        
+        },false);        
     });
 
     var color;
@@ -1249,6 +1199,7 @@ div#rlc-chat { \
  \
 #filter_tabs > span.all { \
     padding: 0px 30px; \
+    height:24px; \
 } \
  \
 #filter_tabs > span.more { \
@@ -1611,195 +1562,6 @@ body { \
 #rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .rlc-showreadmebar #rlc-sidebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #rlc-main .liveupdate-listing .separator, #liveupdate-options, .footer-parent, body > .content { \
     display: none; \
 } \
+#rlc-sidebar .sidebar .md h3, #rlc-sidebar aside.sidebar .md h4, #rlc-sidebar aside.sidebar .md h5, #rlc-sidebar aside.sidebar .md h6 { color:inherit;} \
  \
-/* /* partytime updates */\
-@keyframes sway { \
-  0%{ \
-    top:-20px; \
-    -webkit-transform: rotateX(-20deg); \
-        transform: rotateX(-20deg); \
-  } \
- \
-  3%{ \
-     margin-left: -2%; \
-         -webkit-transform: rotateX(-80deg); \
-          transform: rotateX(-80deg); \
-  } \
- \
-  7% { \
-    margin-left:1% \
-     -webkit-transform: rotateX(-170deg); \
-          transform: rotateX(-170deg); \
-  } \
-  10% { \
-    margin-left: 2%; \
-    -webkit-transform: rotateX(-230deg); \
-          transform: rotateX(-230deg); \
-     } \
-   16% { \
-      margin-left: 5%; \
-            -webkit-transform: rotateX(-250deg); \
-          transform: rotateX(-250deg); \
-   } \
-   22% { \
-     margin-left: 3%; \
-          -webkit-transform: rotateX(-280deg); \
-          transform: rotateX(-280deg); \
-   } \
- \
-  28% { \
-    margin-left: 0%; \
-        -webkit-transform: rotateX(-300deg); \
-          transform: rotateX(-300deg); \
-     } \
- \
-  35% { \
-    margin-left: 3.5%; \
-      -webkit-transform: rotateX(-310deg); \
-          transform: rotateX(-310deg); \
-  } \
- \
-  48% { \
-    margin-left: 1%; \
-     -webkit-transform: rotateX(-350deg); \
-          transform: rotateX(-350deg); \
-     } \
- \
-   58% { \
-    margin-left: 3.5%; \
-     -webkit-transform: rotateX(-310deg); \
-          transform: rotateX(-310deg); \
-   } \
- \
-   70%{ \
-      margin-left: 0.5%; \
-         -webkit-transform: rotateX(-280deg); \
-          transform: rotateX(-280deg); \
-   } \
- \
-  83% { \
-    margin-left: -2%; \
-     -webkit-transform: rotateX(-230deg); \
-          transform: rotateX(-230deg); \
- \
-} \
- \
-  95% { \
-    margin-left: 2%; \
-  -webkit-transform: rotateX(-200deg); \
-          transform: rotateX(-200deg); \
-     } \
- \
-  100% { \
-    margin-left: 3%; \
-    top: 100%; }  \
-} \
-@-webkit-keyframes sway { \
-  0%{ \
-    top:-20px; \
-    -webkit-transform: rotateX(-20deg); \
-        transform: rotateX(-20deg); \
-  } \
- \
-  3%{ \
-     margin-left: -2%; \
-         -webkit-transform: rotateX(-80deg); \
-          transform: rotateX(-80deg); \
-  } \
- \
-  7% { \
-    margin-left:1% \
-     -webkit-transform: rotateX(-170deg); \
-          transform: rotateX(-170deg); \
-  } \
-  10% { \
-    margin-left: 2%; \
-    -webkit-transform: rotateX(-230deg); \
-          transform: rotateX(-230deg); \
-     } \
-   16% { \
-      margin-left: 5%; \
-            -webkit-transform: rotateX(-250deg); \
-          transform: rotateX(-250deg); \
-   } \
-   22% { \
-     margin-left: 3%; \
-          -webkit-transform: rotateX(-280deg); \
-          transform: rotateX(-280deg); \
-   } \
- \
-  28% { \
-    margin-left: 0%; \
-        -webkit-transform: rotateX(-300deg); \
-          transform: rotateX(-300deg); \
-     } \
- \
-  35% { \
-    margin-left: 3.5%; \
-      -webkit-transform: rotateX(-310deg); \
-          transform: rotateX(-310deg); \
-  } \
- \
-  48% { \
-    margin-left: 1%; \
-     -webkit-transform: rotateX(-350deg); \
-          transform: rotateX(-350deg); \
-     } \
- \
-   58% { \
-    margin-left: 3.5%; \
-     -webkit-transform: rotateX(-310deg); \
-          transform: rotateX(-310deg); \
-   } \
- \
-   70%{ \
-      margin-left: 0.5%; \
-         -webkit-transform: rotateX(-280deg); \
-          transform: rotateX(-280deg); \
-   } \
- \
-  83% { \
-    margin-left: -2%; \
-     -webkit-transform: rotateX(-230deg); \
-          transform: rotateX(-230deg); \
- \
-} \
- \
-  95% { \
-    margin-left: 2%; \
-  -webkit-transform: rotateX(-200deg); \
-          transform: rotateX(-200deg); \
-     } \
- \
-  100% { \
-    margin-left: 3%; \
-    top: 100%; }  \
-} \
- \
- \
-span.billsBillsBills { \
-  padding: 5px; \
-  display: block; \
-  position: absolute; \
-  z-index: 100; \
-   } \
- \
-@-webkit-keyframes drop{ \
-  0%{ \
-    top:0%; \
-  } \
-    \
-  100%{ \
-    top: 100%; \
-  } \
-} \
-   span.coinsCoinsCoins{ \
-  padding: 5px; \
-  display: block; \
-  position: absolute; \
-  z-index: 100; \
-  -webkit-animation: drop 4s linear; \
-  animation: drop 4s linear; \
-   }*/ \
-aside.sidebar .md h3, aside.sidebar .md h4, aside.sidebar .md h5, aside.sidebar .md h6 { color:inherit;} \
 ");
