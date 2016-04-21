@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.8
+// @version      2.8.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1472,12 +1472,14 @@ body { \
     height: 24px; \
     width: 24px; \
     display: inline-block; \
-    border-radius: 6px; \
+    border-radius: 3px; \
     background-size: 144px; \
     margin-top: 0px!important; \
     margin-bottom: -6px!important; \
 } \
- \
+.dark-background .mrPumpkin { \
+border-radius: 5px; \
+} \
 .mp_frown { \
     background-position: -24px 0; \
 } \
