@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.8.1
+// @version      2.8.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -959,6 +959,7 @@ GM_addStyle(" /* base 64 encoded emote spritesheet */ \
 GM_addStyle("/*-------------------------------- Core - Custom Containers ------------------------------------- */ \
 #rlc-main p { \
     line-height: 24px!important; \
+    font-size:12px;
 } \
  \
 #rlc-main { \
