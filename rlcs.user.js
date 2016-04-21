@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.7.4.4
+// @version      2.7.5
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -18,6 +18,13 @@
 // ==/UserScript==
 (function() {
     /*----------------------------------------------------------GLOBAL VARIABLES -------------------------------------------------------------------*/
+    
+    
+    // set default states for options
+     if (!GM_getValue("rlc-NoSmileys")) {      
+        GM_setValue("rlc-NoSmileys", 'false');
+    }
+    
     // Grab users username + play nice with RES
     var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
     // Channel Colours
@@ -59,39 +66,9 @@
             </div> \
             <div id="rlc-readmebar"> \
             <div class="md"> \
-                <strong style="font-size:1.2em">RLC Readme</strong><br> \
-                <small>click version number restore sidebar</small> \
-                <p> \
-                <strong>Primary devs: <br> \
-                <a target="_blank" href="/u/Stjerneklar" rel="nofollow">/u/Stjerneklar</a>&nbsp;(EU)  \
-                <br> <a target="_blank" href="/u/FatherDerp" rel="nofollow">/u/FatherDerp</a>&nbsp;(NA) \
-                </strong> \
-                </p> \
-                <p>Full credits available in Github commit log</p> \
+                <strong style="font-size:1.2em">RLC Feature Guide</strong><br> \
+                <small>click version number again to restore sidebar</small> \
                 <hr> \
-                <p>Check the sidebar for invite info, which is required to post</p> \
-                <hr> \
-                <h4><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update RLC to latest version</a></h4> \
-                <hr> \
-                <h3><a target="_blank" href="https://github.com/BNolet/RLC/" rel="nofollow">RLC Github: Project home, Issue tracking, Readme</a></h3> \
-                <hr> \
-                <h3><a target="_blank" href="https://www.reddit.com/r/fukbird/" rel="nofollow">RLC subreddit</a></h3> \
-                <hr> \
-                <p><strong>Feature highlights:</strong></p> \
-                <ul> \
-                    <li>Chat room layout &amp; message flow</li> \
-                    <li>Send message with <strong>Enter</strong> key</li> \
-                    <li>Press <strong>Up</strong> for message history</li> \
-                    <li><strong>Right click</strong> names to copy to textbox</li> \
-                    <li>Channels(including tabs, creation, deletion, single/multi views)</li> \
-                    <li>Much more (mentions, markdown, /me, embeds turned to links)</li> \
-                </ul> \
-                <hr> \
-                <p><strong>Known issues:</strong></p> \
-                <ul> \
-                    <li>Developed in Chrome, sometimes tested on firefox(please report problems with screenshots)</li> \
-                    <li>Post history loading is experimental and not implemented in a very user friendly way, but does work.</li> \
-                </ul> \
             </div> \
             </div> \
         ';
@@ -184,11 +161,11 @@
         }
         $( ".usertext-edit textarea" ).autocomplete( "option", "source", updateArray );
     }
-
+    
     // create persistant option
     function createOption(name, click_action, default_state){
         var checked_markup;
-        var key = "rlc-enhance-" + name.replace(/\W/g, '');
+        var key = "rlc-" + name.replace(/\W/g, '');
         var state = (typeof default_state !== "undefined") ? default_state : false;
         // try and state if setting is defined
         if(GM_getValue(key)){
@@ -236,7 +213,7 @@
         }
 
         // emote support
-        if(GM_getValue("rlc-enhance-NoSmileys") === 'false'){            
+        if(GM_getValue("rlc-NoSmileys") === 'false'){            
             $.each(emojiList,function(emoji,replace){
                 if(line.toLowerCase().indexOf(emoji.toLowerCase()) != -1 && line.indexOf("http") == -1){
 					if($msg.has("h1").length==0 && $msg.has("li").length==0 && $msg.has("code").length==0 && $msg.has("table").length==0){
@@ -266,7 +243,7 @@
 		
 		adder=adder.toString().replace(".","");
 		var firstThree=adder.toString().substring(0,6);
-            if( GM_getValue("rlc-enhance-DarkMode") === 'true'){
+            if( GM_getValue("rlc-DarkMode") === 'true'){
                 var lightercolor = LightenDarkenColor("#"+firstThree, 150);
                  $usr.css("color",lightercolor);
             }
@@ -420,7 +397,7 @@
         this.saveChannelList = function(){
             // clean array before save
             var channels = this.channels.filter(function (item) { return item !== undefined; });
-            GM_setValue("rlc-enhance-channels", channels);
+            GM_setValue("rlc-channels", channels);
         };
 
         // Change chat mode
@@ -433,7 +410,7 @@
             _self.disable_all_channels();
 
             // Update mode setting
-            GM_setValue("rlc-enhance-mode", _self.mode);
+            GM_setValue("rlc-mode", _self.mode);
         };
 
         this.updateChannelMatchCache = function(){
@@ -555,11 +532,11 @@
         // Init tab zone
         this.init = function($el){
             // Load channels
-            if(GM_getValue("rlc-enhance-channels")){
-                this.channels = GM_getValue("rlc-enhance-channels");
+            if(GM_getValue("rlc-channels")){
+                this.channels = GM_getValue("rlc-channels");
             }
-            if(GM_getValue("rlc-enhance-mode")){
-                this.mode = GM_getValue("rlc-enhance-mode");
+            if(GM_getValue("rlc-mode")){
+                this.mode = GM_getValue("rlc-mode");
             }
 
             // init counters
@@ -883,7 +860,7 @@
                 $("body").removeClass("allowHistoryScroll");
             }
         },false);
-        createOption("Channel colors", function(checked, ele){
+        createOption("Channel Colors", function(checked, ele){
             if(checked){
                 $("#rlc-main").addClass("show-colors");
             }else{
@@ -948,7 +925,7 @@
                 $("body").removeClass("rlc-noemotes");
             }
         },false);
-        createOption("Alt. Author click behavior", function(checked, ele){
+        createOption("Left Click Username Copy", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-altauthorclick");
             }else{
