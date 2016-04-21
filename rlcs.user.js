@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.8.2
+// @version      2.8.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -19,12 +19,17 @@
 (function() {
     /*----------------------------------------------------------GLOBAL VARIABLES -------------------------------------------------------------------*/
     
-    
     // set default states for options
-     if (!GM_getValue("rlc-NoSmileys")) {      
+    if (!GM_getValue("rlc-NoSmileys")) {      
         GM_setValue("rlc-NoSmileys", 'false');
+    }    
+    if (!GM_getValue("rlc-SimpleTimestamps")) {      
+        GM_setValue("rlc-SimpleTimestamps", 'true');
     }
-    
+    if (!GM_getValue("rlc-ChannelColors")) {      
+        GM_setValue("rlc-ChannelColors", 'true');
+    }
+   
     // Grab users username + play nice with RES
     var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
     // Channel Colours
@@ -44,6 +49,8 @@
     var activeUserArray = [];
     var activeUserTimes = [];
     var updateArray = [];
+    
+    var rowalternator = 0;
     
     // emoji trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
     var emojiList={ ":)":"smile", ":((":"angry", ":(":"frown", ":s":"silly", ":I":"meh", ":|":"meh", ":/":"meh", ":o":"shocked",
@@ -167,6 +174,7 @@
     function createOption(name, click_action, default_state){
         var checked_markup;
         var key = "rlc-" + name.replace(/\W/g, '');
+        console.log(key);
         var state = (typeof default_state !== "undefined") ? default_state : false;
         // try and state if setting is defined
         if(GM_getValue(key)){
@@ -206,6 +214,11 @@
         if(line.indexOf(robin_user) !== -1){
             $ele.addClass("user-mention");
         }
+        if(rowalternator === 0) {
+           $ele.addClass("alt-bgcolor");
+            rowalternator = 1;
+        }
+        else { rowalternator = 0; }
 
         // /me support
         if(line.indexOf("/me") === 0){
@@ -959,7 +972,7 @@ GM_addStyle(" /* base 64 encoded emote spritesheet */ \
 GM_addStyle("/*-------------------------------- Core - Custom Containers ------------------------------------- */ \
 #rlc-main p { \
     line-height: 24px!important; \
-    font-size:12px; \
+    font-size: 12px; \
 } \
  \
 #rlc-main { \
@@ -1121,7 +1134,7 @@ div#rlc-chat { \
     font-weight: bold; \
 } \
  \
-#rlc-main .liveupdate-listing .liveupdate:nth-child(odd) { \
+#rlc-main .liveupdate-listing .liveupdate.alt-bgcolor { \
     background: rgba(128,128,128,0.2); \
 } \
  \
