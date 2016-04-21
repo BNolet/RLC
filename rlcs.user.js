@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.7.5
+// @version      2.8
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -46,7 +46,8 @@
     var updateArray = [];
     
     // emoji trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
-    var emojiList={ ":)":"smile", ":((":"angry", ":(":"frown", ":s":"silly", ":I":"meh", ":|":"meh", ":/":"meh", ":o":"shocked"};
+    var emojiList={ ":)":"smile", ":((":"angry", ":(":"frown", ":s":"silly", ":I":"meh", ":|":"meh", ":/":"meh", ":o":"shocked",
+                   ":D":"happy","D:":"sad",";_;":"crying",";)":"wink","-_-":"zen","X|":"annoyed","X)":"xsmile","X(":"xsad","XD":"xhappy",":P":"tongue"};
     
     // Html for injection, inserted at doc.ready
     var htmlPayload = '  \
@@ -468,6 +469,9 @@
                     $(".state").click();
                  }*/
                 
+                
+                var chromenoticeimg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAIAAABuYg/PAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAADgSURBVFhH7ZdRbsMwDENzgt7/Sj2VG0eEKxGUmgJOUKR5eMNgiRH3u6U5lgPA6Q08sHg+povL1mJNlJiu9Z1bdkKT2Zv+rAyL7/8OfFbcFKOID2QiGhEBMYr4QCaiERHgt2JkpAgpOMNvxchIEVJwht+KkZEipODMeL9HER/IRDQiAmIU8YFMRCMi4EcmFvtqvPisuEnTg7zLpniXTfGXyopVZn2tQ9Nhscqsr3VoOixWmfW1Dk299Zb8eKpDUxKhHdCH5K7QLK9ddt3/YtYf6zuoEpetxX4ZtpgLTq+09gIQTX1K/dS/IgAAAABJRU5ErkJggg==";
+                
                  //mention sound effect player
                  if(text.indexOf(robin_user) !== -1){
                      if ($("body").hasClass("rlc-notificationsound")) {
@@ -475,7 +479,7 @@
                      }
                      if ($("body").hasClass("rlc-notificationchrome")) {
                          var n = new Notification('Robin Live Chat',{
-                             icon: "https://i.imgur.com/3t4bSRD.png",
+                             icon: chromenoticeimg,
                              body: $usr.text() + ": " + text,
                          });
                      }
@@ -947,11 +951,16 @@
 
 GM_addStyle(" /* base 64 encoded emote spritesheet */ \
 #liveupdate-statusbar.reconnecting .state:before, #liveupdate-statusbar.live .state:before, .mrPumpkin { \
-    background-image: url('data:image/gif;base64,R0lGODlhbABIAPEAAAAAAP/JDgAAAAAAACH5BAEAAAIALAAAAABsAEgAAAL+lAWpy+0HkZtUxVPziyn4D4bimEDdiKZfiQHqSwIYTJOGW+eejOg6j/PRgMIasQiTBZGvE7O5fKKc0mm0GqJis9ftruvVer8ixU+MFqvM3LI6xQZRHcmGfEmHMu73vX7Bt2L3FxcwN7iGaIinaOVH9pXniOhEkShZOXFJGWQJpwm5KBmD2Qk6+Zg56lYquMrVGtkIy9kHSHhoW4ia63q7WXj4+Dks/Et8bLxLmny1fOnGeuZMDeYYPdaWHbgd2v22BY4lXkUuZf6EzqSOxF7kLgTvI3/WLWjvvU2fs29kPf6vXMBzA9OBKbjCCjBPCpGBO3jwR0MSRj7BKTNlYhb+iTEy8tMopyNGkRSHWCxZkeRGlAlB0qqQyGNKbCOZies3BGE7ne94xvM5D2g9fDjr4DPU49sNe0f0LVWa1GnUbDwkjGFxQ+gnE1qtXNAA1sIFCWE1jCVbtsLZtGbHss2w9i2Fr11jcL1a1WqYqnXXPJXaF85fqoOvFg4zVV/gmEQXn2T672Zkxy7xJpH52NU0mpr5pZHWMmRnbqKO8WKky9woZZVElw7GaNhp0q9YNUs9cLWp2r5S7Z6FO1Nv0y9/qQI+PM5x2cWV/2Ye3FRyybFeE49+Txb06dKT1ykW+3pz2shxk99uPrt21YpY525fbbO2PvJJR6qv/htllYqBjxaF4t9+nPXXWIAGFoggZAcqmKB+CzrYIIEMTghhTuxQlwFjFC7kz0UmVWYIRwOeVtAbPEFEIkz8kZgTZpetuIOI8y2Ejoky2kdVibzNKGGFuHQYYY6eXShgFokhdmQ4hymZ5DhLOtlkOS3gdddeVYaTV1ZybUDXlg3E5SUDEBQAADs='); \
+    background-image: url('data:image/png;base64,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'); \
 } \
 ");
 
+
 GM_addStyle("/*-------------------------------- Core - Custom Containers ------------------------------------- */ \
+#rlc-main p { \
+    line-height: 24px!important; \
+} \
+ \
 #rlc-main { \
     width: 80%; \
     height: 100%; \
@@ -1020,6 +1029,7 @@ div#new-update-form { \
     text-align: center; \
     letter-spacing: 1px; \
 } \
+ \
 /*-------------------------------- Send button ------------------------------------- */ \
 #new-update-form .save-button .btn { \
     width: 100%; \
@@ -1053,15 +1063,11 @@ div#rlc-sendmessage { \
 #rlc-main time.live-timestamp { \
     text-indent: 0; \
     width: 100px; \
-    margin: 0; \
-    padding-top: 2px; \
-    padding-bottom: 0; \
     color: inherit; \
+    padding: 0; \
     padding-left: 10px; \
-} \
- \
-.liveupdate-listing li.liveupdate a.author { \
-    color: initial; \
+    margin: 0; \
+    padding-top: 6px; \
 } \
  \
 #rlc-main .liveupdate-listing { \
@@ -1076,11 +1082,6 @@ div#rlc-sendmessage { \
 div#rlc-chat { \
     overflow-y: auto; \
     height: calc(100vh - 131px); \
-} \
- \
-#rlc-main .liveupdate-listing .liveupdate .body a { \
-    font-size: 12px; \
-    padding-top: 1px; \
 } \
  \
 #rlc-main .liveupdate-listing .liveupdate .body { \
@@ -1101,16 +1102,18 @@ div#rlc-chat { \
  \
 #rlc-main .liveupdate-listing a.author { \
     width: 180px; \
-    display: block; \
     float: left; \
     text-align: right; \
+    padding: 0; \
+    color: initial; \
+    margin: 0; \
+    padding-top: 5px; \
 } \
  \
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
     float: right; \
     width: calc(100% - 320px); \
     max-width: none; \
-    min-height: 24px; \
 } \
  \
 #rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
@@ -1135,7 +1138,6 @@ div#rlc-chat { \
 } \
  \
 /*-------------------------filter tabs------------------------------------*/ \
- \
 #filter_tabs { \
     width: 80%; \
     display: table; \
@@ -1176,7 +1178,7 @@ div#rlc-chat { \
  \
 #filter_tabs > span.all { \
     padding: 0px 30px; \
-    height:24px; \
+    height: 24px; \
 } \
  \
 #filter_tabs > span.more { \
@@ -1355,10 +1357,6 @@ ul.ui-autocomplete a { \
 } \
  \
 /* Dark Mode */ \
-.dark-background .liveupdate-listing li.liveupdate .body div.md p { \
-    vertical-align: -webkit-baseline-middle; \
-} \
- \
 .dark-background ul.ui-autocomplete a { \
     color: white!important; \
 } \
@@ -1474,9 +1472,10 @@ body { \
     height: 24px; \
     width: 24px; \
     display: inline-block; \
-    background-size: 72px; \
+    border-radius: 6px; \
+    background-size: 144px; \
+    margin-top: 0px!important; \
     margin-bottom: -6px!important; \
-    margin-top: -4px!important; \
 } \
  \
 .mp_frown { \
@@ -1497,7 +1496,47 @@ body { \
  \
 .mp_shocked { \
     background-position: -24px -24px; \
-    } \
+} \
+ \
+.mp_happy { \
+    background-position: -72px 120px; \
+} \
+ \
+.mp_sad { \
+    background-position: -72px 96px; \
+} \
+ \
+.mp_crying { \
+    background-position: 0px 72px; \
+} \
+ \
+.mp_tongue { \
+    background-position: 0px 24px; \
+} \
+ \
+.mp_xhappy { \
+    background-position: -48px 48px; \
+} \
+ \
+.mp_xsad { \
+    background-position: -24px 48px; \
+} \
+ \
+.mp_xsmile { \
+    background-position: 0px 48px; \
+} \
+ \
+.mp_annoyed { \
+    background-position: -72px 72px; \
+} \
+ \
+.mp_zen { \
+    background-position: -48px 72px; \
+} \
+ \
+.mp_wink { \
+    background-position: -24px 72px; \
+} \
  \
 /* narration */ \
 #rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
@@ -1526,7 +1565,7 @@ body { \
     float: left; \
     width: 70px; \
     padding-left: 10px; \
-    padding-top: 2px; \
+    padding-top: 5px; \
 } \
  \
 /* option classes */ \
@@ -1539,6 +1578,8 @@ body { \
 #rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .rlc-showreadmebar #rlc-sidebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #rlc-main .liveupdate-listing .separator, #liveupdate-options, .footer-parent, body > .content { \
     display: none; \
 } \
-#rlc-sidebar .sidebar .md h3, #rlc-sidebar aside.sidebar .md h4, #rlc-sidebar aside.sidebar .md h5, #rlc-sidebar aside.sidebar .md h6 { color:inherit;} \
  \
+#rlc-sidebar .sidebar .md h3, #rlc-sidebar aside.sidebar .md h4, #rlc-sidebar aside.sidebar .md h5, #rlc-sidebar aside.sidebar .md h6 { \
+    color: inherit; \
+} \
 ");
