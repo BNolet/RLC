@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.8.3
+// @version      2.8.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -174,7 +174,7 @@
     function createOption(name, click_action, default_state){
         var checked_markup;
         var key = "rlc-" + name.replace(/\W/g, '');
-        console.log(key);
+        //console.log(key);
         var state = (typeof default_state !== "undefined") ? default_state : false;
         // try and state if setting is defined
         if(GM_getValue(key)){
@@ -722,7 +722,14 @@
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
         $('#liveupdate-header').appendTo('#rlc-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar');
-
+        
+        // put anything after -RLC-README- in the sidebar into the readme
+        var str = $('#liveupdate-resources .md').html();
+        var res = str.split("<p>-RLC-README-</p>");
+        
+        $('#liveupdate-resources .md').html(res[0]);
+        $('#rlc-readmebar .md').append(res[1]);
+        
         // add placeholder text and focus messagebox
         $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
         $(".usertext-edit textarea").focus();
@@ -862,11 +869,9 @@
             if(checked){
                 startChannels();
                 $("#channelsTable").show();
-                //console.log("Starting Channel Discovery Display Update");
             }else{
                 stopChannels();
                 $("#channelsTable").hide();
-                //console.log("Stopping Channel Discovery Display Update");
             }
             _scroll_to_bottom();
         },false);
