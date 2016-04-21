@@ -1108,12 +1108,7 @@ div#rlc-chat { \
     padding: 0; \
     color: initial; \
     margin: 0; \
-    padding-top: 5px; \
-} \
-@-moz-document url-prefix() {  \
- #rlc-main .liveupdate-listing a.author { \
     padding-top: 4px; \
-} \
 } \
  \
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
