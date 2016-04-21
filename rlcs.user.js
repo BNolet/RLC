@@ -1148,7 +1148,7 @@ div#rlc-chat { \
  \
 #rlc-main .liveupdate-listing .liveupdate .body a { \
     font-size: 12px; \
-    padding-top: 1px; \
+    padding-top: 6px; \
 } \
  \
 #rlc-main .liveupdate-listing .liveupdate .body { \
