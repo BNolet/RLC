@@ -10,19 +10,19 @@ To use this script, install tampermonkey which can be found [here](https://chrom
 
 Come hang out in [RLC Dev Chat](https://www.reddit.com/live/wpytzw1guzg2) to help out or just to chat!
 
-### Features
+### Major Features
 
 * Reddit live styled to mimic chat/robin look
-* Press Enter sends message
+* Press Enter to send message
 * Right click user name to copy into textarea
+* Tab username autocomplete  
 * Messages appear from bottom and scroll up
-* IRC like message history
+* IRC like message history (press up to load your previous messages)
 * Support for /me messages
-* Highlights when you are mentioned
-* Channels 
-* Emotes! - currently supported: :)  :s  :|  :o  :(  :((
+* Highlights when you are mentioned (with optional sound effect and chrome notification)
+* Channels (with graphical interface, tabs and multi-channel-view)
+* Custom RLC Emotes! - currently supported: :)  :s  :|  :o  :(  :((
+* Dark Mode theme compatible with but seperate from RES nightmode
+* Options panel
 
-### Known issues
-
-* chat history (scrolling to load more messages) has been disabled due to issues with the triggering of the load unintentionaly leading to lag if too many posts are loaded.
-
+Note: development of RLC almost always outpaces this readme file. if you wish to keep up, use the chat and the Issues section of this repository.
