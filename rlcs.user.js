@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.7.4.2
+// @version      2.7.4.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -893,10 +893,11 @@
             }
             else if(e.keyCode == 40){
                 e.preventDefault();
-                if(messageHistoryIndex < messageHistory.length-1){
+                if(messageHistoryIndex < messageHistory.length){
                     messageHistoryIndex++;
                     $(this).val(messageHistory[messageHistoryIndex]);
-                }else{
+                }
+				if(messageHistoryIndex == messageHistory.length){
                     $(this).val(lastTyped);
                 }
             }
