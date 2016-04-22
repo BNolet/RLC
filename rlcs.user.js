@@ -1630,7 +1630,7 @@ div#rlc-main-sidebar { \
     top: 0; \
 } \
  \
-div#rlc-sidebar { \
+.rlc-compact div#rlc-sidebar { \
     height: calc(100vh - 50px); \
 } \
  \
