@@ -17,7 +17,6 @@ Come hang out in [RLC Dev Chat](https://www.reddit.com/live/wpytzw1guzg2) to hel
 * Right click user name to copy into text area
 * Tab username autocomplete  
 * Messages appear from bottom and scroll up
-* IRC like message history (press up to load your previous messages)
 * Support for /me messages
 * Highlights when you are mentioned (with optional sound effect and chrome notification)
 * Channels (with graphical interface, tabs and multi-channel-view)
