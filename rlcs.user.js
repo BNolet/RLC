@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.10
+// @version      2.11
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -29,6 +29,9 @@
     if (!GM_getValue("rlc-ChannelColors")) {      
         GM_setValue("rlc-ChannelColors", 'true');
     }
+    if (!GM_getValue("rlc-MultilineText")) {      
+        GM_setValue("rlc-MultilineText", 'true');
+    }    
      
     // Grab users username + play nice with RES
     var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
@@ -281,6 +284,10 @@
                 }
             });
         }
+        if(GM_getValue("rlc-MultilineText") === 'true'){  
+			$msg.html($msg.html().split('\n').join('</p><p>'));
+			$msg.html($msg.html().replace('<p></p><p></p>',''));
+		}
         
         // prevent embedly iframe link handling
         first_line.html(first_line.html()+" ");
@@ -983,7 +990,14 @@
             }else{
                 $("body").removeClass("rlc-noemotes");
             }
-        },false);      
+        },false);
+        createOption("Multiline Text", function(checked, ele){
+            if(checked){
+                $("body").addClass("MultiLine");
+            }else{
+                $("body").removeClass("MultiLine");
+            }
+        },false);   
     });
 
     var color;
