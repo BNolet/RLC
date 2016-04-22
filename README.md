@@ -12,9 +12,9 @@ Come hang out in [RLC Dev Chat](https://www.reddit.com/live/wpytzw1guzg2) to hel
 
 ### Major Features
 
-* Reddit live styled to mimic chat/robin look
+* Reddit live styled to mimic chat/robin (Webchat) look
 * Press Enter to send message
-* Right click user name to copy into textarea
+* Right click user name to copy into text area
 * Tab username autocomplete  
 * Messages appear from bottom and scroll up
 * IRC like message history (press up to load your previous messages)
@@ -24,5 +24,7 @@ Come hang out in [RLC Dev Chat](https://www.reddit.com/live/wpytzw1guzg2) to hel
 * Custom RLC Emotes! - currently supported: :)  :s  :|  :o  :(  :((
 * Dark Mode theme compatible with but seperate from RES nightmode
 * Options panel
+* History (arrow up cycles you through last sent messages)
+* Nicklist (not yet fully functional)
 
 Note: development of RLC almost always outpaces this readme file. if you wish to keep up, use the chat and the Issues section of this repository.
