@@ -284,14 +284,14 @@
                 }
             });
         }
-        if(GM_getValue("rlc-MultilineText") === 'true'){  
-			$msg.html($msg.html().split('\n').join('</p><p>'));
-			$msg.html($msg.html().replace('<p></p><p></p>',''));
-		}
         
         // prevent embedly iframe link handling
         first_line.html(first_line.html()+" ");
 
+        if(GM_getValue("rlc-MultilineText") === 'true'){  
+			$msg.html($msg.html().split('\n').join('</p><p>'));
+			$msg.html($msg.html().replace('<p></p><p></p>',''));
+		}
         // insert time
         $usr.before($ele.find("time"));
 
