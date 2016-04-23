@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.11.1
+// @version      2.11.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1488,7 +1488,7 @@ div#versionnumber { \
     width: 20%; \
     z-index: 100; \
     position: absolute; \
-    bottom: 0; \
+    bottom: -1px; \
     right: 0; \
     background: #FCFCFC; \
 } \
