@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.11.2
+// @version      2.11.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -29,8 +29,11 @@
     if (!GM_getValue("rlc-ChannelColors")) {      
         GM_setValue("rlc-ChannelColors", 'true');
     }
-    if (!GM_getValue("rlc-MultilineText")) {      
-        GM_setValue("rlc-MultilineText", 'true');
+    if (!GM_getValue("rlc-EasyMultilineText")) {      
+        GM_setValue("rlc-EasyMultilineText", 'true');
+    }    
+    if (!GM_getValue("rlc-AutoScroll")) {      
+        GM_setValue("rlc-AutoScroll", 'true');
     }    
      
     // Grab users username + play nice with RES
@@ -142,10 +145,10 @@
     // Scroll chat back to bottom
     var _scroll_to_bottom = function(){
         if ($(document.body).hasClass("allowHistoryScroll")) {
-            return false;
+            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
         else {
-            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
+            return false;
         }
     };
  
@@ -288,9 +291,9 @@
         // prevent embedly iframe link handling
         first_line.html(first_line.html()+" ");
 
-        if(GM_getValue("rlc-MultilineText") === 'true'){  
-			$msg.html($msg.html().split('\n').join('</p><p>'));
-			$msg.html($msg.html().replace('<p></p><p></p>',''));
+        if(GM_getValue("rlc-EasyMultilineText") === 'true'){
+			$msg.html($msg.html().split('\n').join('<br>'));
+			$msg.html($msg.html().replace('<br><br>','<br>'));
 		}
         // insert time
         $usr.before($ele.find("time"));
@@ -918,14 +921,14 @@
                 $("#channelsTable").hide();
             }
             _scroll_to_bottom();
-        },false);
-        createOption("History Mode [BETA]", function(checked, ele){
+        },false);*/
+        createOption("AutoScroll", function(checked, ele){
             if(checked){
                 $("body").addClass("allowHistoryScroll");
             }else{
                 $("body").removeClass("allowHistoryScroll");
             }
-        },false);*/
+        },false);
         createOption("Channel Colors", function(checked, ele){
             if(checked){
                 $("#rlc-main").addClass("show-colors");
@@ -991,7 +994,7 @@
                 $("body").removeClass("rlc-noemotes");
             }
         },false);
-        createOption("Multiline Text", function(checked, ele){
+        createOption("Easy Multiline Text", function(checked, ele){
             if(checked){
                 $("body").addClass("MultiLine");
             }else{
@@ -1137,11 +1140,7 @@ body { \
 } \
  \
 /* option classes */ \
-.allowHistoryScroll { \
-    height: 102%; \
-    overflow-y: scroll; \
-} \
- \
+\
 /* hard removal */ \
 #rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #rlc-main .liveupdate-listing .separator, #liveupdate-options, .footer-parent, body > .content { \
     display: none; \
