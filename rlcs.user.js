@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.11.4
+// @version      2.12
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -12,6 +12,7 @@
 // @exclude      https://*.reddit.com/live/create*
 // @require      https://code.jquery.com/jquery-2.2.3.min.js
 // @require      https://code.jquery.com/ui/1.10.4/jquery-ui.min.js
+// @require      https://raw.githubusercontent.com/mathiasbynens/strip-combining-marks/master/strip-combining-marks.js
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
@@ -22,7 +23,7 @@
     // set default states for options
     if (!GM_getValue("rlc-NoSmileys")) {      
         GM_setValue("rlc-NoSmileys", 'false');
-    }    
+    }
     if (!GM_getValue("rlc-SimpleTimestamps")) {      
         GM_setValue("rlc-SimpleTimestamps", 'true');
     }
@@ -31,9 +32,12 @@
     }
     if (!GM_getValue("rlc-EasyMultilineText")) {      
         GM_setValue("rlc-EasyMultilineText", 'true');
-    }    
+    }
     if (!GM_getValue("rlc-AutoScroll")) {      
         GM_setValue("rlc-AutoScroll", 'true');
+    }  
+    if (!GM_getValue("rlc-BlockZalgoText")) {      
+        GM_setValue("rlc-BlockZalgoText", 'true');
     }    
      
     // Grab users username + play nice with RES
@@ -247,7 +251,6 @@
         // init
         click_action(state, $option);
     }
-
     var handle_new_message = function($ele, rescan){
         // add any proccessing for new messages in here
         var $msg = $ele.find(".body .md");
@@ -255,6 +258,12 @@
         $msg.find("a").attr("target","_blank");
 
         var $usr = $ele.find(".body .author");
+		
+        if(GM_getValue("rlc-BlockZalgoText") === 'true'){
+			var mytext = $msg.html();
+			$msg.html(stripCombiningMarks(mytext));
+		}
+		
         var line = $msg.text().toLowerCase();
         var first_line = $msg.find("p").first();
 
@@ -269,7 +278,7 @@
             rowalternator = 1;
         }
         else { rowalternator = 0; }
-            
+		
         // /me support
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
@@ -996,11 +1005,18 @@
         },false);
         createOption("Easy Multiline Text", function(checked, ele){
             if(checked){
-                $("body").addClass("MultiLine");
+                $("body").addClass("rlc-MultiLine");
             }else{
-                $("body").removeClass("MultiLine");
+                $("body").removeClass("rlc-MultiLine");
             }
-        },false);   
+        },false);
+        createOption("Block Zalgo Text", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-blockZalgo");
+            }else{
+                $("body").removeClass("rlc-blockZalgo");
+            }
+        },false);
     });
 
     var color;
