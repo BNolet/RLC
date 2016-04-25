@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.13
+// @version      2.13.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1063,6 +1063,10 @@ body { \
     min-width: 0; \
     overflow: hidden; \
 } \
+body.allowHistoryScroll { \
+    height: 105%; \
+    overflow: auto; \
+}\
  \
 /* class to prevent selection for divs acting as buttons */ \
 .noselect { \
