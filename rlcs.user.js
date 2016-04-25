@@ -1062,11 +1062,11 @@ GM_addStyle("/*-------------------------------- Standalone Stuff ---------------
 body { \
     min-width: 0; \
     overflow: hidden; \
-} \
+} /* \
 body.allowHistoryScroll { \
     height: 105%; \
     overflow: auto; \
-}\
+} */ \
  \
 /* class to prevent selection for divs acting as buttons */ \
 .noselect { \
