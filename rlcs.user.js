@@ -1210,9 +1210,10 @@ GM_addStyle(" \
 /*-------------------------------- Message Input ------------------------------------- */ \
 /* message input and send button */ \
 div#rlc-messagebox { \
-    position: relative; \
+    position: absolute; \
     float: left; \
     width: 80%; \
+    bottom: 0; \
 } \
  \
 #new-update-form .usertext { \
@@ -1649,7 +1650,6 @@ div#rlc-main-sidebar { \
 .dark-background #rlc-settings strong { \
     color: white; \
 } \
- \
  \
 #channelsTable { \
     display: none; \
