@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.13.6
+// @version      2.14
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -69,7 +69,6 @@
     // Html for injection, inserted at doc.ready
     var htmlPayload = '  \
 <div id="rlc-sidebar"> \
-<div id="versionnumber">v.' + GM_info.script.version + '</div> \
 <div id="rlc-main-sidebar"></div> \
 <div id="rlc-readmebar"> \
 <div class="md">\
@@ -817,11 +816,12 @@
 <div id='activeChannelsTable'></div><br/> \
 </div>").appendTo("#rlc-main-sidebar"); // Active Channel Discovery Table
 
-        tabbedChannels.init($('<div id="filter_tabs"></div>').prependTo("#rlc-main"));
+        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
 
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><strong>Recent User Activity</strong><br><ul></ul></div>");
         $('#rlc-main-sidebar').append("<div id='banlistcontainer'><strong>Muted Users</strong><div id='bannedlist'></div></div>");
-
+        $('#liveupdate-statusbar').prepend("<div id='versionnumber'>v." + GM_info.script.version + "</div>");
+        
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
@@ -1176,15 +1176,18 @@ display: none; \
 } \
 ");
 
-GM_addStyle(" \
- #rlc-main p { \
+GM_addStyle("* { \
+    box-sizing: border-box; \
+} \
+ \
+#rlc-main p { \
     line-height: 24px!important; \
     font-size: 12px; \
 } \
  \
 #rlc-main { \
     width: 80%; \
-    height: calc(100vh - 88px); \
+    height: calc(100vh - 112px); \
     box-sizing: border-box; \
     float: left; \
     position: relative; \
@@ -1193,13 +1196,12 @@ GM_addStyle(" \
 #rlc-sidebar { \
     width: 20%; \
     float: right; \
-    height: calc(100vh - 113px); \
+    height: calc(100vh - 87px); \
     box-sizing: border-box; \
     overflow-y: auto; \
     overflow-x: hidden; \
     padding: 0px 0px 0px 5px; \
     position: relative; \
-    margin-top: 25px; \
 } \
  \
 #rlc-topmenu { \
@@ -1213,6 +1215,14 @@ div#rlc-messagebox { \
     position: relative; \
     float: left; \
     width: 80%; \
+    border-left: 1px solid grey; \
+} \
+ \
+.rlc-hidesidebar div#rlc-messagebox { \
+    position: relative; \
+    float: left; \
+    width: 100%; \
+    border-left: 1px solid grey; \
 } \
  \
 #new-update-form .usertext { \
@@ -1289,7 +1299,7 @@ div#rlc-sendmessage { \
  \
 div#rlc-chat { \
     overflow-y: auto; \
-    height: calc(100vh - 113px); \
+    height: calc(100vh - 112px); \
 } \
  \
 #rlc-main .liveupdate-listing .liveupdate .body { \
@@ -1343,10 +1353,11 @@ div#rlc-chat { \
 #filter_tabs { \
     table-layout: fixed; \
     border: 1px solid #A9A9A9; \
-    border-top: 0; \
-    border-left: 0; \
-    border-right: 0; \
-    width: 100%; \
+    width: 80%; \
+    border-bottom: 0; \
+    box-sizing: border-box; \
+    height: 25px; \
+    float: left; \
 } \
  \
 #filter_tabs > span { \
@@ -1365,6 +1376,7 @@ div#rlc-chat { \
     display: table; \
     width: 100%; \
     table-layout: fixed; \
+    height: 24px; \
 } \
  \
 #filter_tabs .rlc-filters > span { \
@@ -1372,9 +1384,9 @@ div#rlc-chat { \
     text-align: center; \
     display: table-cell; \
     cursor: pointer; \
-    width: 2%; \
     vertical-align: middle; \
     font-size: 1.1em; \
+    border-right: 1px solid grey; \
 } \
  \
 #filter_tabs .rlc-filters > span > span { \
@@ -1383,7 +1395,8 @@ div#rlc-chat { \
  \
 #filter_tabs > span.all { \
     padding: 0px 30px; \
-    height: 24px; \
+    height: 25px; \
+    border-right: 1px solid grey; \
 } \
  \
 #filter_tabs > span.more { \
@@ -1393,7 +1406,8 @@ div#rlc-chat { \
 /* add channels interface */ \
 .rlc-channel-add input { \
     border: 0; \
-    padding: 3px 0px 4px 0px; \
+    padding: 0; \
+    height: 24px; \
 } \
  \
 .rlc-channel-add .channel-mode { \
@@ -1407,13 +1421,15 @@ div#rlc-chat { \
 } \
  \
 .rlc-channel-add { \
-    padding: 5px; \
     display: none; \
     position: absolute; \
-    top: 25px; \
+    bottom: 0px; \
+    height: 24px; \
     background: #FCFCFC; \
-    right: 17px; \
+    left: 0px; \
+    width: calc(80% -  116px); \
     z-index: 1000; \
+    border-right: 1px solid grey; \
 } \
  \
 /*------------------------------------ Sidebar -----------------------------------------------------*/ \
@@ -1446,18 +1462,6 @@ aside.sidebar.side.md-container { \
 } \
  \
 div#versionnumber { \
-    display: table-cell; \
-    cursor: help; \
-    position: fixed; \
-    top: 63px; \
-    padding-top: 7px; \
-    width: 20%; \
-    right: 0; \
-    text-align: center; \
-    height: 25px; \
-    box-sizing: border-box; \
-    border-bottom: 1px solid #A9A9A9; \
-    z-index: 10000; \
 } \
  \
 #liveupdate-statusbar.live .state:before { \
@@ -1500,6 +1504,7 @@ div#versionnumber { \
     table-layout: fixed; \
     width: 20%; \
     z-index: 100; \
+    float: right; \
     background: #FCFCFC; \
 } \
  \
@@ -1551,7 +1556,7 @@ ul.ui-autocomplete a { \
  \
 /* Compact mode */ \
 .rlc-compact div#rlc-chat { \
-    height: calc(100vh - 50px); \
+    height: calc(100vh - 49px); \
 } \
  \
 /* misc fixes */ \
@@ -1570,6 +1575,7 @@ ul.ui-autocomplete a { \
 div#rlc-toggleguide { \
     border-left: 1px solid #A9A9A9; \
     padding-bottom: 6px; \
+    border-right: 1px solid grey; \
 } \
  \
 div#rlc-main-sidebar { \
@@ -1592,16 +1598,16 @@ div#rlc-main-sidebar { \
     color: white; \
 } \
  \
-.dark-background #rlc-settingsbar, .dark-background div#versionnumber, .dark-background div#rlc-settings { \
+.dark-background #rlc-settingsbar, .dark-background div#rlc-settings { \
     background: #404040; \
 } \
  \
 .dark-background .rlc-channel-add { \
-    background: grey; \
+    background: #404040; \
 } \
  \
 .dark-background .rlc-channel-add input { \
-    background: #404040; \
+    background: #F3FFF9; \
     color: white; \
 } \
  \
@@ -1635,20 +1641,20 @@ div#rlc-main-sidebar { \
     top: 2px; \
 } \
  \
-.rlc-compact #versionnumber { \
-    top: 0; \
-} \
- \
 .rlc-compact div#rlc-sidebar { \
-    height: calc(100vh - 50px); \
+    height: calc(100vh - 24px); \
 } \
  \
 .dark-background #rlc-settings strong { \
     color: white; \
 } \
  \
- \
 .rlc-compact div#rlc-main { \
-    height: calc(100vh - 25px); \
+    height: calc(100vh - 49px); \
+} \
+ \
+div#versionnumber { \
+    padding-right: 20px; \
+    font-size: 0.8em; \
 } \
 ");
