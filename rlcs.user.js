@@ -206,6 +206,17 @@
 
         return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
     }
+    function LightenDarkenColor2(col, amt) {
+		var r=col.slice(0,2);
+		var g=col.slice(2,4);
+		var b=col.slice(4,6);
+		var hexR = (parseInt(r, 16) + parseInt(amt, 16)).toString(16);
+		var hexG = (parseInt(g, 16) + parseInt(amt, 16)).toString(16);
+		var hexB = (parseInt(b, 16) + parseInt(amt, 16)).toString(16);
+		console.log(hexR + ", " + hexG + ", " + hexB);
+		
+        return hexR+hexG+hexB;
+    }
     
     function processActiveUsersList() { 
         $("#rlc-activeusers ul").empty();
@@ -315,22 +326,24 @@
             
 		var hexName=toHex($usr.text()).split('');
 		var adder=1;
-		$.each(hexName,function(num){
-			if(num!=0){
-				adder = adder * parseInt(num);
+		$.each(hexName,function(ind,num){
+			num = (parseInt(num)+1)
+			if(num!=0 && !isNaN(num)){
+				adder = adder * num;
 			}
 		});
 		
         adder=adder.toString().replace(".","");
 		var firstThree=adder.toString().substring(0,6);
-            if( GM_getValue("rlc-DarkMode") === 'true'){
-                var lightercolor = LightenDarkenColor("#"+firstThree, 150);
-                 $usr.css("color",lightercolor);
-            }
-            else {
-                var darkercolor = LightenDarkenColor("#"+firstThree,60);
-                $usr.css("color",darkercolor);
-            }
+		
+		if( GM_getValue("rlc-DarkMode") === 'true'){
+			var lightercolor = LightenDarkenColor2(firstThree, 60);
+			 $usr.css("color","#"+lightercolor);
+		}
+		else {
+			var darkercolor = LightenDarkenColor2(firstThree,0);
+			$usr.css("color","#"+darkercolor);
+		}
 		
         // Track channels
         tabbedChannels.proccessLine(line, $ele, rescan);
