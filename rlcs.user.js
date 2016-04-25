@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.13.5
+// @version      2.13.6
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1176,476 +1176,479 @@ display: none; \
 } \
 ");
 
-GM_addStyle("/*-------------------------------- Core - Custom Containers ------------------------------------- */ \
-#rlc-main p { \
-line-height: 24px!important; \
-font-size: 12px; \
+GM_addStyle(" \
+ #rlc-main p { \
+    line-height: 24px!important; \
+    font-size: 12px; \
 } \
-\
+ \
 #rlc-main { \
-width: 80%; \
-height: 100%; \
-box-sizing: border-box; \
-float: left; \
-position: relative; \
+    width: 80%; \
+    height: calc(100vh - 88px); \
+    box-sizing: border-box; \
+    float: left; \
+    position: relative; \
 } \
-\
+ \
 #rlc-sidebar { \
-width: 20%; \
-float: right; \
-height: calc(100vh - 88px); \
-box-sizing: border-box; \
-overflow-y: auto; \
-overflow-x: hidden; \
-padding: 0px 0px 0px 5px; \
-position: relative; \
-margin-top: 25px; \
+    width: 20%; \
+    float: right; \
+    height: calc(100vh - 113px); \
+    box-sizing: border-box; \
+    overflow-y: auto; \
+    overflow-x: hidden; \
+    padding: 0px 0px 0px 5px; \
+    position: relative; \
+    margin-top: 25px; \
 } \
-\
+ \
 #rlc-topmenu { \
-box-sizing: border-box; \
-border-bottom: 1px solid grey; \
+    box-sizing: border-box; \
+    border-bottom: 1px solid grey; \
 } \
-\
+ \
 /*-------------------------------- Message Input ------------------------------------- */ \
 /* message input and send button */ \
 div#rlc-messagebox { \
-position: relative; \
-float: left; \
-width: 80%; \
+    position: relative; \
+    float: left; \
+    width: 80%; \
 } \
-\
+ \
 #new-update-form .usertext { \
-max-width: 85%; \
-float: left; \
-width: 85%; \
+    max-width: 85%; \
+    float: left; \
+    width: 85%; \
 } \
-\
+ \
 .usertext-edit .md { \
-min-width: 100%!important; \
-height: 25px; \
+    min-width: 100%!important; \
+    height: 25px; \
 } \
-\
+ \
 div#new-update-form textarea { \
-height: 25px; \
-overflow: auto; \
-border-bottom: 0; \
-resize: none; \
-border-left: 0; \
+    height: 25px; \
+    overflow: auto; \
+    border-bottom: 0; \
+    resize: none; \
+    border-left: 0; \
 } \
-\
+ \
 div#new-update-form { \
-width: 100%; \
-margin: 0; \
+    width: 100%; \
+    margin: 0; \
 } \
-\
+ \
 .usertext-edit.md-container { \
-max-width: 100%; \
-margin: 0; \
-position: relative; \
+    max-width: 100%; \
+    margin: 0; \
+    position: relative; \
 } \
-\
+ \
 /*-------------------------------- Send button ------------------------------------- */ \
 #new-update-form .save-button .btn { \
-width: 100%; \
-text-transform: capitalize; \
+    width: 100%; \
+    text-transform: capitalize; \
 } \
-\
+ \
 div#rlc-sendmessage { \
-width: 15%; \
-height: 25px; \
-text-align: center; \
-float: right; \
-display: inline-block; \
-padding-top: 5px; \
-box-sizing: border-box; \
-margin-top: 0px; \
-font-size: 1.3em; \
-cursor: pointer; \
-border: 1px solid #A9A9A9; \
-border-left: 0; \
-border-bottom: 0; \
+    width: 15%; \
+    height: 25px; \
+    text-align: center; \
+    float: right; \
+    display: inline-block; \
+    padding-top: 5px; \
+    box-sizing: border-box; \
+    margin-top: 0px; \
+    font-size: 1.3em; \
+    cursor: pointer; \
+    border: 1px solid #A9A9A9; \
+    border-left: 0; \
+    border-bottom: 0; \
 } \
-\
+ \
 /*------------------------------------ Main Chat -----------------------------------------------------*/ \
 #rlc-main time.live-timestamp { \
-text-indent: 0; \
-width: 100px; \
-color: inherit; \
-padding: 0; \
-padding-left: 10px; \
-margin: 0; \
-padding-top: 6px; \
+    text-indent: 0; \
+    width: 100px; \
+    color: inherit; \
+    padding: 0; \
+    padding-left: 10px; \
+    margin: 0; \
+    padding-top: 6px; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing { \
-max-width: 100%; \
-padding: 0px; \
-box-sizing: border-box; \
-display: flex; \
-flex-direction: column-reverse; \
-min-height: 100%; \
+    max-width: 100%; \
+    padding: 0px; \
+    box-sizing: border-box; \
+    display: flex; \
+    flex-direction: column-reverse; \
+    min-height: 100%; \
 } \
-\
+ \
 div#rlc-chat { \
-overflow-y: auto; \
-height: calc(100vh - 113px); \
+    overflow-y: auto; \
+    height: calc(100vh - 113px); \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate .body { \
-max-width: none; \
-margin-bottom: 0; \
-padding: 0px; \
-font-size: 12px; \
-display: block; \
-box-sizing: border-box; \
+    max-width: none; \
+    margin-bottom: 0; \
+    padding: 0px; \
+    font-size: 12px; \
+    display: block; \
+    box-sizing: border-box; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate { \
-height: auto!important; \
-padding: 4px; \
+    height: auto!important; \
+    padding: 4px; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing a.author { \
-width: 180px; \
-float: left; \
-text-align: right; \
-padding: 0; \
-color: initial; \
-margin: 0; \
-padding-top: 4px; \
+    width: 180px; \
+    float: left; \
+    text-align: right; \
+    padding: 0; \
+    color: initial; \
+    margin: 0; \
+    padding-top: 4px; \
 } \
-\
+ \
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
-float: right; \
-width: calc(100% - 320px); \
-max-width: none; \
+    float: right; \
+    width: calc(100% - 320px); \
+    max-width: none; \
 } \
-\
+ \
 #rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
-font-weight: bold; \
+    font-weight: bold; \
 } \
-\
+ \
 /* channel name */ \
 .channelname { \
-color: grey!important; \
-width: 290px; \
-display: block; \
-float: left; \
-text-align: right; \
+    color: grey!important; \
+    width: 290px; \
+    display: block; \
+    float: left; \
+    text-align: right; \
 } \
-\
+ \
 .simpleTimestamps .channelname { \
-width: 260px; \
+    width: 260px; \
 } \
-\
+ \
 /*-------------------------filter tabs------------------------------------*/ \
 #filter_tabs { \
-table-layout: fixed; \
-border: 1px solid #A9A9A9; \
-border-top: 0; \
-border-left: 0; \
-border-right: 0; \
-width: 100%; \
+    table-layout: fixed; \
+    border: 1px solid #A9A9A9; \
+    border-top: 0; \
+    border-left: 0; \
+    border-right: 0; \
+    width: 100%; \
 } \
-\
+ \
 #filter_tabs > span { \
-width: 90%; \
-display: table-cell; \
+    width: 90%; \
+    display: table-cell; \
 } \
-\
+ \
 #filter_tabs > span.all, #filter_tabs > span.more { \
-width: 60px; \
-text-align: center; \
-vertical-align: middle; \
-cursor: pointer; \
+    width: 60px; \
+    text-align: center; \
+    vertical-align: middle; \
+    cursor: pointer; \
 } \
-\
+ \
 #filter_tabs .rlc-filters { \
-display: table; \
-width: 100%; \
-table-layout: fixed; \
+    display: table; \
+    width: 100%; \
+    table-layout: fixed; \
 } \
-\
+ \
 #filter_tabs .rlc-filters > span { \
-padding: 5px 2px; \
-text-align: center; \
-display: table-cell; \
-cursor: pointer; \
-width: 2%; \
-vertical-align: middle; \
-font-size: 1.1em; \
+    padding: 5px 2px; \
+    text-align: center; \
+    display: table-cell; \
+    cursor: pointer; \
+    width: 2%; \
+    vertical-align: middle; \
+    font-size: 1.1em; \
 } \
-\
+ \
 #filter_tabs .rlc-filters > span > span { \
-pointer-events: none; \
+    pointer-events: none; \
 } \
-\
+ \
 #filter_tabs > span.all { \
-padding: 0px 30px; \
-height: 24px; \
+    padding: 0px 30px; \
+    height: 24px; \
 } \
-\
+ \
 #filter_tabs > span.more { \
-padding: 0px 30px 0px 30px; \
+    padding: 0px 30px 0px 30px; \
 } \
-\
+ \
 /* add channels interface */ \
 .rlc-channel-add input { \
-border: 0; \
-padding: 3px 0px 4px 0px; \
+    border: 0; \
+    padding: 3px 0px 4px 0px; \
 } \
-\
+ \
 .rlc-channel-add .channel-mode { \
-float: right; \
-font-size: 1.2em; \
-padding: 5px; \
+    float: right; \
+    font-size: 1.2em; \
+    padding: 5px; \
 } \
-\
+ \
 .rlc-channel-add .channel-mode span { \
-cursor: pointer \
+    cursor: pointer \
 } \
-\
+ \
 .rlc-channel-add { \
-padding: 5px; \
-display: none; \
-position: absolute; \
-top: 25px; \
-background: #FCFCFC; \
-right: 17px; \
-z-index: 1000; \
+    padding: 5px; \
+    display: none; \
+    position: absolute; \
+    top: 25px; \
+    background: #FCFCFC; \
+    right: 17px; \
+    z-index: 1000; \
 } \
-\
+ \
 /*------------------------------------ Sidebar -----------------------------------------------------*/ \
 aside.sidebar.side.md-container { \
-width: 100%; \
-opacity: 1; \
-margin: 0; \
-padding: 0; \
-box-sizing: border-box; \
+    width: 100%; \
+    opacity: 1; \
+    margin: 0; \
+    padding: 0; \
+    box-sizing: border-box; \
 } \
-\
+ \
 #liveupdate-header { \
-width: 100%; \
-margin: 0!important; \
-padding: 0!important; \
-text-align: center; \
-max-width: none; \
-overflow: hidden; \
+    width: 100%; \
+    margin: 0!important; \
+    padding: 0!important; \
+    text-align: center; \
+    max-width: none; \
+    overflow: hidden; \
 } \
-\
+ \
 /*hide sidebar toggle class*/ \
 .rlc-hidesidebar #rlc-main { \
-width: 100%!important; \
+    width: 100%!important; \
 } \
-\
+ \
 #rlc-togglesidebar { \
-display: table-cell; \
-cursor: pointer; \
-border-right: 1px solid #A9A9A9; \
+    display: table-cell; \
+    cursor: pointer; \
+    border-right: 1px solid #A9A9A9; \
 } \
-\
+ \
 div#versionnumber { \
-display: table-cell; \
-cursor: help; \
-position: fixed; \
-top: 63px; \
-padding-top: 7px; \
-width: 20%; \
-right: 0; \
-text-align: center; \
-height: 25px; \
-box-sizing: border-box; \
-border-bottom: 1px solid #A9A9A9; \
-z-index: 10000; \
+    display: table-cell; \
+    cursor: help; \
+    position: fixed; \
+    top: 63px; \
+    padding-top: 7px; \
+    width: 20%; \
+    right: 0; \
+    text-align: center; \
+    height: 25px; \
+    box-sizing: border-box; \
+    border-bottom: 1px solid #A9A9A9; \
+    z-index: 10000; \
 } \
-\
+ \
 #liveupdate-statusbar.live .state:before { \
-border-radius: 2px; \
-height: 36px; \
-width: 36px; \
-margin-top: -8px; \
-margin-bottom: -11px; \
-margin-right: 10px; \
-transform: scale(0.77); \
+    border-radius: 2px; \
+    height: 36px; \
+    width: 36px; \
+    margin-top: -8px; \
+    margin-bottom: -11px; \
+    margin-right: 10px; \
+    transform: scale(0.77); \
 } \
-\
+ \
 #liveupdate-statusbar.reconnecting .state:before { \
-border-radius: 2px; \
-height: 36px; \
-width: 36px; \
-margin-top: -8px; \
-margin-bottom: -11px; \
-margin-right: 10px; \
-transform: scale(0.77); \
+    border-radius: 2px; \
+    height: 36px; \
+    width: 36px; \
+    margin-top: -8px; \
+    margin-bottom: -11px; \
+    margin-right: 10px; \
+    transform: scale(0.77); \
 } \
-\
+ \
 .rlc-showoptions #rlc-settings { \
-display: block; \
-padding-top: 30px; \
+    display: block; \
+    padding-top: 30px; \
 } \
-\
+ \
 .rlc-showreadmebar #rlc-readmebar { \
-display: block; \
-padding: 2px 5px 40px 0px; \
-box-sizing: border-box; \
-font-size: 1.18em; \
+    display: block; \
+    padding: 2px 5px 40px 0px; \
+    box-sizing: border-box; \
+    font-size: 1.18em; \
 } \
-\
+ \
 #rlc-settingsbar { \
-height: 25px; \
-box-sizing: border-box; \
-display: table; \
-border-top: 1px solid #A9A9A9; \
-table-layout: fixed; \
-width: 20%; \
-z-index: 100; \
-position: absolute; \
-bottom: -1px; \
-right: 0; \
-background: #FCFCFC; \
+    height: 25px; \
+    box-sizing: border-box; \
+    display: table; \
+    border-top: 1px solid #A9A9A9; \
+    table-layout: fixed; \
+    width: 20%; \
+    z-index: 100; \
+    background: #FCFCFC; \
 } \
-\
+ \
 div#rlc-toggleoptions { \
-display: table-cell; \
-cursor: pointer; \
+    display: table-cell; \
+    cursor: pointer; \
 } \
-\
+ \
 div#rlc-settingsbar div { \
-padding-top: 6px; \
-text-align: center; \
-cursor: pointer; \
+    padding-top: 6px; \
+    text-align: center; \
+    cursor: pointer; \
 } \
-\
+ \
 /* Autocomplete */ \
 ul.ui-autocomplete { \
-position: fixed!important; \
-bottom: 30px; \
-border-radius: 0px; \
-left: 0px!important; \
-background: grey; \
-width: 300px!important; \
-opacity: 0.8; \
-z-index: 1000; \
-top: initial!important; \
-font-size: 1.2em; \
+    position: fixed!important; \
+    bottom: 30px; \
+    border-radius: 0px; \
+    left: 0px!important; \
+    background: grey; \
+    width: 300px!important; \
+    opacity: 0.8; \
+    z-index: 1000; \
+    top: initial!important; \
+    font-size: 1.2em; \
 } \
-\
+ \
 ul.ui-autocomplete a { \
-color: black!important; \
+    color: black!important; \
 } \
-\
+ \
 /* active users */ \
 #rlc-activeusers, #banlistcontainer { \
-display: inline-block; \
-width: 100%; \
-padding: 10px; \
-font-size: 1.2em; \
+    display: inline-block; \
+    width: 100%; \
+    padding: 10px; \
+    font-size: 1.2em; \
 } \
-\
+ \
 #banlistcontainer p { \
-cursor: pointer; \
+    cursor: pointer; \
 } \
-\
+ \
 #rlc-activeusers li { \
-width: 100%; \
-font-size: 1.2em; \
+    width: 100%; \
+    font-size: 1.2em; \
 } \
-\
+ \
 /* Compact mode */ \
-\
 .rlc-compact div#rlc-chat { \
-height: calc(100vh - 49px); \
+    height: calc(100vh - 50px); \
 } \
-\
+ \
 /* misc fixes */ \
 .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate .simpletime { \
-display: block; \
-float: left; \
-width: 70px; \
-padding-left: 10px; \
-padding-top: 5px; \
+    display: block; \
+    float: left; \
+    width: 70px; \
+    padding-left: 10px; \
+    padding-top: 5px; \
 } \
-\
+ \
 #rlc-sidebar .sidebar .md h3, #rlc-sidebar aside.sidebar .md h4, #rlc-sidebar aside.sidebar .md h5, #rlc-sidebar aside.sidebar .md h6 { \
-color: inherit; \
+    color: inherit; \
 } \
-\
+ \
 div#rlc-toggleguide { \
-border-left: 1px solid #A9A9A9; \
-padding-bottom: 6px; \
+    border-left: 1px solid #A9A9A9; \
+    padding-bottom: 6px; \
 } \
-\
+ \
 div#rlc-main-sidebar { \
-display: block; \
-overflow-x: hidden; \
-padding-right: 5px; \
-box-sizing: border-box; \
+    display: block; \
+    overflow-x: hidden; \
+    padding-right: 5px; \
+    box-sizing: border-box; \
 } \
-\
+ \
 /* Dark Mode */ \
 .dark-background ul.ui-autocomplete a { \
-color: white!important; \
+    color: white!important; \
 } \
-\
+ \
 .dark-background pre { \
-background: transparent; \
+    background: transparent; \
 } \
-\
+ \
 .dark-background.rlc-showreadmebar #rlc-readmebar .md { \
-color: white; \
+    color: white; \
 } \
-\
+ \
 .dark-background #rlc-settingsbar, .dark-background div#versionnumber, .dark-background div#rlc-settings { \
-background: #404040; \
+    background: #404040; \
 } \
-\
+ \
 .dark-background .rlc-channel-add { \
-background: grey; \
+    background: grey; \
 } \
-\
+ \
 .dark-background .rlc-channel-add input { \
-background: #404040; \
-color: white; \
+    background: #404040; \
+    color: white; \
 } \
-\
+ \
 .dark-background .liveupdate-listing li.liveupdate .body div.md, .dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p { \
-color: white!important; \
+    color: white!important; \
 } \
-\
+ \
 .dark-background div#header-bottom-left { \
-background: grey; \
+    background: grey; \
 } \
-\
+ \
 .dark-background { \
-background: #404040; \
-color: white; \
+    background: #404040; \
+    color: white; \
 } \
-\
+ \
 .dark-background .side, .dark-background textarea, .dark-background #rlc-main .liveupdate-listing a.author { \
-background: transparent; \
-color: white; \
+    background: transparent; \
+    color: white; \
 } \
-\
+ \
 #rlc-settings label { \
-width: 100%; \
-display: block; \
-font-size: 1.5em; \
+    width: 100%; \
+    display: block; \
+    font-size: 1.5em; \
 } \
-\
+ \
 #rlc-settings input { \
-margin: 4px; \
-position: relative; \
-top: 2px; \
+    margin: 4px; \
+    position: relative; \
+    top: 2px; \
 } \
-\
+ \
 .rlc-compact #versionnumber { \
-top: 0; \
+    top: 0; \
 } \
-\
+ \
 .rlc-compact div#rlc-sidebar { \
-height: calc(100vh - 50px); \
+    height: calc(100vh - 50px); \
 } \
-\
-.dark-background #rlc-settings strong {color:white;} \
+ \
+.dark-background #rlc-settings strong { \
+    color: white; \
+} \
+ \
+ \
+.rlc-compact div#rlc-main { \
+    height: calc(100vh - 25px); \
+} \
 ");
