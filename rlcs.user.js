@@ -171,7 +171,7 @@
         return result;
     }
 
-    //brighten a color by an amount (for user colors)
+    /*/brighten a color by an amount (for user colors)
     function LightenDarkenColor(col, amt) {
         var usePound = false;
         if (col[0] == "#") {
@@ -196,15 +196,46 @@
         else if (g < 0) g = 0;
 
         return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
-    }
+    }*/
     function LightenDarkenColor2(col, amt) {
         var r=col.slice(0,2);
         var g=col.slice(2,4);
         var b=col.slice(4,6);
-        var hexR = (parseInt(r, 16) + parseInt(amt, 16)).toString(16);
-        var hexG = (parseInt(g, 16) + parseInt(amt, 16)).toString(16);
-        var hexB = (parseInt(b, 16) + parseInt(amt, 16)).toString(16);
-        console.log(hexR + ", " + hexG + ", " + hexB);
+		
+		var randR = (Math.seededRandom(r*100,120,175));
+		var randG = (Math.seededRandom(g*100,120,175));
+		var randB = (Math.seededRandom(b*100,120,175));
+		
+		var suppress=(Math.seededRandom(col*r*10,0,6));
+		console.log(suppress);
+		var modAmt=2;
+		switch(suppress) {
+			case 0:
+				randR/=modAmt;
+				break;
+			case 1:
+				randG/=modAmt;
+				break;
+			case 2:
+				randB/=modAmt;
+				break;
+			case 4:
+				randR/=modAmt;
+				randG/=modAmt;
+				break;
+			case 5:
+				randR/=modAmt;
+				randB/=modAmt;
+				break;
+			case 6:
+				randG/=modAmt;
+				randB/=modAmt;
+				break;
+		} 
+	
+        var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
+        var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
+        var hexB = (parseInt(randB) + parseInt(amt)).toString(16);
 
         return hexR+hexG+hexB;
     }
@@ -253,6 +284,20 @@
         // init
         click_action(state, $option);
     }
+	
+	 
+	// in order to work 'seed' must NOT be undefined,
+	// so in any case, you HAVE to provide a Math.seed
+	Math.seededRandom = function(seed, max, min) {
+		max = max || 1;
+		min = min || 0;
+	 
+		seed = (seed * 9301 + 49297) % 233280;
+		var rnd = seed / 233280;
+	 
+		return parseInt(min + rnd * (max - min));
+	}
+	
     var handle_new_message = function($ele, rescan){
         // add any proccessing for new messages in here
         var $msg = $ele.find(".body .md");
@@ -318,12 +363,12 @@
                 adder = adder * num;
             }
         });
-
-        adder=adder.toString().replace(".","").toString();
-        start = adder.length-6;
-        end = adder.length;
+        adder=adder.toString().replace(".","").split("0").join("");
+        start = adder.length-10;
+        end = adder.length-4;
         var firstThree=adder.toString().substring(start,end);
-
+		
+		
         if( GM_getValue("rlc-DarkMode") === 'true'){
             var lightercolor = LightenDarkenColor2(firstThree, 60);
             $usr.css("color","#"+lightercolor);
