@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.14.3
+// @version      2.15
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -207,7 +207,7 @@
 		var randB = (Math.seededRandom(b*100,120,175));
 		
 		var suppress=(Math.seededRandom(col*r*10,0,6));
-		console.log(suppress);
+		//console.log(suppress);
 		var modAmt=2;
 		switch(suppress) {
 			case 0:
@@ -252,7 +252,7 @@
                 //check if timestamp is recent enough?
             }
         }
-        $( ".usertext-edit textarea" ).autocomplete( "option", "source", updateArray );
+        //$( ".usertext-edit textarea" ).autocomplete( "option", "source", updateArray );
     }
 
     // create persistant option
@@ -886,7 +886,7 @@
             }
         });
 
-        $(".usertext-edit.md-container textarea").attr("tabindex","0"); //fixes autocomplete
+        //$(".usertext-edit.md-container textarea").attr("tabindex","0"); //fixes autocomplete
         var text_area = $(".usertext-edit.md-container textarea");       
 
         //right click author names in chat to copy to messagebox
@@ -924,18 +924,36 @@
         $("#rlc-toggleguide").click(function(){      $("body").removeClass("rlc-showoptions");        $("body").toggleClass("rlc-showreadmebar");});
         $("#rlc-sendmessage").click(function(){         (".save-button .btn").click();});
 
-        $('.usertext-edit textarea').autocomplete({
+        /*$('.usertext-edit textarea').autocomplete({
             source: updateArray,
             autoFocus: true,
             delay: 0,
             minLength: 2
-        });
+        });*/
 
         processActiveUsersList();
-
+		setTimeout(processActiveUsersList,500); // Otherwise it won't actually get the userlist until someone comments
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
-            if (e.keyCode == 9) {e.preventDefault();}
+            if (e.keyCode == 9) { //Stole my old code from Parrot
+				e.preventDefault();
+				var sourceAlt=$('.usertext-edit textarea').val();
+				//console.log(sourceAlt+" 1");
+				var namePart = "";	
+				var space=sourceAlt.lastIndexOf(" ");
+				namePart = sourceAlt.substring(space).trim();
+				//console.log(namePart+" 2");
+				sourceAlt = sourceAlt.substring(0, sourceAlt.lastIndexOf(" "));
+				$.each(updateArray,function(ind,Lname){
+					if(Lname.indexOf(namePart) == 0){
+						namePart=Lname;
+						if(space!=-1)namePart=" "+namePart;
+						//console.log(namePart+" 3");
+						return true;
+					}
+				});
+				$('.usertext-edit textarea').val(sourceAlt+namePart);
+			}
             if (e.keyCode == 13) {
                 if (e.shiftKey) { /* exit enter handling to allow shift+enter newline */  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
