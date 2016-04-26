@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.17.5
+// @version      2.18
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -42,6 +42,7 @@
     var colors = [
         'rgba(255,0,0,0.1)','rgba(0,255,0,0.1)','rgba(0,0,255,0.1)','rgba(0,255,255,0.1)','rgba(255,0,255,0.1)','rgba(255,255,0,0.1)','rgba(211,211,211, .1)','rgba(0,100,0, .1)','rgba(255,20,147, .1)','rgba(184,134,11, .1)'
     ];
+    var ratelimit = 0;
 
     // msg history
     var messageHistory = [];
@@ -650,8 +651,8 @@
                 if($(this).hasClass("selected")) return;
                 $(this).find("span").text(_self.unread_counts[$(this).data("filter")]);
             });
-            //update the active user list
-            
+            // rate limit disable
+            ratelimit = 0;
         };
 
         // Init tab zone
@@ -708,7 +709,7 @@
             this.drawTabs();
 
             // start ticker
-            setInterval(this.tick, 10000);
+            setInterval(this.tick, 2000);
         };
     };
     // boot
@@ -866,13 +867,15 @@
             if (e.keyCode == 13) {
                 if (e.shiftKey) { /* exit enter handling to allow shift+enter newline */  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
+                else if (ratelimit === 1) { e.preventDefault();console.log("rate limit hit");}
                 else {
                     if(text_area.val().indexOf("/version") === 0){ 
                         $(this).val("RLC v."+GM_info.script.version+" has been released. Use the link in the sidebar to update.");
                     }
                     e.preventDefault();
                     $(".save-button .btn").click();
-                     $("#new-update-form textarea").val("");
+                    $("#new-update-form textarea").val("");
+                    ratelimit = 1;
                 }
             }
             else if(e.keyCode == 38) {
@@ -1635,4 +1638,4 @@ select#rlc-channel-dropdown { \
 #filter_tabs .selected { \
     background: grey; \
 } \
-");
+")
