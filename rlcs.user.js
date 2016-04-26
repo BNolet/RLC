@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.15.3
+// @version      2.16
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -11,7 +11,6 @@
 // @exclude      https://www.reddit.com/live/*/contributors*
 // @exclude      https://*.reddit.com/live/create*
 // @require      https://code.jquery.com/jquery-2.2.3.min.js
-// @require      https://code.jquery.com/ui/1.10.4/jquery-ui.min.js
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
@@ -93,7 +92,7 @@
 <div id="rlc-main">   \
 <div id="rlc-chat"></div> \
 </div> \
-<div id="rlc-messagebox"></div> \
+<div id="rlc-messagebox"><select id="rlc-channel-dropdown"><option></option><option>%general</option><option>%offtopic</option><option>%dev</option></select></div>\
 <div id="rlc-settingsbar"> \
 <div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">Sidebar</div> \
 <div id="rlc-toggleoptions" title="Show Options" class="noselect">Options</div> \
@@ -170,33 +169,6 @@
         }
         return result;
     }
-
-    /*/brighten a color by an amount (for user colors)
-    function LightenDarkenColor(col, amt) {
-        var usePound = false;
-        if (col[0] == "#") {
-            col = col.slice(1);
-            usePound = true;
-        }
-        var num = parseInt(col,16);
-
-        var r = (num >> 16) + amt;
-
-        if (r > 255) r = 255;
-        else if  (r < 0) r = 0;
-
-        var b = ((num >> 8) & 0x00FF) + amt;
-
-        if (b > 255) b = 255;
-        else if  (b < 0) b = 0;
-
-        var g = (num & 0x0000FF) + amt;
-
-        if (g > 255) g = 255;
-        else if (g < 0) g = 0;
-
-        return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
-    }*/
     function LightenDarkenColor2(col, amt) {
         var r=col.slice(0,2);
         var g=col.slice(2,4);
@@ -252,7 +224,6 @@
                 //check if timestamp is recent enough?
             }
         }
-        //$( ".usertext-edit textarea" ).autocomplete( "option", "source", updateArray );
     }
 
     // create persistant option
@@ -557,6 +528,9 @@
             var i, idx, channel;
             var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
             var amPm = shorttime[4].toLowerCase();
+            
+            var $usr = $element.find(".body .author");
+            
             if (amPm === "am" || amPm === "pm" ) {
                 var shortimefull = shorttime[3] + " " + amPm;
             }
@@ -566,6 +540,12 @@
 
             var militarytime = convertTo24Hour(shorttime[3] + " " + amPm);
 
+            activeUserArray.push($usr.text());
+            activeUserTimes.push(militarytime);
+
+            // moved here to add user activity from any time rather than only once each 10 secs.(was in tab tick function, place it back there if performance suffers)
+            processActiveUsersList();           
+            
             //add simplified timestamps
             if($element.find(".body .simpletime").length) { }
             else  {
@@ -583,9 +563,8 @@
             // if we are handling new messages
             else {
                 //add info to activeuserarray
-                var $usr = $element.find(".body .author");
-                activeUserArray.push($usr.text());
-                activeUserTimes.push(militarytime);
+
+                
 
                 $usr.attr("target","_blank");                
 
@@ -638,6 +617,18 @@
                     $("#new-update-form textarea").val(channel_key + " " + $("#new-update-form textarea").val());
                 }
             }
+            // else read from dropdown populated by channels
+            else { 
+                var channel_key = $("#rlc-channel-dropdown option:selected" ).text();
+		if (channel_key !== "") {
+                if($("#new-update-form textarea").val().indexOf("/me") === 0){
+                    $("#new-update-form textarea").val("/me " + channel_key + " " + $("#new-update-form textarea").val().substr(3));
+                }else if($("#new-update-form textarea").val().indexOf("/") !== 0){
+                    // if its not a "/" command, add channel
+                    $("#new-update-form textarea").val(channel_key + " " + $("#new-update-form textarea").val());
+                }
+		}
+            }
         };
 
         // Update everuything
@@ -647,7 +638,7 @@
                 $(this).find("span").text(_self.unread_counts[$(this).data("filter")]);
             });
             //update the active user list
-            processActiveUsersList();
+            
         };
 
         // Init tab zone
@@ -922,7 +913,7 @@
         $("#rlc-togglesidebar").click(function(){      $("body").toggleClass("rlc-hidesidebar");});
         $("#rlc-toggleoptions").click(function(){   $("body").removeClass("rlc-showreadmebar");     $("body").toggleClass("rlc-showoptions");});
         $("#rlc-toggleguide").click(function(){      $("body").removeClass("rlc-showoptions");        $("body").toggleClass("rlc-showreadmebar");});
-        $("#rlc-sendmessage").click(function(){         (".save-button .btn").click();});
+        $("#rlc-sendmessage").click(function(){$(".save-button .btn").click();});
 
         /*$('.usertext-edit textarea').autocomplete({
             source: updateArray,
@@ -930,9 +921,8 @@
             delay: 0,
             minLength: 2
         });*/
-
-        processActiveUsersList();
-        // up for last message send, down for prev (if moving between em)
+ 
+        //tab autocomplete
         text_area.on('keydown', function(e) {
             if (e.keyCode == 9) { //Stole my old code from Parrot
 				processActiveUsersList();
@@ -964,6 +954,7 @@
 					$('.usertext-edit textarea').val(sourceAlt+namePart);
 				}
 			}
+            // enter message send
             if (e.keyCode == 13) {
                 if (e.shiftKey) { /* exit enter handling to allow shift+enter newline */  }
                 else if (text_area.val() === "" ) { e.preventDefault();  }
@@ -1242,7 +1233,9 @@ display: none; \
 .rlc-showoptions #rlc-main-sidebar { \
 display: none; \
 } \
-\
+.dark-background select#rlc-channel-dropdown option { \
+    color: black; \
+} \
 \
 .rlc-showreadmebar #rlc-main-sidebar { \
 display: none; \
@@ -1318,8 +1311,9 @@ div#new-update-form textarea { \
 } \
  \
 div#new-update-form { \
-    width: 100%; \
+    width: 90%; \
     margin: 0; \
+    float: right; \
 } \
  \
 .usertext-edit.md-container { \
@@ -1500,7 +1494,7 @@ div#rlc-chat { \
     height: 24px; \
     background: #FCFCFC; \
     left: 0px; \
-    width: calc(80% -  116px); \
+    width: calc(80% - 116px); \
     z-index: 1000; \
     border-right: 1px solid grey; \
 } \
@@ -1729,5 +1723,23 @@ div#rlc-main-sidebar { \
 div#versionnumber { \
     padding-right: 20px; \
     font-size: 0.8em; \
+} \
+ \
+.usertext-edit .bottom-area { \
+    position: absolute; \
+    top: 5px; \
+    left: 50%; \
+} \
+select#rlc-channel-dropdown { \
+    float: left; \
+    height: 25px; \
+    width: 10%; \
+    border-bottom: 0; \
+    background: transparent; \
+    border-left: 0; \
+} \
+ \
+.dark-background select#rlc-channel-dropdown { \
+    color: white; \
 } \
 ");
