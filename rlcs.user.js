@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.15.15
+// @version      2.15.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -932,11 +932,10 @@
         });*/
 
         processActiveUsersList();
-		setTimeout(processActiveUsersList,500); // Otherwise it won't actually get the userlist until someone comments
-		setTimeout(processActiveUsersList,1000); // just in case...
         // up for last message send, down for prev (if moving between em)
         text_area.on('keydown', function(e) {
             if (e.keyCode == 9) { //Stole my old code from Parrot
+				processActiveUsersList();
 				e.preventDefault();
 				var sourceAlt=$('.usertext-edit textarea').val();
 				//console.log(sourceAlt+" 1");
