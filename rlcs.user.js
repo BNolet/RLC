@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.17.3
+// @version      2.17.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -410,7 +410,7 @@
         tabbedChannels.proccessLine(line, $ele, rescan);
 
         //remove seperator
-        //$(".liveupdate-listing .separator").remove();
+        $(".liveupdate-listing .separator").remove();
 
         // Active Channels Monitoring
         //updateMostActiveChannels(line);    
