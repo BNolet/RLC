@@ -53,6 +53,7 @@
     
         //trollolololol
         activeUserArray.push("xelon");
+        activeUserTimes.push("13:37");
     
     // muted user list
     var bannamearray = [];
