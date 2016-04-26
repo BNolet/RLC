@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.16
+// @version      2.16.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -345,7 +345,7 @@
             $usr.css("color","#"+lightercolor);
         }
         else {
-            var darkercolor = LightenDarkenColor2(firstThree,0);
+            var darkercolor = LightenDarkenColor2(firstThree, -40);
             $usr.css("color","#"+darkercolor);
         }
 
