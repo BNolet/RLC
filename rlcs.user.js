@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.15.2
+// @version      2.15.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -944,20 +944,25 @@
 				namePart = sourceAlt.substring(space).trim();
 				//console.log(namePart+" 2");
 				sourceAlt = sourceAlt.substring(0, sourceAlt.lastIndexOf(" "));
+				var found=false;
 				$.each(updateArray,function(ind,Lname){
 					if(Lname.indexOf(namePart) == 0){
 						namePart=Lname;
 						if(space!=-1)namePart=" "+namePart;
 						//console.log(namePart+" 3");
+						found=true;
 						return true;
 					}else if(Lname.toLowerCase().indexOf(namePart.toLowerCase()) == 0){ // This is in an else because it should give priority to case Sensitive tab completion
 						namePart=Lname;
 						if(space!=-1)namePart=" "+namePart;
 						//console.log(namePart+" 3");
+						found=true;
 						return true;
 					}
 				});
-				$('.usertext-edit textarea').val(sourceAlt+namePart);
+				if(found){
+					$('.usertext-edit textarea').val(sourceAlt+namePart);
+				}
 			}
             if (e.keyCode == 13) {
                 if (e.shiftKey) { /* exit enter handling to allow shift+enter newline */  }
