@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.17.1
+// @version      2.17.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -370,7 +370,7 @@
         $(".liveupdate-listing .separator").remove();
 
         // Active Channels Monitoring
-        updateMostActiveChannels(line);    
+        //updateMostActiveChannels(line);    
     };
 
     /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
@@ -715,7 +715,7 @@
     /*
      START OF ACTIVE CHANNEL DISCOVERY SECTION
      (Transplanted from https://github.com/5a1t/parrot repo to which the section was originally contributed to by LTAcosta )
-    */
+    
 
     // Monitor the most active channels.
     var activeChannelsQueue = [];
@@ -769,7 +769,7 @@
 
         channels.sort(function(a,b) {return activeChannelsCounts[b] - activeChannelsCounts[a];});
 
-        /* Build the html table for display in #activeChannelsTable div. */
+        /* Build the html table for display in #activeChannelsTable div. */ /*
         var html = "<table>\r\n" +
             "<thead>\r\n" +
             "<tr><th>#</th><th>Channel Name</th><th>Join Channel</th></tr>\r\n" +
@@ -801,7 +801,7 @@
                 buildDropdown();
                 resetChannels();
             }
-            */
+            */  /*
         });
     }
 
@@ -818,7 +818,7 @@
             channelsInterval = 0;
         }
     }
-
+    */
     /*     END OF ACTIVE CHANNEL DISCOVERY SECTION     */
 
     // boot
@@ -861,10 +861,10 @@
         if($(".usertext-edit textarea").length) { }
         else { $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>"); }
 
-        $("<div id='channelsTable'> \
+      /*  $("<div id='channelsTable'> \
 <div>Most Active Channels</div><br/> \
 <div id='activeChannelsTable'></div><br/> \
-</div>").appendTo("#rlc-main-sidebar"); // Active Channel Discovery Table
+</div>").appendTo("#rlc-main-sidebar"); // Active Channel Discovery Table*/
 
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
         
@@ -879,10 +879,10 @@
         });
 
         _scroll_to_bottom();    //done adding content, scroll to bottom
-        
+        //$(".liveupdate-listing .separator").remove();
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
-            if ($(e.target).is('li.liveupdate')) {
+            if ($(e.target).is('li.liveupdate') && !$(e.target).is('li.liveupdate.seperator') ) {
                 // Apply changes to line
                 handle_new_message($(e.target), false);
                 if ($(document.body).hasClass("AutoScroll")) {
