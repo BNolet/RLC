@@ -50,6 +50,10 @@
     var activeUserArray = [];
     var activeUserTimes = [];
     var updateArray = [];
+    
+        //trollolololol
+        activeUserArray.push("xelon");
+    
     // muted user list
     var bannamearray = [];
     // message background alternation via js
@@ -864,7 +868,7 @@
         });
 
         _scroll_to_bottom();    //done adding content, scroll to bottom
-
+        
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
             if ($(e.target).is('li.liveupdate')) {
