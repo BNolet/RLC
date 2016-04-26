@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.16.4
+// @version      2.16.5
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1756,5 +1756,16 @@ select#rlc-channel-dropdown { \
     padding: 4px; \
     border-top: 0px; \
     border-bottom: 0px; \
+} \
+.rlc-showoptions #rlc-toggleoptions { \
+    background: grey; \
+} \
+ \
+.rlc-showreadmebar div#rlc-toggleguide { \
+    background: grey; \
+} \
+ \
+#filter_tabs .selected { \
+    background: grey; \
 } \
 ");
