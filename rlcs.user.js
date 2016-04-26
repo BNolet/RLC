@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.16.5
+// @version      2.17
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -106,6 +106,15 @@
 ';
     /*---------------------------------------------------------- Functions -------------------------------------------------------------------*/
 
+    // loadhistory  
+    function loadHistory() {
+        $('body').toggleClass("allowHistoryScroll");
+        $('body').scrollTop($('body')[0].scrollHeight);
+        _scroll_to_bottom();
+        $('body').toggleClass("allowHistoryScroll");
+    }
+    
+    
     //timeconverter for active user list
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
@@ -858,7 +867,8 @@
 </div>").appendTo("#rlc-main-sidebar"); // Active Channel Discovery Table
 
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
-
+        
+        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><strong>Recent User Activity</strong><br><ul></ul></div>");
         $('#rlc-main-sidebar').append("<div id='banlistcontainer'><strong>Muted Users</strong><div id='bannedlist'></div></div>");
         $('#liveupdate-statusbar').prepend("<div id='versionnumber'>v." + GM_info.script.version + "</div>");
@@ -903,6 +913,9 @@
             updatebannednames();
         });   
 
+  $("#loadmessages").click(function(){ 
+      loadHistory();
+  });
         // On post message, add it to history
         $(".save-button .btn").click(function(){
             var user_last_message = text_area.val();
@@ -1114,11 +1127,11 @@ font-style: italic; \
 body { \
 min-width: 0; \
 overflow: hidden; \
-} /* \
+}  \
 body.allowHistoryScroll { \
 height: 105%; \
 overflow: auto; \
-} */ \
+}  \
 \
 /* class to prevent selection for divs acting as buttons */ \
 .noselect { \
@@ -1247,7 +1260,17 @@ display: none; \
 } \
 ");
 /*------------------------------------------------------------------------------------------*/
-GM_addStyle("* { \
+GM_addStyle("div#loadmessages { \
+    float: right; \
+    width: 20%; \
+    text-align: center; \
+    height: 25px; \
+    padding-top: 6px; \
+    border-top: 1px solid #A9A9A9; \
+    cursor: pointer; \
+} \
+ \
+* { \
     box-sizing: border-box; \
 } \
  \
@@ -1267,7 +1290,7 @@ GM_addStyle("* { \
 #rlc-sidebar { \
     width: 20%; \
     float: right; \
-    height: calc(100vh - 87px); \
+    height: calc(100vh - 112px); \
     box-sizing: border-box; \
     overflow-y: auto; \
     overflow-x: hidden; \
@@ -1757,6 +1780,7 @@ select#rlc-channel-dropdown { \
     border-top: 0px; \
     border-bottom: 0px; \
 } \
+ \
 .rlc-showoptions #rlc-toggleoptions { \
     background: grey; \
 } \
