@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.16.1
+// @version      2.16.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1241,7 +1241,7 @@ display: none; \
 display: none; \
 } \
 ");
-
+/*------------------------------------------------------------------------------------------*/
 GM_addStyle("* { \
     box-sizing: border-box; \
 } \
@@ -1667,15 +1667,17 @@ div#rlc-main-sidebar { \
  \
 .dark-background #rlc-settingsbar, .dark-background div#rlc-settings { \
     background: #404040; \
+     \
 } \
  \
 .dark-background .rlc-channel-add { \
     background: #404040; \
+ \
 } \
  \
 .dark-background .rlc-channel-add input { \
-    background: #F3FFF9; \
     color: white; \
+    background: rgba(0, 0, 0, 0.28); \
 } \
  \
 .dark-background .liveupdate-listing li.liveupdate .body div.md, .dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p { \
@@ -1730,6 +1732,7 @@ div#versionnumber { \
     top: 5px; \
     left: 50%; \
 } \
+ \
 select#rlc-channel-dropdown { \
     float: left; \
     height: 25px; \
@@ -1739,7 +1742,8 @@ select#rlc-channel-dropdown { \
     border-left: 0; \
 } \
  \
-.dark-background select#rlc-channel-dropdown { \
+.dark-background .rlc-channel-add button, .dark-background select#rlc-channel-dropdown { \
     color: white; \
 } \
+.rlc-channel-add button {background:transparent;border:1px solid grey;color:white;margin:0;padding:4px;border-top:0px;border-bottom:0px;} \
 ");
