@@ -294,9 +294,23 @@
         var line = $msg.text().toLowerCase();
         var first_line = $msg.find("p").first();
 
+        
+     
+        
+        
+        
         // Highlight mentions
         if(line.indexOf(robin_user) !== -1){
             $ele.addClass("user-mention");
+            if ($("body").hasClass("rlc-notificationsound")) {
+                        snd.play();
+                    }
+                    if ($("body").hasClass("rlc-notificationchrome")) {
+                        var n = new Notification('Robin Live Chat',{
+                            icon: chromenoticeimg,
+                            body: $usr.text() + ": " + text,
+                        });
+                    }
         }
 
         //alternating background color    
@@ -363,11 +377,40 @@
             $usr.css("color","#"+darkercolor);
         }
 
+        /***** new stuff moved from processline****/
+        //add info to activeuserarray
+
+        var  shorttime = $ele.find(".body time").attr( "title" ).split(" ");
+        var amPm = shorttime[4].toLowerCase();
+
+        if (amPm === "am" || amPm === "pm" ) {
+            var shortimefull = shorttime[3] + " " + amPm;
+        }
+        else {
+            amPm = " ";
+        }
+
+        var militarytime = convertTo24Hour(shorttime[3] + " " + amPm);
+
+        activeUserArray.push($usr.text());
+        activeUserTimes.push(militarytime);
+
+        // moved here to add user activity from any time rather than only once each 10 secs.(was in tab tick function, place it back there if performance suffers)
+        processActiveUsersList();           
+
+        //add simplified timestamps
+        if($ele.find(".body .simpletime").length) { }
+        else  {
+            $ele.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
+        }
+
+        $usr.attr("target","_blank");                
+
         // Track channels
         tabbedChannels.proccessLine(line, $ele, rescan);
 
-        //remove seperator 
-        $(".liveupdate-listing .separator").remove();
+        //remove seperator
+        //$(".liveupdate-listing .separator").remove();
 
         // Active Channels Monitoring
         //updateMostActiveChannels(line);    
@@ -540,31 +583,7 @@
         // Procces each chat line to create text
         this.proccessLine = function(text, $element, rescan){
             var i, idx, channel;
-            var  shorttime = $element.find(".body time").attr( "title" ).split(" ");
-            var amPm = shorttime[4].toLowerCase();
             
-            var $usr = $element.find(".body .author");
-            
-            if (amPm === "am" || amPm === "pm" ) {
-                var shortimefull = shorttime[3] + " " + amPm;
-            }
-            else {
-                amPm = " ";
-            }
-
-            var militarytime = convertTo24Hour(shorttime[3] + " " + amPm);
-
-            activeUserArray.push($usr.text());
-            activeUserTimes.push(militarytime);
-
-            // moved here to add user activity from any time rather than only once each 10 secs.(was in tab tick function, place it back there if performance suffers)
-            processActiveUsersList();           
-            
-            //add simplified timestamps
-            if($element.find(".body .simpletime").length) { }
-            else  {
-                $element.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
-            }
 
             // If rescanning, clear any existing "channel" classes
             if(typeof rescan !== 'undefined' && rescan === true){
@@ -576,24 +595,7 @@
             }
             // if we are handling new messages
             else {
-                //add info to activeuserarray
-
-                
-
-                $usr.attr("target","_blank");                
-
-                //mention sound effect player
-                if(text.indexOf(robin_user) !== -1){
-                    if ($("body").hasClass("rlc-notificationsound")) {
-                        snd.play();
-                    }
-                    if ($("body").hasClass("rlc-notificationchrome")) {
-                        var n = new Notification('Robin Live Chat',{
-                            icon: chromenoticeimg,
-                            body: $usr.text() + ": " + text,
-                        });
-                    }
-                }
+         
 
             }
 
@@ -882,7 +884,7 @@
         //$(".liveupdate-listing .separator").remove();
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
-            if ($(e.target).is('li.liveupdate') && !$(e.target).is('li.liveupdate.seperator') ) {
+            if ($(e.target).is('li.liveupdate')) {
                 // Apply changes to line
                 handle_new_message($(e.target), false);
                 if ($(document.body).hasClass("AutoScroll")) {
@@ -982,6 +984,7 @@
                     }
                     e.preventDefault();
                     $(".save-button .btn").click();
+                     $("#new-update-form textarea").val("");
                 }
             }
             else if(e.keyCode == 38) {
@@ -1240,7 +1243,7 @@ border: 1px solid #262626; \
 /* option classes */ \
 \
 /* hard removal */ \
-#rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #rlc-main .liveupdate-listing .separator, #liveupdate-options, .footer-parent, body > .content { \
+#rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #liveupdate-options, .footer-parent, body > .content { \
 display: none; \
 } \
 \
