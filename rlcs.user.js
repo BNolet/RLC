@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.15
+// @version      2.15.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -946,6 +946,11 @@
 				sourceAlt = sourceAlt.substring(0, sourceAlt.lastIndexOf(" "));
 				$.each(updateArray,function(ind,Lname){
 					if(Lname.indexOf(namePart) == 0){
+						namePart=Lname;
+						if(space!=-1)namePart=" "+namePart;
+						//console.log(namePart+" 3");
+						return true;
+					}else if(Lname.toLowerCase().indexOf(namePart.toLowerCase()) == 0){ // This is in an else because it should give priority to case Sensitive tab completion
 						namePart=Lname;
 						if(space!=-1)namePart=" "+namePart;
 						//console.log(namePart+" 3");
