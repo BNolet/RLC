@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.14.2
+// @version      2.14.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -201,7 +201,7 @@
         var r=col.slice(0,2);
         var g=col.slice(2,4);
         var b=col.slice(4,6);
-		
+		if(rowalternator)amt+=10;
 		var randR = (Math.seededRandom(r*100,120,175));
 		var randG = (Math.seededRandom(g*100,120,175));
 		var randB = (Math.seededRandom(b*100,120,175));
