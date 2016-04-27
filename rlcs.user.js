@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.22.2
+// @version      2.22.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -417,6 +417,25 @@
             $usr.css("color","#"+darkercolor);
         }
         
+
+        if(typeof rescan !== 'undefined' && rescan === true){
+            // no action
+        }
+        else {   
+            if (GM_getValue("rlc-TextToSpeech") === 'true') {      
+                var hasTripple = /(.)\1\1/.test(line);
+                console.log(hasTripple);
+                if (!hasTripple) { 
+                    var msg = new SpeechSynthesisUtterance($usr.text() + " said " + $msg.text());
+                    window.speechSynthesis.speak(msg);
+                    //               msg.voiceURI = 'native';
+                    //                msg.volume = 1; // 0 to 1
+                    //                msg.rate = 0.1; // 0.1 to 10
+                    //                msg.pitch = 0; //0 to 2
+                }
+            }
+        }
+        
         /* temporarily disabled, im not quite comfortable with putting moderation so prominently */
     /*  if($ele.has('.buttonrow').length>0){
             $msg.append('<button id="rlc-delete">X</button>');   ////The display (red color, X, etc) is only temporary. I'm terrible with design so if you have better ideas feel free
@@ -619,21 +638,6 @@
                     $element.removeClass("rlc-filter-" + i);
                 }
             }
-            else {   
-                if (GM_getValue("rlc-TextToSpeech") === 'true') {      
-                var hasTripple = /(.)\1\1/.test(text);
-                console.log(hasTripple);
-                if (!hasTripple) { 
-                var msg = new SpeechSynthesisUtterance(text);
-                window.speechSynthesis.speak(msg);
- //               msg.voiceURI = 'native';
-//                msg.volume = 1; // 0 to 1
-//                msg.rate = 0.1; // 0.1 to 10
-//                msg.pitch = 0; //0 to 2
-                }
-                }
-             }  
-            
 
             // Scann for channel identifiers
             for(i=0; i< this.channelMatchingCache.length; i++){ // sorted so longer get picked out before shorter ones (sub channel matching)
