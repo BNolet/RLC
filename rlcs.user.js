@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.22.5
+// @version      2.22.6
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -813,7 +813,7 @@
             handle_new_message($(item), true);
         });
         
-        _scroll_to_bottom();    //done adding/modding content, scroll to bottom
+       
 
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
@@ -826,7 +826,6 @@
             }
             //remove separators
             else if ($(e.target).is('.separator')) {
-                console.log($(e.target));
                 $(e.target).remove();  
             }
         });
@@ -834,6 +833,9 @@
         //due to proccessline this needs to run after the new content detector 
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
         $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
+      
+         _scroll_to_bottom();    //done adding/modding content, scroll to bottom
+        
         
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
@@ -872,7 +874,7 @@
             messageHistoryIndex = messageHistory.length;
         });
 
-        $("#rlc-togglesidebar").click(function(){      $("body").toggleClass("rlc-hidesidebar");});
+        $("#rlc-togglesidebar").click(function(){      $("body").toggleClass("rlc-hidesidebar");  _scroll_to_bottom();  });
         $("#rlc-toggleoptions").click(function(){   $("body").removeClass("rlc-showreadmebar");     $("body").toggleClass("rlc-showoptions");});
         $("#rlc-toggleguide").click(function(){      $("body").removeClass("rlc-showoptions");        $("body").toggleClass("rlc-showreadmebar");});
         $("#rlc-sendmessage").click(function(){$(".save-button .btn").click();});
@@ -1251,7 +1253,7 @@ div#rlc-messagebox { \
 .rlc-hidesidebar div#rlc-messagebox { \
     position: relative; \
     float: left; \
-    width: 100%; \
+    width: 80%; \
     border-left: 1px solid grey; \
 } \
  \
@@ -1350,14 +1352,14 @@ div#rlc-chat { \
 button#rlc-delete { \
     width: 3%; \
     height: 5%; \
-    right:0; \
+    right: 0; \
     text-align: center; \
     float: right; \
     display: inline-block; \
     padding: 0px; \
     margin: 0px; \
     font-size: 1em; \
-    color:#000; \
+    color: #000; \
     cursor: pointer; \
 } \
  \
@@ -1505,6 +1507,7 @@ aside.sidebar.side.md-container { \
     cursor: pointer; \
     border-right: 1px solid #A9A9A9; \
 } \
+ \
 #liveupdate-statusbar.live .state:before { \
     border-radius: 2px; \
     height: 36px; \
@@ -1559,6 +1562,7 @@ div#rlc-settingsbar div { \
     text-align: center; \
     cursor: pointer; \
 } \
+ \
 /* active users */ \
 #rlc-activeusers, #banlistcontainer { \
     display: inline-block; \
@@ -1612,15 +1616,19 @@ div#rlc-main-sidebar { \
     background: transparent; \
 } \
  \
+.dark-background code { color:black;} \
 .dark-background .rlc-channel-add button, .dark-background select#rlc-channel-dropdown, .dark-background.rlc-showreadmebar #rlc-readmebar .md { \
     color: white; \
 } \
+ \
 .dark-background select#rlc-channel-dropdown option { \
     color: black; \
 } \
+ \
 .dark-background .rlc-channel-add, .dark-background #rlc-settingsbar, .dark-background div#rlc-settings { \
     background: #404040; \
 } \
+ \
 .dark-background .rlc-channel-add input { \
     color: white; \
     background: rgba(0, 0, 0, 0.28); \
@@ -1687,6 +1695,7 @@ select#rlc-channel-dropdown { \
     background: transparent; \
     border-left: 0; \
 } \
+ \
 .rlc-channel-add button { \
     background: transparent; \
     border: 1px solid grey; \
