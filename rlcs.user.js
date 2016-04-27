@@ -1621,7 +1621,7 @@ div#rlc-main-sidebar { \
     background: transparent; \
 } \
  \
-.dark-background code { color:black;} \
+.dark-background #rlc-main code { color:black;} \
 .dark-background .rlc-channel-add button, .dark-background select#rlc-channel-dropdown, .dark-background.rlc-showreadmebar #rlc-readmebar .md { \
     color: white; \
 } \
