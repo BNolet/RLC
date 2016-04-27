@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.22
+// @version      2.22.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -35,7 +35,7 @@
         GM_setValue("rlc-AutoScroll", 'true');
     }  
     if (!GM_getValue("rlc-TextToSpeech")) {      
-        GM_setValue("rlc-TextToSpeech", 'true');
+        GM_setValue("rlc-TextToSpeech", 'false');
     }  
 
     // Grab users username + play nice with RES
@@ -621,17 +621,16 @@
             }
             else {   
                 if (GM_getValue("rlc-TextToSpeech") === 'true') {      
-
-                // if we are handling new messages
-                //console.log("speak event, utterance:");
-                console.log(text);
+                var hasTripple = /(.)\1\1/.test(text);
+                console.log(hasTripple);
+                if (!hasTripple) { 
                 var msg = new SpeechSynthesisUtterance(text);
                 window.speechSynthesis.speak(msg);
                 msg.voiceURI = 'native';
                 msg.volume = 1; // 0 to 1
-                msg.rate = 7; // 0.1 to 10
-                msg.pitch = 1.5; //0 to 2
-                //do any non-channel message modification in handle_new_message function
+                msg.rate = 10; // 0.1 to 10
+                msg.pitch = 2; //0 to 2
+                }
                 }
              }  
             
