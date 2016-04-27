@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.21
+// @version      2.21.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -415,7 +415,8 @@
             $usr.css("color","#"+darkercolor);
         }
 		
-		if($ele.has('.buttonrow').length>0){
+        /* temporarily disabled, im not quite comfortable with putting moderation so prominently */
+	/*	if($ele.has('.buttonrow').length>0){
 			$msg.append('<button id="rlc-delete">X</button>');   ////The display (red color, X, etc) is only temporary. I'm terrible with design so if you have better ideas feel free
 			$msg.find("#rlc-delete").parent().parent().siblings().find('button').click();
 			$msg.find("#rlc-delete").click(function(){
@@ -424,7 +425,7 @@
 				console.log($delButton);
 				$delButton.click();
 			});
-		}
+		}*/
     };
 
     // channel tabs megafunction
