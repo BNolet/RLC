@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.22.6
+// @version      2.22.7
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -122,10 +122,15 @@
 
     // manipulate native reddit live into loading old messages
     function loadHistory() {
+        if (GM_getValue("rlc-TextToSpeech") == 'true') {      
+                 alert("You have TextToSpeech enabled, please disable to load old messages.");
+        }  
+        else {
         $('body').toggleClass("allowHistoryScroll");
         $('body').scrollTop($('body')[0].scrollHeight);
         _scroll_to_bottom();
         $('body').toggleClass("allowHistoryScroll");
+        }
     }
     
     //timeconverter for active user list
