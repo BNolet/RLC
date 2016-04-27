@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.22.3
+// @version      2.22.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -423,10 +423,10 @@
         }
         else {   
             if (GM_getValue("rlc-TextToSpeech") === 'true') {      
-                var hasTripple = /(.)\1\1/.test(line);
-                console.log(hasTripple);
+                var linetoread = $msg.text().replace("...", "\u2026");   //replace 3 dots with elipsis character
+                var hasTripple = /(.)\1\1/.test(linetoread);
                 if (!hasTripple) { 
-                    var msg = new SpeechSynthesisUtterance($usr.text() + " said " + $msg.text());
+                    var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text());
                     window.speechSynthesis.speak(msg);
                     //               msg.voiceURI = 'native';
                     //                msg.volume = 1; // 0 to 1
