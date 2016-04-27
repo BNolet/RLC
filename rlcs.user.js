@@ -413,7 +413,18 @@
         else {
             var darkercolor = LightenDarkenColor2(firstThree, -40);
             $usr.css("color","#"+darkercolor);
-        }   
+        }
+		
+		if($ele.has('.buttonrow').length>0){
+			$msg.append('<div id="rlc-delete">X</div>');   ////The display (red color, X, etc) is only temporary. I'm terrible with design so if you have better ideas feel free
+			$msg.find("#rlc-delete").parent().parent().siblings().find('button').click();
+			$msg.find("#rlc-delete").click(function(){
+				var $siblings = $(this).parent().parent().siblings();
+				var $delButton = $siblings.find('button');
+				console.log($delButton);
+				$delButton.click();
+			});
+		}
     };
 
     // channel tabs megafunction
@@ -1291,6 +1302,21 @@ div#rlc-chat { \
 #rlc-main .liveupdate-listing .liveupdate { \
     height: auto!important; \
     padding: 4px; \
+} \
+ \
+div#rlc-delete { \
+    width: 3%; \
+    height: 5%; \
+	right:0; \
+    text-align: center; \
+    float: right; \
+    display: inline-block; \
+	background:red; \
+    padding: 0px; \
+    margin: 0px; \
+    font-size: 1em; \
+	color:#000; \
+    cursor: pointer; \
 } \
  \
 #rlc-main .liveupdate-listing a.author { \
