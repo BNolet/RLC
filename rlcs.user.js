@@ -326,12 +326,6 @@
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }
 
-        // easy multiline
-        if(GM_getValue("rlc-EasyMultilineText") === 'true'){
-            $msg.html($msg.html().split('\n').join('<br>'));
-            $msg.html($msg.html().replace('<br><br>','<br>'));
-        }
-
         // Current User name mentioned
         if(line.indexOf(robin_user) !== -1){
             //add bold highlighting
@@ -348,7 +342,7 @@
         }
 
         // emote support
-        if(GM_getValue("rlc-NoSmileys") === 'false'){            
+        if(GM_getValue("rlc-NoSmileys") === 'false'){      
             $.each(emojiList,function(emoji,replace){
                 if(line.toLowerCase().indexOf(emoji.toLowerCase()) != -1 && line.indexOf("http") == -1){
                     if($msg.has("h1").length==0 && $msg.has("li").length==0 && $msg.has("code").length==0 && $msg.has("table").length==0){
@@ -359,6 +353,13 @@
             });
         }        
 
+
+        // easy multiline
+        if(GM_getValue("rlc-EasyMultilineText") === 'true'){
+            $msg.html($msg.html().split('\n').join('<br>'));
+            $msg.html($msg.html().replace('<br><br>','<br>'));
+            $msg.html($msg.html().replace('</p><br>',''));
+        }
         var  shorttime = $ele.find(".body time").attr( "title" ).split(" ");
         var amPm = shorttime[4].toLowerCase();
 
