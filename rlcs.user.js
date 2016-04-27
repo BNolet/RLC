@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.21.1
+// @version      2.22
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -33,6 +33,9 @@
     }
     if (!GM_getValue("rlc-AutoScroll")) {      
         GM_setValue("rlc-AutoScroll", 'true');
+    }  
+    if (!GM_getValue("rlc-TextToSpeech")) {      
+        GM_setValue("rlc-TextToSpeech", 'true');
     }  
 
     // Grab users username + play nice with RES
@@ -384,10 +387,9 @@
         else  {
             $ele.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
         }
-
         // Track channels
         tabbedChannels.proccessLine(line, $ele, rescan);
-
+       
         //remove separator
         $(".liveupdate-listing .separator").remove();
 
@@ -414,19 +416,31 @@
             var darkercolor = LightenDarkenColor2(firstThree, -40);
             $usr.css("color","#"+darkercolor);
         }
-		
+        
         /* temporarily disabled, im not quite comfortable with putting moderation so prominently */
-	/*	if($ele.has('.buttonrow').length>0){
-			$msg.append('<button id="rlc-delete">X</button>');   ////The display (red color, X, etc) is only temporary. I'm terrible with design so if you have better ideas feel free
-			$msg.find("#rlc-delete").parent().parent().siblings().find('button').click();
-			$msg.find("#rlc-delete").click(function(){
-				var $siblings = $(this).parent().parent().siblings();
-				var $delButton = $siblings.find('button');
-				console.log($delButton);
-				$delButton.click();
-			});
-		}*/
+    /*  if($ele.has('.buttonrow').length>0){
+            $msg.append('<button id="rlc-delete">X</button>');   ////The display (red color, X, etc) is only temporary. I'm terrible with design so if you have better ideas feel free
+            $msg.find("#rlc-delete").parent().parent().siblings().find('button').click();
+            $msg.find("#rlc-delete").click(function(){
+                var $siblings = $(this).parent().parent().siblings();
+                var $delButton = $siblings.find('button');
+                console.log($delButton.text());
+                //$delButton.click();  //currently this clicks all buttons in delButton.
+                // since the above console log returns "strikeyesnodeleteyesno" this means messages are deleted and striked. we need better selectors.
+            });
+        }*/
+                
     };
+    
+    function speakViaSpeechSynthAPI(speakArray){
+        //Speak by http://updates.html5rocks.com/2014/01/Web-apps-that-talk---Introduction-to-the-Speech-Synthesis-API
+        if (speakArray.length > 0){
+            for (var i = 0; i < speakArray.length; i++) {
+                var msg = new SpeechSynthesisUtterance(speakArray);
+                window.speechSynthesis.speak(msg);
+            }
+        }
+    }
 
     // channel tabs megafunction
     var tabbedChannels = new function(){
@@ -596,6 +610,7 @@
         this.proccessLine = function(text, $element, rescan){
             var i, idx, channel;
             
+            
             // If rescanning, clear any existing "channel" classes
             if(typeof rescan !== 'undefined' && rescan === true){
                 $element.removeClass("in-channel");
@@ -604,10 +619,22 @@
                     $element.removeClass("rlc-filter-" + i);
                 }
             }
-            // if we are handling new messages
             else {   
+                if (GM_getValue("rlc-TextToSpeech") === 'true') {      
+
+                // if we are handling new messages
+                //console.log("speak event, utterance:");
+                console.log(text);
+                var msg = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.speak(msg);
+                msg.voiceURI = 'native';
+                msg.volume = 1; // 0 to 1
+                msg.rate = 7; // 0.1 to 10
+                msg.pitch = 1.5; //0 to 2
                 //do any non-channel message modification in handle_new_message function
-            }
+                }
+             }  
+            
 
             // Scann for channel identifiers
             for(i=0; i< this.channelMatchingCache.length; i++){ // sorted so longer get picked out before shorter ones (sub channel matching)
@@ -748,10 +775,6 @@
         $('#liveupdate-resources .md').html(res[1]);
         $('#rlc-guidebar .md').append(res[0]);
 
-        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
-
-        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
-
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><strong>Recent User Activity</strong><br><ul></ul></div>");
         $('#rlc-main-sidebar').append("<div id='banlistcontainer'><strong>Muted Users</strong><div id='bannedlist'></div></div>");
 
@@ -782,7 +805,7 @@
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
         });
-
+        
         _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
         // Detect new content being added
@@ -801,6 +824,10 @@
             }
         });
 
+        //due to proccessline this needs to run after the new content detector 
+        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
+        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
+        
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
             if (!$("body").hasClass("rlc-altauthorclick")) { 
@@ -994,7 +1021,15 @@
                 $("body").removeClass("rlc-MultiLine");
             }
         },false);
+        createOption("TextToSpeech", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-TextToSpeech");
+            }else{
+                $("body").removeClass("rlc-TextToSpeech");
+            }
+        },false);
     });
+    
 
     //channel styles
     var color;
@@ -1308,14 +1343,14 @@ div#rlc-chat { \
 button#rlc-delete { \
     width: 3%; \
     height: 5%; \
-	right:0; \
+    right:0; \
     text-align: center; \
     float: right; \
     display: inline-block; \
     padding: 0px; \
     margin: 0px; \
     font-size: 1em; \
-	color:#000; \
+    color:#000; \
     cursor: pointer; \
 } \
  \
