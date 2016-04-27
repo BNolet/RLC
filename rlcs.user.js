@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.20
+// @version      2.21
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -416,7 +416,7 @@
         }
 		
 		if($ele.has('.buttonrow').length>0){
-			$msg.append('<div id="rlc-delete">X</div>');   ////The display (red color, X, etc) is only temporary. I'm terrible with design so if you have better ideas feel free
+			$msg.append('<button id="rlc-delete">X</button>');   ////The display (red color, X, etc) is only temporary. I'm terrible with design so if you have better ideas feel free
 			$msg.find("#rlc-delete").parent().parent().siblings().find('button').click();
 			$msg.find("#rlc-delete").click(function(){
 				var $siblings = $(this).parent().parent().siblings();
@@ -1304,14 +1304,13 @@ div#rlc-chat { \
     padding: 4px; \
 } \
  \
-div#rlc-delete { \
+button#rlc-delete { \
     width: 3%; \
     height: 5%; \
 	right:0; \
     text-align: center; \
     float: right; \
     display: inline-block; \
-	background:red; \
     padding: 0px; \
     margin: 0px; \
     font-size: 1em; \
