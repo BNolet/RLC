@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.6
+// @version      2.26.7
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -477,11 +477,11 @@
                     $menu.css({"left":divPos['left'],"top":divPos['top']-70,"display":"initial"}); //menu up
                 }
 
-                var $button = $(this).find('.delete').find('button'); //test if you can delete (note, dosent seem to work, disabled - stjern)
+                var $button = $(this).parent().siblings().find('.delete').find('button'); 
                 if($button.length>0){
-                    //$menu.find('#deleteCom').removeClass("disabled"); 
+                    $menu.find('#deleteCom').removeClass("disabled"); 
                 }else{
-                    //$menu.find('#deleteCom').addClass("disabled");
+                    $menu.find('#deleteCom').addClass("disabled");
                 }
                 $menu.find('ul li').unbind('click');
                 $menu.find('ul li').bind('click',function(){
