@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.25
+// @version      2.25.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -354,7 +354,7 @@
             if ($("body").hasClass("rlc-notificationchrome")) {
                 var n = new Notification('Robin Live Chat',{
                     icon: chromenoticeimg,
-                    body: $usr.text() + ": " + text,
+                    body: $usr.text() + ": " + line,
                 });
             }
         }
@@ -902,6 +902,11 @@
         // remove iframes
         $("#rlc-main iframe").remove();
         
+        
+        //due to proccessline this needs to run after the new content detector 
+        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
+        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
+        
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
@@ -924,9 +929,7 @@
             }
         });
 
-        //due to proccessline this needs to run after the new content detector 
-        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
-        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
+        
       
          _scroll_to_bottom();    //done adding/modding content, scroll to bottom
         
