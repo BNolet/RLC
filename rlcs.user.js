@@ -181,12 +181,6 @@
         if($("#rlc-chat").attr("data-channel-key")){
             var offset = $("#rlc-chat").attr("data-channel-key").length;
             if(offset === 0) return message;
-
-            if(message.indexOf("/me") === 0){
-                return "/me "+ message.slice(offset+5);
-            }else{
-                return message.slice(offset+1);
-            }
         }
         return message;
     };
@@ -519,7 +513,13 @@
         var $usr = $ele.find(".body .author");
         var line = $msg.text().toLowerCase();
         var first_line = $msg.find("p").first();
-
+      
+         // /me support
+        if(line.indexOf("/me") === 0){
+            $ele.addClass("user-narration");
+            first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
+        }
+        
         // target blank all message links
         $msg.find("a").attr("target","_blank");
 
@@ -529,9 +529,7 @@
         // insert time
         $usr.before($ele.find("time"));
 
-        //remove the /u/ in author name
-        $usr.text($usr.text().replace("/u/", ""));
-
+      
         // tag message with user identifier for muting
         $ele.addClass("u_"+$usr.text());
 
@@ -549,11 +547,11 @@
         $msg.html($msg.html().replace('<br><br>','<br>'));
         $msg.html($msg.html().replace('</p><br>',''));
 
-        // /me support
-        if(line.indexOf("/me") === 0){
-            $ele.addClass("user-narration");
-            first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
-        }
+       
+
+        //remove the /u/ in author name
+        $usr.text($usr.text().replace("/u/", ""));
+
 
         // Track channels
         tabbedChannels.proccessLine(line, $ele, rescan);
@@ -574,6 +572,9 @@
         else {
             messageTextToSpeechHandler($msg, $usr);
         }
+        
+
+        
     };
 
     function getColor(username) {
