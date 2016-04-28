@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.22.7
+// @version      2.23
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -111,6 +111,13 @@
         <div id="rlc-toggleoptions" title="Show Options" class="noselect">Options</div> \
         <div id="rlc-toggleguide" title="Show Guide" class="noselect">Readme</div> \
         </div> \
+		<div id="myContextMenu">\
+		<ul>\
+		<li id="mute"><a>Mute User</a></li>\
+		<li id="PMUser"><a>PM User</a></li>\
+		<li id="deleteCom"><a>Delete Comment</a></li>\
+		</ul>\
+		</div>\
     ';
 
 /*---------------------------------------------------------- Functions -------------------------------------------------------------------*/
@@ -444,22 +451,65 @@
                 }
             }
         }
-        
-        /* temporarily disabled, im not quite comfortable with putting moderation so prominently */
-    /*  if($ele.has('.buttonrow').length>0){
-            $msg.append('<button id="rlc-delete">X</button>');   ////The display (red color, X, etc) is only temporary. I'm terrible with design so if you have better ideas feel free
-            $msg.find("#rlc-delete").parent().parent().siblings().find('button').click();
-            $msg.find("#rlc-delete").click(function(){
-                var $siblings = $(this).parent().parent().siblings();
-                var $delButton = $siblings.find('button');
-                console.log($delButton.text());
-                //$delButton.click();  //currently this clicks all buttons in delButton.
-                // since the above console log returns "strikeyesnodeleteyesno" this means messages are deleted and striked. we need better selectors.
-            });
-        }*/
+		var $menu = $('#myContextMenu');
+        $ele.click(function(){
+			if ($menu.css('display') === 'none' && !isNaN(divPos['left']) && !isNaN(divPos['top']) ) {
+				var h = window.innerHeight;
+				if(window.innerHeight-100 > divPos['top']){
+					$menu.css({"left":divPos['left'],"top":divPos['top'],"display":"initial"}); //menu down
+				}else{
+					$menu.css({"left":divPos['left'],"top":divPos['top']-70,"display":"initial"}); //menu up
+				}
+				
+				var $button = $(this).find('.delete').find('button'); //test if you can delete
+				if($button.length>0){
+					$menu.find('#deleteCom').removeClass("disabled");
+				}else{
+					$menu.find('#deleteCom').addClass("disabled");
+				}
+				$menu.find('ul li').unbind('click');
+				$menu.find('ul li').bind('click',function(){
+					$id=$(this).attr('id');
+					if($id==="deleteCom" && $(this).has('.disabled').length==0){
+						deleteComment($ele);
+					}
+					if($id==="PMUser"){
+						OpenUserPM($usr.text());
+					}
+					if($id==="mute"){
+						var banusername = String($usr.text()).trim();
+						bannamearray.push(banusername);
+						updateMutedUsers();
+					}
+					$ele.click();
+				});
+				
+			}else{
+				$menu.css({"left":0,"top":0,"display":"none"}); //close menu
+			}
+		});
                 
     };
-    
+	function OpenUserPM(name) {
+		var $url = "https://www.reddit.com/message/compose/?to="
+		var win = window.open($url+name, '_blank');
+		win.focus();
+	}
+	function deleteComment($objComment){
+		if($objComment.has('.buttonrow').length>0){
+			var $button = $objComment.find('.delete').find('button');
+			$button.click();
+			$button = $objComment.find('.delete').find('.yes');
+			$button.click();
+		}
+	}
+	var divPos = {};
+	$(document).mousemove(function(e){
+		divPos = {
+			left: e.pageX,
+			top: e.pageY
+		};
+	});
     function speakViaSpeechSynthAPI(speakArray){
         //Speak by http://updates.html5rocks.com/2014/01/Web-apps-that-talk---Introduction-to-the-Speech-Synthesis-API
         if (speakArray.length > 0){
@@ -1721,4 +1771,26 @@ select#rlc-channel-dropdown { \
 #filter_tabs .selected { \
     background: grey; \
 } \
+#myContextMenu{\
+	display:none;\
+	position:absolute;\
+	background:#bbb;\
+    box-shadow: 1px 1px 2px #888888;\
+}\
+#myContextMenu ul{\
+	list-style-type:none;\
+}\
+#myContextMenu ul li a{\
+	padding:0.5em 1em 0.5em 1em;\
+	color:#000;\
+	display:block;\
+}\
+#myContextMenu ul li:not(.disabled) a:hover{\
+	background:#ccc;\
+	color:#333;\
+}\
+#myContextMenu ul li.disabled a{\
+	background:#ddd;\
+	color:#666;\
+}\
 ")
