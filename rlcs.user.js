@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.5
+// @version      2.26.6
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -107,14 +107,14 @@
         <div id="rlc-toggleoptions" title="Show Options" class="noselect">Options</div> \
         <div id="rlc-toggleguide" title="Show Guide" class="noselect">Readme</div> \
         </div> \
-		<div id="myContextMenu">\
-		<ul>\
-		<li id="mute"><a>Mute User</a></li>\
-		<li id="PMUser"><a>PM User</a></li>\
-		<li id="deleteCom"><a>Delete Comment</a></li>\
+        <div id="myContextMenu">\
+        <ul>\
+        <li id="mute"><a>Mute User</a></li>\
+        <li id="PMUser"><a>PM User</a></li>\
+        <li id="deleteCom"><a>Delete Comment</a></li>\
         <li id="copyMessage"><a>Copy Message</a></li>\
-		</ul>\
-		</div>\
+        </ul>\
+        </div>\
     ';
 
 /*---------------------------------------------------------- Functions -------------------------------------------------------------------*/
@@ -465,51 +465,51 @@
         }
     }
 
-    function messageClickHandler($usr,$msg) {
+    function messageClickHandler($usr,$msg,$ele) {
         var $menu = $('#myContextMenu');
         $usr.click(function(event){
             event.preventDefault();
-			if ($menu.css('display') === 'none' && !isNaN(divPos['left']) && !isNaN(divPos['top']) ) {
-				var h = window.innerHeight;
-				if(window.innerHeight-100 > divPos['top']){
-					$menu.css({"left":divPos['left'],"top":divPos['top'],"display":"initial"}); //menu down
-				}else{
-					$menu.css({"left":divPos['left'],"top":divPos['top']-70,"display":"initial"}); //menu up
-				}
+            if ($menu.css('display') === 'none' && !isNaN(divPos['left']) && !isNaN(divPos['top']) ) {
+                var h = window.innerHeight;
+                if(window.innerHeight-100 > divPos['top']){
+                    $menu.css({"left":divPos['left'],"top":divPos['top'],"display":"initial"}); //menu down
+                }else{
+                    $menu.css({"left":divPos['left'],"top":divPos['top']-70,"display":"initial"}); //menu up
+                }
 
-				var $button = $(this).find('.delete').find('button'); //test if you can delete (note, dosent seem to work, disabled - stjern)
-				if($button.length>0){
-					//$menu.find('#deleteCom').removeClass("disabled"); 
-				}else{
-					//$menu.find('#deleteCom').addClass("disabled");
-				}
-				$menu.find('ul li').unbind('click');
-				$menu.find('ul li').bind('click',function(){
-					$id=$(this).attr('id');
-					if($id==="deleteCom" && $(this).has('.disabled').length==0){
-						deleteComment($ele);
-					}
-					if($id==="PMUser"){
-						OpenUserPM($usr.text());
-					}
-					if($id==="mute"){
-						var banusername = String($usr.text()).trim();
-						bannamearray.push(banusername);
-						updateMutedUsers();
-					}
+                var $button = $(this).find('.delete').find('button'); //test if you can delete (note, dosent seem to work, disabled - stjern)
+                if($button.length>0){
+                    //$menu.find('#deleteCom').removeClass("disabled"); 
+                }else{
+                    //$menu.find('#deleteCom').addClass("disabled");
+                }
+                $menu.find('ul li').unbind('click');
+                $menu.find('ul li').bind('click',function(){
+                    $id=$(this).attr('id');
+                    if($id==="deleteCom" && $(this).has('.disabled').length==0){
+                        deleteComment($ele);
+                    }
+                    if($id==="PMUser"){
+                        OpenUserPM($usr.text());
+                    }
+                    if($id==="mute"){
+                        var banusername = String($usr.text()).trim();
+                        bannamearray.push(banusername);
+                        updateMutedUsers();
+                    }
                     if($id==="copyMessage"){
-						var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
+                        var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
                         $(".usertext-edit.md-container textarea").focus().val(copystring);
-					}
-					$(".liveupdate .md").click();
-				});
-				$(".liveupdate .md").click(function(event){
+                    }
+                    $(".liveupdate .md").click();
+                });
+                $(".liveupdate .md").click(function(event){
                     $menu.css({"left":0,"top":0,"display":"none"}); //close menu
                 });
-			}else{
-				$menu.css({"left":0,"top":0,"display":"none"}); //close menu
-			}
-		});
+            }else{
+                $menu.css({"left":0,"top":0,"display":"none"}); //close menu
+            }
+        });
         }
 
     // message display handling for new and old(rescan) messages
@@ -566,7 +566,7 @@
         // timestamp modification & user activity tracking
         timeAndUserTracking($ele,$usr);
         messageUserColor($usr); // user color
-        messageClickHandler($usr,$msg);  // message click handling 
+        messageClickHandler($usr,$msg,$ele);  // message click handling 
 
         // this is rescan, do nothing.
         if(typeof rescan !== 'undefined' && rescan === true){
@@ -579,32 +579,32 @@
     };
 
     function getColor(username) {
-		var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
-		var e = username.toLowerCase(),
-		t = e.replace(/[^a-z0-9]/g, ""),
-		n = parseInt(t, 36) % 6;
-		return colors[n];
-	}
-	function OpenUserPM(name) {
-		var $url = "https://www.reddit.com/message/compose/?to="
-		var win = window.open($url+name, '_blank');
-		win.focus();
-	}
-	function deleteComment($objComment){
-		if($objComment.has('.buttonrow').length>0){
-			var $button = $objComment.find('.delete').find('button');
-			$button.click();
-			$button = $objComment.find('.delete').find('.yes');
-			$button.click();
-		}
-	}
-	var divPos = {};
-	$(document).mousemove(function(e){
-		divPos = {
-			left: e.pageX,
-			top: e.pageY
-		};
-	});
+        var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
+        var e = username.toLowerCase(),
+        t = e.replace(/[^a-z0-9]/g, ""),
+        n = parseInt(t, 36) % 6;
+        return colors[n];
+    }
+    function OpenUserPM(name) {
+        var $url = "https://www.reddit.com/message/compose/?to="
+        var win = window.open($url+name, '_blank');
+        win.focus();
+    }
+    function deleteComment($objComment){
+        if($objComment.has('.buttonrow').length>0){
+            var $button = $objComment.find('.delete').find('button');
+            $button.click();
+            $button = $objComment.find('.delete').find('.yes');
+            $button.click();
+        }
+    }
+    var divPos = {};
+    $(document).mousemove(function(e){
+        divPos = {
+            left: e.pageX,
+            top: e.pageY
+        };
+    });
     function speakViaSpeechSynthAPI(speakArray){
         //Speak by http://updates.html5rocks.com/2014/01/Web-apps-that-talk---Introduction-to-the-Speech-Synthesis-API
         if (speakArray.length > 0){
@@ -917,6 +917,8 @@
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
         $('#liveupdate-header').appendTo('#rlc-sidebar #rlc-main-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar #rlc-main-sidebar');
+        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
+        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
     }
 
     function rlcParseSidebar() {
@@ -937,22 +939,12 @@
         $('#liveupdate-statusbar').prepend("<div id='versionnumber'>v." + GM_info.script.version + "</div>");
     }
 
-    // boot
-    $(document).ready(function() {
-        // move default elements into custom containers defined in htmlPayload
-        rlcSetupContainers();
-        // setup sidebar based on content
-        rlcParseSidebar();       
-
+    function rlcDocReadyModifications() {
         // show hint about invites if there is no messagebox
         if($(".usertext-edit textarea").length) { }
         else { 
-            $("#rlc-main").append(" \
-               <p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, \
-            check the sidebar.</p>"); 
+            $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>"); 
         }
-
-/* ------------- END APPEND/PREPEND---------------*/ 
 
         // add placeholder text and focus messagebox
         $(".usertext-edit textarea").attr("placeholder", "Type here to chat");
@@ -966,7 +958,17 @@
 
         // remove iframes
         $("#rlc-main iframe").remove();
+    }
 
+    // boot
+    $(document).ready(function() {
+        // move default elements into custom containers defined in htmlPayload
+        rlcSetupContainers();
+        // setup sidebar based on content
+        rlcParseSidebar();       
+        // modify initial elements
+        rlcDocReadyModifications();
+        
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
             if ($(e.target).is('li.liveupdate')) {
@@ -981,11 +983,7 @@
                 $(e.target).remove();
             }
         });
-
-         //due to proccessline this needs to run after the new content detector 
-        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
-        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
-
+         
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
@@ -1000,7 +998,7 @@
                 var username = String($(this).text()).trim();
                 var source = String($(".usertext-edit.md-container textarea").val());
                 // Focus textarea and set the value of textarea
-                $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
+                $(".usertext-edit.md-container textarea").focus().val(source + " " + username + " ");
             }
         });
 
@@ -1193,7 +1191,6 @@
         },false);
     });
     
-
     //channel styles
     var color;
     var styles = [];
@@ -1351,27 +1348,27 @@ display: none; \
 display: none; \
 } \
 #myContextMenu{\
-	display:none;\
-	position:absolute;\
-	background:#bbb;\
+    display:none;\
+    position:absolute;\
+    background:#bbb;\
     box-shadow: 1px 1px 2px #888888;\
 }\
 #myContextMenu ul{\
-	list-style-type:none;\
+    list-style-type:none;\
 }\
 #myContextMenu ul li a{\
-	padding:0.5em 1em 0.5em 1em;\
-	color:#000;\
-	display:block;\
+    padding:0.5em 1em 0.5em 1em;\
+    color:#000;\
+    display:block;\
 }\
 #myContextMenu ul li:not(.disabled) a:hover{\
-	background:#ccc;\
-	color:#333;\
+    background:#ccc;\
+    color:#333;\
     cursor: pointer; \
 }\
 #myContextMenu ul li.disabled a{\
-	background:#ddd;\
-	color:#666;\
+    background:#ddd;\
+    color:#666;\
 }\
 ");
 /*------------------------------------------------------------------------------------------*/
