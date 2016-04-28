@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.3
+// @version      2.26.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -828,14 +828,14 @@
             // else read from dropdown populated by channels
             else { 
                 var channel_key = $("#rlc-channel-dropdown option:selected" ).text();
-        if (channel_key !== "") {
-                if($("#new-update-form textarea").val().indexOf("/me") === 0){
-                    $("#new-update-form textarea").val("/me " + channel_key + " " + $("#new-update-form textarea").val().substr(3));
-                }else if($("#new-update-form textarea").val().indexOf("/") !== 0){
-                    // if its not a "/" command, add channel
-                    $("#new-update-form textarea").val(channel_key + " " + $("#new-update-form textarea").val());
+                if (channel_key !== "") {
+                    if($("#new-update-form textarea").val().indexOf("/me") === 0){
+                        $("#new-update-form textarea").val("/me " + channel_key + " " + $("#new-update-form textarea").val().substr(3));
+                    }else if($("#new-update-form textarea").val().indexOf("/") !== 0){
+                        // if its not a "/" command, add channel
+                        $("#new-update-form textarea").val(channel_key + " " + $("#new-update-form textarea").val());
+                    }
                 }
-        }
             }
         };
 
@@ -906,17 +906,18 @@
             setInterval(this.tick, 2000);
         };
     };
-    // boot
-    $(document).ready(function() {
+
+    function rlcSetupContainers() {
         $("body").append(htmlPayload); 
 
-        // move default elements into custom containers defined in htmlPayload
         $('.liveupdate-listing').prependTo('#rlc-chat');
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
         $('#liveupdate-header').appendTo('#rlc-sidebar #rlc-main-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar #rlc-main-sidebar');
+    }
 
+    function rlcParseSidebar() {
         // put anything after -RLC-README- in the sidebar into the readme
         var str = $('#liveupdate-resources .md').html();
         var res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");     
@@ -931,13 +932,22 @@
 
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><strong>Recent User Activity</strong><br><ul></ul></div>");
         $('#rlc-main-sidebar').append("<div id='banlistcontainer'><strong>Muted Users</strong><div id='bannedlist'></div></div>");
-
         $('#liveupdate-statusbar').prepend("<div id='versionnumber'>v." + GM_info.script.version + "</div>");
+    }
+
+    // boot
+    $(document).ready(function() {
+        // move default elements into custom containers defined in htmlPayload
+        rlcSetupContainers();
+        // setup sidebar based on content
+        rlcParseSidebar();       
 
         // show hint about invites if there is no messagebox
         if($(".usertext-edit textarea").length) { }
         else { 
-            $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>"); 
+            $("#rlc-main").append(" \
+               <p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, \
+            check the sidebar.</p>"); 
         }
 
 /* ------------- END APPEND/PREPEND---------------*/ 
