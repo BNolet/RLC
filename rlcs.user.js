@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.25.2
+// @version      2.25.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1278,6 +1278,29 @@ display: none; \
 .rlc-showreadmebar #rlc-main-sidebar { \
 display: none; \
 } \
+#myContextMenu{\
+	display:none;\
+	position:absolute;\
+	background:#bbb;\
+    box-shadow: 1px 1px 2px #888888;\
+}\
+#myContextMenu ul{\
+	list-style-type:none;\
+}\
+#myContextMenu ul li a{\
+	padding:0.5em 1em 0.5em 1em;\
+	color:#000;\
+	display:block;\
+}\
+#myContextMenu ul li:not(.disabled) a:hover{\
+	background:#ccc;\
+	color:#333;\
+    cursor: pointer; \
+}\
+#myContextMenu ul li.disabled a{\
+	background:#ddd;\
+	color:#666;\
+}\
 ");
 /*------------------------------------------------------------------------------------------*/
 GM_addStyle("div#loadmessages { \
@@ -1323,8 +1346,7 @@ GM_addStyle("div#loadmessages { \
     border-bottom: 1px solid grey; \
 } \
  \
-/*-------------------------------- Message Input ------------------------------------- */ \
-/* message input and send button */ \
+/*---- Message Input --------- */ \
 div#rlc-messagebox { \
     position: relative; \
     float: left; \
@@ -1370,7 +1392,7 @@ div#new-update-form { \
     position: relative; \
 } \
  \
-/*-------------------------------- Send button ------------------------------------- */ \
+/*----------- Send button ------- */ \
 #new-update-form .save-button .btn { \
     width: 100%; \
     text-transform: capitalize; \
@@ -1392,7 +1414,7 @@ div#rlc-sendmessage { \
     border-bottom: 0; \
 } \
  \
-/*------------------------------------ Main Chat -----------------------------------------------------*/ \
+/*------------ Main Chat ----------------*/ \
 #rlc-main time.live-timestamp { \
     text-indent: 0; \
     width: 100px; \
@@ -1478,7 +1500,7 @@ button#rlc-delete { \
     width: 260px; \
 } \
  \
-/*-------------------------filter tabs------------------------------------*/ \
+/*---------filter tabs-----------------*/ \
 #filter_tabs { \
     table-layout: fixed; \
     border: 1px solid #A9A9A9; \
@@ -1561,7 +1583,7 @@ button#rlc-delete { \
     border-right: 1px solid grey; \
 } \
  \
-/*------------------------------------ Sidebar -----------------------------------------------------*/ \
+/*-------------- Sidebar -------------------*/ \
 aside.sidebar.side.md-container { \
     width: 100%; \
     opacity: 1; \
@@ -1694,17 +1716,16 @@ div#rlc-main-sidebar { \
 } \
  \
 /* Dark Mode */ \
-.dark-background pre { \
+.dark-background #rlc-sidebar pre { \
     background: transparent; \
 } \
  \
-.dark-background #rlc-main code { color:black;} \
-.dark-background .rlc-channel-add button, .dark-background select#rlc-channel-dropdown, .dark-background.rlc-showreadmebar #rlc-readmebar .md { \
-    color: white; \
+.dark-background select#rlc-channel-dropdown option, .dark-background #rlc-main code { \
+    color: black; \
 } \
  \
-.dark-background select#rlc-channel-dropdown option { \
-    color: black; \
+.dark-background #rlc-settings strong, .dark-background .liveupdate-listing li.liveupdate .body div.md, .dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p, .dark-background .rlc-channel-add button, .dark-background select#rlc-channel-dropdown, .dark-background.rlc-showreadmebar #rlc-readmebar .md { \
+    color: white; \
 } \
  \
 .dark-background .rlc-channel-add, .dark-background #rlc-settingsbar, .dark-background div#rlc-settings { \
@@ -1714,10 +1735,6 @@ div#rlc-main-sidebar { \
 .dark-background .rlc-channel-add input { \
     color: white; \
     background: rgba(0, 0, 0, 0.28); \
-} \
- \
-.dark-background .liveupdate-listing li.liveupdate .body div.md, .dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p { \
-    color: white!important; \
 } \
  \
 .dark-background div#header-bottom-left { \
@@ -1733,25 +1750,9 @@ div#rlc-main-sidebar { \
     background: transparent; \
     color: white; \
 } \
- \
-#rlc-settings label { \
-    width: 100%; \
-    display: block; \
-    font-size: 1.5em; \
-} \
- \
-#rlc-settings input { \
-    margin: 4px; \
-    position: relative; \
-    top: 2px; \
-} \
- \
+/* compact */ \
 .rlc-compact div#rlc-sidebar { \
     height: calc(100vh - 50px); \
-} \
- \
-.dark-background #rlc-settings strong { \
-    color: white; \
 } \
  \
 .rlc-compact div#rlc-main { \
@@ -1787,38 +1788,19 @@ select#rlc-channel-dropdown { \
     border-bottom: 0px; \
 } \
  \
-.rlc-showoptions #rlc-toggleoptions { \
+.rlc-showoptions #rlc-toggleoptions, .rlc-showreadmebar div#rlc-toggleguide, #filter_tabs .selected { \
     background: grey; \
 } \
  \
-.rlc-showreadmebar div#rlc-toggleguide { \
-    background: grey; \
+#rlc-settings label { \
+    width: 100%; \
+    display: block; \
+    font-size: 1.5em; \
 } \
  \
-#filter_tabs .selected { \
-    background: grey; \
+#rlc-settings input { \
+    margin: 4px; \
+    position: relative; \
+    top: 2px; \
 } \
-#myContextMenu{\
-	display:none;\
-	position:absolute;\
-	background:#bbb;\
-    box-shadow: 1px 1px 2px #888888;\
-}\
-#myContextMenu ul{\
-	list-style-type:none;\
-}\
-#myContextMenu ul li a{\
-	padding:0.5em 1em 0.5em 1em;\
-	color:#000;\
-	display:block;\
-}\
-#myContextMenu ul li:not(.disabled) a:hover{\
-	background:#ccc;\
-	color:#333;\
-    cursor: pointer; \
-}\
-#myContextMenu ul li.disabled a{\
-	background:#ddd;\
-	color:#666;\
-}\
 ")
