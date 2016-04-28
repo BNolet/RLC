@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.25
+// @version      2.25.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -22,14 +22,8 @@
     if (!GM_getValue("rlc-NoSmileys")) {      
         GM_setValue("rlc-NoSmileys", 'false');
     }
-    if (!GM_getValue("rlc-SimpleTimestamps")) {      
-        GM_setValue("rlc-SimpleTimestamps", 'true');
-    }
     if (!GM_getValue("rlc-ChannelColors")) {      
         GM_setValue("rlc-ChannelColors", 'true');
-    }
-    if (!GM_getValue("rlc-EasyMultilineText")) {      
-        GM_setValue("rlc-EasyMultilineText", 'true');
     }
     if (!GM_getValue("rlc-AutoScroll")) {      
         GM_setValue("rlc-AutoScroll", 'true');
@@ -119,6 +113,7 @@
 		<li id="mute"><a>Mute User</a></li>\
 		<li id="PMUser"><a>PM User</a></li>\
 		<li id="deleteCom"><a>Delete Comment</a></li>\
+        <li id="copyMessage"><a>Copy Message</a></li>\
 		</ul>\
 		</div>\
     ';
@@ -354,7 +349,7 @@
             if ($("body").hasClass("rlc-notificationchrome")) {
                 var n = new Notification('Robin Live Chat',{
                     icon: chromenoticeimg,
-                    body: $usr.text() + ": " + text,
+                    body: $usr.text() + ": " + line,
                 });
             }
         }
@@ -373,11 +368,10 @@
 
 
         // easy multiline
-        if(GM_getValue("rlc-EasyMultilineText") === 'true'){
-            $msg.html($msg.html().split('\n').join('<br>'));
-            $msg.html($msg.html().replace('<br><br>','<br>'));
-            $msg.html($msg.html().replace('</p><br>',''));
-        }
+        $msg.html($msg.html().split('\n').join('<br>'));
+        $msg.html($msg.html().replace('<br><br>','<br>'));
+        $msg.html($msg.html().replace('</p><br>',''));
+        
         var  shorttime = $ele.find(".body time").attr( "title" ).split(" ");
         var amPm = shorttime[4].toLowerCase();
 
@@ -409,7 +403,6 @@
         $(".liveupdate-listing .separator").remove();
 
         // user color
-		
         if (GM_getValue("rlc-RobinColors") === 'false') {    
 			var hexName=toHex($usr.text()).split('');
 			var adder=1;
@@ -470,6 +463,25 @@
                             var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text());
                             break;
                     }
+                    // Set variable voice type
+                    if(true){ // You want to be able to disable this in options.
+                        // Select voices that english users can use, even if its not for english exactly...
+                        var voiceList = speechSynthesis.getVoices().filter(function(voice) {
+                            langSupport = ["en","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
+                            for (key in langSupport) {
+                                if( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; } 
+                            }
+                        });
+                        // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
+                        function strSeededRandInt (str,min=0,max=256,code=0){ 
+                            for(i=0;i<str.length;i++){
+                                code += str.charCodeAt(i);
+                            }
+                            return code%(1+max-min)+min;
+                        }
+                        msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
+                        msg.pitch = 2*strSeededRandInt($usr.text(),0,1000)/1000;
+                    }
                     // Now speak the sentence
                     window.speechSynthesis.speak(msg);
                     //               msg.voiceURI = 'native';
@@ -484,7 +496,8 @@
             }
         }
 		var $menu = $('#myContextMenu');
-        $ele.click(function(){
+        $usr.click(function(event){
+            event.preventDefault();
 			if ($menu.css('display') === 'none' && !isNaN(divPos['left']) && !isNaN(divPos['top']) ) {
 				var h = window.innerHeight;
 				if(window.innerHeight-100 > divPos['top']){
@@ -493,11 +506,11 @@
 					$menu.css({"left":divPos['left'],"top":divPos['top']-70,"display":"initial"}); //menu up
 				}
 				
-				var $button = $(this).find('.delete').find('button'); //test if you can delete
+				var $button = $(this).find('.delete').find('button'); //test if you can delete (note, dosent seem to work, disabled - stjern)
 				if($button.length>0){
-					$menu.find('#deleteCom').removeClass("disabled");
+					//$menu.find('#deleteCom').removeClass("disabled"); 
 				}else{
-					$menu.find('#deleteCom').addClass("disabled");
+					//$menu.find('#deleteCom').addClass("disabled");
 				}
 				$menu.find('ul li').unbind('click');
 				$menu.find('ul li').bind('click',function(){
@@ -513,12 +526,19 @@
 						bannamearray.push(banusername);
 						updateMutedUsers();
 					}
-					$ele.click();
+                    if($id==="copyMessage"){
+						var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
+                        $(".usertext-edit.md-container textarea").focus().val(copystring);
+					}
+					$(".liveupdate .md").click();
 				});
-				
+				$(".liveupdate .md").click(function(event){
+                    $menu.css({"left":0,"top":0,"display":"none"}); //close menu
+                });
 			}else{
 				$menu.css({"left":0,"top":0,"display":"none"}); //close menu
 			}
+            
 		});
                 
     };
@@ -902,6 +922,11 @@
         // remove iframes
         $("#rlc-main iframe").remove();
         
+        
+        //due to proccessline this needs to run after the new content detector 
+        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
+        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
+        
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
@@ -924,9 +949,7 @@
             }
         });
 
-        //due to proccessline this needs to run after the new content detector 
-        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
-        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
+        
       
          _scroll_to_bottom();    //done adding/modding content, scroll to bottom
         
@@ -941,14 +964,6 @@
                 $(".usertext-edit.md-container textarea").focus().val("").val(source + " " + username + " ");
             }
         });
-
-        //left click author names in chat to mute
-        $('body').on('click', ".liveupdate .author", function (event) {
-            event.preventDefault();
-            var banusername = String($(this).text()).trim();
-            bannamearray.push(banusername);
-            updateMutedUsers();
-        });   
 
         // load old messages
         $("#loadmessages").click(function(){ 
@@ -1068,14 +1083,6 @@
                 $("body").removeClass("dark-background");
             }
         },false);
-        createOption("Simple Timestamps", function(checked, ele){
-            if(checked){
-                $("body").addClass("simpleTimestamps");
-            }else{
-                $("body").removeClass("simpleTimestamps");
-            }
-            _scroll_to_bottom();
-        },false);
         createOption("Compact Mode", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-compact");
@@ -1115,13 +1122,6 @@
                 $("body").addClass("rlc-noemotes");
             }else{
                 $("body").removeClass("rlc-noemotes");
-            }
-        },false);
-        createOption("Easy Multiline Text", function(checked, ele){
-            if(checked){
-                $("body").addClass("rlc-MultiLine");
-            }else{
-                $("body").removeClass("rlc-MultiLine");
             }
         },false);
         createOption("TextToSpeech", function(checked, ele){
@@ -1283,7 +1283,7 @@ border: 1px solid #262626; \
 /* option classes */ \
 \
 /* hard removal */ \
-#rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, .simpleTimestamps #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #liveupdate-options, .footer-parent, body > .content { \
+#rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #liveupdate-options, .footer-parent, body > .content { \
 display: none; \
 } \
 \
@@ -1493,7 +1493,7 @@ button#rlc-delete { \
     text-align: right; \
 } \
  \
-.simpleTimestamps .channelname { \
+.channelname { \
     width: 260px; \
 } \
  \
@@ -1687,7 +1687,7 @@ div#rlc-settingsbar div { \
 } \
  \
 /* misc fixes */ \
-.simpleTimestamps #rlc-main .liveupdate-listing .liveupdate .simpletime { \
+#rlc-main .liveupdate-listing .liveupdate .simpletime { \
     display: block; \
     float: left; \
     width: 70px; \
