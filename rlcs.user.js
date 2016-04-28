@@ -447,7 +447,24 @@
                 var linetoread = $msg.text().split("...").join("\u2026") //replace 3 dots with elipsis character
                 var hasTripple = /(.)\1\1/.test(linetoread);
                 if (!hasTripple) { 
-                    var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text());
+                    // Narrator logic based on content
+                    var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
+                    switch (true) {
+                        case /.+\?/.test(checkingStr): // Questioned
+                            var msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text());
+                            break;
+                        case /.+\!/.test(checkingStr):   // Exclaimed
+                            var msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text());
+                            break;
+                        case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
+                            linetoread = linetoread.trim().slice(0, -2);
+                            var msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
+                            break;
+                        default: // said
+                            var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text());
+                            break;
+                    }
+                    // Now speak the sentence
                     window.speechSynthesis.speak(msg);
                     //               msg.voiceURI = 'native';
                     //                msg.volume = 1; // 0 to 1
