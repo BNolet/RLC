@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.23.1
+// @version      2.24
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -36,6 +36,9 @@
     }  
     if (!GM_getValue("rlc-TextToSpeech")) {      
         GM_setValue("rlc-TextToSpeech", 'false');
+    }  
+    if (!GM_getValue("rlc-RobinColors")) {      
+        GM_setValue("rlc-RobinColors", 'false');
     }  
 
     // Grab users username + play nice with RES
@@ -406,29 +409,35 @@
         $(".liveupdate-listing .separator").remove();
 
         // user color
-        var hexName=toHex($usr.text()).split('');
-        var adder=1;
-        $.each(hexName,function(ind,num){
-            num = (parseInt(num)+1)
-            if(num!=0 && !isNaN(num)){
-                adder = adder * num;
-            }
-        });
-        adder=adder.toString().replace(".","").split("0").join("");
-        start = adder.length-10;
-        end = adder.length-4;
-        var firstThree=adder.toString().substring(start,end);
-        
-        // variable brigtening of colors based on dark mode setting
-        if( GM_getValue("rlc-DarkMode") === 'true'){
-            var lightercolor = LightenDarkenColor2(firstThree, 60);
-            $usr.css("color","#"+lightercolor);
-        }
-        else {
-            var darkercolor = LightenDarkenColor2(firstThree, -40);
-            $usr.css("color","#"+darkercolor);
-        }
-        
+		
+        if (GM_getValue("rlc-RobinColors") === 'false') {    
+			var hexName=toHex($usr.text()).split('');
+			var adder=1;
+			$.each(hexName,function(ind,num){
+				num = (parseInt(num)+1)
+				if(num!=0 && !isNaN(num)){
+					adder = adder * num;
+				}
+			});
+			adder=adder.toString().replace(".","").split("0").join("");
+			start = adder.length-10;
+			end = adder.length-4;
+			var firstThree=adder.toString().substring(start,end);
+			
+			// variable brigtening of colors based on dark mode setting
+			if( GM_getValue("rlc-DarkMode") === 'true'){
+				var lightercolor = LightenDarkenColor2(firstThree, 60);
+				$usr.css("color","#"+lightercolor);
+			}
+			else {
+				var darkercolor = LightenDarkenColor2(firstThree, -40);
+				$usr.css("color","#"+darkercolor);
+			}
+		}else{
+			$usr.css("color",getColor($usr.text())); //ROBIN COLORS!!!!!
+		}
+		
+		
         if(typeof rescan !== 'undefined' && rescan === true){
             // this is rescan, do nothing.
         }
@@ -490,6 +499,13 @@
 		});
                 
     };
+	function getColor(username) {
+		var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
+		var e = username.toLowerCase(),
+		t = e.replace(/[^a-z0-9]/g, ""),
+		n = parseInt(t, 36) % 6;
+		return colors[n];
+	}
 	function OpenUserPM(name) {
 		var $url = "https://www.reddit.com/message/compose/?to="
 		var win = window.open($url+name, '_blank');
@@ -1090,6 +1106,13 @@
                 $("body").addClass("rlc-TextToSpeech");
             }else{
                 $("body").removeClass("rlc-TextToSpeech");
+            }
+        },false);
+        createOption("RobinColors", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-RobinColors");
+            }else{
+                $("body").removeClass("rlc-RobinColors");
             }
         },false);
     });
