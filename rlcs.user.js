@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.1
+// @version      2.26.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -131,10 +131,10 @@
                  alert("You have TextToSpeech enabled, please disable to load old messages.");
         }  
         else {
-        $('body').toggleClass("allowHistoryScroll");
-        $('body').scrollTop($('body')[0].scrollHeight);
-        _scroll_to_bottom();
-        $('body').toggleClass("allowHistoryScroll");
+            $('body').toggleClass("allowHistoryScroll");
+            $('body').scrollTop($('body')[0].scrollHeight);
+            _scroll_to_bottom();
+            $('body').toggleClass("allowHistoryScroll");
         }
     }
     
@@ -303,43 +303,7 @@
         click_action(state, $option);
     }   
     
-    // message display handling for new and old(rescan) messages
-    var handle_new_message = function($ele, rescan){
-        // add any proccessing for new messages in here
-        var $msg = $ele.find(".body .md");
-        var $usr = $ele.find(".body .author");
-        var line = $msg.text().toLowerCase();
-        var first_line = $msg.find("p").first();
-
-        // target blank all message links
-        $msg.find("a").attr("target","_blank");          
-
-        // prevent embedly iframe link handling
-        first_line.html(first_line.html()+" ");       
-
-        // insert time
-        $usr.before($ele.find("time"));
-
-        //remove the /u/ in author name
-        $usr.text($usr.text().replace("/u/", ""));
-
-        // tag message with user identifier for muting
-        $ele.addClass("u_"+$usr.text());
-
-        //alternating background color    
-        if(rowalternator === 0) {
-            $ele.addClass("alt-bgcolor");
-            rowalternator = 1;
-        }
-        else { rowalternator = 0; }
-
-        // /me support
-        if(line.indexOf("/me") === 0){
-            $ele.addClass("user-narration");
-            first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
-        }
-
-        // Current User name mentioned
+    function messageMentionHandler(line, $usr, $ele) { 
         if(line.indexOf(robin_user) !== -1){
             //add bold highlighting
             $ele.addClass("user-mention");
@@ -353,8 +317,19 @@
                 });
             }
         }
-
-        // emote support
+    }
+    
+    function alternateMsgBackground($ele) {
+        if(rowalternator === 0) {
+            $ele.addClass("alt-bgcolor");
+            rowalternator = 1;
+        }
+        else { 
+            rowalternator = 0; 
+        }
+    }
+    
+    function emoteSupport(line, $msg, first_line) { 
         if(GM_getValue("rlc-NoSmileys") === 'false'){      
             $.each(emojiList,function(emoji,replace){
                 if(line.toLowerCase().indexOf(emoji.toLowerCase()) != -1 && line.indexOf("http") == -1){
@@ -364,140 +339,135 @@
                     }
                 }
             });
-        }        
+        }
+    }
+    
+    // user color
+    function messageUserColor($usr) {
+        if (GM_getValue("rlc-RobinColors") === 'false') {    
+            var hexName=toHex($usr.text()).split('');
+            var adder=1;
+            $.each(hexName,function(ind,num){
+                num = (parseInt(num)+1)
+                if(num!=0 && !isNaN(num)){
+                    adder = adder * num;
+                }
+            });
+            adder=adder.toString().replace(".","").split("0").join("");
+            start = adder.length-10;
+            end = adder.length-4;
+            var firstThree=adder.toString().substring(start,end);
 
-
-        // easy multiline
-        $msg.html($msg.html().split('\n').join('<br>'));
-        $msg.html($msg.html().replace('<br><br>','<br>'));
-        $msg.html($msg.html().replace('</p><br>',''));
-        
+            // variable brigtening of colors based on dark mode setting
+            if( GM_getValue("rlc-DarkMode") === 'true'){
+                var lightercolor = LightenDarkenColor2(firstThree, 60);
+                $usr.css("color","#"+lightercolor);
+            }
+            else {
+                var darkercolor = LightenDarkenColor2(firstThree, -40);
+                $usr.css("color","#"+darkercolor);
+            }
+        }else{
+            $usr.css("color",getColor($usr.text())); //ROBIN COLORS!!!!!
+        }
+    }
+    
+    // timestamp modification & user activity tracking
+    function timeAndUserTracking($ele,$usr) {
         var  shorttime = $ele.find(".body time").attr( "title" ).split(" ");
         var amPm = shorttime[4].toLowerCase();
 
-        if (amPm === "am" || amPm === "pm" ) {
-            var shortimefull = shorttime[3] + " " + amPm;
-        }
-        else {
-            amPm = " ";
-        }
+        if (amPm === "am" || amPm === "pm" ) {  var shortimefull = shorttime[3] + " " + amPm; }
+        else { amPm = " "; }
 
         var militarytime = convertTo24Hour(shorttime[3] + " " + amPm);
+
+        if ($("body").hasClass("rlc-24hrTimeStamps")) {
+            shorttime = convertTo24Hour(shorttime[3] + " " + amPm);
+        }
+        else { shorttime = shorttime[3]+" "+amPm; }
+
+        //add simplified timestamps
+        if($ele.find(".body .simpletime").length) { }
+        else  {
+            $ele.find(".body time").before("<div class='simpletime'>"+shorttime+"</div>");
+        }
 
         //add info to activeuserarray
         activeUserArray.push($usr.text());
         activeUserTimes.push(militarytime);
 
         // moved here to add user activity from any time rather than only once each 10 secs.(was in tab tick function, place it back there if performance suffers)
-        processActiveUsersList();           
+        processActiveUsersList();                
+    }
+    
+    function messageTextToSpeechHandler($msg,$usr) {
+        if (GM_getValue("rlc-TextToSpeech") === 'true') {      
+            var linetoread = $msg.text().split("...").join("\u2026") //replace 3 dots with elipsis character
+            var hasTripple = /(.)\1\1/.test(linetoread);
+            if (!hasTripple) { 
+                // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
+                var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
+                switch (true) {
+                    case /.+\?$/.test(checkingStr): // Questioned
+                        var msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text());
+                        break;
+                    case /.+\!$/.test(checkingStr):   // Exclaimed
+                        var msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text());
+                        break;
+                    case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
+                        linetoread = linetoread.trim().slice(0, -2);
+                        var msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
+                        break;
+                    case checkingStr == checkingStr.toUpperCase(): //Check for screaming
+                        var msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text());
+                        break;
+                    case /^[\\\/]me/.test(checkingStr): //Check for declared action
+                        var msg = new SpeechSynthesisUtterance( $usr.text() + " " + linetoread );
+                        break;
+                    default: // said
+                        var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text());
+                        break;
+                }
+                // Now speak the sentence
+                // msg.voiceURI = 'native';
 
-        //add simplified timestamps
-        if($ele.find(".body .simpletime").length) { }
-        else  {
-            $ele.find(".body time").before("<div class='simpletime'>"+shorttime[3]+ " "+amPm+"</div>");
-        }
-        // Track channels
-        tabbedChannels.proccessLine(line, $ele, rescan);
-       
-        //remove separator
-        $(".liveupdate-listing .separator").remove();
-
-        // user color
-        if (GM_getValue("rlc-RobinColors") === 'false') {    
-			var hexName=toHex($usr.text()).split('');
-			var adder=1;
-			$.each(hexName,function(ind,num){
-				num = (parseInt(num)+1)
-				if(num!=0 && !isNaN(num)){
-					adder = adder * num;
-				}
-			});
-			adder=adder.toString().replace(".","").split("0").join("");
-			start = adder.length-10;
-			end = adder.length-4;
-			var firstThree=adder.toString().substring(start,end);
-			
-			// variable brigtening of colors based on dark mode setting
-			if( GM_getValue("rlc-DarkMode") === 'true'){
-				var lightercolor = LightenDarkenColor2(firstThree, 60);
-				$usr.css("color","#"+lightercolor);
-			}
-			else {
-				var darkercolor = LightenDarkenColor2(firstThree, -40);
-				$usr.css("color","#"+darkercolor);
-			}
-		}else{
-			$usr.css("color",getColor($usr.text())); //ROBIN COLORS!!!!!
-		}
-		
-		
-        if(typeof rescan !== 'undefined' && rescan === true){
-            // this is rescan, do nothing.
-        }
-        else {   
-            // not rescan, read aloud if TTS enabled
-            if (GM_getValue("rlc-TextToSpeech") === 'true') {      
-                var linetoread = $msg.text().split("...").join("\u2026") //replace 3 dots with elipsis character
-                var hasTripple = /(.)\1\1/.test(linetoread);
-                if (!hasTripple) { 
-                    // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
-                    var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
-                    switch (true) {
-                        case /.+\?$/.test(checkingStr): // Questioned
-                            var msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text());
-                            break;
-                        case /.+\!$/.test(checkingStr):   // Exclaimed
-                            var msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text());
-                            break;
-                        case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
-                            linetoread = linetoread.trim().slice(0, -2);
-                            var msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
-                            break;
-                        case checkingStr == checkingStr.toUpperCase(): //Check for screaming
-                            var msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text());
-                            break;
-                        case /^[\\\/]me/.test(checkingStr): //Check for declared action
-                            var msg = new SpeechSynthesisUtterance( $usr.text() + " " + linetoread );
-                            break;
-                        default: // said
-                            var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text());
-                            break;
-                    }
-                    // Now speak the sentence
-                    // msg.voiceURI = 'native';
-                   
-                    // Set variable voice type
-                    if(!$("body").hasClass("rlc-NoUserVoices")){ // You want to be able to disable this in options.
-                        // Select voices that english users can use, even if its not for english exactly...
-                        var voiceList = speechSynthesis.getVoices().filter(function(voice) {
-                            langSupport = ["en","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
-                            for (key in langSupport) {
-                                if( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; } 
-                            }
-                        });
-                        // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
-                        function strSeededRandInt (str,min=0,max=256,code=0){ 
-                            for(i=0;i<str.length;i++){
-                                code += str.charCodeAt(i);
-                            }
-                            return code%(1+max-min)+min;
+                // Set variable voice type
+                if(!$("body").hasClass("rlc-NoUserVoices")){ // You want to be able to disable this in options.
+                    // Select voices that english users can use, even if its not for english exactly...
+                    var voiceList = speechSynthesis.getVoices().filter(function(voice) {
+                        langSupport = ["en","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
+                        for (key in langSupport) {
+                            if( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; } 
                         }
-                        msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
-                        msg.pitch = 2*strSeededRandInt($usr.text(),0,1000)/1000;
+                    });
+                    // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
+                    function strSeededRandInt (str,min=0,max=256,code=0){ 
+                        for(i=0;i<str.length;i++){
+                            code += str.charCodeAt(i);
+                        }
+                        return code%(1+max-min)+min;
                     }
-                    msg.volume = 1; // 0 to 1
-                    //msg.rate = 1; // 0.1 to 10
-                    //msg.pitch = 1; //0 to 2
-                    window.speechSynthesis.speak(msg);                                  
-                    // get supported voices
-                    /* speechSynthesis.getVoices().forEach(function(voice) {
+                    msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
+                    msg.pitch = 2*strSeededRandInt($usr.text(),0,1000)/1000;
+                    console.log(msg.pitch);
+                    console.log(msg.voice);
+                }
+                msg.volume = 1; // 0 to 1
+                //msg.rate = 1; // 0.1 to 10
+                //msg.pitch = 1; //0 to 2
+                window.speechSynthesis.speak(msg);                                  
+                // get supported voices
+                /* speechSynthesis.getVoices().forEach(function(voice) {
                         console.log(voice.name, voice.default ? '(default)' :'');
                     });*/
 
-                }
             }
         }
-		var $menu = $('#myContextMenu');
+    }
+    
+    function messageClickHandler($usr,$msg) { 
+        var $menu = $('#myContextMenu');
         $usr.click(function(event){
             event.preventDefault();
 			if ($menu.css('display') === 'none' && !isNaN(divPos['left']) && !isNaN(divPos['top']) ) {
@@ -542,8 +512,82 @@
 			}
             
 		});
+        } 
+    
+    // message display handling for new and old(rescan) messages
+    var handle_new_message = function($ele, rescan){
+
+ 
                 
+        // add any proccessing for new messages in here
+        var $msg = $ele.find(".body .md");
+        var $usr = $ele.find(".body .author");
+        var line = $msg.text().toLowerCase();
+        var first_line = $msg.find("p").first();
+
+        // target blank all message links
+        $msg.find("a").attr("target","_blank");          
+
+        // prevent embedly iframe link handling
+        first_line.html(first_line.html()+" ");       
+
+        // insert time
+        $usr.before($ele.find("time"));
+
+        //remove the /u/ in author name
+        $usr.text($usr.text().replace("/u/", ""));
+
+        // tag message with user identifier for muting
+        $ele.addClass("u_"+$usr.text());
+        
+        //alternating background color   
+        alternateMsgBackground($ele);
+        
+        // Current User name mentioned
+        messageMentionHandler(line, $usr, $ele);
+
+        // emote support
+        emoteSupport(line, $msg, first_line)
+        
+        // easy multiline
+        $msg.html($msg.html().split('\n').join('<br>'));
+        $msg.html($msg.html().replace('<br><br>','<br>'));
+        $msg.html($msg.html().replace('</p><br>',''));
+        
+        // /me support
+        if(line.indexOf("/me") === 0){
+            $ele.addClass("user-narration");
+            first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
+        }
+        
+        // timestamp modification & user activity tracking
+        timeAndUserTracking($ele,$usr);     
+        
+        // Track channels
+        tabbedChannels.proccessLine(line, $ele, rescan);
+       
+        //remove separator
+        $(".liveupdate-listing .separator").remove();
+
+        // user color
+        messageUserColor($usr);        
+			
+        if(typeof rescan !== 'undefined' && rescan === true){
+            // this is rescan, do nothing.
+        }
+        else {   
+            // not rescan, read aloud if TTS enabled
+            messageTextToSpeechHandler($msg, $usr);
+                   //note to self, everything is getting hit twice...
+        $ele.addClass("RLC-handled");
+        if ($ele.hasClass("RLC-handled")) { console.log("rlc handler hit again");}
+        }
+        
+        // message click handling 
+        messageClickHandler($usr,$msg)      
     };
+    
+    
 	function getColor(username) {
 		var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
 		var e = username.toLowerCase(),
@@ -925,14 +969,7 @@
         $("#rlc-main iframe").remove();
         
         
-        //due to proccessline this needs to run after the new content detector 
-        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
-        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
-        
-        // rescan existing chat for messages
-        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-            handle_new_message($(item), true);
-        });
+       
         
        
 
@@ -951,7 +988,14 @@
             }
         });
 
+         //due to proccessline this needs to run after the new content detector 
+        tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
+        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
         
+        // rescan existing chat for messages
+        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+            handle_new_message($(item), true);
+        });
       
          _scroll_to_bottom();    //done adding/modding content, scroll to bottom
         
@@ -1145,6 +1189,13 @@
                 $("body").addClass("rlc-RobinColors");
             }else{
                 $("body").removeClass("rlc-RobinColors");
+            }
+        },false);
+        createOption("24 hour timestamps", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-24hrTimeStamps");
+            }else{
+                $("body").removeClass("rlc-24hrTimeStamps");
             }
         },false);
     });
