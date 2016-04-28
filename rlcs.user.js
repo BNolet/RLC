@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.25.3
+// @version      2.26
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -464,11 +464,34 @@
                             break;
                     }
                     // Now speak the sentence
-                    window.speechSynthesis.speak(msg);
-                    //               msg.voiceURI = 'native';
-                    //                msg.volume = 1; // 0 to 1
-                    //                msg.rate = 0.1; // 0.1 to 10
-                    //                msg.pitch = 0; //0 to 2
+                    // msg.voiceURI = 'native';
+                    
+        // Set variable voice type
+                     if(true){ // You want to be able to disable this in options.
+                         // Select voices that english users can use, even if its not for english exactly...
+                         var voiceList = speechSynthesis.getVoices().filter(function(voice) {
+                             langSupport = ["en","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
+                             for (key in langSupport) {
+                                 if( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; } 
+                             }
+                         });
+                         // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
+                         function strSeededRandInt (str,min=0,max=256,code=0){ 
+                             for(i=0;i<str.length;i++){
+                                 code += str.charCodeAt(i);
+                             }
+                             return code%(1+max-min)+min;
+                         }
+                         msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
+                         msg.pitch = 2*strSeededRandInt($usr.text(),0,1000)/1000;
+                     }
+                    
+                    
+                    
+                                    msg.volume = 1; // 0 to 1
+                                    //msg.rate = 1; // 0.1 to 10
+                                    //msg.pitch = 1; //0 to 2
+                    window.speechSynthesis.speak(msg);                                  
                     // get supported voices
                    /* speechSynthesis.getVoices().forEach(function(voice) {
                         console.log(voice.name, voice.default ? '(default)' :'');
