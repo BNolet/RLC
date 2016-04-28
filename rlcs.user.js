@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.7
+// @version      2.26.8
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -501,11 +501,14 @@
                         var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
                         $(".usertext-edit.md-container textarea").focus().val(copystring);
                     }
-                    $(".liveupdate .md").click();
-                });
-                $(".liveupdate .md").click(function(event){
                     $menu.css({"left":0,"top":0,"display":"none"}); //close menu
                 });
+				$('body').unbind('click');
+				$('body').bind('click',function(e) {
+					if ($(e.target).closest($usr).length === 0) {
+						$menu.css({"left":0,"top":0,"display":"none"});
+					}
+				});
             }else{
                 $menu.css({"left":0,"top":0,"display":"none"}); //close menu
             }
