@@ -18,7 +18,7 @@ Come hang out in [RLC Dev Chat](https://www.reddit.com/live/wpytzw1guzg2) to hel
 * Tab username autocomplete  
 * Messages appear from bottom and scroll up
 * Support for /me messages
-* Highlights when you are mentioned (with optional sound effect and chrome notifications)
+* Highlights when you are mentioned (with optional sound effect and chrome notification)
 * Channels (with graphical interface, tabs and multi-channel-view)
 * Custom RLC Emotes! - currently supported: :)  :s  :|  :o  :(  :((
 * Dark Mode theme compatible with but seperate from RES nightmode
