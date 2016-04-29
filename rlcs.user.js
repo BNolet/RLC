@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.27
+// @version      2.27.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -568,15 +568,18 @@
          if (loading_initial_messages == 0) {
             //stuff that should not be done to messages loaded on init
              
-             if ($("body").hasClass("rlc-notificationsound")) {
-                snd.play();
-            }
-            if ($("body").hasClass("rlc-notificationchrome")) {
-                var n = new Notification('Robin Live Chat',{
-                    icon: chromenoticeimg,
-                    body: $usr.text() + ": " + line,
-                });
-            }
+             if(line.indexOf(robin_user) !== -1){
+                 if ($("body").hasClass("rlc-notificationsound")) {
+                     snd.play();
+                 }
+                 if ($("body").hasClass("rlc-notificationchrome")) {
+                     var n = new Notification('Robin Live Chat',{
+                         icon: chromenoticeimg,
+                         body: $usr.text() + ": " + line,
+                     });
+                 }
+             }
+
              
              if(typeof rescan !== 'undefined' && rescan === true){
                  // this is rescan, do nothing. rescans happen when channel tabs are changed
