@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.9
+// @version      2.26.10
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -460,7 +460,6 @@
                 /* speechSynthesis.getVoices().forEach(function(voice) {
                         console.log(voice.name, voice.default ? '(default)' :'');
                     });*/
-
             }
         }
     }
@@ -994,6 +993,8 @@
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
         });
+        
+        
 
          _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
@@ -1180,6 +1181,7 @@
                 $("body").addClass("rlc-TextToSpeech");
             }else{
                 $("body").removeClass("rlc-TextToSpeech");
+                window.speechSynthesis.cancel()
             }
         },false);
         createOption("Disable User based voices", function(checked, ele){
