@@ -547,6 +547,8 @@
                         var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text() + toneStr );
                         break;
                 }
+                //console.log("usr:"+$usr.text());
+                //console.log("linetoread:"+linetoread);
                 // Now speak the sentence
                 // msg.voiceURI = 'native';
 
