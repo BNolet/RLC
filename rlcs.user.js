@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.28.1
+// @version      2.28.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -453,7 +453,7 @@
                 if(!$("body").hasClass("rlc-NoUserVoices")){ // You want to be able to disable this in options.
                     // Select voices that english users can use, even if its not for english exactly...
                     var voiceList = speechSynthesis.getVoices().filter(function(voice) {
-                        langSupport = ["en","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
+                        langSupport = ["en","en-US","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
                         for (key in langSupport) {
                             if( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
                         }
