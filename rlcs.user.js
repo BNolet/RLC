@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.10
+// @version      2.26.11
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -57,6 +57,9 @@
     activeUserArray.push("xelon");
     activeUserTimes.push("13:37");
 
+    // badmanfix tts (see channel Tick)
+    var badmanfixtts = 1;
+    
     // muted user list
     var bannamearray = [];
 
@@ -136,6 +139,10 @@
             $('body').toggleClass("allowHistoryScroll");
         }
     }
+    
+
+   
+    
 
     //timeconverter for active user list
     function convertTo24Hour(time) {
@@ -848,6 +855,10 @@
             _self.$el.find(".rlc-filters span").each(function(){
                 if($(this).hasClass("selected")) return;
                 $(this).find("span").text(_self.unread_counts[$(this).data("filter")]);
+                if (badmanfixtts !== 0) {  // get rid of this asap. stops speech synthesis 1 second after page init
+                    badmanfixtts = badmanfixtts - 1;
+                    window.speechSynthesis.cancel()
+                }
             });
             // rate limit disable
             ratelimit = 0;
@@ -994,7 +1005,17 @@
             handle_new_message($(item), true);
         });
         
-        
+
+
+        $.getJSON( ".json", function( data ) {
+            var oldmessages = data.data.children;
+            $.each( oldmessages, function( ) {
+               var x = $(this).toArray();
+                console.log(x[0].data.body);
+            });
+        });
+
+     
 
          _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
