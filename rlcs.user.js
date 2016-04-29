@@ -492,7 +492,7 @@
             var linetoread = $msg.text().split("...").join("\u2026") //replace 3 dots with elipsis character
             var hasTripple = /(.)\1\1/.test(linetoread);
             var numbermatches = get_numbers(linetoread);
-            console.log(linetoread);
+            //console.log(linetoread);
             $.each(numbermatches,function(i) {
                 linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
             });
@@ -569,8 +569,8 @@
                         return code%(1+max-min)+min;
                     }
                     msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
-                    msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt 324#",0,1000)/1000; // random range: 0.5 to 1.5
-                    msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt $%^&",0,1000)/1000; // random range: 0.5 to 1.5
+                    msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt",0,1000)/1000; // random range: 0.5 to 1.5
+                    msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt",0,1000)/1000; // random range: 0.5 to 1.5
 
                     if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)
                     {
@@ -578,8 +578,10 @@
                         msg.rate = 1;
                     }
 
-                    // console.log(msg.pitch);
-                    // console.log(msg.voice);
+                    console.log(msg.pitch);
+                    console.log(msg.rate);
+                    console.log(msg.voice);
+
                 }
                 msg.volume = 1; // 0 to 1
                 //msg.rate = 1; // 0.1 to 10
