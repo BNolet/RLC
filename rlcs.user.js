@@ -404,44 +404,46 @@
             if (!hasTripple) {
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
-
+                // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
                 var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
-
-                if (msgemotes.length) { 
+                var domEmoji = "";
+                if (msgemotes.length) {
                     var finalemote;
                     $.each(msgemotes,function() {
                         finalemote = $(this).attr("class");
 
                     });
-                    var lastEmoteClass = finalemote.split(" ")[1].split("mp_")[1]; 
-                    console.log(lastEmoteClass);
-                    switch (lastEmoteClass) {
-                        case "smile":
-                            console.log("smiley detected");
-                            break;
-                        case "angry":
-                    }
+                    var lastEmoteClass = finalemote.split(" ");
+                    var lastEmote = finalemote.split(" ")[1].split("mp_")[1]; // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy` (Note: This can be fragile if "mp_" is changed to something else)
+                    domEmoji = lastEmote;
+                    console.log(lastEmote);
                 }
-
+                // Select Emoji to narration tone
+                var toneStr="";
+                var toneList = { "smile":"while smiling", "angry":"angrily", "frown":"while frowing", "silly":"pulling a silly face", "meh":" in a disinterested manner", "shocked":"expressing shock", "happy":"happily", "sad":"sadly", "crying":"tearfully", "wink":" while winking", "zen":"in zen mode", "annoyed":"expressing annoyance", "xsmile":"in a big smile", "xsad":"extreamly sadly", "xhappy":"extreamly happy", "tongue":"while sticking out a tounge"};
+                if ( domEmoji in toneList ){
+                    toneStr = " " + toneList[domEmoji];
+                }
+                // Narration Style
                 switch (true) {
                     case /.+\?$/.test(checkingStr): // Questioned
-                        var msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text());
+                        var msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text() + toneStr );
                         break;
                     case /.+\!$/.test(checkingStr):   // Exclaimed
-                        var msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text());
+                        var msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text() + toneStr );
                         break;
                     case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
                         linetoread = linetoread.trim().slice(0, -2);
                         var msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
                         break;
                     case checkingStr == checkingStr.toUpperCase(): //Check for screaming
-                        var msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text());
+                        var msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
                         break;
                     case /^[\\\/]me/.test(checkingStr): //Check for declared action
-                        var msg = new SpeechSynthesisUtterance( $usr.text() + " " + linetoread );
+                        var msg = new SpeechSynthesisUtterance( $usr.text() + " " + linetoread  + toneStr  );
                         break;
                     default: // said
-                        var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text());
+                        var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text() + toneStr );
                         break;
                 }
                 // Now speak the sentence
