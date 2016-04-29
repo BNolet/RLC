@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.28.3
+// @version      2.29
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -154,6 +154,92 @@
         return time.replace(/(am|pm)/, '');
     }
 
+    function numberToEnglish( n ) {
+
+    var string = n.toString(), units, tens, scales, start, end, chunks, chunksLen, chunk, ints, i, word, words, and = '';
+
+    /* Is number zero? */
+    if( parseInt( string ) === 0 ) {
+        return 'zero';
+    }
+
+    /* Array of units as words */
+    units = [ '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen' ];
+
+    /* Array of tens as words */
+    tens = [ '', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety' ];
+
+    /* Array of scales as words */
+    scales = [ '', 'thousand', 'million', 'billion', 'trillion', 'quadrillion', 'quintillion', 'sextillion', 'septillion', 'octillion', 'nonillion', 'decillion', 'undecillion', 'duodecillion', 'tredecillion', 'quatttuor-decillion', 'quindecillion', 'sexdecillion', 'septen-decillion', 'octodecillion', 'novemdecillion', 'vigintillion', 'centillion' ];
+
+    /* Split user arguemnt into 3 digit chunks from right to left */
+    start = string.length;
+    chunks = [];
+    while( start > 0 ) {
+        end = start;
+        chunks.push( string.slice( ( start = Math.max( 0, start - 3 ) ), end ) );
+    }
+
+    /* Check if function has enough scale words to be able to stringify the user argument */
+    chunksLen = chunks.length;
+    if( chunksLen > scales.length ) {
+        return '';
+    }
+
+    /* Stringify each integer in each chunk */
+    words = [];
+    for( i = 0; i < chunksLen; i++ ) {
+
+        chunk = parseInt( chunks[i] );
+
+        if( chunk ) {
+
+            /* Split chunk into array of individual integers */
+            ints = chunks[i].split( '' ).reverse().map( parseFloat );
+
+            /* If tens integer is 1, i.e. 10, then add 10 to units integer */
+            if( ints[1] === 1 ) {
+                ints[0] += 10;
+            }
+
+            /* Add scale word if chunk is not zero and array item exists */
+            if( ( word = scales[i] ) ) {
+                words.push( word );
+            }
+
+            /* Add unit word if array item exists */
+            if( ( word = units[ ints[0] ] ) ) {
+                words.push( word );
+            }
+
+            /* Add tens word if array item exists */
+            if( ( word = tens[ ints[1] ] ) ) {
+                words.push( word );
+            }
+
+            /* Add 'and' string after units or tens integer if: */
+            if( ints[0] || ints[1] ) {
+
+                /* Chunk has a hundreds integer or chunk is the first of multiple chunks */
+                if( ints[2] || ! i && chunksLen ) {
+                    words.push( and );
+                }
+
+            }
+
+            /* Add hundreds word if array item exists */
+            if( ( word = units[ ints[2] ] ) ) {
+                words.push( word + ' hundred' );
+            }
+
+        }
+
+    }
+
+    return words.reverse().join( ' ' );
+
+}
+    
     // user muting
     function updateMutedUsers() {
         // reset by removing css and userlist
@@ -397,10 +483,20 @@
         processActiveUsersList();
     }
 
+    function get_numbers(input) {
+    return input.match(/[0-9]+/g);
+}
+    
     function messageTextToSpeechHandler($msg,$usr) {
         if (GM_getValue("rlc-TextToSpeech") === 'true') {
             var linetoread = $msg.text().split("...").join("\u2026") //replace 3 dots with elipsis character
             var hasTripple = /(.)\1\1/.test(linetoread);
+            var numbermatches = get_numbers(linetoread);
+            console.log(linetoread);
+            $.each(numbermatches,function(i) {
+                        linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
+                    });
+            console.log(linetoread);
             if (!hasTripple) {
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
@@ -416,7 +512,7 @@
                     var lastEmoteClass = finalemote.split(" ");
                     var lastEmote = finalemote.split(" ")[1].split("mp_")[1]; // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy` (Note: This can be fragile if "mp_" is changed to something else)
                     domEmoji = lastEmote;
-                    console.log(lastEmote);
+                    //console.log(lastEmote);
                 }
                 // Select Emoji to narration tone
                 var toneStr="";
@@ -473,17 +569,17 @@
                         msg.pitch = 1;
                     }
                     
-                    console.log(msg.pitch);
-                    console.log(msg.voice);
+                   // console.log(msg.pitch);
+                   // console.log(msg.voice);
                 }
                 msg.volume = 1; // 0 to 1
                 //msg.rate = 1; // 0.1 to 10
                 //msg.pitch = 1; //0 to 2
                 window.speechSynthesis.speak(msg);
                 // get supported voices
-                 speechSynthesis.getVoices().forEach(function(voice) {
+                 /*speechSynthesis.getVoices().forEach(function(voice) {
                         console.log(voice.lang, voice.name);
-                    });
+                    });*/
             }
         }
     }
@@ -526,12 +622,12 @@
                     }
                     $menu.css({"left":0,"top":0,"display":"none"}); //close menu
                 });
-				$('body').unbind('click');
-				$('body').bind('click',function(e) {
-					if ($(e.target).closest($usr).length === 0) {
-						$menu.css({"left":0,"top":0,"display":"none"});
-					}
-				});
+                $('body').unbind('click');
+                $('body').bind('click',function(e) {
+                    if ($(e.target).closest($usr).length === 0) {
+                        $menu.css({"left":0,"top":0,"display":"none"});
+                    }
+                });
             }else{
                 $menu.css({"left":0,"top":0,"display":"none"}); //close menu
             }
@@ -971,8 +1067,6 @@
         $('<div id="rlc-settingsbar2"></div>').insertBefore("#filter_tabs");
         $('#rlc-settingsbar2').append('<div id="loadmessages">Load Msgs</div><div id="s2compactmode">Compact</div><div id="s2tts">TTS</div>');
     }
-
- 
     
     function rlcParseSidebar() {
         // put anything after -RLC-README- in the sidebar into the readme
@@ -1042,7 +1136,7 @@
             handle_new_message($(item), true);
         });
         
-/*
+/*  Ajaxgetcurrentmessages
        var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
             var oldmessages = data.data.children;
             var msgarray = [];
@@ -1063,8 +1157,20 @@
         });
 */
      
-
          _scroll_to_bottom();    //done adding/modding content, scroll to bottom
+
+        var text_area = $(".usertext-edit.md-container textarea");
+        // On post message, add it to history
+        $(".save-button .btn").click(function(){
+            var user_last_message = text_area.val();
+
+            // if message history is to long, clear it out
+            if(messageHistory.length === 25){
+                messageHistory.shift();
+            }
+            messageHistory.push(remove_channel_key_from_message(user_last_message));
+            messageHistoryIndex = messageHistory.length;
+        });
 
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
@@ -1089,24 +1195,11 @@
         $("#s2tts").click(function(){ 
             $( "#rlc-settings label:contains('TextToSpeech') input" ).click();
         });
- 
-        var text_area = $(".usertext-edit.md-container textarea");
-        // On post message, add it to history
-        $(".save-button .btn").click(function(){
-            var user_last_message = text_area.val();
 
-            // if message history is to long, clear it out
-            if(messageHistory.length === 25){
-                messageHistory.shift();
-            }
-            messageHistory.push(remove_channel_key_from_message(user_last_message));
-            messageHistoryIndex = messageHistory.length;
-        });
-
-        $("#rlc-togglesidebar").click(function(){      $("body").toggleClass("rlc-hidesidebar");  _scroll_to_bottom();  });
-        $("#rlc-toggleoptions").click(function(){   $("body").removeClass("rlc-showreadmebar");     $("body").toggleClass("rlc-showoptions");});
-        $("#rlc-toggleguide").click(function(){      $("body").removeClass("rlc-showoptions");        $("body").toggleClass("rlc-showreadmebar");});
-        $("#rlc-sendmessage").click(function(){$(".save-button .btn").click();});
+        $("#rlc-togglesidebar").click(function(){   $("body").toggleClass("rlc-hidesidebar");   _scroll_to_bottom();  });
+        $("#rlc-toggleoptions").click(function(){   $("body").removeClass("rlc-showreadmebar"); $("body").toggleClass("rlc-showoptions");});
+        $("#rlc-toggleguide").click(function(){     $("body").removeClass("rlc-showoptions");   $("body").toggleClass("rlc-showreadmebar");});
+        $("#rlc-sendmessage").click(function(){     $(".save-button .btn").click();});
 
         //handling of keypresses in messagebox textarea
         text_area.on('keydown', function(e) {
@@ -1179,7 +1272,7 @@
             }
         });
 
-        // Options 
+        /* --------------------OPTIONS------------- */
         createOption("AutoScroll", function(checked, ele){
             if(checked){
                 $("body").addClass("AutoScroll");
