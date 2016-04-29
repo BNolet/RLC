@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.28
+// @version      2.28.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -467,17 +467,17 @@
                     }
                     msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
                     msg.pitch = 2*strSeededRandInt($usr.text(),0,1000)/1000;
-                  //  console.log(msg.pitch);
-                  //  console.log(msg.voice);
+                    console.log(msg.pitch);
+                    console.log(msg.voice);
                 }
                 msg.volume = 1; // 0 to 1
                 //msg.rate = 1; // 0.1 to 10
                 //msg.pitch = 1; //0 to 2
                 window.speechSynthesis.speak(msg);
                 // get supported voices
-                /* speechSynthesis.getVoices().forEach(function(voice) {
-                        console.log(voice.name, voice.default ? '(default)' :'');
-                    });*/
+                 speechSynthesis.getVoices().forEach(function(voice) {
+                        console.log(voice.lang, voice.name);
+                    });
             }
         }
     }
