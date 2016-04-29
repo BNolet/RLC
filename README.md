@@ -2,9 +2,10 @@
 
 This is a script made for [reddit live](https://www.reddit.com/live). RLC makes it possible to use the live feature as a fully functional chat. 
 
+Note: Screenshot is horrendously outdated.
 ![Screenshot](http://i.imgur.com/ZmI5AWx.png)
 
-To use this script, install tampermonkey which can be found [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), or Greasemonkey which can be found [here](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) and then click the link below to install RLC.
+To use this script, install Tampermonkey which can be found [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), or Greasemonkey which can be found [here](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) and then click the link below to install RLC.
 
 [Install now](https://github.com/BNolet/RLCS/raw/master/rlcs.user.js)
 
