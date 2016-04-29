@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.27.3
+// @version      2.27.4
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1448,7 +1448,7 @@ display: none; \
 }\
 ");
 /*------------------------------------------------------------------------------------------*/
-GM_addStyle(" * { \
+GM_addStyle("* { \
     box-sizing: border-box; \
 } \
  \
@@ -1603,18 +1603,19 @@ button#rlc-delete { \
 } \
  \
 #rlc-main .liveupdate-listing a.author { \
-    width: 180px; \
+    width: 110px; \
     float: left; \
     text-align: right; \
     padding: 0; \
     color: initial; \
     margin: 0; \
     padding-top: 4px; \
+    padding-left: 20px; \
 } \
  \
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
     float: right; \
-    width: calc(100% - 320px); \
+    width: calc(100% - 230px); \
     max-width: none; \
 } \
  \
@@ -1833,8 +1834,8 @@ div#rlc-settingsbar div, div#rlc-settingsbar2 div { \
 #rlc-main .liveupdate-listing .liveupdate .simpletime { \
     display: block; \
     float: left; \
-    width: 70px; \
-    padding-left: 10px; \
+    width: 80px; \
+    padding-left: 20px; \
     padding-top: 5px; \
 } \
  \
