@@ -500,6 +500,11 @@
             if (!hasTripple) {
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
+                // Abbreviation Expansion (All keys must be in uppercase)
+                replaceStrList = {"WTF":"What The Fuck", "BTW":"By The Way", "NVM":"Nevermind", "AFAIK":"As Far As I Know", "AKF":"Away From Keyboard", "AKA":"Also Known As", "ASAP":"As Soon As Possible", "CYA":"See Ya", "IKR":"I Know Right", "IMO":"In My Own Opinion", "JK":"Just Kidding", "OMG":"Oh My Gosh", "RTFM":"Read The Fucking Manual", "TLDR":"Too Long Didn't Read"};
+                linetoread = linetoread.split(" ").map(function(token){ 
+                    if( token.toUpperCase() in replaceStrList ){return replaceStrList[token];}else{return token;};
+                }).join(" ");
                 // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
                 var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
                 var domEmoji = "";
@@ -535,13 +540,15 @@
                     case checkingStr == checkingStr.toUpperCase(): //Check for screaming
                         var msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
                         break;
-                    case /^[\\\/]me/.test(checkingStr): //Check for declared action
-                        var msg = new SpeechSynthesisUtterance( $usr.text() + " " + linetoread  + toneStr  );
+                    case linetoread.trim().split(" ")[0] == $usr.text().trim(): //Check for declared action
+                        var msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
                         break;
                     default: // said
                         var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text() + toneStr );
                         break;
                 }
+                //console.log("usr:"+$usr.text());
+                //console.log("linetoread:"+linetoread);
                 // Now speak the sentence
                 // msg.voiceURI = 'native';
 
@@ -562,11 +569,13 @@
                         return code%(1+max-min)+min;
                     }
                     msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
-                    msg.pitch = 2*strSeededRandInt($usr.text(),0,1000)/1000;
+                    msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt 324#",0,1000)/1000; // random range: 0.5 to 1.5
+                    msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt $%^&",0,1000)/1000; // random range: 0.5 to 1.5
                     
                     if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)
                     {
                         msg.pitch = 1;
+                        msg.rate = 1;
                     }
                     
                    // console.log(msg.pitch);
