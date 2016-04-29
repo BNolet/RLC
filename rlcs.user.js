@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.8
+// @version      2.26.9
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -921,9 +921,12 @@
         $('#liveupdate-header').appendTo('#rlc-sidebar #rlc-main-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar #rlc-main-sidebar');
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
-        $('<div id="loadmessages">Load Messages</div>').insertBefore("#filter_tabs");
+        $('<div id="rlc-settingsbar2"></div>').insertBefore("#filter_tabs");
+        $('#rlc-settingsbar2').append('<div id="loadmessages">Load Msgs</div><div id="s2compactmode">Compact</div><div id="s2tts">TTS</div>');
     }
 
+ 
+    
     function rlcParseSidebar() {
         // put anything after -RLC-README- in the sidebar into the readme
         var str = $('#liveupdate-resources .md').html();
@@ -1006,8 +1009,16 @@
         });
 
         // load old messages
-        $("#loadmessages").click(function(){ 
+        $("#s2loadmessages").click(function(){ 
             loadHistory();
+        });
+
+        // easy access options
+        $("#s2compactmode").click(function(){ 
+            $( "#rlc-settings label:contains('Compact Mode') input" ).click();
+        });
+        $("#s2tts").click(function(){ 
+            $( "#rlc-settings label:contains('TextToSpeech') input" ).click();
         });
  
         var text_area = $(".usertext-edit.md-container textarea");
@@ -1375,17 +1386,7 @@ display: none; \
 }\
 ");
 /*------------------------------------------------------------------------------------------*/
-GM_addStyle("div#loadmessages { \
-    float: right; \
-    width: 20%; \
-    text-align: center; \
-    height: 25px; \
-    padding-top: 6px; \
-    border-top: 1px solid #A9A9A9; \
-    cursor: pointer; \
-} \
- \
-* { \
+GM_addStyle(" * { \
     box-sizing: border-box; \
 } \
  \
@@ -1415,7 +1416,7 @@ GM_addStyle("div#loadmessages { \
  \
 #rlc-topmenu { \
     box-sizing: border-box; \
-    border-bottom: 1px solid grey; \
+    border-bottom: 1px solid #A9A9A9; \
 } \
  \
 /*---- Message Input --------- */ \
@@ -1423,14 +1424,14 @@ div#rlc-messagebox { \
     position: relative; \
     float: left; \
     width: 80%; \
-    border-left: 1px solid grey; \
+    border-left: 1px solid #A9A9A9; \
 } \
  \
 .rlc-hidesidebar div#rlc-messagebox { \
     position: relative; \
     float: left; \
     width: 80%; \
-    border-left: 1px solid grey; \
+    border-left: 1px solid #A9A9A9; \
 } \
  \
 #new-update-form .usertext { \
@@ -1561,7 +1562,7 @@ button#rlc-delete { \
  \
 /* channel name */ \
 .channelname { \
-    color: grey!important; \
+    color: #A9A9A9!important; \
     width: 290px; \
     display: block; \
     float: left; \
@@ -1609,7 +1610,7 @@ button#rlc-delete { \
     cursor: pointer; \
     vertical-align: middle; \
     font-size: 1.1em; \
-    border-right: 1px solid grey; \
+    border-right: 1px solid #A9A9A9; \
 } \
  \
 #filter_tabs .rlc-filters > span > span { \
@@ -1619,7 +1620,7 @@ button#rlc-delete { \
 #filter_tabs > span.all { \
     padding: 0px 30px; \
     height: 25px; \
-    border-right: 1px solid grey; \
+    border-right: 1px solid #A9A9A9; \
 } \
  \
 #filter_tabs > span.more { \
@@ -1652,7 +1653,7 @@ button#rlc-delete { \
     left: 0px; \
     width: calc(80% - 116px); \
     z-index: 1000; \
-    border-right: 1px solid grey; \
+    border-right: 1px solid #A9A9A9; \
 } \
  \
 /*-------------- Sidebar -------------------*/ \
@@ -1679,8 +1680,7 @@ aside.sidebar.side.md-container { \
 } \
  \
 #rlc-togglesidebar { \
-    display: table-cell; \
-    cursor: pointer; \
+    display: block; \
     border-right: 1px solid #A9A9A9; \
 } \
  \
@@ -1716,27 +1716,33 @@ aside.sidebar.side.md-container { \
     font-size: 1.18em; \
 } \
  \
-#rlc-settingsbar { \
+#rlc-settingsbar, #rlc-settingsbar2 { \
     height: 25px; \
     box-sizing: border-box; \
     display: table; \
-    border-top: 1px solid #A9A9A9; \
     table-layout: fixed; \
     width: 20%; \
     z-index: 100; \
     float: right; \
     background: #FCFCFC; \
+    border-top: 1px solid #A9A9A9; \
+    cursor: pointer; \
+    text-align: center; \
 } \
  \
 div#rlc-toggleoptions { \
     display: table-cell; \
     cursor: pointer; \
+    border-right: 1px solid #A9A9A9; \
 } \
  \
-div#rlc-settingsbar div { \
-    padding-top: 6px; \
+div#rlc-settingsbar div, div#rlc-settingsbar2 div { \
     text-align: center; \
     cursor: pointer; \
+    width: 33%; \
+    height: 24px; \
+    float: left; \
+    padding-top: 7px; \
 } \
  \
 /* active users */ \
@@ -1775,9 +1781,7 @@ div#rlc-settingsbar div { \
 } \
  \
 div#rlc-toggleguide { \
-    border-left: 1px solid #A9A9A9; \
     padding-bottom: 6px; \
-    border-right: 1px solid grey; \
 } \
  \
 div#rlc-main-sidebar { \
@@ -1800,7 +1804,7 @@ div#rlc-main-sidebar { \
     color: white; \
 } \
  \
-.dark-background .rlc-channel-add, .dark-background #rlc-settingsbar, .dark-background div#rlc-settings { \
+.dark-background #rlc-settingsbar2, .dark-background .rlc-channel-add, .dark-background #rlc-settingsbar, .dark-background div#rlc-settings { \
     background: #404040; \
 } \
  \
@@ -1810,7 +1814,7 @@ div#rlc-main-sidebar { \
 } \
  \
 .dark-background div#header-bottom-left { \
-    background: grey; \
+    background: #A9A9A9; \
 } \
  \
 .dark-background { \
@@ -1822,6 +1826,7 @@ div#rlc-main-sidebar { \
     background: transparent; \
     color: white; \
 } \
+ \
 /* compact */ \
 .rlc-compact div#rlc-sidebar { \
     height: calc(100vh - 50px); \
@@ -1853,14 +1858,14 @@ select#rlc-channel-dropdown { \
  \
 .rlc-channel-add button { \
     background: transparent; \
-    border: 1px solid grey; \
+    border: 1px solid #A9A9A9; \
     margin: 0; \
     padding: 4px; \
     border-top: 0px; \
     border-bottom: 0px; \
 } \
  \
-.rlc-showoptions #rlc-toggleoptions, .rlc-showreadmebar div#rlc-toggleguide, #filter_tabs .selected { \
+.rlc-TextToSpeech #s2tts, .rlc-compact #s2compactmode, .rlc-showoptions #rlc-toggleoptions, .rlc-showreadmebar div#rlc-toggleguide, #filter_tabs .selected { \
     background: grey; \
 } \
  \
@@ -1874,5 +1879,13 @@ select#rlc-channel-dropdown { \
     margin: 4px; \
     position: relative; \
     top: 2px; \
+} \
+ \
+div#loadmessages { \
+    border-right: 1px solid #A9A9A9; \
+} \
+ \
+div#s2compactmode { \
+    border-right: 1px solid #A9A9A9; \
 } \
 ")
