@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.27.2
+// @version      2.27.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -404,12 +404,25 @@
             if (!hasTripple) {
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
-                
+
                 var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
-                $.each(msgemotes,function() {
-                 console.log($(this));  //log each emote to console
-                });
-                
+
+                if (msgemotes.length) { 
+                    var finalemote;
+                    $.each(msgemotes,function() {
+                        finalemote = $(this).attr("class");
+
+                    });
+                    var lastEmoteClass = finalemote.split(" ")[1].split("mp_")[1]; 
+                    console.log(lastEmoteClass);
+                    switch (lastEmoteClass) {
+                        case "smile":
+                            console.log("smiley detected");
+                            break;
+                        case "angry":
+                    }
+                }
+
                 switch (true) {
                     case /.+\?$/.test(checkingStr): // Questioned
                         var msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text());
