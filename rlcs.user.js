@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.27.1
+// @version      2.27.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -404,6 +404,12 @@
             if (!hasTripple) {
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
+                
+                var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
+                $.each(msgemotes,function() {
+                 console.log($(this));  //log each emote to console
+                });
+                
                 switch (true) {
                     case /.+\?$/.test(checkingStr): // Questioned
                         var msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text());
@@ -446,8 +452,8 @@
                     }
                     msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
                     msg.pitch = 2*strSeededRandInt($usr.text(),0,1000)/1000;
-                    console.log(msg.pitch);
-                    console.log(msg.voice);
+                  //  console.log(msg.pitch);
+                  //  console.log(msg.voice);
                 }
                 msg.volume = 1; // 0 to 1
                 //msg.rate = 1; // 0.1 to 10
@@ -863,6 +869,7 @@
                     badmanfixtts = badmanfixtts - 1;
                     window.speechSynthesis.cancel()
                 }
+                loading_initial_messages = 0;
             });
             // rate limit disable
             ratelimit = 0;
@@ -932,7 +939,7 @@
         $('.liveupdate-listing').prependTo('#rlc-chat');
         
         //remove initial messages
-        $('.liveupdate-listing .liveupdate').remove();
+        //$('.liveupdate-listing .liveupdate').remove();
         
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
@@ -1010,11 +1017,11 @@
         });
          
         // rescan existing chat for messages
-        //$("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-        //    handle_new_message($(item), true);
-        //});
+        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+            handle_new_message($(item), true);
+        });
         
-
+/*
        var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
             var oldmessages = data.data.children;
             var msgarray = [];
@@ -1033,7 +1040,7 @@
         ajaxLoadCurrentMessages.complete(function() {
             loading_initial_messages = 0;
         });
-
+*/
      
 
          _scroll_to_bottom();    //done adding/modding content, scroll to bottom
