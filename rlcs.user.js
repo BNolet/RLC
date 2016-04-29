@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.26.11
+// @version      2.27
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -43,6 +43,8 @@
     ];
     var ratelimit = 0;
 
+    var loading_initial_messages = 1;
+    
     // msg history
     var messageHistory = [];
     var messageHistoryIndex = -1;
@@ -140,10 +142,6 @@
         }
     }
     
-
-   
-    
-
     //timeconverter for active user list
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
@@ -313,15 +311,7 @@
         if(line.indexOf(robin_user) !== -1){
             //add bold highlighting
             $ele.addClass("user-mention");
-            if ($("body").hasClass("rlc-notificationsound")) {
-                snd.play();
-            }
-            if ($("body").hasClass("rlc-notificationchrome")) {
-                var n = new Notification('Robin Live Chat',{
-                    icon: chromenoticeimg,
-                    body: $usr.text() + ": " + line,
-                });
-            }
+            
         }
     }
 
@@ -528,7 +518,7 @@
         var $usr = $ele.find(".body .author");
         var line = $msg.text().toLowerCase();
         var first_line = $msg.find("p").first();
-        
+
         // /me support
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
@@ -564,8 +554,6 @@
         $msg.html($msg.html().replace('<br><br>','<br>'));
         $msg.html($msg.html().replace('</p><br>',''));
 
-        
-
         // Track channels
         tabbedChannels.proccessLine(line, $ele, rescan);
 
@@ -576,15 +564,28 @@
         timeAndUserTracking($ele,$usr);
         messageUserColor($usr); // user color
         messageClickHandler($usr,$msg,$ele);  // message click handling 
-
-        // this is rescan, do nothing.
-        if(typeof rescan !== 'undefined' && rescan === true){
-            
-        }
-        // not rescan, read aloud if TTS enabled
-        else {
-            messageTextToSpeechHandler($msg, $usr);
-        }
+        
+         if (loading_initial_messages == 0) {
+            //stuff that should not be done to messages loaded on init
+             
+             if ($("body").hasClass("rlc-notificationsound")) {
+                snd.play();
+            }
+            if ($("body").hasClass("rlc-notificationchrome")) {
+                var n = new Notification('Robin Live Chat',{
+                    icon: chromenoticeimg,
+                    body: $usr.text() + ": " + line,
+                });
+            }
+             
+             if(typeof rescan !== 'undefined' && rescan === true){
+                 // this is rescan, do nothing. rescans happen when channel tabs are changed
+             }
+             // not rescan, read aloud if TTS enabled
+             else {
+                 messageTextToSpeechHandler($msg, $usr);
+             }
+         }
     };
 
     function getColor(username) {
@@ -926,10 +927,15 @@
         $("body").append(htmlPayload); 
 
         $('.liveupdate-listing').prependTo('#rlc-chat');
+        
+        //remove initial messages
+        $('.liveupdate-listing .liveupdate').remove();
+        
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
         $('#liveupdate-header').appendTo('#rlc-sidebar #rlc-main-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar #rlc-main-sidebar');
+        
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
         $('<div id="rlc-settingsbar2"></div>').insertBefore("#filter_tabs");
         $('#rlc-settingsbar2').append('<div id="loadmessages">Load Msgs</div><div id="s2compactmode">Compact</div><div id="s2tts">TTS</div>');
@@ -1001,18 +1007,28 @@
         });
          
         // rescan existing chat for messages
-        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-            handle_new_message($(item), true);
-        });
+        //$("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+        //    handle_new_message($(item), true);
+        //});
         
 
-
-        $.getJSON( ".json", function( data ) {
+       var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
             var oldmessages = data.data.children;
+            var msgarray = [];
             $.each( oldmessages, function( ) {
-               var x = $(this).toArray();
-                console.log(x[0].data.body);
+                var x = $(this).toArray()[0].data;
+                var body = x.body;
+                var author = x.author;
+                var created = x.created;
+                //var created_utc = new Date(x.created_utc);
+                //April 29 2016 3:22 PM +02:00
+                
+                var fakemessage = '<li class="liveupdate"> <a><time title="Smartch 00 0000 0:00 PM +00:00" class="live-timestamp"></time></a><div class="body"><div class="md"><p>'+body+'</p></div><a href="/user/' + author + '" class="author" data-name="' + author + '">/u/'+author+'</a></div><ul class="buttonrow"><li><span class="strike confirm-button"><button>strike</button></span></li><li><span class="delete confirm-button"><button>delete</button></span></li></ul></li>';
+                $('.liveupdate-listing').append(fakemessage);
             });
+        });
+        ajaxLoadCurrentMessages.complete(function() {
+            loading_initial_messages = 0;
         });
 
      
