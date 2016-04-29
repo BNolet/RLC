@@ -16,7 +16,7 @@
 // @grant       GM_getValue
 // ==/UserScript==
 (function() {
-/*----------------------------------------------------------GLOBAL VARIABLES -------------------------------------------------------------------*/
+    /*----------------------------------------------------------GLOBAL VARIABLES -------------------------------------------------------------------*/
     // set default states for options
     if (!GM_getValue("rlc-NoSmileys")) {
         GM_setValue("rlc-NoSmileys", 'false');
@@ -44,7 +44,7 @@
     var ratelimit = 0;
 
     var loading_initial_messages = 1;
-    
+
     // msg history
     var messageHistory = [];
     var messageHistoryIndex = -1;
@@ -61,7 +61,7 @@
 
     // badmanfix tts (see channel Tick)
     var badmanfixtts = 1;
-    
+
     // muted user list
     var bannamearray = [];
 
@@ -81,58 +81,58 @@
 
     // Html for injection, inserted at doc.ready
     var htmlPayload = '  \
-        <div id="rlc-sidebar"> \
-        <div id="rlc-main-sidebar"></div> \
-        <div id="rlc-readmebar"> \
-        <div class="md">\
-        <strong style="font-size:1.2em">RLC Feature Guide</strong><br> \
-        <small>click version number again to restore sidebar</small> \
-        <hr> \
-        </div> \
-        </div> \
-        <div id="rlc-guidebar"> \
-        <div class="md"> \
-        <strong style="font-size:1.2em">RLC New User Intro</strong><br> \
-        <hr> \
-        </div> \
-        </div> \
-        <div id="rlc-settings"> \
-        <div class="md"> \
-        <strong style="font-size:1.2em">RLC Options</strong><br> \
-        <hr> \
-        </div> \
-        </div> \
-        </div> \
-        <div id="rlc-main">   \
-        <div id="rlc-chat"></div> \
-        </div> \
-        <div id="rlc-messagebox"><select id="rlc-channel-dropdown"><option></option><option>%general</option><option>%offtopic</option><option>%dev</option></select></div>\
-        <div id="rlc-settingsbar"> \
-        <div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">Sidebar</div> \
-        <div id="rlc-toggleoptions" title="Show Options" class="noselect">Options</div> \
-        <div id="rlc-toggleguide" title="Show Guide" class="noselect">Readme</div> \
-        </div> \
-        <div id="myContextMenu">\
-        <ul>\
-        <li id="mute"><a>Mute User</a></li>\
-        <li id="PMUser"><a>PM User</a></li>\
-        <li id="deleteCom"><a>Delete Comment</a></li>\
-        <li id="copyMessage"><a>Copy Message</a></li>\
-        </ul>\
-        </div>\
-    ';
+<div id="rlc-sidebar"> \
+<div id="rlc-main-sidebar"></div> \
+<div id="rlc-readmebar"> \
+<div class="md">\
+<strong style="font-size:1.2em">RLC Feature Guide</strong><br> \
+<small>click version number again to restore sidebar</small> \
+<hr> \
+</div> \
+</div> \
+<div id="rlc-guidebar"> \
+<div class="md"> \
+<strong style="font-size:1.2em">RLC New User Intro</strong><br> \
+<hr> \
+</div> \
+</div> \
+<div id="rlc-settings"> \
+<div class="md"> \
+<strong style="font-size:1.2em">RLC Options</strong><br> \
+<hr> \
+</div> \
+</div> \
+</div> \
+<div id="rlc-main">   \
+<div id="rlc-chat"></div> \
+</div> \
+<div id="rlc-messagebox"><select id="rlc-channel-dropdown"><option></option><option>%general</option><option>%offtopic</option><option>%dev</option></select></div>\
+<div id="rlc-settingsbar"> \
+<div id="rlc-togglesidebar" title="Toggle Sidebar" class="noselect">Sidebar</div> \
+<div id="rlc-toggleoptions" title="Show Options" class="noselect">Options</div> \
+<div id="rlc-toggleguide" title="Show Guide" class="noselect">Readme</div> \
+</div> \
+<div id="myContextMenu">\
+<ul>\
+<li id="mute"><a>Mute User</a></li>\
+<li id="PMUser"><a>PM User</a></li>\
+<li id="deleteCom"><a>Delete Comment</a></li>\
+<li id="copyMessage"><a>Copy Message</a></li>\
+</ul>\
+</div>\
+';
 
-/*---------------------------------------------------------- Functions -------------------------------------------------------------------*/
+    /*---------------------------------------------------------- Functions -------------------------------------------------------------------*/
 
     // Scroll chat back to bottom
     var _scroll_to_bottom = function(){
         $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
-   };
+    };
 
     // manipulate native reddit live into loading old messages
     function loadHistory() {
         if (GM_getValue("rlc-TextToSpeech") == 'true') {
-                 alert("You have TextToSpeech enabled, please disable to load old messages.");
+            alert("You have TextToSpeech enabled, please disable to load old messages.");
         }
         else {
             $('body').toggleClass("allowHistoryScroll");
@@ -141,7 +141,7 @@
             $('body').toggleClass("allowHistoryScroll");
         }
     }
-    
+
     //timeconverter for active user list
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
@@ -156,90 +156,90 @@
 
     function numberToEnglish( n ) {
 
-    var string = n.toString(), units, tens, scales, start, end, chunks, chunksLen, chunk, ints, i, word, words, and = '';
+        var string = n.toString(), units, tens, scales, start, end, chunks, chunksLen, chunk, ints, i, word, words, and = '';
 
-    /* Is number zero? */
-    if( parseInt( string ) === 0 ) {
-        return 'zero';
-    }
+        /* Is number zero? */
+        if( parseInt( string ) === 0 ) {
+            return 'zero';
+        }
 
-    /* Array of units as words */
-    units = [ '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen' ];
+        /* Array of units as words */
+        units = [ '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen' ];
 
-    /* Array of tens as words */
-    tens = [ '', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety' ];
+        /* Array of tens as words */
+        tens = [ '', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety' ];
 
-    /* Array of scales as words */
-    scales = [ '', 'thousand', 'million', 'billion', 'trillion', 'quadrillion', 'quintillion', 'sextillion', 'septillion', 'octillion', 'nonillion', 'decillion', 'undecillion', 'duodecillion', 'tredecillion', 'quatttuor-decillion', 'quindecillion', 'sexdecillion', 'septen-decillion', 'octodecillion', 'novemdecillion', 'vigintillion', 'centillion' ];
+        /* Array of scales as words */
+        scales = [ '', 'thousand', 'million', 'billion', 'trillion', 'quadrillion', 'quintillion', 'sextillion', 'septillion', 'octillion', 'nonillion', 'decillion', 'undecillion', 'duodecillion', 'tredecillion', 'quatttuor-decillion', 'quindecillion', 'sexdecillion', 'septen-decillion', 'octodecillion', 'novemdecillion', 'vigintillion', 'centillion' ];
 
-    /* Split user arguemnt into 3 digit chunks from right to left */
-    start = string.length;
-    chunks = [];
-    while( start > 0 ) {
-        end = start;
-        chunks.push( string.slice( ( start = Math.max( 0, start - 3 ) ), end ) );
-    }
+        /* Split user arguemnt into 3 digit chunks from right to left */
+        start = string.length;
+        chunks = [];
+        while( start > 0 ) {
+            end = start;
+            chunks.push( string.slice( ( start = Math.max( 0, start - 3 ) ), end ) );
+        }
 
-    /* Check if function has enough scale words to be able to stringify the user argument */
-    chunksLen = chunks.length;
-    if( chunksLen > scales.length ) {
-        return '';
-    }
+        /* Check if function has enough scale words to be able to stringify the user argument */
+        chunksLen = chunks.length;
+        if( chunksLen > scales.length ) {
+            return '';
+        }
 
-    /* Stringify each integer in each chunk */
-    words = [];
-    for( i = 0; i < chunksLen; i++ ) {
+        /* Stringify each integer in each chunk */
+        words = [];
+        for( i = 0; i < chunksLen; i++ ) {
 
-        chunk = parseInt( chunks[i] );
+            chunk = parseInt( chunks[i] );
 
-        if( chunk ) {
+            if( chunk ) {
 
-            /* Split chunk into array of individual integers */
-            ints = chunks[i].split( '' ).reverse().map( parseFloat );
+                /* Split chunk into array of individual integers */
+                ints = chunks[i].split( '' ).reverse().map( parseFloat );
 
-            /* If tens integer is 1, i.e. 10, then add 10 to units integer */
-            if( ints[1] === 1 ) {
-                ints[0] += 10;
-            }
+                /* If tens integer is 1, i.e. 10, then add 10 to units integer */
+                if( ints[1] === 1 ) {
+                    ints[0] += 10;
+                }
 
-            /* Add scale word if chunk is not zero and array item exists */
-            if( ( word = scales[i] ) ) {
-                words.push( word );
-            }
+                /* Add scale word if chunk is not zero and array item exists */
+                if( ( word = scales[i] ) ) {
+                    words.push( word );
+                }
 
-            /* Add unit word if array item exists */
-            if( ( word = units[ ints[0] ] ) ) {
-                words.push( word );
-            }
+                /* Add unit word if array item exists */
+                if( ( word = units[ ints[0] ] ) ) {
+                    words.push( word );
+                }
 
-            /* Add tens word if array item exists */
-            if( ( word = tens[ ints[1] ] ) ) {
-                words.push( word );
-            }
+                /* Add tens word if array item exists */
+                if( ( word = tens[ ints[1] ] ) ) {
+                    words.push( word );
+                }
 
-            /* Add 'and' string after units or tens integer if: */
-            if( ints[0] || ints[1] ) {
+                /* Add 'and' string after units or tens integer if: */
+                if( ints[0] || ints[1] ) {
 
-                /* Chunk has a hundreds integer or chunk is the first of multiple chunks */
-                if( ints[2] || ! i && chunksLen ) {
-                    words.push( and );
+                    /* Chunk has a hundreds integer or chunk is the first of multiple chunks */
+                    if( ints[2] || ! i && chunksLen ) {
+                        words.push( and );
+                    }
+
+                }
+
+                /* Add hundreds word if array item exists */
+                if( ( word = units[ ints[2] ] ) ) {
+                    words.push( word + ' hundred' );
                 }
 
             }
 
-            /* Add hundreds word if array item exists */
-            if( ( word = units[ ints[2] ] ) ) {
-                words.push( word + ' hundred' );
-            }
-
         }
+
+        return words.reverse().join( ' ' );
 
     }
 
-    return words.reverse().join( ' ' );
-
-}
-    
     // user muting
     function updateMutedUsers() {
         // reset by removing css and userlist
@@ -293,8 +293,8 @@
 
     //generate random value based on seed, max and minimum (for user colors)
     Math.seededRandom = function(seed, max, min) {
-    // in order to work 'seed' must NOT be undefined,
-    // so in any case, you HAVE to provide a Math.seed
+        // in order to work 'seed' must NOT be undefined,
+        // so in any case, you HAVE to provide a Math.seed
         max = max || 1;
         min = min || 0;
 
@@ -397,7 +397,7 @@
         if(line.indexOf(robin_user) !== -1){
             //add bold highlighting
             $ele.addClass("user-mention");
-            
+
         }
     }
 
@@ -484,9 +484,9 @@
     }
 
     function get_numbers(input) {
-    return input.match(/[0-9]+/g);
-}
-    
+        return input.match(/[0-9]+/g);
+    }
+
     function messageTextToSpeechHandler($msg,$usr) {
         if (GM_getValue("rlc-TextToSpeech") === 'true') {
             var linetoread = $msg.text().split("...").join("\u2026") //replace 3 dots with elipsis character
@@ -494,8 +494,8 @@
             var numbermatches = get_numbers(linetoread);
             console.log(linetoread);
             $.each(numbermatches,function(i) {
-                        linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
-                    });
+                linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
+            });
             console.log(linetoread);
             if (!hasTripple) {
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
@@ -571,22 +571,22 @@
                     msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
                     msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt 324#",0,1000)/1000; // random range: 0.5 to 1.5
                     msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt $%^&",0,1000)/1000; // random range: 0.5 to 1.5
-                    
+
                     if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)
                     {
                         msg.pitch = 1;
                         msg.rate = 1;
                     }
-                    
-                   // console.log(msg.pitch);
-                   // console.log(msg.voice);
+
+                    // console.log(msg.pitch);
+                    // console.log(msg.voice);
                 }
                 msg.volume = 1; // 0 to 1
                 //msg.rate = 1; // 0.1 to 10
                 //msg.pitch = 1; //0 to 2
                 window.speechSynthesis.speak(msg);
                 // get supported voices
-                 /*speechSynthesis.getVoices().forEach(function(voice) {
+                /*speechSynthesis.getVoices().forEach(function(voice) {
                         console.log(voice.lang, voice.name);
                     });*/
             }
@@ -641,7 +641,7 @@
                 $menu.css({"left":0,"top":0,"display":"none"}); //close menu
             }
         });
-        }
+    }
 
     // message display handling for new and old(rescan) messages
     // add any proccessing for new messages in here
@@ -696,38 +696,38 @@
         timeAndUserTracking($ele,$usr);
         messageUserColor($usr); // user color
         messageClickHandler($usr,$msg,$ele);  // message click handling 
-        
-         if (loading_initial_messages == 0) {
-            //stuff that should not be done to messages loaded on init
-             
-             if(line.indexOf(robin_user) !== -1){
-                 if ($("body").hasClass("rlc-notificationsound")) {
-                     snd.play();
-                 }
-                 if ($("body").hasClass("rlc-notificationchrome")) {
-                     var n = new Notification('Robin Live Chat',{
-                         icon: chromenoticeimg,
-                         body: $usr.text() + ": " + line,
-                     });
-                 }
-             }
 
-             
-             if(typeof rescan !== 'undefined' && rescan === true){
-                 // this is rescan, do nothing. rescans happen when channel tabs are changed
-             }
-             // not rescan, read aloud if TTS enabled
-             else {
-                 messageTextToSpeechHandler($msg, $usr);
-             }
-         }
+        if (loading_initial_messages == 0) {
+            //stuff that should not be done to messages loaded on init
+
+            if(line.indexOf(robin_user) !== -1){
+                if ($("body").hasClass("rlc-notificationsound")) {
+                    snd.play();
+                }
+                if ($("body").hasClass("rlc-notificationchrome")) {
+                    var n = new Notification('Robin Live Chat',{
+                        icon: chromenoticeimg,
+                        body: $usr.text() + ": " + line,
+                    });
+                }
+            }
+
+
+            if(typeof rescan !== 'undefined' && rescan === true){
+                // this is rescan, do nothing. rescans happen when channel tabs are changed
+            }
+            // not rescan, read aloud if TTS enabled
+            else {
+                messageTextToSpeechHandler($msg, $usr);
+            }
+        }
     };
 
     function getColor(username) {
         var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
         var e = username.toLowerCase(),
-        t = e.replace(/[^a-z0-9]/g, ""),
-        n = parseInt(t, 36) % 6;
+            t = e.replace(/[^a-z0-9]/g, ""),
+            n = parseInt(t, 36) % 6;
         return colors[n];
     }
     function OpenUserPM(name) {
@@ -762,7 +762,7 @@
 
     // channel tabs megafunction
     var tabbedChannels = new function(){
-    /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
+        /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
      * and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); to each line detected by the system */
         var _self = this;
 
@@ -1063,20 +1063,20 @@
         $("body").append(htmlPayload); 
 
         $('.liveupdate-listing').prependTo('#rlc-chat');
-        
+
         //remove initial messages
         //$('.liveupdate-listing .liveupdate').remove();
-        
+
         $('#new-update-form').appendTo('#rlc-messagebox');
         $('#new-update-form').append('<div id="rlc-sendmessage">Send Message</div>');
         $('#liveupdate-header').appendTo('#rlc-sidebar #rlc-main-sidebar');
         $('.main-content aside.sidebar').appendTo('#rlc-sidebar #rlc-main-sidebar');
-        
+
         tabbedChannels.init($('<div id="filter_tabs"></div>').insertBefore("#rlc-settingsbar"));
         $('<div id="rlc-settingsbar2"></div>').insertBefore("#filter_tabs");
         $('#rlc-settingsbar2').append('<div id="loadmessages">Load Msgs</div><div id="s2compactmode">Compact</div><div id="s2tts">TTS</div>');
     }
-    
+
     function rlcParseSidebar() {
         // put anything after -RLC-README- in the sidebar into the readme
         var str = $('#liveupdate-resources .md').html();
@@ -1124,7 +1124,7 @@
         rlcParseSidebar();       
         // modify initial elements
         rlcDocReadyModifications();
-        
+
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
             if ($(e.target).is('li.liveupdate')) {
@@ -1139,13 +1139,13 @@
                 $(e.target).remove();
             }
         });
-         
+
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
         });
-        
-/*  Ajaxgetcurrentmessages
+
+        /*  Ajaxgetcurrentmessages
        var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
             var oldmessages = data.data.children;
             var msgarray = [];
@@ -1156,7 +1156,7 @@
                 var created = x.created;
                 //var created_utc = new Date(x.created_utc);
                 //April 29 2016 3:22 PM +02:00
-                
+
                 var fakemessage = '<li class="liveupdate"> <a><time title="Smartch 00 0000 0:00 PM +00:00" class="live-timestamp"></time></a><div class="body"><div class="md"><p>'+body+'</p></div><a href="/user/' + author + '" class="author" data-name="' + author + '">/u/'+author+'</a></div><ul class="buttonrow"><li><span class="strike confirm-button"><button>strike</button></span></li><li><span class="delete confirm-button"><button>delete</button></span></li></ul></li>';
                 $('.liveupdate-listing').append(fakemessage);
             });
@@ -1165,8 +1165,8 @@
             loading_initial_messages = 0;
         });
 */
-     
-         _scroll_to_bottom();    //done adding/modding content, scroll to bottom
+
+        _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
         var text_area = $(".usertext-edit.md-container textarea");
         // On post message, add it to history
@@ -1376,7 +1376,7 @@
             }
         },false);
     });
-    
+
     //channel styles
     var color;
     var styles = [];
@@ -1534,531 +1534,531 @@ display: none; \
 display: none; \
 } \
 #myContextMenu{\
-    display:none;\
-    position:absolute;\
-    background:#bbb;\
-    box-shadow: 1px 1px 2px #888888;\
+display:none;\
+position:absolute;\
+background:#bbb;\
+box-shadow: 1px 1px 2px #888888;\
 }\
 #myContextMenu ul{\
-    list-style-type:none;\
+list-style-type:none;\
 }\
 #myContextMenu ul li a{\
-    padding:0.5em 1em 0.5em 1em;\
-    color:#000;\
-    display:block;\
+padding:0.5em 1em 0.5em 1em;\
+color:#000;\
+display:block;\
 }\
 #myContextMenu ul li:not(.disabled) a:hover{\
-    background:#ccc;\
-    color:#333;\
-    cursor: pointer; \
+background:#ccc;\
+color:#333;\
+cursor: pointer; \
 }\
 #myContextMenu ul li.disabled a{\
-    background:#ddd;\
-    color:#666;\
+background:#ddd;\
+color:#666;\
 }\
 ");
 /*------------------------------------------------------------------------------------------*/
 GM_addStyle("* { \
-    box-sizing: border-box; \
+box-sizing: border-box; \
 } \
- \
+\
 #rlc-main p { \
-    line-height: 24px!important; \
-    font-size: 12px; \
+line-height: 24px!important; \
+font-size: 12px; \
 } \
- \
+\
 #rlc-main { \
-    width: 80%; \
-    height: calc(100vh - 112px); \
-    box-sizing: border-box; \
-    float: left; \
-    position: relative; \
+width: 80%; \
+height: calc(100vh - 112px); \
+box-sizing: border-box; \
+float: left; \
+position: relative; \
 } \
- \
+\
 #rlc-sidebar { \
-    width: 20%; \
-    float: right; \
-    height: calc(100vh - 112px); \
-    box-sizing: border-box; \
-    overflow-y: auto; \
-    overflow-x: hidden; \
-    padding: 0px 0px 0px 5px; \
-    position: relative; \
+width: 20%; \
+float: right; \
+height: calc(100vh - 112px); \
+box-sizing: border-box; \
+overflow-y: auto; \
+overflow-x: hidden; \
+padding: 0px 0px 0px 5px; \
+position: relative; \
 } \
- \
+\
 #rlc-topmenu { \
-    box-sizing: border-box; \
-    border-bottom: 1px solid #A9A9A9; \
+box-sizing: border-box; \
+border-bottom: 1px solid #A9A9A9; \
 } \
- \
+\
 /*---- Message Input --------- */ \
 div#rlc-messagebox { \
-    position: relative; \
-    float: left; \
-    width: 80%; \
-    border-left: 1px solid #A9A9A9; \
+position: relative; \
+float: left; \
+width: 80%; \
+border-left: 1px solid #A9A9A9; \
 } \
- \
+\
 .rlc-hidesidebar div#rlc-messagebox { \
-    position: relative; \
-    float: left; \
-    width: 80%; \
-    border-left: 1px solid #A9A9A9; \
+position: relative; \
+float: left; \
+width: 80%; \
+border-left: 1px solid #A9A9A9; \
 } \
- \
+\
 #new-update-form .usertext { \
-    max-width: 85%; \
-    float: left; \
-    width: 85%; \
+max-width: 85%; \
+float: left; \
+width: 85%; \
 } \
- \
+\
 .usertext-edit .md { \
-    min-width: 100%!important; \
-    height: 25px; \
+min-width: 100%!important; \
+height: 25px; \
 } \
- \
+\
 div#new-update-form textarea { \
-    height: 25px; \
-    overflow: auto; \
-    border-bottom: 0; \
-    resize: none; \
-    border-left: 0; \
+height: 25px; \
+overflow: auto; \
+border-bottom: 0; \
+resize: none; \
+border-left: 0; \
 } \
- \
+\
 div#new-update-form { \
-    width: 90%; \
-    margin: 0; \
-    float: right; \
+width: 90%; \
+margin: 0; \
+float: right; \
 } \
- \
+\
 .usertext-edit.md-container { \
-    max-width: 100%; \
-    margin: 0; \
-    position: relative; \
+max-width: 100%; \
+margin: 0; \
+position: relative; \
 } \
- \
+\
 /*----------- Send button ------- */ \
 #new-update-form .save-button .btn { \
-    width: 100%; \
-    text-transform: capitalize; \
+width: 100%; \
+text-transform: capitalize; \
 } \
- \
+\
 div#rlc-sendmessage { \
-    width: 15%; \
-    height: 25px; \
-    text-align: center; \
-    float: right; \
-    display: inline-block; \
-    padding-top: 5px; \
-    box-sizing: border-box; \
-    margin-top: 0px; \
-    font-size: 1.3em; \
-    cursor: pointer; \
-    border: 1px solid #A9A9A9; \
-    border-left: 0; \
-    border-bottom: 0; \
+width: 15%; \
+height: 25px; \
+text-align: center; \
+float: right; \
+display: inline-block; \
+padding-top: 5px; \
+box-sizing: border-box; \
+margin-top: 0px; \
+font-size: 1.3em; \
+cursor: pointer; \
+border: 1px solid #A9A9A9; \
+border-left: 0; \
+border-bottom: 0; \
 } \
- \
+\
 /*------------ Main Chat ----------------*/ \
 #rlc-main time.live-timestamp { \
-    text-indent: 0; \
-    width: 100px; \
-    color: inherit; \
-    padding: 0; \
-    padding-left: 10px; \
-    margin: 0; \
-    padding-top: 6px; \
+text-indent: 0; \
+width: 100px; \
+color: inherit; \
+padding: 0; \
+padding-left: 10px; \
+margin: 0; \
+padding-top: 6px; \
 } \
- \
+\
 #rlc-main .liveupdate-listing { \
-    max-width: 100%; \
-    padding: 0px; \
-    box-sizing: border-box; \
-    display: flex; \
-    flex-direction: column-reverse; \
-    min-height: 100%; \
+max-width: 100%; \
+padding: 0px; \
+box-sizing: border-box; \
+display: flex; \
+flex-direction: column-reverse; \
+min-height: 100%; \
 } \
- \
+\
 div#rlc-chat { \
-    overflow-y: auto; \
-    height: calc(100vh - 112px); \
+overflow-y: auto; \
+height: calc(100vh - 112px); \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate .body { \
-    max-width: none; \
-    margin-bottom: 0; \
-    padding: 0px; \
-    font-size: 12px; \
-    display: block; \
-    box-sizing: border-box; \
+max-width: none; \
+margin-bottom: 0; \
+padding: 0px; \
+font-size: 12px; \
+display: block; \
+box-sizing: border-box; \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate { \
-    height: auto!important; \
-    padding: 4px; \
+height: auto!important; \
+padding: 4px; \
 } \
- \
+\
 button#rlc-delete { \
-    width: 3%; \
-    height: 5%; \
-    right: 0; \
-    text-align: center; \
-    float: right; \
-    display: inline-block; \
-    padding: 0px; \
-    margin: 0px; \
-    font-size: 1em; \
-    color: #000; \
-    cursor: pointer; \
+width: 3%; \
+height: 5%; \
+right: 0; \
+text-align: center; \
+float: right; \
+display: inline-block; \
+padding: 0px; \
+margin: 0px; \
+font-size: 1em; \
+color: #000; \
+cursor: pointer; \
 } \
- \
+\
 #rlc-main .liveupdate-listing a.author { \
-    width: 110px; \
-    float: left; \
-    text-align: right; \
-    padding: 0; \
-    color: initial; \
-    margin: 0; \
-    padding-top: 4px; \
-    padding-left: 20px; \
+width: 110px; \
+float: left; \
+text-align: right; \
+padding: 0; \
+color: initial; \
+margin: 0; \
+padding-top: 4px; \
+padding-left: 20px; \
 } \
- \
+\
 #rlc-main .liveupdate-listing .liveupdate .body div.md { \
-    float: right; \
-    width: calc(100% - 230px); \
-    max-width: none; \
+float: right; \
+width: calc(100% - 230px); \
+max-width: none; \
 } \
- \
+\
 #rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
-    font-weight: bold; \
+font-weight: bold; \
 } \
- \
+\
 /* channel name */ \
 .channelname { \
-    color: #A9A9A9!important; \
-    width: 290px; \
-    display: block; \
-    float: left; \
-    text-align: right; \
+color: #A9A9A9!important; \
+width: 290px; \
+display: block; \
+float: left; \
+text-align: right; \
 } \
- \
+\
 .channelname { \
-    width: 260px; \
+width: 260px; \
 } \
- \
+\
 /*---------filter tabs-----------------*/ \
 #filter_tabs { \
-    table-layout: fixed; \
-    border: 1px solid #A9A9A9; \
-    width: 80%; \
-    border-bottom: 0; \
-    box-sizing: border-box; \
-    height: 25px; \
-    float: left; \
+table-layout: fixed; \
+border: 1px solid #A9A9A9; \
+width: 80%; \
+border-bottom: 0; \
+box-sizing: border-box; \
+height: 25px; \
+float: left; \
 } \
- \
+\
 #filter_tabs > span { \
-    width: 90%; \
-    display: table-cell; \
+width: 90%; \
+display: table-cell; \
 } \
- \
+\
 #filter_tabs > span.all, #filter_tabs > span.more { \
-    width: 60px; \
-    text-align: center; \
-    vertical-align: middle; \
-    cursor: pointer; \
+width: 60px; \
+text-align: center; \
+vertical-align: middle; \
+cursor: pointer; \
 } \
- \
+\
 #filter_tabs .rlc-filters { \
-    display: table; \
-    width: 100%; \
-    table-layout: fixed; \
-    height: 24px; \
+display: table; \
+width: 100%; \
+table-layout: fixed; \
+height: 24px; \
 } \
- \
+\
 #filter_tabs .rlc-filters > span { \
-    padding: 5px 2px; \
-    text-align: center; \
-    display: table-cell; \
-    cursor: pointer; \
-    vertical-align: middle; \
-    font-size: 1.1em; \
-    border-right: 1px solid #A9A9A9; \
+padding: 5px 2px; \
+text-align: center; \
+display: table-cell; \
+cursor: pointer; \
+vertical-align: middle; \
+font-size: 1.1em; \
+border-right: 1px solid #A9A9A9; \
 } \
- \
+\
 #filter_tabs .rlc-filters > span > span { \
-    pointer-events: none; \
+pointer-events: none; \
 } \
- \
+\
 #filter_tabs > span.all { \
-    padding: 0px 30px; \
-    height: 25px; \
-    border-right: 1px solid #A9A9A9; \
+padding: 0px 30px; \
+height: 25px; \
+border-right: 1px solid #A9A9A9; \
 } \
- \
+\
 #filter_tabs > span.more { \
-    padding: 0px 30px 0px 30px; \
+padding: 0px 30px 0px 30px; \
 } \
- \
+\
 /* add channels interface */ \
 .rlc-channel-add input { \
-    border: 0; \
-    padding: 0; \
-    height: 24px; \
+border: 0; \
+padding: 0; \
+height: 24px; \
 } \
- \
+\
 .rlc-channel-add .channel-mode { \
-    float: right; \
-    font-size: 1.2em; \
-    padding: 5px; \
+float: right; \
+font-size: 1.2em; \
+padding: 5px; \
 } \
- \
+\
 .rlc-channel-add .channel-mode span { \
-    cursor: pointer \
+cursor: pointer \
 } \
- \
+\
 .rlc-channel-add { \
-    display: none; \
-    position: absolute; \
-    bottom: 0px; \
-    height: 24px; \
-    background: #FCFCFC; \
-    left: 0px; \
-    width: calc(80% - 116px); \
-    z-index: 1000; \
-    border-right: 1px solid #A9A9A9; \
+display: none; \
+position: absolute; \
+bottom: 0px; \
+height: 24px; \
+background: #FCFCFC; \
+left: 0px; \
+width: calc(80% - 116px); \
+z-index: 1000; \
+border-right: 1px solid #A9A9A9; \
 } \
- \
+\
 /*-------------- Sidebar -------------------*/ \
 aside.sidebar.side.md-container { \
-    width: 100%; \
-    opacity: 1; \
-    margin: 0; \
-    padding: 0; \
-    box-sizing: border-box; \
+width: 100%; \
+opacity: 1; \
+margin: 0; \
+padding: 0; \
+box-sizing: border-box; \
 } \
- \
+\
 #liveupdate-header { \
-    width: 100%; \
-    margin: 0!important; \
-    padding: 0!important; \
-    text-align: center; \
-    max-width: none; \
-    overflow: hidden; \
+width: 100%; \
+margin: 0!important; \
+padding: 0!important; \
+text-align: center; \
+max-width: none; \
+overflow: hidden; \
 } \
- \
+\
 /*hide sidebar toggle class*/ \
 .rlc-hidesidebar #rlc-main { \
-    width: 100%!important; \
+width: 100%!important; \
 } \
- \
+\
 #rlc-togglesidebar { \
-    display: block; \
-    border-right: 1px solid #A9A9A9; \
+display: block; \
+border-right: 1px solid #A9A9A9; \
 } \
- \
+\
 #liveupdate-statusbar.live .state:before { \
-    border-radius: 2px; \
-    height: 36px; \
-    width: 36px; \
-    margin-top: -8px; \
-    margin-bottom: -11px; \
-    margin-right: 10px; \
-    transform: scale(0.77); \
+border-radius: 2px; \
+height: 36px; \
+width: 36px; \
+margin-top: -8px; \
+margin-bottom: -11px; \
+margin-right: 10px; \
+transform: scale(0.77); \
 } \
- \
+\
 #liveupdate-statusbar.reconnecting .state:before { \
-    border-radius: 2px; \
-    height: 36px; \
-    width: 36px; \
-    margin-top: -8px; \
-    margin-bottom: -11px; \
-    margin-right: 10px; \
-    transform: scale(0.77); \
+border-radius: 2px; \
+height: 36px; \
+width: 36px; \
+margin-top: -8px; \
+margin-bottom: -11px; \
+margin-right: 10px; \
+transform: scale(0.77); \
 } \
- \
+\
 .rlc-showoptions #rlc-settings { \
-    display: block; \
-    padding-top: 30px; \
+display: block; \
+padding-top: 30px; \
 } \
- \
+\
 .rlc-showreadmebar #rlc-readmebar { \
-    display: block; \
-    padding: 2px 5px 40px 0px; \
-    box-sizing: border-box; \
-    font-size: 1.18em; \
+display: block; \
+padding: 2px 5px 40px 0px; \
+box-sizing: border-box; \
+font-size: 1.18em; \
 } \
- \
+\
 #rlc-settingsbar, #rlc-settingsbar2 { \
-    height: 25px; \
-    box-sizing: border-box; \
-    display: table; \
-    table-layout: fixed; \
-    width: 20%; \
-    z-index: 100; \
-    float: right; \
-    background: #FCFCFC; \
-    border-top: 1px solid #A9A9A9; \
-    cursor: pointer; \
-    text-align: center; \
+height: 25px; \
+box-sizing: border-box; \
+display: table; \
+table-layout: fixed; \
+width: 20%; \
+z-index: 100; \
+float: right; \
+background: #FCFCFC; \
+border-top: 1px solid #A9A9A9; \
+cursor: pointer; \
+text-align: center; \
 } \
- \
+\
 div#rlc-toggleoptions { \
-    display: table-cell; \
-    cursor: pointer; \
-    border-right: 1px solid #A9A9A9; \
+display: table-cell; \
+cursor: pointer; \
+border-right: 1px solid #A9A9A9; \
 } \
- \
+\
 div#rlc-settingsbar div, div#rlc-settingsbar2 div { \
-    text-align: center; \
-    cursor: pointer; \
-    width: 33%; \
-    height: 24px; \
-    float: left; \
-    padding-top: 7px; \
+text-align: center; \
+cursor: pointer; \
+width: 33%; \
+height: 24px; \
+float: left; \
+padding-top: 7px; \
 } \
- \
+\
 /* active users */ \
 #rlc-activeusers, #banlistcontainer { \
-    display: inline-block; \
-    width: 100%; \
-    padding: 10px; \
-    font-size: 1.2em; \
+display: inline-block; \
+width: 100%; \
+padding: 10px; \
+font-size: 1.2em; \
 } \
- \
+\
 #banlistcontainer p { \
-    cursor: pointer; \
+cursor: pointer; \
 } \
- \
+\
 #rlc-activeusers li { \
-    width: 100%; \
-    font-size: 1.2em; \
+width: 100%; \
+font-size: 1.2em; \
 } \
- \
+\
 /* Compact mode */ \
 .rlc-compact div#rlc-chat { \
-    height: calc(100vh - 49px); \
+height: calc(100vh - 49px); \
 } \
- \
+\
 /* misc fixes */ \
 #rlc-main .liveupdate-listing .liveupdate .simpletime { \
-    display: block; \
-    float: left; \
-    width: 80px; \
-    padding-left: 20px; \
-    padding-top: 5px; \
+display: block; \
+float: left; \
+width: 80px; \
+padding-left: 20px; \
+padding-top: 5px; \
 } \
- \
+\
 #rlc-sidebar .sidebar .md h3, #rlc-sidebar aside.sidebar .md h4, #rlc-sidebar aside.sidebar .md h5, #rlc-sidebar aside.sidebar .md h6 { \
-    color: inherit; \
+color: inherit; \
 } \
- \
+\
 div#rlc-toggleguide { \
-    padding-bottom: 6px; \
+padding-bottom: 6px; \
 } \
- \
+\
 div#rlc-main-sidebar { \
-    display: block; \
-    overflow-x: hidden; \
-    padding-right: 5px; \
-    box-sizing: border-box; \
+display: block; \
+overflow-x: hidden; \
+padding-right: 5px; \
+box-sizing: border-box; \
 } \
- \
+\
 /* Dark Mode */ \
 .dark-background #rlc-sidebar pre { \
-    background: transparent; \
+background: transparent; \
 } \
- \
+\
 .dark-background select#rlc-channel-dropdown option, .dark-background #rlc-main code { \
-    color: black; \
+color: black; \
 } \
- \
+\
 .dark-background #rlc-settings strong, .dark-background .liveupdate-listing li.liveupdate .body div.md, .dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p, .dark-background .rlc-channel-add button, .dark-background select#rlc-channel-dropdown, .dark-background.rlc-showreadmebar #rlc-readmebar .md { \
-    color: white; \
+color: white; \
 } \
- \
+\
 .dark-background #rlc-settingsbar2, .dark-background .rlc-channel-add, .dark-background #rlc-settingsbar, .dark-background div#rlc-settings { \
-    background: #404040; \
+background: #404040; \
 } \
- \
+\
 .dark-background .rlc-channel-add input { \
-    color: white; \
-    background: rgba(0, 0, 0, 0.28); \
+color: white; \
+background: rgba(0, 0, 0, 0.28); \
 } \
- \
+\
 .dark-background div#header-bottom-left { \
-    background: #A9A9A9; \
+background: #A9A9A9; \
 } \
- \
+\
 .dark-background { \
-    background: #404040; \
-    color: white; \
+background: #404040; \
+color: white; \
 } \
- \
+\
 .dark-background .side, .dark-background textarea, .dark-background #rlc-main .liveupdate-listing a.author { \
-    background: transparent; \
-    color: white; \
+background: transparent; \
+color: white; \
 } \
- \
+\
 /* compact */ \
 .rlc-compact div#rlc-sidebar { \
-    height: calc(100vh - 50px); \
+height: calc(100vh - 50px); \
 } \
- \
+\
 .rlc-compact div#rlc-main { \
-    height: calc(100vh - 50px); \
+height: calc(100vh - 50px); \
 } \
- \
+\
 div#versionnumber { \
-    padding-right: 20px; \
-    font-size: 0.8em; \
+padding-right: 20px; \
+font-size: 0.8em; \
 } \
- \
+\
 .usertext-edit .bottom-area { \
-    position: absolute; \
-    top: 5px; \
-    left: 50%; \
+position: absolute; \
+top: 5px; \
+left: 50%; \
 } \
- \
+\
 select#rlc-channel-dropdown { \
-    float: left; \
-    height: 25px; \
-    width: 10%; \
-    border-bottom: 0; \
-    background: transparent; \
-    border-left: 0; \
+float: left; \
+height: 25px; \
+width: 10%; \
+border-bottom: 0; \
+background: transparent; \
+border-left: 0; \
 } \
- \
+\
 .rlc-channel-add button { \
-    background: transparent; \
-    border: 1px solid #A9A9A9; \
-    margin: 0; \
-    padding: 4px; \
-    border-top: 0px; \
-    border-bottom: 0px; \
+background: transparent; \
+border: 1px solid #A9A9A9; \
+margin: 0; \
+padding: 4px; \
+border-top: 0px; \
+border-bottom: 0px; \
 } \
- \
+\
 .rlc-TextToSpeech #s2tts, .rlc-compact #s2compactmode, .rlc-showoptions #rlc-toggleoptions, .rlc-showreadmebar div#rlc-toggleguide, #filter_tabs .selected { \
-    background: grey; \
+background: grey; \
 } \
- \
+\
 #rlc-settings label { \
-    width: 100%; \
-    display: block; \
-    font-size: 1.5em; \
+width: 100%; \
+display: block; \
+font-size: 1.5em; \
 } \
- \
+\
 #rlc-settings input { \
-    margin: 4px; \
-    position: relative; \
-    top: 2px; \
+margin: 4px; \
+position: relative; \
+top: 2px; \
 } \
- \
+\
 div#loadmessages { \
-    border-right: 1px solid #A9A9A9; \
+border-right: 1px solid #A9A9A9; \
 } \
- \
+\
 div#s2compactmode { \
-    border-right: 1px solid #A9A9A9; \
+border-right: 1px solid #A9A9A9; \
 } \
 ")
