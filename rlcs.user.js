@@ -970,10 +970,10 @@
             _self.$el.find(".rlc-filters span").each(function(){
                 if($(this).hasClass("selected")) return;
                 $(this).find("span").text(_self.unread_counts[$(this).data("filter")]);
-              /*  if (badmanfixtts !== 0) {  // get rid of this asap. stops speech synthesis 1 second after page init
+                if (badmanfixtts !== 0) {  // get rid of this asap. stops speech synthesis 1 second after page init
                     badmanfixtts = badmanfixtts - 1;
                     window.speechSynthesis.cancel()
-                }*/
+                }
                 loading_initial_messages = 0;
                 //UpdatealternateMsgBackground();
             });
