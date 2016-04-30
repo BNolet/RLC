@@ -402,30 +402,30 @@
 
     function alternateMsgBackground($ele) {
         if (GM_getValue("rlc-CSSbackgroundalternation") == 'false') {
-	        if(rowalternator === 0) {
-	            $ele.addClass("alt-bgcolor");
-	            rowalternator = 1;
-	        }
-	        else {
-	            rowalternator = 0;
-	        }
-	    }
+            if(rowalternator === 0) {
+                $ele.addClass("alt-bgcolor");
+                rowalternator = 1;
+            }
+            else {
+                rowalternator = 0;
+            }
+        }
     }
 
     function UpdatealternateMsgBackground() {
-    	if (GM_getValue("rlc-CSSbackgroundalternation") == 'false') {
-	        $("#rlc-chat li.liveupdate").removeClass("alt-bgcolor");
-	        var x = 0;
-	        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-		        if(x === 0) {
-		            $(this).addClass("alt-bgcolor");
-		            x = 1;
-		        }
-		        else {
-		            x = 0;
-		        }
-	        });
-    	}
+        if (GM_getValue("rlc-CSSbackgroundalternation") == 'false') {
+            $("#rlc-chat li.liveupdate").removeClass("alt-bgcolor");
+            var x = 0;
+            $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+                if(x === 0) {
+                    $(this).addClass("alt-bgcolor");
+                    x = 1;
+                }
+                else {
+                    x = 0;
+                }
+            });
+        }
     }
 
     function emoteSupport(line, $msg, first_line) {
@@ -519,7 +519,7 @@
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
                 // Abbreviation Expansion (All keys must be in uppercase)
                 replaceStrList = {"WTF":"What The Fuck", "BTW":"By The Way", "NVM":"Nevermind", "AFAIK":"As Far As I Know", "AFK":"Away From Keyboard", "AKA":"Also Known As", "ASAP":"As Soon As Possible", "CYA":"See Ya", 
-                				  "IKR":"I Know Right", "IMO":"In My Own Opinion", "JK":"Just Kidding", "OMG":"Oh My God", "RTFM":"Read The Fucking Manual", "TLDR":"Too Long, Didn't Read","FTW":"For The Win","FFS":"For Fucks Sake"};
+                                  "IKR":"I Know Right", "IMO":"In My Own Opinion", "JK":"Just Kidding", "OMG":"Oh My God", "RTFM":"Read The Fucking Manual", "TLDR":"Too Long, Didn't Read","FTW":"For The Win","FFS":"For Fucks Sake"};
                 linetoread = linetoread.split(" ").map(function(token){ 
                     if( token.toUpperCase() in replaceStrList ){return replaceStrList[token];}else{return token;};
                 }).join(" ");
@@ -540,8 +540,8 @@
                 // Select Emoji to narration tone
                 var toneStr="";
                 var toneList = { "smile":"with a smile", "angry":"angrily", "frown":"while frowning", "silly":"pulling a silly face", "meh":" in a disinterested manner", "shocked":"in shock", "happy":"happily", 
-                				 "sad":"sadly", "crying":"tearfully", "wink":" while winking", "zen":"in zen mode", "annoyed":"expressing annoyance", "xsmile":"with a big smile", "xsad":"very sadly", "xhappy":"very happily", 
-                				 "tongue":"while sticking out a tounge"};
+                                "sad":"sadly", "crying":"tearfully", "wink":" while winking", "zen":"in zen mode", "annoyed":"expressing annoyance", "xsmile":"with a big smile", "xsad":"very sadly", "xhappy":"very happily", 
+                                "tongue":"while sticking out a tounge"};
                 if ( domEmoji in toneList ){
                     toneStr = " " + toneList[domEmoji];
                 }
@@ -589,8 +589,8 @@
                         return code%(1+max-min)+min;
                     }
                     msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
-                    msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt",0,1000)/1000; // random range: 0.5 to 1.5
-                    msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt",0,1000)/1000; // random range: 0.5 to 1.5
+                    msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
+                    msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
 
                     // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
                     if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)
@@ -599,9 +599,9 @@
                         msg.rate = 1;
                     }
 
-                   // console.log(msg.pitch);
-                   // console.log(msg.rate);
-                   // console.log(msg.voice);
+                    // console.log(msg.pitch);
+                    // console.log(msg.rate);
+                    // console.log(msg.voice);
 
                 }
                 msg.volume = 1; // 0 to 1
@@ -1140,14 +1140,8 @@
         $("#rlc-main iframe").remove();
     }
 
-    // boot
-    $(document).ready(function() {
-        // move default elements into custom containers defined in htmlPayload
-        rlcSetupContainers();
-        // setup sidebar based on content
-        rlcParseSidebar();       
-        // modify initial elements
-        rlcDocReadyModifications();
+
+    function rlcInitEventListeners() {  
 
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
@@ -1164,35 +1158,6 @@
                 $(e.target).remove();
             }
         });
-
-
-        // rescan existing chat for messages
-        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-            handle_new_message($(item), true);
-        });
-
-        //  Ajaxgetcurrentmessages
-      /* var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
-            var oldmessages = data.data.children;
-            var msgarray = [];
-            $.each( oldmessages, function( ) {
-                var x = $(this).toArray()[0].data;
-                var body = x.body;
-                var author = x.author;
-                var created = x.created;
-                //var created_utc = new Date(x.created_utc);
-                //April 29 2016 3:22 PM +02:00
-
-                var fakemessage = '<li class="liveupdate"> <a><time title="Smartch 00 0000 0:00 PM +00:00" class="live-timestamp"></time></a><div class="body"><div class="md"><p>'+body+'</p></div><a href="/user/' + author + '" class="author" data-name="' + author + '">/u/'+author+'</a></div><ul class="buttonrow"><li><span class="strike confirm-button"><button>strike</button></span></li><li><span class="delete confirm-button"><button>delete</button></span></li></ul></li>';
-                $('.liveupdate-listing').append(fakemessage);
-            });
-        });
-        ajaxLoadCurrentMessages.complete(function() {
-            loading_initial_messages = 0;
-        });*/
-
-
-        _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
         var text_area = $(".usertext-edit.md-container textarea");
         // On post message, add it to history
@@ -1307,7 +1272,33 @@
             }
         });
 
-        /* --------------------OPTIONS------------- */
+    }
+
+
+    /* failed experiment but reads updates from json and inserts fake updates based on them */
+    function Ajaxgetcurrentmessages() {
+        //  Ajaxgetcurrentmessages
+        var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
+            var oldmessages = data.data.children;
+            var msgarray = [];
+            $.each( oldmessages, function( ) {
+                var x = $(this).toArray()[0].data;
+                var body = x.body;
+                var author = x.author;
+                var created = x.created;
+                //var created_utc = new Date(x.created_utc);
+                //April 29 2016 3:22 PM +02:00
+
+                var fakemessage = '<li class="liveupdate"> <a><time title="Smartch 00 0000 0:00 PM +00:00" class="live-timestamp"></time></a><div class="body"><div class="md"><p>'+body+'</p></div><a href="/user/' + author + '" class="author" data-name="' + author + '">/u/'+author+'</a></div><ul class="buttonrow"><li><span class="strike confirm-button"><button>strike</button></span></li><li><span class="delete confirm-button"><button>delete</button></span></li></ul></li>';
+                $('.liveupdate-listing').append(fakemessage);
+            });
+        });
+        ajaxLoadCurrentMessages.complete(function() {
+            loading_initial_messages = 0;
+        });
+    }
+
+    function rlcCreateOptions() {
         createOption("AutoScroll", function(checked, ele){
             if(checked){
                 $("body").addClass("AutoScroll");
@@ -1401,13 +1392,35 @@
                 $("body").removeClass("rlc-24hrTimeStamps");
             }
         },false);
-         createOption("CSS background alternation", function(checked, ele){
+        createOption("CSS background alternation", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-CssBGAlternate");
             }else{
                 $("body").removeClass("rlc-CssBGAlternate");
             }
         },false);
+    }
+
+    // boot
+    $(document).ready(function() {
+        // move default elements into custom containers defined in htmlPayload
+        rlcSetupContainers();
+        // setup sidebar based on content
+        rlcParseSidebar();       
+        // modify initial elements
+        rlcDocReadyModifications();
+        // attach event listeners
+        rlcInitEventListeners();
+        // make options 
+        rlcCreateOptions();
+
+        // handle existing chat messages
+        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+            handle_new_message($(item), true);
+        });
+
+        _scroll_to_bottom();    //done adding/modding content, scroll to bottom
+
     });
 
     //channel styles
@@ -1428,675 +1441,16 @@ background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANgAAAC0CAY
 .alt-bgcolor {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=')!important;} \
 .dark-background .alt-bgcolor {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=')!important;} \
 .rlc-CssBGAlternate #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd) {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=')!important; \
-	} \
-	\
+} \
+\
 .rlc-CssBGAlternate .dark-background #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd) {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=')!important; \
-	} \
+} \
 ");
 
-GM_addStyle("/*-------------------------------- Standalone Stuff ------------------------------------- */ \
-/* narration */ \
-#rlc-main #rlc-chat li.liveupdate.user-narration .body .md { \
-font-style: italic; \
-} \
-\
-/* MISC */ \
-body { \
-min-width: 0; \
-overflow: hidden; \
-}  \
-body.allowHistoryScroll { \
-height: 105%; \
-overflow: auto; \
-}  \
-\
-/* class to prevent selection for divs acting as buttons */ \
-.noselect { \
--webkit-touch-callout: none; \
-/* iOS Safari */ \
--webkit-user-select: none; \
-/* Chrome/Safari/Opera */ \
--khtml-user-select: none; \
-/* Konqueror */ \
--moz-user-select: none; \
-/* Firefox */ \
--ms-user-select: none; \
-/* IE/Edge */ \
-} \
-\
-.mrPumpkin { \
-height: 24px; \
-width: 24px; \
-display: inline-block; \
-border-radius: 3px; \
-background-size: 144px; \
-margin-top: 0px!important; \
-margin-bottom: -6px!important; \
-} \
-\
-.dark-background .mrPumpkin { \
-border-radius: 5px; \
-} \
-\
-.mp_frown { \
-background-position: -24px 0; \
-} \
-\
-.mp_silly { \
-background-position: -48px 0; \
-} \
-\
-.mp_meh { \
-background-position: 0 -24px; \
-} \
-\
-.mp_angry { \
-background-position: -48px -24px; \
-} \
-\
-.mp_shocked { \
-background-position: -24px -24px; \
-} \
-\
-.mp_happy { \
-background-position: -72px 120px; \
-} \
-\
-.mp_sad { \
-background-position: -72px 96px; \
-} \
-\
-.mp_crying { \
-background-position: 0px 72px; \
-} \
-\
-.mp_tongue { \
-background-position: 0px 24px; \
-} \
-\
-.mp_xhappy { \
-background-position: -48px 48px; \
-} \
-\
-.mp_xsad { \
-background-position: -24px 48px; \
-} \
-\
-.mp_xsmile { \
-background-position: 0px 48px; \
-} \
-\
-.mp_annoyed { \
-background-position: -72px 72px; \
-} \
-\
-.mp_zen { \
-background-position: -48px 72px; \
-} \
-\
-.mp_wink { \
-background-position: -24px 72px; \
-} \
-\
-/* Let's get this party started */ \
-.rlc-customscrollbars ::-webkit-scrollbar { \
-width: 10px; \
-} \
-\
-/* Track */ \
-.rlc-customscrollbars ::-webkit-scrollbar-track { \
-background-color: #262626; \
-} \
-\
-/* Handle */ \
-.rlc-customscrollbars ::-webkit-scrollbar-thumb { \
-background-color: #4C4C4C; \
-border: 1px solid #262626; \
-} \
-\
-/* option classes */ \
-\
-/* hard removal */ \
-#rlc-main #rlc-chat li.liveupdate.user-narration > a, #rlc-main #rlc-chat li.liveupdate.user-narration .body a, #rlc-main iframe, #hsts_pixel, .debuginfo, #rlc-main .liveupdate-listing .liveupdate time, #rlc-main .liveupdate-listing .liveupdate .simpletime, .save-button, #rlc-chat.rlc-filter li.liveupdate, #discussions, .reddiquette, #contributors, #liveupdate-resources > h2, .rlc-hidesidebar #rlc-sidebar, #rlc-settings, #rlc-readmebar, .ui-helper-hidden-accessible, .rlc-filter .channelname, .rlc-compact div#header, .help-toggle, #rlc-main .liveupdate-listing li.liveupdate time:before, #rlc-main .liveupdate-listing li.liveupdate ul.buttonrow, #liveupdate-options, .footer-parent, body > .content { \
-display: none; \
-} \
-\
-#rlc-guidebar { \
-display: none; \
-} \
-\
-.rlc-showoptions #rlc-main-sidebar { \
-display: none; \
-} \
-.rlc-showreadmebar #rlc-main-sidebar { \
-display: none; \
-} \
-#myContextMenu{\
-display:none;\
-position:absolute;\
-background:#bbb;\
-box-shadow: 1px 1px 2px #888888;\
-}\
-#myContextMenu ul{\
-list-style-type:none;\
-}\
-#myContextMenu ul li a{\
-padding:0.5em 1em 0.5em 1em;\
-color:#000;\
-display:block;\
-}\
-#myContextMenu ul li:not(.disabled) a:hover{\
-background:#ccc;\
-color:#333;\
-cursor: pointer; \
-}\
-#myContextMenu ul li.disabled a{\
-background:#ddd;\
-color:#666;\
-}\
-");
-/*------------------------------------------------------------------------------------------*/
-GM_addStyle("* { \
-box-sizing: border-box; \
-} \
-\
-#rlc-main p { \
-line-height: 24px!important; \
-font-size: 12px; \
-} \
-\
-#rlc-main { \
-width: 80%; \
-height: calc(100vh - 112px); \
-box-sizing: border-box; \
-float: left; \
-position: relative; \
-} \
-\
-#rlc-sidebar { \
-width: 20%; \
-float: right; \
-height: calc(100vh - 112px); \
-box-sizing: border-box; \
-overflow-y: auto; \
-overflow-x: hidden; \
-padding: 0px 0px 0px 5px; \
-position: relative; \
-} \
-\
-#rlc-topmenu { \
-box-sizing: border-box; \
-border-bottom: 1px solid #A9A9A9; \
-} \
-\
-/*---- Message Input --------- */ \
-div#rlc-messagebox { \
-position: relative; \
-float: left; \
-width: 80%; \
-border-left: 1px solid #A9A9A9; \
-} \
-\
-.rlc-hidesidebar div#rlc-messagebox { \
-position: relative; \
-float: left; \
-width: 80%; \
-border-left: 1px solid #A9A9A9; \
-} \
-\
-#new-update-form .usertext { \
-max-width: 85%; \
-float: left; \
-width: 85%; \
-} \
-\
-.usertext-edit .md { \
-min-width: 100%!important; \
-height: 25px; \
-} \
-\
-div#new-update-form textarea { \
-height: 25px; \
-overflow: auto; \
-border-bottom: 0; \
-resize: none; \
-border-left: 0; \
-} \
-\
-div#new-update-form { \
-width: 90%; \
-margin: 0; \
-float: right; \
-} \
-\
-.usertext-edit.md-container { \
-max-width: 100%; \
-margin: 0; \
-position: relative; \
-} \
-\
-/*----------- Send button ------- */ \
-#new-update-form .save-button .btn { \
-width: 100%; \
-text-transform: capitalize; \
-} \
-\
-div#rlc-sendmessage { \
-width: 15%; \
-height: 25px; \
-text-align: center; \
-float: right; \
-display: inline-block; \
-padding-top: 5px; \
-box-sizing: border-box; \
-margin-top: 0px; \
-font-size: 1.3em; \
-cursor: pointer; \
-border: 1px solid #A9A9A9; \
-border-left: 0; \
-border-bottom: 0; \
-} \
-\
-/*------------ Main Chat ----------------*/ \
-#rlc-main time.live-timestamp { \
-text-indent: 0; \
-width: 100px; \
-color: inherit; \
-padding: 0; \
-padding-left: 10px; \
-margin: 0; \
-padding-top: 6px; \
-} \
-\
-#rlc-main .liveupdate-listing { \
-max-width: 100%; \
-padding: 0px; \
-box-sizing: border-box; \
-display: flex; \
-flex-direction: column-reverse; \
-min-height: 100%; \
-} \
-\
-div#rlc-chat { \
-overflow-y: auto; \
-height: calc(100vh - 112px); \
-} \
-\
-#rlc-main .liveupdate-listing .liveupdate .body { \
-max-width: none; \
-margin-bottom: 0; \
-padding: 0px; \
-font-size: 12px; \
-display: block; \
-box-sizing: border-box; \
-} \
-\
-#rlc-main .liveupdate-listing .liveupdate { \
-height: auto!important; \
-padding: 4px; \
-} \
-\
-button#rlc-delete { \
-width: 3%; \
-height: 5%; \
-right: 0; \
-text-align: center; \
-float: right; \
-display: inline-block; \
-padding: 0px; \
-margin: 0px; \
-font-size: 1em; \
-color: #000; \
-cursor: pointer; \
-} \
-\
-#rlc-main .liveupdate-listing a.author { \
-width: 110px; \
-float: left; \
-text-align: right; \
-padding: 0; \
-color: initial; \
-margin: 0; \
-padding-top: 4px; \
-padding-left: 20px; \
-} \
-\
-#rlc-main .liveupdate-listing .liveupdate .body div.md { \
-float: right; \
-width: calc(100% - 230px); \
-max-width: none; \
-} \
-\
-#rlc-main #rlc-chat li.liveupdate.user-mention .body .md { \
-font-weight: bold; \
-} \
-\
-/* channel name */ \
-.channelname { \
-color: #A9A9A9!important; \
-width: 290px; \
-display: block; \
-float: left; \
-text-align: right; \
-} \
-\
-.channelname { \
-width: 260px; \
-} \
-\
-/*---------filter tabs-----------------*/ \
-#filter_tabs { \
-table-layout: fixed; \
-border: 1px solid #A9A9A9; \
-width: 80%; \
-border-bottom: 0; \
-box-sizing: border-box; \
-height: 25px; \
-float: left; \
-} \
-\
-#filter_tabs > span { \
-width: 90%; \
-display: table-cell; \
-} \
-\
-#filter_tabs > span.all, #filter_tabs > span.more { \
-width: 60px; \
-text-align: center; \
-vertical-align: middle; \
-cursor: pointer; \
-} \
-\
-#filter_tabs .rlc-filters { \
-display: table; \
-width: 100%; \
-table-layout: fixed; \
-height: 24px; \
-} \
-\
-#filter_tabs .rlc-filters > span { \
-padding: 5px 2px; \
-text-align: center; \
-display: table-cell; \
-cursor: pointer; \
-vertical-align: middle; \
-font-size: 1.1em; \
-border-right: 1px solid #A9A9A9; \
-} \
-\
-#filter_tabs .rlc-filters > span > span { \
-pointer-events: none; \
-} \
-\
-#filter_tabs > span.all { \
-padding: 0px 30px; \
-height: 25px; \
-border-right: 1px solid #A9A9A9; \
-} \
-\
-#filter_tabs > span.more { \
-padding: 0px 30px 0px 30px; \
-} \
-\
-/* add channels interface */ \
-.rlc-channel-add input { \
-border: 0; \
-padding: 0; \
-height: 24px; \
-} \
-\
-.rlc-channel-add .channel-mode { \
-float: right; \
-font-size: 1.2em; \
-padding: 5px; \
-} \
-\
-.rlc-channel-add .channel-mode span { \
-cursor: pointer \
-} \
-\
-.rlc-channel-add { \
-display: none; \
-position: absolute; \
-bottom: 0px; \
-height: 24px; \
-background: #FCFCFC; \
-left: 0px; \
-width: calc(80% - 116px); \
-z-index: 1000; \
-border-right: 1px solid #A9A9A9; \
-} \
-\
-/*-------------- Sidebar -------------------*/ \
-aside.sidebar.side.md-container { \
-width: 100%; \
-opacity: 1; \
-margin: 0; \
-padding: 0; \
-box-sizing: border-box; \
-} \
-\
-#liveupdate-header { \
-width: 100%; \
-margin: 0!important; \
-padding: 0!important; \
-text-align: center; \
-max-width: none; \
-overflow: hidden; \
-} \
-\
-/*hide sidebar toggle class*/ \
-.rlc-hidesidebar #rlc-main { \
-width: 100%!important; \
-} \
-\
-#rlc-togglesidebar { \
-display: block; \
-border-right: 1px solid #A9A9A9; \
-} \
-\
-#liveupdate-statusbar.live .state:before { \
-border-radius: 2px; \
-height: 36px; \
-width: 36px; \
-margin-top: -8px; \
-margin-bottom: -11px; \
-margin-right: 10px; \
-transform: scale(0.77); \
-} \
-\
-#liveupdate-statusbar.reconnecting .state:before { \
-border-radius: 2px; \
-height: 36px; \
-width: 36px; \
-margin-top: -8px; \
-margin-bottom: -11px; \
-margin-right: 10px; \
-transform: scale(0.77); \
-} \
-\
-.rlc-showoptions #rlc-settings { \
-display: block; \
-padding-top: 30px; \
-} \
-\
-.rlc-showreadmebar #rlc-readmebar { \
-display: block; \
-padding: 2px 5px 40px 0px; \
-box-sizing: border-box; \
-font-size: 1.18em; \
-} \
-\
-#rlc-settingsbar, #rlc-settingsbar2 { \
-height: 25px; \
-box-sizing: border-box; \
-display: table; \
-table-layout: fixed; \
-width: 20%; \
-z-index: 100; \
-float: right; \
-background: #FCFCFC; \
-border-top: 1px solid #A9A9A9; \
-cursor: pointer; \
-text-align: center; \
-} \
-\
-div#rlc-toggleoptions { \
-display: table-cell; \
-cursor: pointer; \
-border-right: 1px solid #A9A9A9; \
-} \
-\
-div#rlc-settingsbar div, div#rlc-settingsbar2 div { \
-text-align: center; \
-cursor: pointer; \
-width: 33%; \
-height: 24px; \
-float: left; \
-padding-top: 7px; \
-} \
-\
-/* active users */ \
-#rlc-activeusers, #banlistcontainer { \
-display: inline-block; \
-width: 100%; \
-padding: 10px; \
-font-size: 1.2em; \
-} \
-\
-#banlistcontainer p { \
-cursor: pointer; \
-} \
-\
-#rlc-activeusers li { \
-width: 100%; \
-font-size: 1.2em; \
-} \
-\
-/* Compact mode */ \
-.rlc-compact div#rlc-chat { \
-height: calc(100vh - 49px); \
-} \
-\
-/* misc fixes */ \
-#rlc-main .liveupdate-listing .liveupdate .simpletime { \
-display: block; \
-float: left; \
-width: 80px; \
-padding-left: 20px; \
-padding-top: 5px; \
-} \
-\
-#rlc-sidebar .sidebar .md h3, #rlc-sidebar aside.sidebar .md h4, #rlc-sidebar aside.sidebar .md h5, #rlc-sidebar aside.sidebar .md h6 { \
-color: inherit; \
-} \
-\
-div#rlc-toggleguide { \
-padding-bottom: 6px; \
-} \
-\
-div#rlc-main-sidebar { \
-display: block; \
-overflow-x: hidden; \
-padding-right: 5px; \
-box-sizing: border-box; \
-} \
-\
-/* Dark Mode */ \
-.dark-background #rlc-sidebar pre { \
-background: transparent; \
-} \
-\
-.dark-background select#rlc-channel-dropdown option, .dark-background #rlc-main code { \
-color: black; \
-} \
-\
-.dark-background #rlc-settings strong, .dark-background .liveupdate-listing li.liveupdate .body div.md, .dark-background aside.sidebar .md, .dark-background #liveupdate-description .md, .dark-background .md blockquote p, .dark-background .rlc-channel-add button, .dark-background select#rlc-channel-dropdown, .dark-background.rlc-showreadmebar #rlc-readmebar .md { \
-color: white; \
-} \
-\
-.dark-background #rlc-settingsbar2, .dark-background .rlc-channel-add, .dark-background #rlc-settingsbar, .dark-background div#rlc-settings { \
-background: #404040; \
-} \
-\
-.dark-background .rlc-channel-add input { \
-color: white; \
-background: rgba(0, 0, 0, 0.28); \
-} \
-\
-.dark-background div#header-bottom-left { \
-background: #A9A9A9; \
-} \
-\
-.dark-background { \
-background: #404040; \
-color: white; \
-} \
-\
-.dark-background .side, .dark-background textarea, .dark-background #rlc-main .liveupdate-listing a.author { \
-background: transparent; \
-color: white; \
-} \
-\
-/* compact */ \
-.rlc-compact div#rlc-sidebar { \
-height: calc(100vh - 50px); \
-} \
-\
-.rlc-compact div#rlc-main { \
-height: calc(100vh - 50px); \
-} \
-\
-div#versionnumber { \
-padding-right: 20px; \
-font-size: 0.8em; \
-} \
-\
-.usertext-edit .bottom-area { \
-position: absolute; \
-top: 5px; \
-left: 50%; \
-} \
-\
-select#rlc-channel-dropdown { \
-float: left; \
-height: 25px; \
-width: 10%; \
-border-bottom: 0; \
-background: transparent; \
-border-left: 0; \
-} \
-\
-.rlc-channel-add button { \
-background: transparent; \
-border: 1px solid #A9A9A9; \
-margin: 0; \
-padding: 4px; \
-border-top: 0px; \
-border-bottom: 0px; \
-} \
-\
-.rlc-TextToSpeech #s2tts, .rlc-compact #s2compactmode, .rlc-showoptions #rlc-toggleoptions, .rlc-showreadmebar div#rlc-toggleguide, #filter_tabs .selected { \
-background: grey; \
-} \
-\
-#rlc-settings label { \
-width: 100%; \
-display: block; \
-font-size: 1.5em; \
-} \
-\
-#rlc-settings input { \
-margin: 4px; \
-position: relative; \
-top: 2px; \
-} \
-\
-div#loadmessages { \
-border-right: 1px solid #A9A9A9; \
-} \
-\
-div#s2compactmode { \
-border-right: 1px solid #A9A9A9; \
-} \
-")
+/* CSS tip: use cssminifier.com instead of messing around with line continuation, unpack in editor and re-minify before reinsertion via cssminifier.com */
+
+/*--------------RLC CSS STANDALONES (Minified)--------------*/
+GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-narration .body .md{font-style:italic}body{min-width:0;overflow:hidden}body.allowHistoryScroll{height:105%;overflow:auto}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}.mrPumpkin{height:24px;width:24px;display:inline-block;border-radius:3px;background-size:144px;margin-top:0!important;margin-bottom:-6px!important}.dark-background .mrPumpkin{border-radius:5px}.mp_frown{background-position:-24px 0}.mp_silly{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_zen{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.rlc-customscrollbars ::-webkit-scrollbar{width:10px}.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#262626}.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#4C4C4C;border:1px solid #262626}#contributors,#discussions,#hsts_pixel,#liveupdate-options,#liveupdate-resources>h2,#rlc-chat.rlc-filter li.liveupdate,#rlc-guidebar,#rlc-main #rlc-chat li.liveupdate.user-narration .body a,#rlc-main #rlc-chat li.liveupdate.user-narration>a,#rlc-main .liveupdate-listing .liveupdate .simpletime,#rlc-main .liveupdate-listing .liveupdate time,#rlc-main .liveupdate-listing li.liveupdate time:before,#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,#rlc-main iframe,#rlc-readmebar,#rlc-settings,.debuginfo,.footer-parent,.help-toggle,.reddiquette,.rlc-compact div#header,.rlc-filter .channelname,.rlc-hidesidebar #rlc-sidebar,.rlc-showoptions #rlc-main-sidebar,.rlc-showreadmebar #rlc-main-sidebar,.save-button,.ui-helper-hidden-accessible,body>.content{display:none}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}");
+
+/*--------------RLC CSS CORE (Minified)--------------*/
+GM_addStyle("#rlc-main,#rlc-sidebar{height:calc(100vh - 112px);position:relative}#rlc-sidebar,div#rlc-main-sidebar{overflow-x:hidden;box-sizing:border-box}*{box-sizing:border-box}#rlc-main p{line-height:24px!important;font-size:12px}#rlc-main{width:80%;box-sizing:border-box;float:left}#rlc-sidebar{width:20%;float:right;overflow-y:auto;padding:0 0 0 5px}#rlc-topmenu{box-sizing:border-box;border-bottom:1px solid #A9A9A9}.rlc-hidesidebar div#rlc-messagebox,div#rlc-messagebox{position:relative;float:left;width:80%;border-left:1px solid #A9A9A9}#new-update-form .usertext{max-width:85%;float:left;width:85%}.usertext-edit .md{min-width:100%!important;height:25px}div#new-update-form textarea{height:25px;overflow:auto;border-bottom:0;resize:none;border-left:0}div#new-update-form{width:90%;margin:0;float:right}.usertext-edit.md-container{max-width:100%;margin:0;position:relative}#new-update-form .save-button .btn{width:100%;text-transform:capitalize}div#rlc-sendmessage{width:15%;height:25px;text-align:center;float:right;display:inline-block;padding-top:5px;box-sizing:border-box;margin-top:0;font-size:1.3em;cursor:pointer;border:1px solid #A9A9A9;border-left:0;border-bottom:0}#rlc-main time.live-timestamp{text-indent:0;width:100px;color:inherit;padding:6px 0 0 10px;margin:0}#rlc-main .liveupdate-listing{max-width:100%;padding:0;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}div#rlc-chat{overflow-y:auto;height:calc(100vh - 112px)}#rlc-main .liveupdate-listing .liveupdate .body{max-width:none;margin-bottom:0;padding:0;font-size:12px;display:block;box-sizing:border-box}#rlc-main .liveupdate-listing .liveupdate{height:auto!important;padding:4px}button#rlc-delete{width:3%;height:5%;right:0;text-align:center;float:right;display:inline-block;padding:0;margin:0;font-size:1em;color:#000;cursor:pointer}#rlc-main .liveupdate-listing a.author{width:110px;float:left;text-align:right;padding:4px 0 0 20px;color:initial;margin:0}#rlc-main .liveupdate-listing .liveupdate .body div.md{float:right;width:calc(100% - 230px);max-width:none}#rlc-main #rlc-chat li.liveupdate.user-mention .body .md{font-weight:700}.channelname{color:#A9A9A9!important;display:block;float:left;text-align:right;width:260px}#filter_tabs{table-layout:fixed;border:1px solid #A9A9A9;width:80%;border-bottom:0;box-sizing:border-box;height:25px;float:left}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:5px 2px;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid #A9A9A9}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;height:25px;border-right:1px solid #A9A9A9}#filter_tabs>span.more{padding:0 30px}.rlc-channel-add input{border:0;padding:0;height:24px}#rlc-togglesidebar,.rlc-channel-add,div#loadmessages,div#rlc-toggleoptions,div#s2compactmode{border-right:1px solid #A9A9A9}.rlc-channel-add .channel-mode{float:right;font-size:1.2em;padding:5px}.rlc-channel-add .channel-mode span{cursor:pointer}.rlc-channel-add{display:none;position:absolute;bottom:0;height:24px;background:#FCFCFC;left:0;width:calc(80% - 116px);z-index:1000}aside.sidebar.side.md-container{width:100%;opacity:1;margin:0;padding:0;box-sizing:border-box}#liveupdate-header{width:100%;margin:0!important;padding:0!important;text-align:center;max-width:none;overflow:hidden}.rlc-hidesidebar #rlc-main{width:100%!important}#rlc-togglesidebar{display:block}#liveupdate-statusbar.live .state:before,#liveupdate-statusbar.reconnecting .state:before{border-radius:2px;height:36px;width:36px;margin-top:-8px;margin-bottom:-11px;margin-right:10px;transform:scale(.77)}.rlc-showoptions #rlc-settings{display:block;padding-top:30px}.rlc-showreadmebar #rlc-readmebar{display:block;padding:2px 5px 40px 0;box-sizing:border-box;font-size:1.18em}#rlc-settingsbar,#rlc-settingsbar2{height:25px;box-sizing:border-box;display:table;table-layout:fixed;width:20%;z-index:100;float:right;background:#FCFCFC;border-top:1px solid #A9A9A9;cursor:pointer;text-align:center}div#rlc-toggleoptions{display:table-cell;cursor:pointer}div#rlc-settingsbar div,div#rlc-settingsbar2 div{text-align:center;cursor:pointer;width:33%;height:24px;float:left;padding-top:7px}#banlistcontainer,#rlc-activeusers{display:inline-block;width:100%;padding:10px;font-size:1.2em}#banlistcontainer p{cursor:pointer}#rlc-activeusers li{width:100%;font-size:1.2em}.rlc-compact div#rlc-chat{height:calc(100vh - 49px)}#rlc-main .liveupdate-listing .liveupdate .simpletime{display:block;float:left;width:80px;padding-left:20px;padding-top:5px}#rlc-sidebar .sidebar .md h3,#rlc-sidebar aside.sidebar .md h4,#rlc-sidebar aside.sidebar .md h5,#rlc-sidebar aside.sidebar .md h6{color:inherit}div#rlc-toggleguide{padding-bottom:6px}div#rlc-main-sidebar{display:block;padding-right:5px}.dark-background #rlc-sidebar pre{background:0 0}.dark-background #rlc-main code,.dark-background select#rlc-channel-dropdown option{color:#000}.dark-background #liveupdate-description .md,.dark-background #rlc-settings strong,.dark-background .liveupdate-listing li.liveupdate .body div.md,.dark-background .md blockquote p,.dark-background .rlc-channel-add button,.dark-background aside.sidebar .md,.dark-background select#rlc-channel-dropdown,.dark-background.rlc-showreadmebar #rlc-readmebar .md{color:#fff}.dark-background #rlc-settingsbar,.dark-background #rlc-settingsbar2,.dark-background .rlc-channel-add,.dark-background div#rlc-settings{background:#404040}.dark-background .rlc-channel-add input{color:#fff;background:rgba(0,0,0,.28)}.dark-background div#header-bottom-left{background:#A9A9A9}.dark-background{background:#404040;color:#fff}.dark-background #rlc-main .liveupdate-listing a.author,.dark-background .side,.dark-background textarea{background:0 0;color:#fff}.rlc-compact div#rlc-main,.rlc-compact div#rlc-sidebar{height:calc(100vh - 50px)}div#versionnumber{padding-right:20px;font-size:.8em}.usertext-edit .bottom-area{position:absolute;top:5px;left:50%}select#rlc-channel-dropdown{float:left;height:25px;width:10%;border-bottom:0;background:0 0;border-left:0}.rlc-channel-add button{background:0 0;border:1px solid #A9A9A9;margin:0;padding:4px;border-top:0;border-bottom:0}#filter_tabs .selected,.rlc-TextToSpeech #s2tts,.rlc-compact #s2compactmode,.rlc-showoptions #rlc-toggleoptions,.rlc-showreadmebar div#rlc-toggleguide{background:grey}#rlc-settings label{width:100%;display:block;font-size:1.5em}#rlc-settings input{margin:4px;position:relative;top:2px}");
