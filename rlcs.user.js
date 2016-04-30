@@ -482,9 +482,11 @@ ________________________________________________________________________________
         var first_line = $msg.find("p").first();
 
         // /me support
+		var flag_declared = false;
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
+			flag_declared = true;
         }
 
         // target blank all message links
@@ -548,7 +550,7 @@ ________________________________________________________________________________
                         });
                     }
                 }
-                messageTextToSpeechHandler($msg, $usr);
+                messageTextToSpeechHandler($msg, $usr, flag_declared);
                 //  console.log("this is not rescan");
             }
         }
@@ -604,7 +606,7 @@ ________________________________________________________________________________
 
     var langSupport = ["en","en-US","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
 
-    function messageTextToSpeechHandler($msg,$usr) {
+    function messageTextToSpeechHandler($msg,$usr,flag_declared=false) {
         if (GM_getValue("rlc-TextToSpeech") === 'true') {
             var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
             var hasTripple = /(.)\1\1/.test(linetoread);
@@ -654,7 +656,7 @@ ________________________________________________________________________________
                     case checkingStr == checkingStr.toUpperCase(): //Check for screaming
                         msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
                         break;
-                    case linetoread.trim().split(" ")[0] == $usr.text().trim(): //Check for declared action
+                    case flag_declared: //Check for declared action
                         msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
                         break;
                     default: // said
