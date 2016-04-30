@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.30.5.1
+// @version      2.30.6
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -201,29 +201,7 @@ ________________________________________________________________________________
         click_action(state, $option);
     }
 
-/*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
-                                                                              RLC MESSAGE HANDLING FUNCTIONS SECTION BELOW
-010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
-101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
-____________________________________________________________________________________________________________________________________________________________________________*/
-
-    
-        // numbers to english words for TTS
-    var a = ['','one ','two ','three ','four ', 'five ','six ','seven ','eight ','nine ','ten ','eleven ','twelve ','thirteen ','fourteen ','fifteen ','sixteen ','seventeen ','eighteen ','nineteen '];
-    var b = ['', '', 'twenty','thirty','forty','fifty', 'sixty','seventy','eighty','ninety'];
-    function numberToEnglish (num) {
-        if ((num = num.toString()).length > 9) return 'overflow';
-        n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-        if (!n) return; var str = '';
-        str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'crore ' : '';
-        str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'lakh ' : '';
-        str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
-        str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
-        str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + ' ' : '';
-        return str;
-    }
-
-    // channel prefix removal
+  // channel prefix removal
     var remove_channel_key_from_message = function(message){
         if($("#rlc-chat").attr("data-channel-key")){
             var offset = $("#rlc-chat").attr("data-channel-key").length;
@@ -237,6 +215,12 @@ ________________________________________________________________________________
         }
         return message;
     };
+
+/*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
+                                                                              RLC MESSAGE HANDLING FUNCTIONS SECTION BELOW
+010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
+101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
+____________________________________________________________________________________________________________________________________________________________________________*/
 
     //convert string to hex (for user colors)
     function toHex(str) {
@@ -306,6 +290,45 @@ ________________________________________________________________________________
         return hexR+hexG+hexB;
     }
 
+function getColor(username) {
+        var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
+        var e = username.toLowerCase(),
+            t = e.replace(/[^a-z0-9]/g, ""),
+            n = parseInt(t, 36) % 6;
+        return colors[n];
+    }
+
+  // user color
+    function messageUserColor($usr) {
+        if (GM_getValue("rlc-RobinColors") === 'false') {
+            var hexName=toHex($usr.text()).split('');
+            var adder=1;
+            $.each(hexName,function(ind,num){
+                num = (parseInt(num)+1);
+                if(num!==0 && !isNaN(num)){
+                    adder = adder * num;
+                }
+            });
+            adder=adder.toString().replace(".","").split("0").join("");
+            start = adder.length-10;
+            end = adder.length-4;
+            var firstThree=adder.toString().substring(start,end);
+
+            // variable brigtening of colors based on dark mode setting
+            if( GM_getValue("rlc-DarkMode") === 'true'){
+                var lightercolor = LightenDarkenColor2(firstThree, 60);
+                $usr.css("color","#"+lightercolor);
+            }
+            else {
+                var darkercolor = LightenDarkenColor2(firstThree, -40);
+                $usr.css("color","#"+darkercolor);
+            }
+        }else{
+            $usr.css("color",getColor($usr.text())); //ROBIN COLORS!!!!!
+        }
+    }
+    
+
     function messageMentionHandler(line, $usr, $ele) {
         if(line.indexOf(robin_user) !== -1){
             //add bold highlighting
@@ -359,35 +382,7 @@ ________________________________________________________________________________
         }
     }
 
-    // user color
-    function messageUserColor($usr) {
-        if (GM_getValue("rlc-RobinColors") === 'false') {
-            var hexName=toHex($usr.text()).split('');
-            var adder=1;
-            $.each(hexName,function(ind,num){
-                num = (parseInt(num)+1);
-                if(num!==0 && !isNaN(num)){
-                    adder = adder * num;
-                }
-            });
-            adder=adder.toString().replace(".","").split("0").join("");
-            start = adder.length-10;
-            end = adder.length-4;
-            var firstThree=adder.toString().substring(start,end);
-
-            // variable brigtening of colors based on dark mode setting
-            if( GM_getValue("rlc-DarkMode") === 'true'){
-                var lightercolor = LightenDarkenColor2(firstThree, 60);
-                $usr.css("color","#"+lightercolor);
-            }
-            else {
-                var darkercolor = LightenDarkenColor2(firstThree, -40);
-                $usr.css("color","#"+darkercolor);
-            }
-        }else{
-            $usr.css("color",getColor($usr.text())); //ROBIN COLORS!!!!!
-        }
-    }
+ 
 
     // timestamp modification & user activity tracking
     function timeAndUserTracking($ele,$usr) {
@@ -469,6 +464,28 @@ ________________________________________________________________________________
             }
         });
     }
+
+ 
+    function OpenUserPM(name) {
+        var $url = "https://www.reddit.com/message/compose/?to=";
+        var win = window.open($url+name, '_blank');
+        win.focus();
+    }
+    function deleteComment($objComment){
+        if($objComment.has('.buttonrow').length>0){
+            var $button = $objComment.find('.delete').find('button');
+            $button.click();
+            $button = $objComment.find('.delete').find('.yes');
+            $button.click();
+        }
+    }
+    var divPos = {};
+    $(document).mousemove(function(e){
+        divPos = {
+            left: e.pageX,
+            top: e.pageY
+        };
+    });
 
     //used differentiate initial and subsequent messages
     var loading_initial_messages = 1; 
@@ -563,35 +580,6 @@ ________________________________________________________________________________
         //  console.log("end new message handling instance");
     };
 
-    function getColor(username) {
-        var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
-        var e = username.toLowerCase(),
-            t = e.replace(/[^a-z0-9]/g, ""),
-            n = parseInt(t, 36) % 6;
-        return colors[n];
-    }
-    function OpenUserPM(name) {
-        var $url = "https://www.reddit.com/message/compose/?to=";
-        var win = window.open($url+name, '_blank');
-        win.focus();
-    }
-    function deleteComment($objComment){
-        if($objComment.has('.buttonrow').length>0){
-            var $button = $objComment.find('.delete').find('button');
-            $button.click();
-            $button = $objComment.find('.delete').find('.yes');
-            $button.click();
-        }
-    }
-    var divPos = {};
-    $(document).mousemove(function(e){
-        divPos = {
-            left: e.pageX,
-            top: e.pageY
-        };
-    });
-
-
 /*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
                                                                               RLC TEXT TO SPEECH FUNCTIONS SECTION BELOW
 010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
@@ -600,6 +588,21 @@ ________________________________________________________________________________
 
     function get_numbers(input) {
         return input.match(/[0-9]+/g);
+    }
+
+        // numbers to english words for TTS
+    var a = ['','one ','two ','three ','four ', 'five ','six ','seven ','eight ','nine ','ten ','eleven ','twelve ','thirteen ','fourteen ','fifteen ','sixteen ','seventeen ','eighteen ','nineteen '];
+    var b = ['', '', 'twenty','thirty','forty','fifty', 'sixty','seventy','eighty','ninety'];
+    function numberToEnglish (num) {
+        if ((num = num.toString()).length > 9) return 'overflow';
+        n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+        if (!n) return; var str = '';
+        str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'crore ' : '';
+        str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'lakh ' : '';
+        str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
+        str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
+        str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + ' ' : '';
+        return str;
     }
 
     // Select Emoji to narration tone
@@ -1297,6 +1300,7 @@ ________________________________________________________________________________
             console.log("handling new message from existing content");
         });
 
+       
         _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
         
