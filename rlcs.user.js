@@ -1308,8 +1308,7 @@
         rlcDocReadyModifications();
         // attach event listeners
         rlcInitEventListeners();
-        // make options 
-        rlcCreateOptions();
+        
 
         // handle existing chat messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
