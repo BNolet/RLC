@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.29.31
+// @version      2.29.32
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1298,7 +1298,26 @@
         });
     }
 
-    function rlcCreateOptions() {
+    // boot
+    $(document).ready(function() {
+        // move default elements into custom containers defined in htmlPayload
+        rlcSetupContainers();
+        // setup sidebar based on content
+        rlcParseSidebar();       
+        // modify initial elements
+        rlcDocReadyModifications();
+        // attach event listeners
+        rlcInitEventListeners();
+        // make options 
+        rlcCreateOptions();
+
+        // handle existing chat messages
+        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+            handle_new_message($(item), true);
+        });
+
+        _scroll_to_bottom();    //done adding/modding content, scroll to bottom
+
         createOption("AutoScroll", function(checked, ele){
             if(checked){
                 $("body").addClass("AutoScroll");
@@ -1399,28 +1418,7 @@
                 $("body").removeClass("rlc-CssBGAlternate");
             }
         },false);
-    }
-
-    // boot
-    $(document).ready(function() {
-        // move default elements into custom containers defined in htmlPayload
-        rlcSetupContainers();
-        // setup sidebar based on content
-        rlcParseSidebar();       
-        // modify initial elements
-        rlcDocReadyModifications();
-        // attach event listeners
-        rlcInitEventListeners();
-        // make options 
-        rlcCreateOptions();
-
-        // handle existing chat messages
-        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-            handle_new_message($(item), true);
-        });
-
-        _scroll_to_bottom();    //done adding/modding content, scroll to bottom
-
+        
     });
 
     //channel styles
