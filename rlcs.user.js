@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.29.30
+// @version      2.29.31
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -33,6 +33,9 @@
     if (!GM_getValue("rlc-RobinColors")) {
         GM_setValue("rlc-RobinColors", 'false');
     }
+    if (!GM_getValue("rlc-CSSbackgroundalternation")) {
+        GM_setValue("rlc-CSSbackgroundalternation", 'false');
+    }
 
     // Grab users username + play nice with RES
     var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
@@ -54,10 +57,6 @@
     var activeUserArray = [];
     var activeUserTimes = [];
     var updateArray = [];
-
-    //trollolololol
-    activeUserArray.push("xelon");
-    activeUserTimes.push("13:37");
 
     // badmanfix tts (see channel Tick)
     var badmanfixtts = 1;
@@ -309,7 +308,7 @@
         var r=col.slice(0,2);
         var g=col.slice(2,4);
         var b=col.slice(4,6);
-        if(rowalternator)amt+=10;
+        if(rowalternator)amt+=10;   //might wanna rethink this
         var randR = (Math.seededRandom(r*100,120,175));
         var randG = (Math.seededRandom(g*100,120,175));
         var randB = (Math.seededRandom(b*100,120,175));
@@ -402,27 +401,31 @@
     }
 
     function alternateMsgBackground($ele) {
-        if(rowalternator === 0) {
-            $ele.addClass("alt-bgcolor");
-            rowalternator = 1;
-        }
-        else {
-            rowalternator = 0;
+        if (GM_getValue("rlc-CSSbackgroundalternation") == 'false') {
+            if(rowalternator === 0) {
+                $ele.addClass("alt-bgcolor");
+                rowalternator = 1;
+            }
+            else {
+                rowalternator = 0;
+            }
         }
     }
 
     function UpdatealternateMsgBackground() {
-        $("#rlc-chat li.liveupdate").removeClass("alt-bgcolor");
-        var x = 0;
-        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-        if(x === 0) {
-            $(this).addClass("alt-bgcolor");
-            x = 1;
+        if (GM_getValue("rlc-CSSbackgroundalternation") == 'false') {
+            $("#rlc-chat li.liveupdate").removeClass("alt-bgcolor");
+            var x = 0;
+            $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+                if(x === 0) {
+                    $(this).addClass("alt-bgcolor");
+                    x = 1;
+                }
+                else {
+                    x = 0;
+                }
+            });
         }
-        else {
-            x = 0;
-        }
-        });
     }
 
     function emoteSupport(line, $msg, first_line) {
@@ -515,7 +518,8 @@
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
                 // Abbreviation Expansion (All keys must be in uppercase)
-                replaceStrList = {"WTF":"What The Fuck", "BTW":"By The Way", "NVM":"Nevermind", "AFAIK":"As Far As I Know", "AKF":"Away From Keyboard", "AKA":"Also Known As", "ASAP":"As Soon As Possible", "CYA":"See Ya", "IKR":"I Know Right", "IMO":"In My Own Opinion", "JK":"Just Kidding", "OMG":"Oh My Gosh", "RTFM":"Read The Fucking Manual", "TLDR":"Too Long Didn't Read"};
+                replaceStrList = {"WTF":"What The Fuck", "BTW":"By The Way", "NVM":"Nevermind", "AFAIK":"As Far As I Know", "AFK":"Away From Keyboard", "AKA":"Also Known As", "ASAP":"As Soon As Possible", "CYA":"See Ya", 
+                                  "IKR":"I Know Right", "IMO":"In My Own Opinion", "JK":"Just Kidding", "OMG":"Oh My Gosh", "RTFM":"Read The Fucking Manual", "TLDR":"Too Long Didn't Read"};
                 linetoread = linetoread.split(" ").map(function(token){ 
                     if( token.toUpperCase() in replaceStrList ){return replaceStrList[token];}else{return token;};
                 }).join(" ");
@@ -535,7 +539,9 @@
                 }
                 // Select Emoji to narration tone
                 var toneStr="";
-                var toneList = { "smile":"while smiling", "angry":"angrily", "frown":"while frowing", "silly":"pulling a silly face", "meh":" in a disinterested manner", "shocked":"expressing shock", "happy":"happily", "sad":"sadly", "crying":"tearfully", "wink":" while winking", "zen":"in zen mode", "annoyed":"expressing annoyance", "xsmile":"in a big smile", "xsad":"extreamly sadly", "xhappy":"extreamly happy", "tongue":"while sticking out a tounge"};
+                var toneList = { "smile":"while smiling", "angry":"angrily", "frown":"while frowing", "silly":"pulling a silly face", "meh":" in a disinterested manner", "shocked":"expressing shock", "happy":"happily", 
+                                "sad":"sadly", "crying":"tearfully", "wink":" while winking", "zen":"in zen mode", "annoyed":"expressing annoyance", "xsmile":"in a big smile", "xsad":"extreamly sadly", "xhappy":"extreamly happy", 
+                                "tongue":"while sticking out a tounge"};
                 if ( domEmoji in toneList ){
                     toneStr = " " + toneList[domEmoji];
                 }
@@ -586,15 +592,16 @@
                     msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt",0,1000)/1000; // random range: 0.5 to 1.5
                     msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt",0,1000)/1000; // random range: 0.5 to 1.5
 
+                    // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
                     if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1)
                     {
                         msg.pitch = 1;
                         msg.rate = 1;
                     }
 
-                    console.log(msg.pitch);
-                    console.log(msg.rate);
-                    console.log(msg.voice);
+                    // console.log(msg.pitch);
+                    // console.log(msg.rate);
+                    // console.log(msg.voice);
 
                 }
                 msg.volume = 1; // 0 to 1
@@ -1165,7 +1172,7 @@
         });
 
         //  Ajaxgetcurrentmessages
-      /* var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
+        /* var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
             var oldmessages = data.data.children;
             var msgarray = [];
             $.each( oldmessages, function( ) {
@@ -1394,6 +1401,13 @@
                 $("body").removeClass("rlc-24hrTimeStamps");
             }
         },false);
+        createOption("CSS background alternation", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-CssBGAlternate");
+            }else{
+                $("body").removeClass("rlc-CssBGAlternate");
+            }
+        },false);
     });
 
     //channel styles
@@ -1413,6 +1427,11 @@ background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANgAAAC0CAY
 } \
 .alt-bgcolor {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=')!important;} \
 .dark-background .alt-bgcolor {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=')!important;} \
+.rlc-CssBGAlternate #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd) {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=')!important; \
+} \
+\
+.rlc-CssBGAlternate .dark-background #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd) {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=')!important; \
+} \
 ");
 
 GM_addStyle("/*-------------------------------- Standalone Stuff ------------------------------------- */ \
