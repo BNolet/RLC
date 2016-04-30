@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.30.2
+// @version      2.30.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -24,7 +24,8 @@
     if (!GM_getValue("rlc-TextToSpeech")) {             GM_setValue("rlc-TextToSpeech",             'false');}
     if (!GM_getValue("rlc-RobinColors")) {              GM_setValue("rlc-RobinColors",              'false');}
     if (!GM_getValue("rlc-CSSbackgroundalternation")) { GM_setValue("rlc-CSSbackgroundalternation", 'false');}
-
+    if (!GM_getValue("rlc-DebugMode")) {                GM_setValue("rlc-DebugMode",                'false');}
+    
     // Grab users username + play nice with RES
     var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
 
@@ -57,6 +58,13 @@
         $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
     };
 
+    function RLClog(thingtolog) {
+        if (GM_getValue("rlc-DebugMode") == 'true') {
+         console.log(thingtolog);   
+        }        
+    }
+    
+    
     // manipulate native reddit live into loading old messages
     function loadHistory() {
         if (GM_getValue("rlc-TextToSpeech") == 'true') {
@@ -392,7 +400,7 @@
             var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
             var hasTripple = /(.)\1\1/.test(linetoread);
             var numbermatches = get_numbers(linetoread);
-           // console.log(linetoread);
+            RLClog(linetoread);
             $.each(numbermatches,function(i) {
                 linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
             });
@@ -445,7 +453,7 @@
                         break;
                 }
                 //console.log("usr:"+$usr.text());
-              //  console.log("linetoread:"+linetoread);
+                RLClog("linetoread:"+linetoread);
                 // Now speak the sentence
                 // msg.voiceURI = 'native';
 
@@ -475,9 +483,9 @@
                         msg.rate = 1;
                     }
 
-                    // console.log(msg.pitch);
-                    // console.log(msg.rate);
-                    // console.log(msg.voice);
+                     RLClog(msg.pitch);
+                     RLClog(msg.rate);
+                     RLClog(msg.voice);
 
                 }
                 msg.volume = 1; // 0 to 1
@@ -1319,7 +1327,13 @@
                 $("body").removeClass("rlc-CssBGAlternate");
             }
         },false);
-
+        createOption("Debug Mode", function(checked, ele){
+            if(checked){
+                $("body").addClass("rlc-DebugMode");
+            }else{
+                $("body").removeClass("rlc-DebugMode");
+            }
+        },false);
     });
 
     //channel styles
