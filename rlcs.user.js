@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.29
+// @version      2.29.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -409,6 +409,20 @@
         else {
             rowalternator = 0;
         }
+    }
+
+    function UpdatealternateMsgBackground() {
+        $("#rlc-chat li.liveupdate").removeClass("alt-bgcolor");
+        var x = 0;
+        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+        if(x === 0) {
+            $(this).addClass("alt-bgcolor");
+            x = 1;
+        }
+        else {
+            x = 0;
+        }
+        });
     }
 
     function emoteSupport(line, $msg, first_line) {
@@ -998,6 +1012,7 @@
                     window.speechSynthesis.cancel()
                 }
                 loading_initial_messages = 0;
+                //UpdatealternateMsgBackground();
             });
             // rate limit disable
             ratelimit = 0;
@@ -1135,6 +1150,7 @@
                 if ($(document.body).hasClass("AutoScroll")) {
                     _scroll_to_bottom();
                 }
+                UpdatealternateMsgBackground(); //fix backgrounds, should happen on DELETE of a message but we cant catch the event.
             }
             //remove separators
             else if ($(e.target).is('.separator')) {
@@ -1142,13 +1158,14 @@
             }
         });
 
+
         // rescan existing chat for messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
         });
 
-        /*  Ajaxgetcurrentmessages
-       var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
+        //  Ajaxgetcurrentmessages
+      /* var ajaxLoadCurrentMessages = $.getJSON( ".json", function( data ) {
             var oldmessages = data.data.children;
             var msgarray = [];
             $.each( oldmessages, function( ) {
@@ -1165,8 +1182,8 @@
         });
         ajaxLoadCurrentMessages.complete(function() {
             loading_initial_messages = 0;
-        });
-*/
+        });*/
+
 
         _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
