@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.29.33
+// @version      2.29.34
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1140,8 +1140,10 @@
         $("#rlc-main iframe").remove();
     }
 
-
+    // note: could use some splitting up
     function rlcInitEventListeners() {  
+
+        var text_area = $(".usertext-edit.md-container textarea");
 
         // Detect new content being added
         $(".liveupdate-listing").on('DOMNodeInserted', function(e) {
@@ -1159,7 +1161,9 @@
             }
         });
 
-        var text_area = $(".usertext-edit.md-container textarea");
+        // dreamcode: 
+        /* on li.liveupdate removal(maybe its not removed? maybe detached?) call function UpdatealternateMsgBackground to fix alternation */
+
         // On post message, add it to history
         $(".save-button .btn").click(function(){
             var user_last_message = text_area.val();
@@ -1184,7 +1188,7 @@
         });
 
         // load old messages
-        $("#s2loadmessages").click(function(){ 
+        $("#loadmessages").click(function(){ 
             loadHistory();
         });
 
@@ -1271,9 +1275,7 @@
                 }
             }
         });
-
     }
-
 
     /* failed experiment but reads updates from json and inserts fake updates based on them */
     function Ajaxgetcurrentmessages() {
@@ -1308,7 +1310,7 @@
         rlcDocReadyModifications();
         // attach event listeners
         rlcInitEventListeners();
-        
+
 
         // handle existing chat messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
@@ -1317,6 +1319,8 @@
 
         _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
+
+        /* Create options */
         createOption("AutoScroll", function(checked, ele){
             if(checked){
                 $("body").addClass("AutoScroll");
@@ -1417,7 +1421,7 @@
                 $("body").removeClass("rlc-CssBGAlternate");
             }
         },false);
-        
+
     });
 
     //channel styles
