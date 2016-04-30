@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.30.4
+// @version      2.30.5
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -472,6 +472,9 @@ ________________________________________________________________________________
 
     //used differentiate initial and subsequent messages
     var loading_initial_messages = 1; 
+
+    // track if username has been mentioned
+    var meMentioned = 0; 
     // message display handling for new and old(rescan) messages
     // add any proccessing for new messages in here
     var handle_new_message = function($ele, rescan){
@@ -481,12 +484,13 @@ ________________________________________________________________________________
         var line = $msg.text().toLowerCase();
         var first_line = $msg.find("p").first();
 
+        meMentioned = 0; 
+
         // /me support
-		var flag_declared = false;
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
-			flag_declared = true;
+            meMentioned = 1; 
         }
 
         // target blank all message links
@@ -550,7 +554,7 @@ ________________________________________________________________________________
                         });
                     }
                 }
-                messageTextToSpeechHandler($msg, $usr, flag_declared);
+                messageTextToSpeechHandler($msg, $usr);
                 //  console.log("this is not rescan");
             }
         }
@@ -606,7 +610,7 @@ ________________________________________________________________________________
 
     var langSupport = ["en","en-US","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
 
-    function messageTextToSpeechHandler($msg,$usr,flag_declared=false) {
+    function messageTextToSpeechHandler($msg,$usr) {
         if (GM_getValue("rlc-TextToSpeech") === 'true') {
             var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
             var hasTripple = /(.)\1\1/.test(linetoread);
@@ -656,7 +660,7 @@ ________________________________________________________________________________
                     case checkingStr == checkingStr.toUpperCase(): //Check for screaming
                         msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
                         break;
-                    case flag_declared: //Check for declared action
+                    case meMentioned == 1: //Check for /me 
                         msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
                         break;
                     default: // said
