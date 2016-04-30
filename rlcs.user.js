@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.30
+// @version      2.30.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -60,7 +60,7 @@
             $('body').toggleClass("allowHistoryScroll");
         }
     }
-    
+
     //timeconverter for active user list
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
@@ -104,7 +104,7 @@
                 selectors.push(".u_"+bannamearray[i]+"{display:none;}");      //generate css display none rule for user in list
                 $('#bannedlist').append("<p>"+bannamearray[i]+"</p>");        //generate interface element for disabling muting
             }
-        };
+        }
         $('body').append("<style id='mystyle'>"+selectors.join(" ")+"</style>"); //inject style tag with user rules
 
         // handle clicking in muted user list (needs to be here for scope reasons)
@@ -153,7 +153,7 @@
         var rnd = seed / 233280;
 
         return parseInt(min + rnd * (max - min));
-    }
+    };
 
     // message background alternation via js
     var rowalternator = 0;
@@ -295,7 +295,7 @@
         if(GM_getValue("rlc-NoSmileys") === 'false'){
             $.each(emojiList,function(emoji,replace){
                 if(line.toLowerCase().indexOf(emoji.toLowerCase()) != -1 && line.indexOf("http") == -1){
-                    if($msg.has("h1").length==0 && $msg.has("li").length==0 && $msg.has("code").length==0 && $msg.has("table").length==0){
+                    if($msg.has("h1").length===0 && $msg.has("li").length===0 && $msg.has("code").length===0 && $msg.has("table").length===0){
                         first_line.html(first_line.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
                         first_line.html(first_line.html().split(emoji.toLowerCase()).join("<span class='mrPumpkin mp_"+replace+"'></span>"));
                     }
@@ -310,8 +310,8 @@
             var hexName=toHex($usr.text()).split('');
             var adder=1;
             $.each(hexName,function(ind,num){
-                num = (parseInt(num)+1)
-                if(num!=0 && !isNaN(num)){
+                num = (parseInt(num)+1);
+                if(num!==0 && !isNaN(num)){
                     adder = adder * num;
                 }
             });
@@ -379,10 +379,10 @@
 
     function messageTextToSpeechHandler($msg,$usr) {
         if (GM_getValue("rlc-TextToSpeech") === 'true') {
-            var linetoread = $msg.text().split("...").join("\u2026") //replace 3 dots with elipsis character
+            var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
             var hasTripple = /(.)\1\1/.test(linetoread);
             var numbermatches = get_numbers(linetoread);
-            //console.log(linetoread);
+           // console.log(linetoread);
             $.each(numbermatches,function(i) {
                 linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
             });
@@ -391,7 +391,7 @@
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
                 linetoread = linetoread.split(" ").map(function(token){ 
-                    if( token.toUpperCase() in replaceStrList ){return replaceStrList[token];}else{return token;};
+                    if( token.toUpperCase() in replaceStrList ){return replaceStrList[token];}else{return token;}
                 }).join(" ");
                 // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
                 var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
@@ -412,29 +412,30 @@
                     toneStr = " " + toneList[domEmoji];
                 }
                 // Narration Style
+                var msg;
                 switch (true) {
                     case /.+\?$/.test(checkingStr): // Questioned
-                        var msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text() + toneStr );
+                        msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text() + toneStr );
                         break;
                     case /.+\!$/.test(checkingStr):   // Exclaimed
-                        var msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text() + toneStr );
+                        msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text() + toneStr );
                         break;
                     case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
                         linetoread = linetoread.trim().slice(0, -2);
-                        var msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
+                        msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
                         break;
                     case checkingStr == checkingStr.toUpperCase(): //Check for screaming
-                        var msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
+                        msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
                         break;
                     case linetoread.trim().split(" ")[0] == $usr.text().trim(): //Check for declared action
-                        var msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
+                        msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
                         break;
                     default: // said
-                        var msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text() + toneStr );
+                        msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text() + toneStr );
                         break;
                 }
                 //console.log("usr:"+$usr.text());
-                //console.log("linetoread:"+linetoread);
+              //  console.log("linetoread:"+linetoread);
                 // Now speak the sentence
                 // msg.voiceURI = 'native';
 
@@ -442,8 +443,7 @@
                 if(!$("body").hasClass("rlc-NoUserVoices")){ // You want to be able to disable this in options.
                     // Select voices that english users can use, even if its not for english exactly...
                     var voiceList = speechSynthesis.getVoices().filter(function(voice) {
-                        
-                        for (key in langSupport) {
+                        for (var key in langSupport) {
                             if( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
                         }
                     });
@@ -503,7 +503,7 @@
                 $menu.find('ul li').unbind('click');
                 $menu.find('ul li').bind('click',function(){
                     $id=$(this).attr('id');
-                    if($id==="deleteCom" && $(this).has('.disabled').length==0){
+                    if($id==="deleteCom" && $(this).has('.disabled').length===0){
                         deleteComment($ele);
                     }
                     if($id==="PMUser"){
@@ -571,7 +571,7 @@
         messageMentionHandler(line, $usr, $ele);
 
         // emote support
-        emoteSupport(line, $msg, first_line)
+        emoteSupport(line, $msg, first_line);
 
         // easy multiline
         $msg.html($msg.html().split('\n').join('<br>'));
@@ -589,7 +589,7 @@
         messageUserColor($usr); // user color
         messageClickHandler($usr,$msg,$ele);  // message click handling 
 
-        if (loading_initial_messages == 0) {
+        if (loading_initial_messages === 0) {
            // console.log("loading_initial_messages = 0");
             //stuff that should not be done to messages loaded on init, like TTS handling
             if(typeof rescan !== 'undefined' && rescan === true){
@@ -624,7 +624,7 @@
         return colors[n];
     }
     function OpenUserPM(name) {
-        var $url = "https://www.reddit.com/message/compose/?to="
+        var $url = "https://www.reddit.com/message/compose/?to=";
         var win = window.open($url+name, '_blank');
         win.focus();
     }
@@ -870,7 +870,7 @@
                 }
             }
             // else read from dropdown populated by channels
-            else { 
+            else {
                 var channel_key = $("#rlc-channel-dropdown option:selected" ).text();
                 if (channel_key !== "") {
                     if($("#new-update-form textarea").val().indexOf("/me") === 0){
@@ -955,10 +955,10 @@
             // start ticker
             setInterval(this.tick, 2000);
         };
-    };
+    }();
 
     function rlcSetupContainers() {
-        $("body").append(htmlPayload); 
+        $("body").append(htmlPayload);
 
         $('.liveupdate-listing').prependTo('#rlc-chat');
 
@@ -978,15 +978,15 @@
     function rlcParseSidebar() {
         // put anything after -RLC-README- in the sidebar into the readme
         var str = $('#liveupdate-resources .md').html();
-        var res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");     
+        var res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
         $('#liveupdate-resources .md').html(res[0]);
         $('#rlc-readmebar .md').append(res[1]);
 
         // put anything before -RLC-MAIN- in the sidebar into the guide
-        var str = $('#liveupdate-resources .md').html();
-        var res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");     
-        $('#liveupdate-resources .md').html(res[1]);
-        $('#rlc-guidebar .md').append(res[0]);
+        var str2 = $('#liveupdate-resources .md').html();
+        var res2 = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
+        $('#liveupdate-resources .md').html(res2[1]);
+        $('#rlc-guidebar .md').append(res2[0]);
 
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><strong>Recent User Activity</strong><br><ul></ul></div>");
         $('#rlc-main-sidebar').append("<div id='banlistcontainer'><strong>Muted Users</strong><div id='bannedlist'></div></div>");
@@ -996,8 +996,8 @@
     function rlcDocReadyModifications() {
         // show hint about invites if there is no messagebox
         if($(".usertext-edit textarea").length) { }
-        else { 
-            $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>"); 
+        else {
+            $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>");
         }
 
         // add placeholder text and focus messagebox
@@ -1019,7 +1019,7 @@
     var messageHistoryIndex = -1;
     var lastTyped="";
     // note: could use some splitting up
-    function rlcInitEventListeners() {  
+    function rlcInitEventListeners() {
 
         var text_area = $(".usertext-edit.md-container textarea");
 
@@ -1040,7 +1040,7 @@
             }
         });
 
-        // dreamcode: 
+        // dreamcode:
         /* on li.liveupdate removal(maybe its not removed? maybe detached?) call function UpdatealternateMsgBackground to fix alternation */
 
         // On post message, add it to history
@@ -1057,7 +1057,7 @@
 
         //right click author names in chat to copy to messagebox
         $('body').on('contextmenu', ".liveupdate .author", function (event) {
-            if (!$("body").hasClass("rlc-altauthorclick")) { 
+            if (!$("body").hasClass("rlc-altauthorclick")) {
                 event.preventDefault();
                 var username = String($(this).text()).trim();
                 var source = String($(".usertext-edit.md-container textarea").val());
@@ -1067,15 +1067,15 @@
         });
 
         // load old messages
-        $("#loadmessages").click(function(){ 
+        $("#loadmessages").click(function(){
             loadHistory();
         });
 
         // easy access options
-        $("#s2compactmode").click(function(){ 
+        $("#s2compactmode").click(function(){
             $( "#rlc-settings label:contains('Compact Mode') input" ).click();
         });
-        $("#s2tts").click(function(){ 
+        $("#s2tts").click(function(){
             $( "#rlc-settings label:contains('TextToSpeech') input" ).click();
         });
 
@@ -1099,13 +1099,13 @@
                 sourceAlt = sourceAlt.substring(0, sourceAlt.lastIndexOf(" "));
                 var found=false;
                 $.each(updateArray,function(ind,Lname){
-                    if(Lname.indexOf(namePart) == 0){
+                    if(Lname.indexOf(namePart) === 0){
                         namePart=Lname;
                         if(space!=-1)namePart=" "+namePart;
                         //console.log(namePart+" 3");
                         found=true;
                         return true;
-                    }else if(Lname.toLowerCase().indexOf(namePart.toLowerCase()) == 0){ // This is in an else because it should give priority to case Sensitive tab completion
+                    }else if(Lname.toLowerCase().indexOf(namePart.toLowerCase()) === 0){ // This is in an else because it should give priority to case Sensitive tab completion
                         namePart=Lname;
                         if(space!=-1)namePart=" "+namePart;
                         //console.log(namePart+" 3");
@@ -1123,7 +1123,7 @@
                 else if (text_area.val() === "" ) { e.preventDefault();  }
                 else if (ratelimit === 1) { e.preventDefault();console.log("rate limit hit");}
                 else {
-                    if(text_area.val().indexOf("/version") === 0){ 
+                    if(text_area.val().indexOf("/version") === 0){
                         $(this).val("RLC v."+GM_info.script.version+" has been released. Use the link in the sidebar to update.");
                     }
                     e.preventDefault();
@@ -1154,9 +1154,6 @@
                 }
             }
         });
-
- 
-
     }
 
     /* failed experiment but reads updates from json and inserts fake updates based on them - Not called by anything atm */
@@ -1186,7 +1183,7 @@
         // move default elements into custom containers defined in htmlPayload
         rlcSetupContainers();
         // setup sidebar based on content
-        rlcParseSidebar();       
+        rlcParseSidebar();
         // modify initial elements
         rlcDocReadyModifications();
         // attach event listeners
@@ -1241,7 +1238,7 @@
                 $("body").removeClass("rlc-compact");
             }
             _scroll_to_bottom();
-        },false);  
+        },false);
         createOption("Notification Sound", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-notificationsound");
@@ -1267,7 +1264,7 @@
                 $("body").removeClass("rlc-customscrollbars");
             }
             _scroll_to_bottom();
-        },false);        
+        },false);
         createOption("No Smileys", function(checked, ele){
             if(checked){
                 $("body").addClass("rlc-noemotes");
@@ -1280,7 +1277,7 @@
                 $("body").addClass("rlc-TextToSpeech");
             }else{
                 $("body").removeClass("rlc-TextToSpeech");
-                window.speechSynthesis.cancel()
+                window.speechSynthesis.cancel();
             }
         },false);
         createOption("Disable User based voices", function(checked, ele){
@@ -1322,23 +1319,13 @@
 
         GM_addStyle("#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-"+c+" { background: "+color+";}", 0);
         GM_addStyle("#rlc-chat.rlc-filter.rlc-filter-"+c+" li.liveupdate.rlc-filter-"+c+" { display:block;}", 0);
-    }    
+    }
 })();
 
-GM_addStyle(" /* base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian  */ \
-#liveupdate-statusbar.reconnecting .state:before, #liveupdate-statusbar.live .state:before, .mrPumpkin { \
-background-image: url('data:image/png;base64,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'); \
-} \
-.alt-bgcolor {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=')!important;} \
-.dark-background .alt-bgcolor {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=')!important;} \
-.rlc-CssBGAlternate #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd) {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=')!important; \
-} \
-\
-.rlc-CssBGAlternate .dark-background #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd) {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=')!important; \
-} \
-");
-
 /* CSS tip: use cssminifier.com instead of messing around with line continuation, unpack in editor and re-minify before reinsertion via cssminifier.com */
+
+/* base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian  */
+GM_addStyle("#liveupdate-statusbar.live .state:before,#liveupdate-statusbar.reconnecting .state:before,.mrPumpkin{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANgAAAC0CAYAAAD2FuLMAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAABYktHRACIBR1IAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE2LTA0LTE3VDE5OjMwOjQ5LTA1OjAw6JLuAgAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxNi0wNC0xN1QxOTozMDo0OS0wNTowMJnPVr4AAAiJSURBVHhe7d1BjuREE4bh6TnALFixAwkJjjCruQRLFnAMJA6AxDFgwZJLzGqOABIS7FixmAs0E56OpirLGZnpjHBl2u8jWd1oXFHR5fzK6az6fz88fvDiwsPDw9Nv+0ie/gb9zNUPrj0HTA/U47tXy8+9PLx+v/xMDxz9fDRLP1i3BEwO1t4HKiUHTg8a/dwauR/kvXz6CSCAzDMe7/1uqJ6nH/SzasR+OIvZOIMBgQgYEMgMmEwBdOvlUcujhvKo5VFDedTyqKE8a53Z6jWY9aK2zv9baum+9PPRDP1wDWZjiggEugmY9Q4mSv9+yaMW/dhG6wfXOIMBgQgYEOgmYKWL4paLZo9a9GMbrR9c4wwGBDK/KnV5Udv77lVTS/ehn3n6YZnexncRDfRjI2BlTBGBQAQMCETAgEAEDAhEwIBABAwIRMCAQFWfgy2fd3R+9lJTo/VzHt2/VWv93n5qHu/5+mx9XVI1z8PnYLZpz2A6ILdsXgPwktVPxPNhDlMGTAfzVt6DvqYfQnZOVQHrHZC9gZhdTfg8Xx+PWmc+Xp6avou4NWSt9Uv7ewzImhre/Wi9VO3fUtuPyj1fSUt9rsFsfNnXQD82AlbGMj0QiIABgV7KKV6nHvek0w36WTdqP7BxBgMCcQO+BP3Ycv1gHbeQTdCPrdQPrjFFBAIxRUzQj40pYhvu0ZxBP7bLfpDHFBEIJPMMviqVQT82zmJlnMEcyYDTENRo3R/zIWCO5MwiW01oZB/dH8dlBkzfYT3eZT1qedRQHrVyNUohk39Lg5Wr1cKjhvKsdWar12DWi9r6jttSS/c9Sj+y39pj031yvPup0doP12A2poiB1gZ364DH3G4CZr2DidK/X/KoRT+20frBNc5gQCACBgS6CVjpGqHlGsKjFv3YRusH1ziDAYHMr0pdXtT2vnvV1NJ96Geeflimt/FdRAP92AhYGVNEIBABAwIRMCAQAQMCETAgEAEDAhEwINDhPgfTGsqjVm2N9LlrtdYfqR8+B7MdKmC5AdVbr+bxy2DreJ7a5xAt+25V/TcTMFPVFLH3YAmPGhar/h7PvTVcQh7r2aNHrejX7Cyqr8HkBe/ZgDOqDpi8y/ZswBkd5hqsdJbsqXmE1yeC9MM1mO0wy/TWoBtlQOJ8DvU52FqQCBfuiburZNCPjelhnUOdwYDRcAO+BP3Ycv1gHfdoTtCPrdQPrjFFBAIxRUzQj40pYhtWETPox3bZD/KYIgKBZJ7B/y9iBv3YOIuVcQYDAhEwIJAZMJkC6NbLo5ZHDWBPqwFbG8RbB7ZHLY8aRxb9WvBab8cU8QBk0UM27yBoPa2PdjcBKx2glgPoUcuzn6PzCpo+nmD1u1mmrzkwtS96ay3dn37+V+rHssf+LNPbThWwVmv93FNtP719tzwPAbPdTBFLL2rLQfOo5dnP0cmAXwb9h9ek53XRx2s9bMcixwF4BStF0PqZX5W6fFF7D1xNLd1nj35qlPrZ24j9MEW02WewX/5ZNo8DutR4qreV1NANmAFTRCAQAQMCETAgEAEDAhEwIBABAwIRMCBQU8Dkg8UtmzePmhF9AanqgMmAvPygt2VjMOOsqgKm4drq6CHz+Ns8X5/R+jkz+7uIv//x8ZdvP+0KmFgO2NPXpB6/+nL5mdKDWvNcsu/WnmofW9uP7ter9nlG6ofvItqmDZjYOpBa65f2Xwaaw+tT8zxipH4ImK0qYLlAtCrVqx1Ae6EfGwErY5keCETAgEAv5RSvU4970ukG/awbtR/YOIMBgcwb8O2xyKHvxum74Vo/e6AfW64frOMezQn6sZX6wTWmiEAg7tGcmK2ft2/fLj/38ubNm+Vn2g/WcY/mjNH72TtYKQma9oM8ApYxQ8Def/HN8t+pV3/++vTbNc/9CVidlyMMHiE9SC/0s+6yn3ufvYT0IL3AxiIHEIiAAYEIGBBoNWByQS1blNb69INZyVVq8e4qXhf5pXq9/95q1n50kSO3ypfTulqYo3VYSSwzp4hyoGWTA6sHdwt9vNbbin4wm6prsK0DKWrg0A9mURWwrQNB99fHe6EfzMIM2NaBk/IaSPSD2ZiriL0DJ7V1INEPZmWuIu5NBxX9rNN+SquIudXCVqX6rCKWVV2DAdiGgAGBCBgQiIABgQgYEIiAAYEIGBCIgAGBqj5olg84ez9sranR+sGu7t+qtX5t371qn4cPmucx7RlMBpsMyC2bVyCAkikDpuHaipBhL1UB6x2QvYEYncffduTX58yqz2Aasi3bGQZPz99IuI6Lb9MbRu2HRY55sEwPBCJgQCDu0Zwxcj8yNbs3pod1uLtKxuj96HXYvRCwOtyALzFbP3sHTc+eaT9Y9xwwpQduL6UDRT9z9YNrBCzBgIan4aeIo0yBRusHcxh2kWOki/jR+sE8CFjGWsD++vHv5b9rff7DZ0+/XdtSh4DNach7NN87XEJ6GLEfzIVvcgCBCBgQyAyYXBfp1suzFjCL1YCtBWFrODxrAbORq+ab/z2YNfhbF0Raaum+pUWF7/796em3Pj9/8v3Tb+v0Myjt556riIKVxPncnMFKZ5aWM49nLWBGLHIAgQgYEOgmYKVrrJZrMM9awIw4gwGBVlcR1eUiRO/ZpqaW7qOrdrnVwtzqn/f+6SrivbGKOB/zDCZB0K2XZy1gFkwRgUAEDAhEwIBABAwIZK4i7i1dRczhu4iYBWcwIBABAwJVBUymbh4bcDZVAbv8kLi0Lfv/9u5mA86IKSIQKGQVUaaDl2eth69fP5/dLDqN3Prdv9bvIpb0fhcxt1qYW10sYRVxPiFnMAmThEo37wADswibIkqodAPOimswIBABAwINeY9mXVy4J11QGK0fzIW7q2RcDujR+sE8uAFfQs9Wo/eDOTwHTOlA2ktp4NAPwZrXixf/AZq/oygOz8PlAAAAAElFTkSuQmCC)}.alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}.dark-background .alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.rlc-CssBGAlternate #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd){background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}.rlc-CssBGAlternate .dark-background #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd){background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}");
 
 /*--------------RLC CSS STANDALONES (Minified)--------------*/
 GM_addStyle("#rlc-main #rlc-chat li.liveupdate.user-narration .body .md{font-style:italic}body{min-width:0;overflow:hidden}body.allowHistoryScroll{height:105%;overflow:auto}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}.mrPumpkin{height:24px;width:24px;display:inline-block;border-radius:3px;background-size:144px;margin-top:0!important;margin-bottom:-6px!important}.dark-background .mrPumpkin{border-radius:5px}.mp_frown{background-position:-24px 0}.mp_silly{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_zen{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.rlc-customscrollbars ::-webkit-scrollbar{width:10px}.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#262626}.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#4C4C4C;border:1px solid #262626}#contributors,#discussions,#hsts_pixel,#liveupdate-options,#liveupdate-resources>h2,#rlc-chat.rlc-filter li.liveupdate,#rlc-guidebar,#rlc-main #rlc-chat li.liveupdate.user-narration .body a,#rlc-main #rlc-chat li.liveupdate.user-narration>a,#rlc-main .liveupdate-listing .liveupdate .simpletime,#rlc-main .liveupdate-listing .liveupdate time,#rlc-main .liveupdate-listing li.liveupdate time:before,#rlc-main .liveupdate-listing li.liveupdate ul.buttonrow,#rlc-main iframe,#rlc-readmebar,#rlc-settings,.debuginfo,.footer-parent,.help-toggle,.reddiquette,.rlc-compact div#header,.rlc-filter .channelname,.rlc-hidesidebar #rlc-sidebar,.rlc-showoptions #rlc-main-sidebar,.rlc-showreadmebar #rlc-main-sidebar,.save-button,.ui-helper-hidden-accessible,body>.content{display:none}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}");
