@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.29.21
+// @version      2.29.30
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -689,7 +689,7 @@
         $ele.addClass("u_"+$usr.text());
 
         //alternating background color   
-        //alternateMsgBackground($ele);
+        alternateMsgBackground($ele);
 
         // Current User name mentioned
         messageMentionHandler(line, $usr, $ele);
@@ -752,7 +752,6 @@
         win.focus();
     }
     function deleteComment($objComment){
-		$objComment.attr('visible','false');
         if($objComment.has('.buttonrow').length>0){
             var $button = $objComment.find('.delete').find('button');
             $button.click();
@@ -1698,14 +1697,6 @@ display: flex; \
 flex-direction: column-reverse; \
 min-height: 100%; \
 } \
-\
-	#rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd) { \
-	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=')!important; \
-	} \
-	\
-	.dark-background #rlc-main .liveupdate-listing li.liveupdate:nth-last-child(odd) { \
-	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=')!important; \
-	} \
 \
 div#rlc-chat { \
 overflow-y: auto; \
