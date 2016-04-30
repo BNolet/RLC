@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.29.37
+// @version      2.30
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -386,7 +386,7 @@
             $.each(numbermatches,function(i) {
                 linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
             });
-            console.log(linetoread);
+            //console.log(linetoread);
             if (!hasTripple) {
                 // Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
                 var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
@@ -590,10 +590,10 @@
         messageClickHandler($usr,$msg,$ele);  // message click handling 
 
         if (loading_initial_messages == 0) {
-            console.log("loading_initial_messages = 0");
+           // console.log("loading_initial_messages = 0");
             //stuff that should not be done to messages loaded on init, like TTS handling
             if(typeof rescan !== 'undefined' && rescan === true){
-                console.log("this is rescan");
+              //  console.log("this is rescan");
                 // this is rescan, do nothing. rescans happen when channel tabs are changed
             }
             // not rescan, read aloud if TTS enabled
@@ -610,10 +610,10 @@
                     }
                 }
                 messageTextToSpeechHandler($msg, $usr);
-                console.log("this is not rescan");
+              //  console.log("this is not rescan");
             }
         }
-        console.log("end new message handling instance");
+      //  console.log("end new message handling instance");
     };
 
     function getColor(username) {
@@ -1028,7 +1028,7 @@
             if ($(e.target).is('li.liveupdate')) {
                 // Apply changes to line
                 handle_new_message($(e.target), false);
-                console.log("handling new message from inserted content");
+                //console.log("handling new message from inserted content");
                 if ($(document.body).hasClass("AutoScroll")) {
                     _scroll_to_bottom();
                 }
@@ -1154,6 +1154,9 @@
                 }
             }
         });
+
+ 
+
     }
 
     /* failed experiment but reads updates from json and inserts fake updates based on them - Not called by anything atm */
@@ -1179,7 +1182,7 @@
     }
 
     // boot
-    $(document).ready(function() {
+    $(window).load(function() {
         // move default elements into custom containers defined in htmlPayload
         rlcSetupContainers();
         // setup sidebar based on content
@@ -1192,11 +1195,20 @@
         // handle existing chat messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
-            console.log("handling new message from existing content");
+            //console.log("handling new message from existing content");
         });
 
         _scroll_to_bottom();    //done adding/modding content, scroll to bottom
 
+
+   /* dident work
+    $(window).scroll(function(e) {
+      if (loading_initial_messages = 1) {
+        e.preventDefault();
+      }
+    });*/
+    //prevent native history load on scroll
+    $(window).unbind('scroll');
 
         /* Create options */
         createOption("AutoScroll", function(checked, ele){
