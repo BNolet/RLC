@@ -395,7 +395,7 @@
     
     var langSupport = ["en","en-US","ja","es-US","hi-IN","it-IT","nl-NL","pl-PL","ru-RU"];
 
-    function messageTextToSpeechHandler($msg,$usr) {
+    function messageTextToSpeechHandler($msg,$usr,declaredAction=false) {
         if (GM_getValue("rlc-TextToSpeech") === 'true') {
             var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
             var hasTripple = /(.)\1\1/.test(linetoread);
@@ -445,7 +445,7 @@
                     case checkingStr == checkingStr.toUpperCase(): //Check for screaming
                         msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
                         break;
-                    case linetoread.trim().split(" ")[0] == $usr.text().trim(): //Check for declared action
+                    case declaredAction == true: //Check for declared action
                         msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
                         break;
                     default: // said
@@ -562,9 +562,11 @@
         var first_line = $msg.find("p").first();
 
         // /me support
+		var declaredAction = false;
         if(line.indexOf("/me") === 0){
             $ele.addClass("user-narration");
             first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
+			declaredAction = true;
         }
 
         // target blank all message links
@@ -628,7 +630,7 @@
                         });
                     }
                 }
-                messageTextToSpeechHandler($msg, $usr);
+                messageTextToSpeechHandler($msg, $usr, declaredAction);
               //  console.log("this is not rescan");
             }
         }
