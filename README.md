@@ -2,8 +2,8 @@
 
 This is a script made for [reddit live](https://www.reddit.com/live). RLC makes it possible to use the live feature as a fully functional chat. 
 
-Note: Screenshot is horrendously outdated.
-![Screenshot](http://i.imgur.com/ZmI5AWx.png)
+
+![Screenshot](http://i.imgur.com/p2o6NwM.png)
 
 To use this script, install Tampermonkey which can be found [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), or Greasemonkey which can be found [here](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) and then click the link below to install RLC.
 
@@ -22,9 +22,10 @@ Come hang out in [RLC Dev Chat](https://www.reddit.com/live/wpytzw1guzg2) to hel
 * Highlights when you are mentioned (with optional sound effect and chrome notification)
 * Channels (with graphical interface, tabs and multi-channel-view)
 * Custom RLC Emotes! - currently supported: :)  :s  :|  :o  :(  :((
+* Robin colors!
 * Dark Mode theme compatible with but seperate from RES nightmode
 * Options panel
 * History (arrow up cycles you through last sent messages)
 * Nicklist (not yet fully functional)
 
-Note: development of RLC almost always outpaces this readme file. if you wish to keep up, use the chat and the Issues section of this repository.
+Note: development of RLC almost always outpaces this readme file. Check out the chat itself and the Issues section of this repository to get a better idea of the current state of the project.
