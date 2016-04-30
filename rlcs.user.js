@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.29.36
+// @version      2.29.37
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -53,6 +53,7 @@
             alert("You have TextToSpeech enabled, please disable to load old messages.");
         }
         else {
+            loading_initial_messages = 1;
             $('body').toggleClass("allowHistoryScroll");
             $('body').scrollTop($('body')[0].scrollHeight);
             _scroll_to_bottom();
@@ -536,7 +537,7 @@
     // message display handling for new and old(rescan) messages
     // add any proccessing for new messages in here
     var handle_new_message = function($ele, rescan){
-        console.log(loading_initial_messages);
+
         var $msg = $ele.find(".body .md");
         var $usr = $ele.find(".body .author");
         var line = $msg.text().toLowerCase();
@@ -589,8 +590,10 @@
         messageClickHandler($usr,$msg,$ele);  // message click handling 
 
         if (loading_initial_messages == 0) {
+            console.log("loading_initial_messages = 0");
             //stuff that should not be done to messages loaded on init, like TTS handling
             if(typeof rescan !== 'undefined' && rescan === true){
+                console.log("this is rescan");
                 // this is rescan, do nothing. rescans happen when channel tabs are changed
             }
             // not rescan, read aloud if TTS enabled
@@ -607,8 +610,10 @@
                     }
                 }
                 messageTextToSpeechHandler($msg, $usr);
+                console.log("this is not rescan");
             }
         }
+        console.log("end new message handling instance");
     };
 
     function getColor(username) {
@@ -651,7 +656,7 @@
     // rate limiter for prevention of message send withn 1 sec on previous user message, see Tick and Event Handlers
     var ratelimit = 0;
     // badmanfix tts (see channel Tick)
-    var badmanfixtts = 1;
+    //var badmanfixtts = 1;
     // channel tabs megafunction
     var tabbedChannels = new function(){
         /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
@@ -883,10 +888,10 @@
             _self.$el.find(".rlc-filters span").each(function(){
                 if($(this).hasClass("selected")) return;
                 $(this).find("span").text(_self.unread_counts[$(this).data("filter")]);
-                if (badmanfixtts !== 0) {  // get rid of this asap. stops speech synthesis 1 second after page init
+                /*if (badmanfixtts !== 0) {  // get rid of this asap. stops speech synthesis 1 second after page init
                     badmanfixtts = badmanfixtts - 1;
                     window.speechSynthesis.cancel()
-                }
+                }*/
                 loading_initial_messages = 0;
                 //UpdatealternateMsgBackground();
             });
@@ -1023,6 +1028,7 @@
             if ($(e.target).is('li.liveupdate')) {
                 // Apply changes to line
                 handle_new_message($(e.target), false);
+                console.log("handling new message from inserted content");
                 if ($(document.body).hasClass("AutoScroll")) {
                     _scroll_to_bottom();
                 }
@@ -1186,6 +1192,7 @@
         // handle existing chat messages
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handle_new_message($(item), true);
+            console.log("handling new message from existing content");
         });
 
         _scroll_to_bottom();    //done adding/modding content, scroll to bottom
