@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      2.29.2
+// @version      2.29.21
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner
 // @include      https://www.reddit.com/live/*
@@ -1151,7 +1151,7 @@
                 if ($(document.body).hasClass("AutoScroll")) {
                     _scroll_to_bottom();
                 }
-                UpdatealternateMsgBackground(); //fix backgrounds, should happen on DELETE of a message but we cant catch the event.
+                //UpdatealternateMsgBackground(); //fix backgrounds, should happen on DELETE of a message but we cant catch the event.
             }
             //remove separators
             else if ($(e.target).is('.separator')) {
