@@ -1,1 +1,4 @@
 *.sublime-workspace
+.eslintrc.js
+lint.txt
+lint.html
