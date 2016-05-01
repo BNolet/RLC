@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.2.91
+// @version      3.2.92
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -131,7 +131,7 @@ ________________________________________________________________________________
 	}
 
 	var b = GM_getValue("mutedUsers");
-	if(b.length!=undefined){
+	if(b!=undefined){
 		var mutedUsers = b;
 		console.log(mutedUsers);
 	}else{
