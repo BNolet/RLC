@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.2.5
+// @version      3.2.6
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -27,7 +27,7 @@ ________________________________________________________________________________
 	if (!GM_getValue("rlc-ChannelColors")) {                GM_setValue("rlc-ChannelColors",            true);}
 	if (!GM_getValue("rlc-AutoScroll")) {                   GM_setValue("rlc-AutoScroll",               true);}
 	if (!GM_getValue("rlc-TextToSpeech")) {                 GM_setValue("rlc-TextToSpeech",             false);}
-        if (!GM_getValue("rlc-TTSUsernameNarration")) { 	    GM_setValue("rlc-TTSUsernameNarration", true);}
+    if (!GM_getValue("rlc-TTSUsernameNarration")) { 	    GM_setValue("rlc-TTSUsernameNarration",      true);}
 	if (!GM_getValue("rlc-RobinColors")) {                  GM_setValue("rlc-RobinColors",              false);}
 	if (!GM_getValue("rlc-CSSBackgroundAlternation")) { 	GM_setValue("rlc-CSSBackgroundAlternation", false);}
 	if (!GM_getValue("rlc-DebugMode")) {                    GM_setValue("rlc-DebugMode",                false);}
@@ -205,6 +205,7 @@ ________________________________________________________________________________
 		// Add to DOM
 		$("#rlc-settings").append($option);
 		clickAction(state, $option);
+		console.log(key+" = "+state);
 	}
 
 /*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
@@ -539,7 +540,7 @@ ________________________________________________________________________________
 		if (loadingInitialMessages === 0) {
 			// Stuff that should not be done to messages loaded on init, like TTS handling
 			if (rescan) {
-				console.log("This is the rescan. Do you copy? Not sure why we're reporting. Over and out.");
+				//console.log("This is the rescan. Do you copy? Not sure why we're reporting. Over and out.");
 				// This is rescan, do nothing. rescans happen when channel tabs are changed
 			}
 			else {
@@ -688,7 +689,7 @@ ________________________________________________________________________________
 				var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
 				var hasTripple = /(.)\1\1/.test(linetoread);
 				var numbermatches = getNumbers(linetoread);
-				RLClog("initial linetoread "+linetoread);
+				//RLClog("initial linetoread "+linetoread);
 				$.each(numbermatches, function(i) {
 					linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
 				});
@@ -718,7 +719,7 @@ ________________________________________________________________________________
 					var msg;
                     var usr = $usr.text();
                     if (usr == "741456963789852123") { usr = "7-41"; }
-                    RLClog("usr name for narration "+usr)
+                    //RLClog("usr name for narration "+usr)
 	                if (!GM_getValue("rlc-TTSUsernameNarration")) {
 	                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
 	                } else {
@@ -743,7 +744,7 @@ ________________________________________________________________________________
 	                            msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
 	                            break;
 	                    }
-                        RLClog("message: "+ linetoread + " said " + $usr.text() + toneStr );
+                        //RLClog("message: "+ linetoread + " said " + $usr.text() + toneStr );
 	                }
 						// Now speak the sentence
 					// msg.voiceURI = 'native';
@@ -770,9 +771,9 @@ ________________________________________________________________________________
 							msg.rate = 1;
 						}
 
-						RLClog(msg.pitch);
-						RLClog(msg.rate);
-						RLClog(msg.voice);
+						//RLClog(msg.pitch);
+						//RLClog(msg.rate);
+						//RLClog(msg.voice);
 
 					}
 					msg.volume = 1; // 0 to 1
