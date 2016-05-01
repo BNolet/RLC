@@ -717,8 +717,7 @@ ________________________________________________________________________________
 					// Narration Style
 					var msg;
                     var usr = $usr.text();
-                    usr = "741456963789852123";
-                    if (usr = "741456963789852123") { usr = "7-41"; }
+                    if (usr == "741456963789852123") { usr = "7-41"; }
                     RLClog("usr name for narration "+usr)
 	                if (!GM_getValue("rlc-TTSUsernameNarration")) {
 	                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
