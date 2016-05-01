@@ -690,8 +690,7 @@ ________________________________________________________________________________
 					"xhappy": "very happily",
 					"tongue": "while sticking out a tounge"};
 	// Abbreviation Expansion (All keys must be in uppercase)
-	var replaceStrList = {	"WTF":
-							"What The Fuck",
+		var replaceStrList = {	"WTF": "What The Fuck",
 							"BTW": "By The Way",
 							"NVM": "Nevermind",
 							"AFAIK": "As Far As I Know",
@@ -707,7 +706,18 @@ ________________________________________________________________________________
 							"RTFM": "Read The Fucking Manual",
 							"TLDR": "Too Long, Didn't Read",
 							"FTW": "For The Win",
-							"FFS": "For Fucks Sake"};
+							"FFS": "For Fucks Sake",
+							"BRB": "Be Right Back",
+                            "B4N": "Bye For Now",
+							"B&": "Banned",
+							"BF": "Boyfriend",
+							"GF": "Girlfriend",
+							"SO": "Significant Other",
+							"FUBAR": "Fucked Up Beyond All Recognition",
+							"FTFY": "Fixed That For You",
+                            "LMAO": "Laughing My Ass Off",
+							"TTS": "Text To Speech",
+                            "THX": "Thanks"};
 
 	var langSupport = ["en", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
