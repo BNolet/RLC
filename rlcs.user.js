@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.2.92
+// @version      3.3
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -550,7 +550,11 @@ ________________________________________________________________________________
 		messageUserColor($usr); // User color
 
 		messageClickHandler($usr, $msg, $el);  // Message click handling
-
+		
+		if(mutedUsers.indexOf($usr.text())!=-1){ //deal with muting
+			$msg.parent().addClass('muted'); 
+		}
+		
 		if (loadingInitialMessages === 0) {
 			reAlternate();
 			// Stuff that should not be done to messages loaded on init, like TTS handling
@@ -571,7 +575,9 @@ ________________________________________________________________________________
 						});
 					}
 				}
-				messageTextToSpeechHandler($msg, $usr);
+				if(!$msg.parent().hasClass('muted')){
+					messageTextToSpeechHandler($msg, $usr);
+				}
 			}
 		}
 	};
