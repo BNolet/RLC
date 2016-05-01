@@ -23,11 +23,11 @@
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
 	// set default states for options
-	if (!GM_getValue("rlc-NoSmileys")) {                    GM_setValue("rlc-NoSmileys",                false);}
+	if (!GM_getValue("rlc-NoEmotes")) {                    GM_setValue("rlc-NoEmotes",                false);}
 	if (!GM_getValue("rlc-ChannelColors")) {                GM_setValue("rlc-ChannelColors",            true);}
 	if (!GM_getValue("rlc-AutoScroll")) {                   GM_setValue("rlc-AutoScroll",               true);}
-	if (!GM_getValue("rlc-TextToSpeech")) {                 GM_setValue("rlc-TextToSpeech",             false);}
-    if (!GM_getValue("rlc-TTSUsernameNarration")) { 	    GM_setValue("rlc-TTSUsernameNarration",      true);}
+	if (!GM_getValue("rlc-TextToSpeechTTS")) {                 GM_setValue("rlc-TextToSpeechTTS",             false);}
+	if (!GM_getValue("rlc-TTSUsernameNarration")) { 	    GM_setValue("rlc-TTSUsernameNarration",      false);}
 	if (!GM_getValue("rlc-RobinColors")) {                  GM_setValue("rlc-RobinColors",              false);}
 	if (!GM_getValue("rlc-CSSBackgroundAlternation")) { 	GM_setValue("rlc-CSSBackgroundAlternation", false);}
 	if (!GM_getValue("rlc-DebugMode")) {                    GM_setValue("rlc-DebugMode",                false);}
@@ -338,7 +338,7 @@ ________________________________________________________________________________
 					":P": "tongue"};
 
 	function emoteSupport(line, $msg, firstLine) {
-		if (!GM_getValue("rlc-NoSmileys")){
+		if (!GM_getValue("rlc-NoEmotes")){
 			$.each(emojiList, function(emoji,replace){
 				if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
 					if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
@@ -683,9 +683,8 @@ ________________________________________________________________________________
 	}
 
 	function messageTextToSpeechHandler($msg, $usr) {
-		//if (GM_getValue("rlc-TextToSpeech")) {  ####### wasn't getting detected right? Always true (FF)
+		if (GM_getValue("rlc-TextToSpeechTTS")) { 
 		if($msg.text().length<250){
-			if ($("body").hasClass("rlc-TextToSpeech")) {
 				var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
 				var hasTripple = /(.)\1\1/.test(linetoread);
 				var numbermatches = getNumbers(linetoread);
