@@ -1192,7 +1192,7 @@ ________________________________________________________________________________
 			$( "#rlc-settings label:contains('Compact Mode') input" ).click();
 		});
 		$("#s2tts").click(function(){
-			$( "#rlc-settings label:contains('Text To Speech') input" ).click();
+			$( "#rlc-settings label:contains('Text To Speech (TTS)') input" ).click();
 		});
 
 		$("#rlc-togglesidebar").click(function(){   $("body").toggleClass("rlc-hidesidebar");   scollToBottom();  });
