@@ -28,7 +28,7 @@ ________________________________________________________________________________
 	if (!GM_getValue("rlc-AutoScroll")) {               GM_setValue("rlc-AutoScroll",               true);}
 	if (!GM_getValue("rlc-TextToSpeech")) {             GM_setValue("rlc-TextToSpeech",             false);}
 	if (!GM_getValue("rlc-RobinColors")) {              GM_setValue("rlc-RobinColors",              false);}
-	if (!GM_getValue("rlc-CSSbackgroundalternation")) { GM_setValue("rlc-CSSbackgroundalternation", false);}
+	if (!GM_getValue("rlc-BackgroundAlternation")) { 	GM_setValue("rlc-BackgroundAlternation", 	false);}
 	if (!GM_getValue("rlc-DebugMode")) {                GM_setValue("rlc-DebugMode",                false);}
 
 	// Grab users username + play nice with RES
@@ -37,14 +37,14 @@ ________________________________________________________________________________
 	// Channel Colours
 	var colors = ["rgba(255,0,0,0.1)", "rgba(0,255,0,0.1)", "rgba(0,0,255,0.1)", "rgba(0,255,255,0.1)", "rgba(255,0,255,0.1)", "rgba(255,255,0,0.1)", "rgba(211,211,211, .1)", "rgba(0,100,0, .1)", "rgba(255,20,147, .1)", "rgba(184,134,11, .1)"];
 
-	// notification sound in base64 encoding
+	// Notification sound in base64 encoding
 	var base64sound ="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QECBtFxREzTNkMyfLLVlM9UgS6aQnkPEo3DJRYkUyVQacP6j+5rqMc4TaCiVCxzSEDIKUTvMec6D7tk0aS4CEYQqahfEu6jh/We1NrVrQzhbTKZBgYbi8YbecRuLTMpTvUoAIIlynCMCimNNtBMWwDOcZIMABFMmDZPSCQgzPrLBYvUyQFMUd6UR1kbzgIGfWKw/SrqKgg5coZaKgUBQzOtyEaucSrOTBlGOqpGMNYXtGwYFhwTdfZ/nmjb0QUrCKicsj8alcPp0y7KmpuOEVAQSvUg25SKDofWuZEBtKidNLZhQJ0oGpdfVeGhJgUUEjARAINH4cGP3olbJAcdDR4gdl/onWtSmuw1xa2WVPSOy6CJ4qHBgSoO8r9UmcZiT4P+YkAhcKf+BJTTY44/cYFV5vLKV2XeYQShgODRoQoL8Kv/7ksTXgBhp4TbVygAE2sIlAzuwAJ5JQRVudDXlr7DoQRA6LbSquF6tu7RZb5t9nGr1bOOvx+64QknJBvtR///////////////6R48LQFE////////////////2AwDFdBkACAVhVSstnYaa015ymstdiCPRbJK5R0zROkwvcAhgeoNiRyAwEGJhpENIsbJLJknUCBC5jw5QzRuQEc0uCEwauFwjqEFhBYXEVxjQyKGKSXFmigRmTxeLx0mUjEumrUkklJJLLpqogQ5x4mhziLGyJdRatHrRLrooskk6Jq6Jqj1o/qSSqS/60UZkXmUkk9FFGtFH/9aPRRZRkXmSLyT0W/0UaLKSSWYl1zFMQU1FMy45OC4yqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpMQU1FMy45OC4yqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr/+5LEoQPVgaL0XYiAAAAANIAAAASqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
 	var snd = new Audio("data:audio/wav;base64, " + base64sound);
 
-	// chrome notice img in bass64
+	// Chrome notice image in bass64
 	var chromeNotificationImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAIAAABuYg/PAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAADgSURBVFhH7ZdRbsMwDENzgt7/Sj2VG0eEKxGUmgJOUKR5eMNgiRH3u6U5lgPA6Q08sHg+povL1mJNlJiu9Z1bdkKT2Zv+rAyL7/8OfFbcFKOID2QiGhEBMYr4QCaiERHgt2JkpAgpOMNvxchIEVJwht+KkZEipODMeL9HER/IRDQiAmIU8YFMRCMi4EcmFvtqvPisuEnTg7zLpniXTfGXyopVZn2tQ9Nhscqsr3VoOixWmfW1Dk299Zb8eKpDUxKhHdCH5K7QLK9ddt3/YtYf6zuoEpetxX4ZtpgLTq+09gIQTX1K/dS/IgAAAABJRU5ErkJggg==";
 
-	// Html for injection, inserted at doc.ready
+	// HTML for injection, inserted at doc.ready
 	var htmlPayload =  `<div id="rlc-sidebar">
 						<div id="rlc-main-sidebar"></div> 
 						    <div id="rlc-readmebar">
@@ -102,19 +102,17 @@ ________________________________________________________________________________
 		$("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
 	};
 
-	// option based relay for debug info via console.log, use for checks that make sense to track long term
+	// Option based relay for debug info via console.log, use for checks that make sense to track long term
 	function RLClog(thingtolog) {
-		if (GM_getValue("rlc-DebugMode")) {
-			console.log(thingtolog);
-		}
+		if (GM_getValue("rlc-DebugMode")) console.log(thingtolog);
 	}
 
-	// manipulate native reddit live into loading old messages
+	// Manipulate native reddit live into loading old messages
 	function loadHistory() {
 		if (GM_getValue("rlc-TextToSpeech")) {
+			// TODO: Switch to something more user-friendly. Message in the chat?
 			alert("You have TextToSpeech enabled, please disable to load old messages.");
-		}
-		else {
+		} else {
 			loadingInitialMessages = 1;
 			$("body").toggleClass("allowHistoryScroll");
 			$("body").scrollTop($("body")[0].scrollHeight);
@@ -123,82 +121,79 @@ ________________________________________________________________________________
 		}
 	}
 
-	//timeconverter for active user list
+	// Time converter for active user list
 	function convertTo24Hour(time) {
 		var hours = parseInt(time.substr(0, 2));
-		if (time.indexOf("am") !== -1 && hours === 12) {
-			time = time.replace("12", "0");
-		}
-		if (time.indexOf("pm") !== -1 && hours < 12) {
-			time = time.replace(hours, (hours + 12));
-		}
+		if (time.indexOf("am") !== -1 && hours === 12) time = time.replace("12", "0");
+		if (time.indexOf("pm") !== -1 && hours < 12) time = time.replace(hours, (hours + 12));
 		return time.replace(/(am|pm)/, "");
 	}
 
-	// muted user list
 	var mutedUsers = [];
-	// user muting
 	function updateMutedUsers() {
-		// reset by removing css and userlist
+		// Reset by removing CSS and userlist
 		$("#mystyle").remove();
 		$("#bannedlist").empty();
 
-		// iterate over the muted users
+		// Iterate over the muted users
 		var selectors = [];
 		for(let i = 0; i <= mutedUsers.length; i++){
-			if (mutedUsers[i] !== undefined) {    //avoid the undefined one i cant figure out why im puttin in
-				selectors.push(".u_"+mutedUsers[i]+"{display:none;}");      //generate css display none rule for user in list
-				$("#bannedlist").append("<p>"+mutedUsers[i]+"</p>");        //generate interface element for disabling muting
+			if (mutedUsers[i] !== undefined) {    // Avoid the undefined one I cant figure out why I'm puttin in
+				selectors.push(`.u_${mutedUsers[i]}{display:none;}`);      // Generate CSS display none rule for user in list
+				$("#bannedlist").append(`<p>${mutedUsers[i]}</p>`);        // Generate interface element for disabling muting
 			}
 		}
-		$("body").append("<style id='mystyle'>"+selectors.join(" ")+"</style>"); //inject style tag with user rules
+		$("body").append(`<style id='mystyle'>${selectors.join(" ")}</style>`); // Inject style tag with user rules
 
-		// handle clicking in muted user list (needs to be here for scope reasons)
+		// Handle clicking in muted user list (needs to be here for scope reasons)
 		$("#bannedlist p").click(function(){
-			var thisguy = $(this).text();
-			var hisposition = mutedUsers.indexOf(thisguy);
-			$(this).remove();  //remove this element from the muted list
-			mutedUsers.splice(hisposition, 1);  //remove this guy from the muted array
-			updateMutedUsers(); // run parent function
+			let target = $(this).text();
+			let targetPosition = mutedUsers.indexOf(target);
+			$(this).remove();  // Remove this element from the muted list
+			mutedUsers.splice(targetPosition, 1);  // Remove target from the muted array
+			updateMutedUsers(); // Update
 			scollToBottom();
 		});
 	}
 
-	// Active user arrays
-	var activeUserArray = [];
-	var activeUserTimes = [];
-	var updateArray = [];
-	// update active user list
+	var activeUserArray = [],
+		activeUserTimes = [],
+		updateArray = [];
+	
+	// Update active user list
 	function processActiveUsersList() {
 		$("#rlc-activeusers ul").empty();
 		updateArray = [];
+		
 		for(let i = 0; i <= activeUserArray.length; i++){
 			if (updateArray.indexOf(activeUserArray[i]) === -1 && activeUserArray[i] !== undefined) {
 				updateArray.push(activeUserArray[i]);
-				$("#rlc-activeusers ul").append("<li><span class='activeusersUser'>"+activeUserArray[i] + "</span> @ <span class='activeusersTime'>" + activeUserTimes[i]+"</span></li>");
+				$("#rlc-activeusers ul").append(`<li><span class='activeusersUser'>${activeUserArray[i]}</span> @ <span class='activeusersTime'>${activeUserTimes[i]}</span></li>`);
 			} else if (updateArray.indexOf(activeUserArray[i]) > -1) {
-				//add message counter value
-				//check if timestamp is recent enough?
+				/* TODO: Add things.
+				
+				   Add message counter value
+				   Check if timestamp is recent enough? */
 			}
 		}
 	}
 
-	// create persistant option
+	// Create persistant option
 	function createOption(name, clickAction, defaultState){
 		var checkedMarkup;
 		var key = "rlc-" + name.replace(/\W/g, "");
 		var state = (typeof defaultState !== "undefined") ? defaultState : false;
-		// try and state if setting is defined
+		// Try and state if setting is defined
 		if (GM_getValue(key)){
 			state = GM_getValue(key);
 		}
-		// markup for state
+		// Markup for state
 		checkedMarkup = state ? "checked='checked'" : "";
-		// render option
-		var $option = $("<label><input type='checkbox' "+checkedMarkup+">"+name+"</label>").click(function(){
-			var checked = $(this).find("input").is(":checked");
+		// Render option
+		var $option = $(`<label><input type='checkbox' ${checkedMarkup}>${name}</label>`).click(function(){
+			let checked = $(this).find("input").is(":checked");
 
-			// persist state
+			// Persist state
 			if (checked !== state){
 				GM_setValue(key, checked);
 				state = checked;
@@ -206,9 +201,8 @@ ________________________________________________________________________________
 
 			clickAction(checked, $(this));
 		});
-		// add to dom
+		// Add to DOM
 		$("#rlc-settings").append($option);
-		// init
 		clickAction(state, $option);
 	}
 
@@ -219,9 +213,9 @@ ________________________________________________________________________________
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
 	
-		// numbers to english words for TTS
-	var digits = ["", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "];
-	var tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+	// Numbers to english words for TTS
+	var digits = ["", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "],
+		tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 	
 	function numberToEnglish (num) {
 		if ((num = num.toString()).length > 9) return "Overflow in numberToEnglish function.";
@@ -236,22 +230,19 @@ ________________________________________________________________________________
 		return str;
 	}
 
-	// channel prefix removal
+	// Channel prefix removal
 	var removeChannelKeyFromMessage = function(message){
 		if ($("#rlc-chat").attr("data-channel-key")){
 			var offset = $("#rlc-chat").attr("data-channel-key").length;
 			if (offset === 0) return message;
 
-			if (message.indexOf("/me") === 0){
-				return "/me "+ message.slice(offset+5);
-			} else {
-				return message.slice(offset+1);
-			}
+			if (message.indexOf("/me") === 0) return "/me "+ message.slice(offset+5);
+			return message.slice(offset+1);
 		}
 		return message;
 	};
 
-	//convert string to hex (for user colors)
+	// Convert string to hex (for user colors)
 	function toHex(str) {
 		var result = "";
 		for (var i=0; i<str.length; i++) {
@@ -260,12 +251,10 @@ ________________________________________________________________________________
 		return result;
 	}
 
-	//generate random value based on seed, max and minimum (for user colors)
-	Math.seededRandom = function(seed, max, min) {
-		// in order to work 'seed' must NOT be undefined,
-		// so in any case, you HAVE to provide a Math.seed
-		max = max || 1;
-		min = min || 0;
+	// Generate random value based on seed, max and minimum (for user colors)
+	Math.seededRandom = function(seed, max = 1, min = 0) {
+		// In order to work 'seed' must NOT be undefined,
+		// So in any case, you HAVE to provide a Math.seed
 
 		seed = (seed * 9301 + 49297) % 233280;
 		var rnd = seed / 233280;
@@ -273,20 +262,21 @@ ________________________________________________________________________________
 		return parseInt(min + rnd * (max - min));
 	};
 
-	// message background alternation via js
-	var rowalternator = 0;
-	//modify color by amount
+	// Message background alternation via js
+	var rowAlternator = 0;
+	// Modify color by amount
 	function LightenDarkenColor2(col, amt) {
-		var r=col.slice(0,2);
-		var g=col.slice(2,4);
-		var b=col.slice(4,6);
-		if (rowalternator)amt+=10;   //might wanna rethink this
+		var r = col.slice(0,2);
+		var g = col.slice(2,4);
+		var b = col.slice(4,6);
+		if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
 		var randR = (Math.seededRandom(r*100,120,175));
 		var randG = (Math.seededRandom(g*100,120,175));
 		var randB = (Math.seededRandom(b*100,120,175));
 
-		var suppress=(Math.seededRandom(col*r*10,0,6));
-		var modAmt=2;
+		// TODO-SUGGESTION: Code readability
+		var suppress = (Math.seededRandom(col*r*10,0,6));
+		var modAmt =2 ;
 		switch(suppress) {
 		case 0:
 			randR/=modAmt;
@@ -318,25 +308,25 @@ ________________________________________________________________________________
 		var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
 		var hexB = (parseInt(randB) + parseInt(amt)).toString(16);
 
-		return hexR+hexG+hexB;
+		return hexR + hexG + hexB;
 	}
 
-	function messageMentionHandler(line, $usr, $ele) {
+	function messageMentionHandler(line, $usr, $el) {
 		if (line.indexOf(robinUser) !== -1){
-			//add bold highlighting
-			$ele.addClass("user-mention");
+			// Add bold highlighting
+			$el.addClass("user-mention");
 
 		}
 	}
 
-	function alternateMsgBackground($ele) {
-		if (!GM_getValue("rlc-CSSbackgroundalternation")) {
-			if (rowalternator === 0) {
-				$ele.addClass("alt-bgcolor");
-				rowalternator = 1;
+	function alternateMsgBackground($el) {
+		if (!GM_getValue("rlc-BackgroundAlternation")) {
+			if (rowAlternator === 0) {
+				$el.addClass("alt-bgcolor");
+				rowAlternator = 1;
 			}
 			else {
-				rowalternator = 0;
+				rowAlternator = 0;
 			}
 		}
 	}
@@ -368,46 +358,46 @@ ________________________________________________________________________________
 				if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
 					if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
 						firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
-						firstLine.html(firstLine.html().split(emoji.toLowerCase()).join("<span class='mrPumpkin mp_"+replace+"'></span>"));
+						firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrPumpkin mp_${replace}'></span>`));
 					}
 				}
 			});
 		}
 	}
 
-	// user color
+	// User color
 	function messageUserColor($usr) {
 		if (!GM_getValue("rlc-RobinColors")) {
-			var hexName=toHex($usr.text()).split("");
-			var adder=1;
+			var hexName = toHex($usr.text()).split("");
+			var adder = 1;
 			$.each(hexName, function(ind,num){
-				num = (parseInt(num)+1);
-				if (num!==0 && !isNaN(num)){
+				num = (parseInt(num) + 1);
+				if (num !== 0 && !isNaN(num)){
 					adder = adder * num;
 				}
 			});
-			adder=adder.toString().replace(".", "").split("0").join("");
+			adder = adder.toString().replace(".", "").split("0").join("");
 			let start = adder.length-10;
 			let end = adder.length-4;
-			var firstThree=adder.toString().substring(start, end);
+			var firstThree = adder.toString().substring(start, end);
 
-			// variable brigtening of colors based on dark mode setting
+			// Variable brigtening of colors based on dark mode setting
 			if (GM_getValue("rlc-DarkMode")){
-				var lightercolor = LightenDarkenColor2(firstThree, 60);
-				$usr.css("color", "#"+lightercolor);
+				var lighterColor = LightenDarkenColor2(firstThree, 60);
+				$usr.css("color", "#"+lighterColor);
 			}
 			else {
-				var darkercolor = LightenDarkenColor2(firstThree, -40);
-				$usr.css("color", "#"+darkercolor);
+				var darkerColor = LightenDarkenColor2(firstThree, -40);
+				$usr.css("color", "#"+darkerColor);
 			}
 		} else {
-			$usr.css("color",getColor($usr.text())); //ROBIN COLORS!!!!!
+			$usr.css("color", getColor($usr.text())); //ROBIN COLORS!!!!!
 		}
 	}
 
-	// timestamp modification & user activity tracking
-	function timeAndUserTracking($ele, $usr) {
-		var shortTime = $ele.find(".body time").attr( "title" ).split(" ");
+	// Timestamp modification & user activity tracking
+	function timeAndUserTracking($el, $usr) {
+		var shortTime = $el.find(".body time").attr("title").split(" ");
 		var amPm = shortTime[4].toLowerCase();
 
 		if (!(amPm === "am" || amPm === "pm")) { amPm = " "; }
@@ -420,22 +410,22 @@ ________________________________________________________________________________
 			shortTime = shortTime[3]+" "+amPm; 
 		}
 
-		//add simplified timestamps
-		if ($ele.find(".body .simpletime").length <= 0) {
-			$ele.find(".body time").before("<div class='simpletime'>"+shortTime+"</div>");
+		// Add simplified timestamps
+		if ($el.find(".body .simpletime").length <= 0) {
+			$el.find(".body time").before(`<div class='simpletime'>${shortTime}</div>`);
 		}
 
-		//add info to activeuserarray
+		// Add info to activeuserarray
 		activeUserArray.push($usr.text());
 		activeUserTimes.push(militarytime);
 
-		// moved here to add user activity from any time rather than only once each 10 secs.(was in tab tick function, place it back there if performance suffers)
+		// Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
 		processActiveUsersList();
 	}
 
 	
-
-	function messageClickHandler($usr, $msg, $ele) {
+	// I'm not even going to try to clear this up.
+	function messageClickHandler($usr, $msg, $el) {
 		var $menu = $("#myContextMenu");
 		$usr.click(function(event){
 			event.preventDefault();
@@ -456,7 +446,7 @@ ________________________________________________________________________________
 				$menu.find("ul li").bind("click", function(){
 					var $id = $(this).attr("id");
 					if ($id === "deleteCom" && $(this).has(".disabled").length === 0){
-						deleteComment($ele);
+						deleteComment($el);
 					}
 					if ($id === "PMUser"){
 						OpenUserPM($usr.text());
@@ -484,19 +474,18 @@ ________________________________________________________________________________
 		});
 	}
 
-	//used differentiate initial and subsequent messages
+	// Used differentiate initial and subsequent messages
 	var loadingInitialMessages = 1; 
 
-	// track if username has been mentioned
+	// Track if username has been mentioned
 	var meMentioned = 0; 
-	// message display handling for new and old(rescan) messages
-	// add any proccessing for new messages in here
-	var handleNewMessage = function($ele, rescan){
-
+	// Message display handling for new and old (rescan) messages
+	// Add any proccessing for new messages in here
+	var handleNewMessage = function($el, rescan){
 		console.log(rescan);
 		
-		var $msg = $ele.find(".body .md");
-		var $usr = $ele.find(".body .author");
+		var $msg = $el.find(".body .md");
+		var $usr = $el.find(".body .author");
 		var line = $msg.text().toLowerCase();
 		var firstLine = $msg.find("p").first();
 
@@ -504,61 +493,60 @@ ________________________________________________________________________________
 
 		// /me support
 		if (line.indexOf("/me") === 0){
-			$ele.addClass("user-narration");
+			$el.addClass("user-narration");
 			firstLine.html(firstLine.html().replace("/me", " " + $usr.text().replace("/u/", "")));
 			meMentioned = 1; 
 		}
 
-		// target blank all message links
+		// Target blank all message links
 		$msg.find("a").attr("target", "_blank");
 
-		// prevent embedly iframe link handling
+		// Prevent embedly iframe link handling
 		firstLine.html(firstLine.html()+" ");
 
-		// insert time
-		$usr.before($ele.find("time"));
+		// Insert time
+		$usr.before($el.find("time"));
 
-		//remove the /u/ in author name
+		// Remove the /u/ in author name
 		$usr.text($usr.text().replace("/u/", ""));
 
-		// tag message with user identifier for muting
-		$ele.addClass("u_"+$usr.text());
+		// Tag message with user identifier for muting
+		$el.addClass("u_"+$usr.text());
 
-		//alternating background color   
-		alternateMsgBackground($ele);
+		// Alternating background color   
+		alternateMsgBackground($el);
 
 		// Current User name mentioned
-		messageMentionHandler(line, $usr, $ele);
+		messageMentionHandler(line, $usr, $el);
 
-		// emote support
+		// Emote support
 		emoteSupport(line, $msg, firstLine);
 
-		// easy multiline
+		// Easy (and hacky) multiline
 		$msg.html($msg.html().split("\n").join("<br>"));
 		$msg.html($msg.html().replace("<br><br>","<br>"));
 		$msg.html($msg.html().replace("</p><br>", ""));
 
 		// Track channels
-		tabbedChannels.proccessLine(line, $ele, rescan);
+		tabbedChannels.proccessLine(line, $el, rescan);
 
-		//remove separator
+		// Remove separator
 		$(".liveupdate-listing .separator").remove();
 
-		// timestamp modification & user activity tracking
-		timeAndUserTracking($ele, $usr);
-		messageUserColor($usr); // user color
+		// Timestamp modification & user activity tracking
+		timeAndUserTracking($el, $usr);
+		messageUserColor($usr); // User color
 
-		messageClickHandler($usr, $msg, $ele);  // message click handling 
+		messageClickHandler($usr, $msg, $el);  // Message click handling 
 
 		if (loadingInitialMessages === 0) {
-			// console.log("loadingInitialMessages = 0");
-			// stuff that should not be done to messages loaded on init, like TTS handling
+			// Stuff that should not be done to messages loaded on init, like TTS handling
 			if (rescan) {
 				console.log("This is the rescan. Do you copy? Not sure why we're reporting. Over and out.");
-				// this is rescan, do nothing. rescans happen when channel tabs are changed
+				// This is rescan, do nothing. rescans happen when channel tabs are changed
 			}
 			else {
-				// not rescan, read aloud if TTS enabled
+				// Not rescan, read aloud if TTS enabled
 				if (line.indexOf(robinUser) !== -1){
 					if ($("body").hasClass("rlc-notificationsound")) {
 						snd.play();
@@ -573,7 +561,6 @@ ________________________________________________________________________________
 				messageTextToSpeechHandler($msg, $usr);
 			}
 		}
-		//  console.log("end new message handling instance");
 	};
 
 	function getColor(username) {
@@ -765,7 +752,7 @@ ________________________________________________________________________________
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
 	// rate limiter for prevention of message send withn 1 sec on previous user message, see Tick and Event Handlers
-	var ratelimit = 0;
+	var rateLimit = 0;
 	// badmanfix tts (see channel Tick)
 	//var badmanfixtts = 1;
 	// channel tabs megafunction
@@ -935,34 +922,34 @@ ________________________________________________________________________________
 		};
 
 		// Procces each chat line to create text
-		this.proccessLine = function(text, $element, rescan){
+		this.proccessLine = function(text, $elment, rescan){
 			var i, idx, channel;
 
 			// If rescanning, clear any existing "channel" classes
 			if (typeof rescan !== "undefined" && rescan === true){
-				$element.removeClass("in-channel");
+				$elment.removeClass("in-channel");
 
 				for(i=0; i <= this.channels.length; i++){
-					$element.removeClass("rlc-filter-" + i);
+					$elment.removeClass("rlc-filter-" + i);
 				}
 			}
 
-			// Scann for channel identifiers
-			for(i=0; i< this.channelMatchingCache.length; i++){ // sorted so longer get picked out before shorter ones (sub channel matching)
+			// Scan for channel identifiers
+			for(i=0; i< this.channelMatchingCache.length; i++){ // Sorted so longer get picked out before shorter ones (sub channel matching)
 				idx = this.channelMatchingCache[i];
 				channel = this.channels[idx];
 
 				if (typeof channel === "undefined") continue;
 
-				// handle channel prefix in message
+				// Handle channel prefix in message
 				if (text.indexOf(channel) === 0){
-					$element.find(".body").append("<a class='channelname'>&nbsp;in&nbsp;"+channel+"</a>");
-					$element.addClass("rlc-filter-" + idx +" in-channel");
+					$elment.find(".body").append(`<a class='channelname'>&nbsp;in&nbsp;${channel}</a>`);
+					$elment.addClass(`rlc-filter-${idx} in-channel`);
 					this.unreadCounts[idx]++;
 
-					// remove channel name in messages
-					var newele = $element.find(".body .md p").html().replace(channel, "");
-					$element.find(".body .md p").html(newele);
+					// Remove channel name in messages
+					var newele = $elment.find(".body .md p").html().replace(channel, "");
+					$elment.find(".body .md p").html(newele);
 
 					return;
 				}
@@ -972,13 +959,13 @@ ________________________________________________________________________________
 		// If in one channel, auto add channel keys
 		this.submitHelper = function(){
 			if ($("#rlc-chat").hasClass("rlc-filter")){
-				// auto add channel key
+				// Auto add channel key
 				let channelKey = $("#rlc-chat").attr("data-channel-key");
 
 				if ($("#new-update-form textarea").val().indexOf("/me") === 0){
 					$("#new-update-form textarea").val("/me " + channelKey + " " + $("#new-update-form textarea").val().substr(3));
 				} else if ($("#new-update-form textarea").val().indexOf("/") !== 0){
-					// if its not a "/" command, add channel
+					// If it's not a "/" command, add channel
 					$("#new-update-form textarea").val(channelKey + " " + $("#new-update-form textarea").val());
 				}
 			}
@@ -990,27 +977,22 @@ ________________________________________________________________________________
 					if ($("#new-update-form textarea").val().indexOf("/me") === 0){
 						$("#new-update-form textarea").val("/me " + channelKey + " " + $("#new-update-form textarea").val().substr(3));
 					} else if ($("#new-update-form textarea").val().indexOf("/") !== 0){
-						// if its not a "/" command, add channel
+						// If it's not a "/" command, add channel
 						$("#new-update-form textarea").val(channelKey + " " + $("#new-update-form textarea").val());
 					}
 				}
 			}
 		};
 
-		// Update everuything
+		// Update everythang
 		this.tick = function(){
 			_self.$el.find(".rlc-filters span").each(function(){
 				if ($(this).hasClass("selected")) return;
 				$(this).find("span").text(_self.unreadCounts[$(this).data("filter")]);
-				/*if (badmanfixtts !== 0) {  // get rid of this asap. stops speech synthesis 1 second after page init
-					badmanfixtts = badmanfixtts - 1;
-					window.speechSynthesis.cancel()
-				}*/
 				loadingInitialMessages = 0;
-				//UpdatealternateMsgBackground();
 			});
-			// rate limit disable
-			ratelimit = 0;
+			// Rate limit disable
+			rateLimit = 0;
 		};
 
 		// Init tab zone
@@ -1023,17 +1005,15 @@ ________________________________________________________________________________
 				this.mode = GM_getValue("rlc-mode");
 			}
 
-			// init counters
+			// Init counters
 			for(var i in this.channels){
 				this.unreadCounts[i] = 0;
 			}
 
-			// update channel cache
+			// Update channel cache
 			this.updateChannelMatchCache();
-
-			// set up el
+			
 			this.$el = $el;
-
 			// Create inital markup
 			this.$el.html("<span class='all selected'>Global</span><span><div class='rlc-filters'></div></span><span class='more'>[Channels]</span>");
 			this.$opt = $("<div class='rlc-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
@@ -1049,6 +1029,7 @@ ________________________________________________________________________________
 				if (chanID===null)return; // no a channel
 				_self.removeChannel(_self.channels[chanID]);
 			});
+			
 			// Form events
 			this.$opt.find(".channel-mode span").click(this.changeChannelMode);
 			this.$opt.find("button").click(function(){
@@ -1060,13 +1041,13 @@ ________________________________________________________________________________
 
 			$(".save-button .btn").click(this.submitHelper);
 
-			// store default room class
+			// Store default room class
 			this.defaultRoomClasses = $("#rlc-chat").attr("class") ? $("#rlc-chat").attr("class") : "";
 
-			// redraw tabs
+			// Redraw tabs
 			this.drawTabs();
 
-			// start ticker
+			// Start ticker
 			setInterval(this.tick, 2000);
 		};
 	}();
@@ -1077,12 +1058,12 @@ ________________________________________________________________________________
 101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
-	// msg history
-	var messageHistory = [];
-	var messageHistoryIndex = -1;
-	var lastTyped="";
+	// Message history
+	var messageHistory = [],
+		messageHistoryIndex = -1,
+		lastTyped = "";
 
-	// messagebox event handling
+	// Messagebox event handling
 	function messageboxEventHandling() { 
 		var textArea = $(".usertext-edit.md-container textarea");
 
@@ -1090,7 +1071,7 @@ ________________________________________________________________________________
 		$(".save-button .btn").click(function(){
 			var userLastMessage = textArea.val();
 
-			// if message history is to long, clear it out
+			// If message history is to long, clear it out
 			if (messageHistory.length === 25){
 				messageHistory.shift();
 			}
@@ -1098,10 +1079,10 @@ ________________________________________________________________________________
 			messageHistoryIndex = messageHistory.length;
 		});
 
-		//handling of keypresses in messagebox textarea
+		// Handling of keypresses in messagebox textarea
 		textArea.on("keydown", function(e) {
-			//tab autocomplete
-			if (e.keyCode === 9) { //Stole my old code from Parrot
+			// Tab autocomplete
+			if (e.keyCode === 9) { // Stole my old code from Parrot
 				processActiveUsersList();
 				e.preventDefault();
 				var sourceAlt= $(".usertext-edit textarea").val();
@@ -1113,12 +1094,12 @@ ________________________________________________________________________________
 				$.each(updateArray, function(ind,Lname){
 					if (Lname.indexOf(namePart) === 0){
 						namePart=Lname;
-						if (space !== -1)namePart=" "+namePart;
+						if (space !== -1) namePart = " "+namePart;
 						found = true;
 						return true;
 					} else if (Lname.toLowerCase().indexOf(namePart.toLowerCase()) === 0){ // This is in an else because it should give priority to case Sensitive tab completion
 						namePart = Lname;
-						if (space !== -1)namePart=" "+namePart;
+						if (space !== -1) namePart=" "+namePart;
 						found = true;
 						return true;
 					}
@@ -1127,21 +1108,21 @@ ________________________________________________________________________________
 					$(".usertext-edit textarea").val(sourceAlt+namePart);
 				}
 			}
-			// enter message send
+			// Enter message send
 			if (e.keyCode === 13) {
-				if (e.shiftKey) { /* exit enter handling to allow shift+enter newline */  }
+				if (e.shiftKey) { /* Exit enter handling to allow shift+enter newline */  }
 				else if (textArea.val() === "" ) { e.preventDefault();  }
-				else if (ratelimit === 1) { e.preventDefault();console.log("rate limit hit");}
+				else if (rateLimit === 1) { e.preventDefault();console.log("rate limit hit");}
 				else {
 					if (textArea.val().indexOf("/version") === 0){
 						/* eslint-disable camelcase */
-						$(this).val("RLC v."+GM_info.script.version+" has been released. Use the link in the sidebar to update.");
+						$(this).val(`RLC v.${GM_info.script.version} has been released. Use the link in the sidebar to update.`);
 						/* eslint-enable camelcase */
 					}
 					e.preventDefault();
 					$(".save-button .btn").click();
 					$("#new-update-form textarea").val("");
-					ratelimit = 1;
+					rateLimit = 1;
 				}
 			}
 			else if (e.keyCode === 38) {
@@ -1164,7 +1145,7 @@ ________________________________________________________________________________
 
 
 	function mouseClicksEventHandling() { 
-		//right click author names in chat to copy to messagebox
+		// Right click author names in chat to copy to messagebox
 		$("body").on("contextmenu", ".liveupdate .author", function (event) {
 			if (!$("body").hasClass("rlc-altauthorclick")) {
 				event.preventDefault();
@@ -1175,12 +1156,12 @@ ________________________________________________________________________________
 			}
 		});
 
-		// load old messages
+		// Load old messages
 		$("#loadmessages").click(function(){
 			loadHistory();
 		});
 
-		// easy access options
+		// Easy access options
 		$("#s2compactmode").click(function(){
 			$( "#rlc-settings label:contains('Compact Mode') input" ).click();
 		});
@@ -1207,10 +1188,6 @@ ________________________________________________________________________________
 		$("body").append(htmlPayload);
 
 		$(".liveupdate-listing").prependTo("#rlc-chat");
-
-		//remove initial messages
-		//$('.liveupdate-listing .liveupdate').remove();
-
 		$("#new-update-form").appendTo("#rlc-messagebox");
 		$("#new-update-form").append("<div id=\"rlc-sendmessage\">Send Message</div>");
 		$("#liveupdate-header").appendTo("#rlc-sidebar #rlc-main-sidebar");
@@ -1224,13 +1201,13 @@ ________________________________________________________________________________
 	}
 
 	function rlcParseSidebar() {
-		// put anything after -RLC-README- in the sidebar into the readme
+		// Put anything after -RLC-README- in the sidebar into the readme
 		let str = $("#liveupdate-resources .md").html();
 		let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
 		$("#liveupdate-resources .md").html(res[0]);
 		$("#rlc-readmebar .md").append(res[1]);
 
-		// put anything before -RLC-MAIN- in the sidebar into the guide
+		// Put anything before -RLC-MAIN- in the sidebar into the guide
 		str = $("#liveupdate-resources .md").html();
 		res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
 		$("#liveupdate-resources .md").html(res[1]);
@@ -1244,22 +1221,22 @@ ________________________________________________________________________________
 	}
 
 	function rlcDocReadyModifications() {
-		// show hint about invites if there is no messagebox
+		// Show hint about invites if there is no messagebox
 		if ($(".usertext-edit textarea").length <= 0) {
 			$("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>");
 		}
 
-		// add placeholder text and focus messagebox
+		// Add placeholder text and focus messagebox
 		$(".usertext-edit textarea").attr("placeholder", "Type here to chat");
 		$(".usertext-edit textarea").focus();
 
-		// make links external
+		// Make links external
 		$("#rlc-main a").attr("target", "_blank");
 		$("#rlc-sidebar a").attr("target", "_blank");
 		$("#rlc-readmebar a").attr("target", "_blank");
 		$("#rlc-guidebar a").attr("target", "_blank");
 
-		// remove iframes
+		// Remove iframes
 		$("#rlc-main iframe").remove();
 	}
 
@@ -1273,15 +1250,14 @@ ________________________________________________________________________________
 				if ($(document.body).hasClass("AutoScroll")) {
 					scollToBottom();
 				}
-				//UpdatealternateMsgBackground(); //fix backgrounds, should happen on DELETE of a message but we cant catch the event.
 			}
-			//remove separators
+			// Remove separators
 			else if ($(e.target).is(".separator")) {
 				$(e.target).remove();
 			}
 		});
 
-		// dreamcode:
+		// Pseudocode:
 		/* on li.liveupdate removal(maybe its not removed? maybe detached?) call function UpdatealternateMsgBackground to fix alternation */
 
 		messageboxEventHandling();
@@ -1310,15 +1286,15 @@ ________________________________________________________________________________
 101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
-	// boot
+	// Boot
 	$(window).load(function() {
-		// move default elements into custom containers defined in htmlPayload
+		// Move default elements into custom containers defined in htmlPayload
 		rlcSetupContainers();
-		// setup sidebar based on content
+		// Setup sidebar based on content
 		rlcParseSidebar();
-		// modify initial elements
+		// Modify initial elements
 		rlcDocReadyModifications();
-		// attach event listeners
+		// Attach event listeners
 		rlcInitEventListeners();
 
 		// handle existing chat messages
@@ -1353,7 +1329,7 @@ ________________________________________________________________________________
 ____________________________________________________________________________________________________________________________________________________________________________*/      
 
 		/* Create options */
-		createOption("AutoScroll", function(checked){
+		createOption("Auto Scroll", function(checked){
 			if (checked){
 				$("body").addClass("AutoScroll");
 			} else {
@@ -1366,7 +1342,7 @@ ________________________________________________________________________________
 			} else {
 				$("#rlc-main").removeClass("show-colors");
 			}
-			// correct scroll after spam filter change
+			// Correct scroll after spam filter change
 			scollToBottom();
 		},false);
 		createOption("Dark Mode", function(checked){
@@ -1410,14 +1386,14 @@ ________________________________________________________________________________
 			}
 			scollToBottom();
 		},false);
-		createOption("No Smileys", function(checked){
+		createOption("No Emotes", function(checked){
 			if (checked){
 				$("body").addClass("rlc-noemotes");
 			} else {
 				$("body").removeClass("rlc-noemotes");
 			}
 		},false);
-		createOption("TextToSpeech", function(checked){
+		createOption("Text To Speech (TTS)", function(checked){
 			if (checked){
 				$("body").addClass("rlc-TextToSpeech");
 			} else {
@@ -1425,28 +1401,28 @@ ________________________________________________________________________________
 				window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel();
 			}
 		},false);
-		createOption("Disable User based voices", function(checked){
+		createOption("Disable User-based Voices", function(checked){
 			if (checked){
 				$("body").addClass("rlc-NoUserVoices");
 			} else {
 				$("body").removeClass("rlc-NoUserVoices");
 			}
 		},false);
-		createOption("RobinColors", function(checked){
+		createOption("Robin Colors", function(checked){
 			if (checked){
 				$("body").addClass("rlc-RobinColors");
 			} else {
 				$("body").removeClass("rlc-RobinColors");
 			}
 		},false);
-		createOption("24 hour timestamps", function(checked){
+		createOption("24-hour Timestamps", function(checked){
 			if (checked){
 				$("body").addClass("rlc-24hrTimeStamps");
 			} else {
 				$("body").removeClass("rlc-24hrTimeStamps");
 			}
 		},false);
-		createOption("CSS background alternation", function(checked){
+		createOption("Background Alternation", function(checked){
 			if (checked){
 				$("body").addClass("rlc-CssBGAlternate");
 			} else {
@@ -1462,13 +1438,13 @@ ________________________________________________________________________________
 		},false);
 	});
 
-	//channel styles
+	// Channel styles
 	var color;
 	for(var c = 0; c < 35; c++){
 		color = colors[(c % (colors.length))];
 
-		GM_addStyle("#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-"+c+" { background: "+color+";}", 0);
-		GM_addStyle("#rlc-chat.rlc-filter.rlc-filter-"+c+" li.liveupdate.rlc-filter-"+c+" { display:block;}", 0);
+		GM_addStyle(`#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-€{c} { background: ${color};}`, 0);
+		GM_addStyle(`#rlc-chat.rlc-filter.rlc-filter-${c} li.liveupdate.rlc-filter-${c} { display:block;}`, 0);
 	}
 })();
 
