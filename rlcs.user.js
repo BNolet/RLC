@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.2.7
+// @version      3.2.8
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -141,7 +141,9 @@ ________________________________________________________________________________
 		for(let i = 0; i <= mutedUsers.length; i++){
 			if (mutedUsers[i] !== undefined) {    // Avoid the undefined one I cant figure out why I'm puttin in
 				selectors.push(`.u_${mutedUsers[i]}{display:none;}`);      // Generate CSS display none rule for user in list
+				$('.u_'+mutedUsers[i]).addClass('muted');
 				$("#bannedlist").append(`<p>${mutedUsers[i]}</p>`);        // Generate interface element for disabling muting
+				reAlternate();
 			}
 		}
 		$("body").append(`<style id='mystyle'>${selectors.join(" ")}</style>`); // Inject style tag with user rules
@@ -150,6 +152,8 @@ ________________________________________________________________________________
 		$("#bannedlist p").click(function(){
 			let target = $(this).text();
 			let targetPosition = mutedUsers.indexOf(target);
+			$('.u_'+mutedUsers[targetPosition]).removeClass('muted');
+			reAlternate();
 			$(this).remove();  // Remove this element from the muted list
 			mutedUsers.splice(targetPosition, 1);  // Remove target from the muted array
 			updateMutedUsers(); // Update
@@ -306,12 +310,14 @@ ________________________________________________________________________________
 
 	function alternateMsgBackground($el) {
 		if (!GM_getValue("rlc-CSSBackgroundAlternation")) {
-			if (rowAlternator === false) {
-				$el.addClass("alt-bgcolor");
-				rowAlternator = true;
+			if (loadingInitialMessages === 0) {
+				var $child = $('.liveupdate-listing:not(.muted)').children()[1];
+				rowAlternator=($($child).hasClass('alt-bgcolor'));
+			}else{
+				rowAlternator=!rowAlternator;
 			}
-			else {
-				rowAlternator = false;
+			if(rowAlternator === false){
+				$el.addClass("alt-bgcolor");
 			}
 		}
 	}
@@ -573,9 +579,20 @@ ________________________________________________________________________________
 		var win = window.open($url+name, "_blank");
 		win.focus();
 	}
-	function deleteComment($objComment){
-		if ($objComment.has(".buttonrow").length>0){
-			//Start Alternation fix//
+	function reAlternate($objComment){
+		if($objComment===undefined){
+			var alt=false;
+			for(i=$('.liveupdate-listing').children().length;i>=0;i--){
+				var obj=$('.liveupdate-listing').children()[i];
+				if(!$(obj).hasClass('muted')){
+					$(obj).removeClass('alt-bgcolor');
+					if(alt){
+						$(obj).addClass('alt-bgcolor');
+					}
+					alt=!alt;
+				}
+			}
+		}else{
 			var found;
 			var alt;
 			for(i=$('.liveupdate-listing').children().length;i>=0;i--){
@@ -592,7 +609,11 @@ ________________________________________________________________________________
 					alt=!alt;
 				}
 			}
-			//End Alternation Fix//
+		}
+	}
+	function deleteComment($objComment){
+		if ($objComment.has(".buttonrow").length>0){
+			reAlternate($objComment);
 			var $button = $objComment.find(".delete").find("button");
 			$button.click();
 			$button = $objComment.find(".delete").find(".yes");
