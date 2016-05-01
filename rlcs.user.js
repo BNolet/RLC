@@ -1421,7 +1421,7 @@ ________________________________________________________________________________
 				$("body").addClass("rlc-TextToSpeech");
 			} else {
 				$("body").removeClass("rlc-TextToSpeech");
-				window.speechSynthesis.cancel();
+				window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel();
 			}
 		},false);
 		createOption("Disable User based voices", function(checked){
