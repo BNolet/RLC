@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.1.0
+// @version      3.1.1
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -28,7 +28,7 @@ ________________________________________________________________________________
 	if (!GM_getValue("rlc-AutoScroll")) {               GM_setValue("rlc-AutoScroll",               true);}
 	if (!GM_getValue("rlc-TextToSpeech")) {             GM_setValue("rlc-TextToSpeech",             false);}
 	if (!GM_getValue("rlc-RobinColors")) {              GM_setValue("rlc-RobinColors",              false);}
-	if (!GM_getValue("rlc-BackgroundAlternation")) { 	GM_setValue("rlc-BackgroundAlternation", 	false);}
+	if (!GM_getValue("rlc-CSSBackgroundAlternation")) { 	GM_setValue("rlc-CSSBackgroundAlternation", 	false);}
 	if (!GM_getValue("rlc-DebugMode")) {                GM_setValue("rlc-DebugMode",                false);}
 
 	// Grab users username + play nice with RES
@@ -320,7 +320,7 @@ ________________________________________________________________________________
 	}
 
 	function alternateMsgBackground($el) {
-		if (!GM_getValue("rlc-BackgroundAlternation")) {
+		if (!GM_getValue("rlc-CSSBackgroundAlternation")) {
 			if (rowAlternator === 0) {
 				$el.addClass("alt-bgcolor");
 				rowAlternator = 1;
@@ -1422,7 +1422,7 @@ ________________________________________________________________________________
 				$("body").removeClass("rlc-24hrTimeStamps");
 			}
 		},false);
-		createOption("Background Alternation", function(checked){
+		createOption("CSS Background Alternation", function(checked){
 			if (checked){
 				$("body").addClass("rlc-CssBGAlternate");
 			} else {
