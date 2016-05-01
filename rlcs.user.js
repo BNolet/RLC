@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.2.8
+// @version      3.2.9
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -130,7 +130,14 @@ ________________________________________________________________________________
 		return time.replace(/(am|pm)/, "");
 	}
 
-	var mutedUsers = [];
+	var b = GM_getValue("mutedUsers");
+	if(b.length>0){
+		var mutedUsers = b;
+		console.log(mutedUsers);
+	}else{
+		var mutedUsers = [];
+	}
+	
 	function updateMutedUsers() {
 		// Reset by removing CSS and userlist
 		$("#mystyle").remove();
@@ -159,6 +166,7 @@ ________________________________________________________________________________
 			updateMutedUsers(); // Update
 			scollToBottom();
 		});
+		GM_setValue("mutedUsers", mutedUsers);
 	}
 
 	var activeUserArray = [],
@@ -544,6 +552,7 @@ ________________________________________________________________________________
 		messageClickHandler($usr, $msg, $el);  // Message click handling
 
 		if (loadingInitialMessages === 0) {
+			reAlternate();
 			// Stuff that should not be done to messages loaded on init, like TTS handling
 			if (rescan) {
 				//console.log("This is the rescan. Do you copy? Not sure why we're reporting. Over and out.");
@@ -1349,7 +1358,7 @@ ________________________________________________________________________________
 		$("#rlc-chat").find("li.liveupdate").each(function(idx,item){
 			handleNewMessage($(item), true);
 		});
-
+		updateMutedUsers();
 		rowAlternator=!rowAlternator;
 		scollToBottom();    //done adding/modding content, scroll to bottom
 
