@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.1.1
+// @version      3.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -263,7 +263,7 @@ ________________________________________________________________________________
 	};
 
 	// Message background alternation via js
-	var rowAlternator = 0;
+	var rowAlternator = false;
 	// Modify color by amount
 	function LightenDarkenColor2(col, amt) {
 		var r = col.slice(0,2);
@@ -275,33 +275,34 @@ ________________________________________________________________________________
 		var randB = (Math.seededRandom(b*100,120,175));
 
 		// TODO-SUGGESTION: Code readability
-		var suppress = (Math.seededRandom(col*r*10,0,6));
+		var suppress = (Math.seededRandom(col*r*10,0,5));
 		var modAmt =2 ;
 		switch(suppress) {
-		case 0:
-			randR/=modAmt;
-			break;
-		case 1:
-			randG/=modAmt;
-			break;
-		case 2:
-			randB/=modAmt;
-			break;
-		case 4:
-			randR/=modAmt;
-			randG/=modAmt;
-			break;
-		case 5:
-			randR/=modAmt;
-			randB/=modAmt;
-			break;
-		case 6:
-			randG/=modAmt;
-			randB/=modAmt;
-			break;
-		default:
-			console.log("This shouldn't happen! (LightenDarkenColor2 switch case)");
-			break;
+			case 0:
+				randR/=modAmt;
+				break;
+			case 1:
+				randG/=modAmt;
+				break;
+			case 2:
+				randB/=modAmt;
+				break;
+			case 3:
+				randR/=modAmt;
+				randG/=modAmt;
+				break;
+			case 4:
+				randR/=modAmt;
+				randB/=modAmt;
+				break;
+			case 5:
+				randG/=modAmt;
+				randB/=modAmt;
+				break;
+			default:
+				console.log(suppress);
+				console.log("This shouldn't happen! (LightenDarkenColor2 switch case)");
+				break;
 		}
 
 		var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
@@ -321,12 +322,12 @@ ________________________________________________________________________________
 
 	function alternateMsgBackground($el) {
 		if (!GM_getValue("rlc-CSSBackgroundAlternation")) {
-			if (rowAlternator === 0) {
+			if (rowAlternator === false) {
 				$el.addClass("alt-bgcolor");
-				rowAlternator = 1;
+				rowAlternator = true;
 			}
 			else {
-				rowAlternator = 0;
+				rowAlternator = false;
 			}
 		}
 	}
@@ -577,6 +578,24 @@ ________________________________________________________________________________
 	}
 	function deleteComment($objComment){
 		if ($objComment.has(".buttonrow").length>0){
+			//Start Alternation fix//
+			var found;
+			var alt;
+			for(i=$('.liveupdate-listing').children().length;i>=0;i--){
+				var obj=$('.liveupdate-listing').children()[i];
+				if(obj == $objComment.context) {
+					found=true;
+					alt = $($('.liveupdate-listing').children()[i+1]).hasClass("alt-bgcolor");
+				}
+				if(found){
+					$($('.liveupdate-listing').children()[i]).removeClass('alt-bgcolor');
+					if(alt){
+						$($('.liveupdate-listing').children()[i]).addClass('alt-bgcolor');
+					}
+					alt=!alt;
+				}
+			}
+			//End Alternation Fix//
 			var $button = $objComment.find(".delete").find("button");
 			$button.click();
 			$button = $objComment.find(".delete").find(".yes");
@@ -649,7 +668,8 @@ ________________________________________________________________________________
 	}
 	
 	function messageTextToSpeechHandler($msg, $usr) {
-		if (GM_getValue("rlc-TextToSpeech")) {
+		//if (GM_getValue("rlc-TextToSpeech")) {  ####### wasn't getting detected right? Always true (FF)
+		if ($("body").hasClass("rlc-TextToSpeech")) {
 			var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
 			var hasTripple = /(.)\1\1/.test(linetoread);
 			var numbermatches = getNumbers(linetoread);
@@ -681,7 +701,7 @@ ________________________________________________________________________________
 				}
 				// Narration Style
 				var msg;
-				switch (true) {
+				switch (true) {   //These are causing AutoScroll not to work..? (FF)
 				case /.+\?$/.test(checkingStr): // Questioned
 					msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text() + toneStr );
 					break;
@@ -1303,6 +1323,7 @@ ________________________________________________________________________________
 			console.log("handling new message from existing content");
 		});
 
+		rowAlternator=!rowAlternator;
 		scollToBottom();    //done adding/modding content, scroll to bottom
 
 		
