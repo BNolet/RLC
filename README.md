@@ -3,7 +3,7 @@
 This is a script made for [reddit live](https://www.reddit.com/live). RLC makes it possible to use the live feature as a fully functional chat. 
 
 
-![Screenshot](http://i.imgur.com/p2o6NwM.png)
+![Screenshot](https://i.imgur.com/kclqoxP.png)
 
 To use this script, install Tampermonkey which can be found [here](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en), or Greasemonkey which can be found [here](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) and then click the link below to install RLC.
 
