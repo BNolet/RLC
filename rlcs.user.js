@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.2.1
+// @version      3.2.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -23,13 +23,14 @@
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
 	// set default states for options
-	if (!GM_getValue("rlc-NoSmileys")) {                GM_setValue("rlc-NoSmileys",                false);}
-	if (!GM_getValue("rlc-ChannelColors")) {            GM_setValue("rlc-ChannelColors",            true);}
-	if (!GM_getValue("rlc-AutoScroll")) {               GM_setValue("rlc-AutoScroll",               true);}
-	if (!GM_getValue("rlc-TextToSpeech")) {             GM_setValue("rlc-TextToSpeech",             false);}
-	if (!GM_getValue("rlc-RobinColors")) {              GM_setValue("rlc-RobinColors",              false);}
-	if (!GM_getValue("rlc-CSSBackgroundAlternation")) { 	GM_setValue("rlc-CSSBackgroundAlternation", 	false);}
-	if (!GM_getValue("rlc-DebugMode")) {                GM_setValue("rlc-DebugMode",                false);}
+	if (!GM_getValue("rlc-NoSmileys")) {                    GM_setValue("rlc-NoSmileys",                false);}
+	if (!GM_getValue("rlc-ChannelColors")) {                GM_setValue("rlc-ChannelColors",            true);}
+	if (!GM_getValue("rlc-AutoScroll")) {                   GM_setValue("rlc-AutoScroll",               true);}
+	if (!GM_getValue("rlc-TextToSpeech")) {                 GM_setValue("rlc-TextToSpeech",             false);}
+    if (!GM_getValue("rlc-TTSUsernameNarration")) { 	    GM_setValue("rlc-TTSUsernameNarration",      true);}
+	if (!GM_getValue("rlc-RobinColors")) {                  GM_setValue("rlc-RobinColors",              false);}
+	if (!GM_getValue("rlc-CSSBackgroundAlternation")) { 	GM_setValue("rlc-CSSBackgroundAlternation", false);}
+	if (!GM_getValue("rlc-DebugMode")) {                    GM_setValue("rlc-DebugMode",                false);}
 
 	// Grab users username + play nice with RES
 	var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
@@ -221,12 +222,13 @@ ________________________________________________________________________________
 		if ((num = num.toString()).length > 9) return "Overflow in numberToEnglish function.";
 		let n = ("000000000" + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
 		
+        /* NOTE: IF YOU REPLACE != with !== below, the numbers are read wrong */
 		if (!n) return; var str = "";
-		str += (n[1] !== 0) ? (digits[Number(n[1])] || tens[n[1][0]] + " " + digits[n[1][1]]) + "crore " : "";
-		str += (n[2] !== 0) ? (digits[Number(n[2])] || tens[n[2][0]] + " " + digits[n[2][1]]) + "lakh " : "";
-		str += (n[3] !== 0) ? (digits[Number(n[3])] || tens[n[3][0]] + " " + digits[n[3][1]]) + "thousand " : "";
-		str += (n[4] !== 0) ? (digits[Number(n[4])] || tens[n[4][0]] + " " + digits[n[4][1]]) + "hundred " : "";
-		str += (n[5] !== 0) ? ((str !== "") ? "and " : "") + (digits[Number(n[5])] || tens[n[5][0]] + " " + digits[n[5][1]]) + " " : "";
+		str += (n[1] != 0) ? (digits[Number(n[1])] || tens[n[1][0]] + " " + digits[n[1][1]]) + "crore " : "";
+		str += (n[2] != 0) ? (digits[Number(n[2])] || tens[n[2][0]] + " " + digits[n[2][1]]) + "lakh " : "";
+		str += (n[3] != 0) ? (digits[Number(n[3])] || tens[n[3][0]] + " " + digits[n[3][1]]) + "thousand " : "";
+		str += (n[4] != 0) ? (digits[Number(n[4])] || tens[n[4][0]] + " " + digits[n[4][1]]) + "hundred " : "";
+		str += (n[5] != 0) ? ((str != "") ? "and " : "") + (digits[Number(n[5])] || tens[n[5][0]] + " " + digits[n[5][1]]) + " " : "";
 		return str;
 	}
 
@@ -701,27 +703,31 @@ ________________________________________________________________________________
 				}
 				// Narration Style
 				var msg;
-				switch (true) {   //These are causing AutoScroll not to work..? (FF)
-				case /.+\?$/.test(checkingStr): // Questioned
-					msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text() + toneStr );
-					break;
-				case /.+\!$/.test(checkingStr):   // Exclaimed
-					msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text() + toneStr );
-					break;
-				case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
-					linetoread = linetoread.trim().slice(0, -2);
-					msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
-					break;
-				case checkingStr === checkingStr.toUpperCase(): //Check for screaming
-					msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
-					break;
-				case meMentioned === 1: //Check for /me 
-					msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
-					break;
-				default: // said
-					msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text() + toneStr );
-					break;
-				}
+                if (!GM_getValue("rlc-TTSUsernameNarration")) {
+                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
+                } else {
+                    switch (true) {   //These are causing AutoScroll not to work..? (FF)
+                        case /.+\?$/.test(checkingStr): // Questioned
+                            msg = new SpeechSynthesisUtterance(linetoread + " questioned " + $usr.text() + toneStr );
+                            break;
+                        case /.+\!$/.test(checkingStr):   // Exclaimed
+                            msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + $usr.text() + toneStr );
+                            break;
+                        case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
+                            linetoread = linetoread.trim().slice(0, -2);
+                            msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
+                            break;
+                        case checkingStr === checkingStr.toUpperCase(): //Check for screaming
+                            msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
+                            break;
+                        case meMentioned === 1: //Check for /me 
+                            msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
+                            break;
+                        default: // said
+                            msg = new SpeechSynthesisUtterance(linetoread + " said " + $usr.text() + toneStr );
+                            break;
+                    }
+                }
 				RLClog("linetoread: "+linetoread);
 				// Now speak the sentence
 				// msg.voiceURI = 'native';
@@ -1420,6 +1426,13 @@ ________________________________________________________________________________
 			} else {
 				$("body").removeClass("rlc-TextToSpeech");
 				window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel();
+			}
+		},false);
+           createOption("TTS Username Narration", function(checked){
+			if (!checked) {
+
+			} else {
+
 			}
 		},false);
 		createOption("Disable User-based Voices", function(checked){
