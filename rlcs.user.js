@@ -32,7 +32,7 @@ ________________________________________________________________________________
 	if (!GM_getValue("rlc-DebugMode")) {                GM_setValue("rlc-DebugMode",                false);}
 
 	// Grab users username + play nice with RES
-	var robin_user = $("#header-bottom-right .user a").first().text().toLowerCase();
+	var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
 
 	// Channel Colours
 	var colors = ["rgba(255,0,0,0.1)", "rgba(0,255,0,0.1)", "rgba(0,0,255,0.1)", "rgba(0,255,255,0.1)", "rgba(255,0,255,0.1)", "rgba(255,255,0,0.1)", "rgba(211,211,211, .1)", "rgba(0,100,0, .1)", "rgba(255,20,147, .1)", "rgba(184,134,11, .1)"];
@@ -98,7 +98,7 @@ ________________________________________________________________________________
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
    // Scroll chat back to bottom
-	var _scroll_to_bottom = function(){
+	var scollToBottom = function(){
 		$("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
 	};
 
@@ -115,10 +115,10 @@ ________________________________________________________________________________
 			alert("You have TextToSpeech enabled, please disable to load old messages.");
 		}
 		else {
-			loading_initial_messages = 1;
+			loadingInitialMessages = 1;
 			$("body").toggleClass("allowHistoryScroll");
 			$("body").scrollTop($("body")[0].scrollHeight);
-			_scroll_to_bottom();
+			scollToBottom();
 			$("body").toggleClass("allowHistoryScroll");
 		}
 	}
@@ -126,10 +126,10 @@ ________________________________________________________________________________
 	//timeconverter for active user list
 	function convertTo24Hour(time) {
 		var hours = parseInt(time.substr(0, 2));
-		if (time.indexOf("am") != -1 && hours == 12) {
+		if (time.indexOf("am") !== -1 && hours === 12) {
 			time = time.replace("12", "0");
 		}
-		if (time.indexOf("pm")  != -1 && hours < 12) {
+		if (time.indexOf("pm") !== -1 && hours < 12) {
 			time = time.replace(hours, (hours + 12));
 		}
 		return time.replace(/(am|pm)/, "");
@@ -160,7 +160,7 @@ ________________________________________________________________________________
 			$(this).remove();  //remove this element from the muted list
 			mutedUsers.splice(hisposition, 1);  //remove this guy from the muted array
 			updateMutedUsers(); // run parent function
-			_scroll_to_bottom();
+			scollToBottom();
 		});
 	}
 
@@ -184,32 +184,32 @@ ________________________________________________________________________________
 	}
 
 	// create persistant option
-	function createOption(name, click_action, default_state){
-		var checked_markup;
+	function createOption(name, clickAction, defaultState){
+		var checkedMarkup;
 		var key = "rlc-" + name.replace(/\W/g, "");
-		var state = (typeof default_state !== "undefined") ? default_state : false;
+		var state = (typeof defaultState !== "undefined") ? defaultState : false;
 		// try and state if setting is defined
 		if (GM_getValue(key)){
 			state = GM_getValue(key);
 		}
 		// markup for state
-		checked_markup = state ? "checked='checked'" : "";
+		checkedMarkup = state ? "checked='checked'" : "";
 		// render option
-		var $option = $("<label><input type='checkbox' "+checked_markup+">"+name+"</label>").click(function(){
+		var $option = $("<label><input type='checkbox' "+checkedMarkup+">"+name+"</label>").click(function(){
 			var checked = $(this).find("input").is(":checked");
 
 			// persist state
-			if (checked != state){
+			if (checked !== state){
 				GM_setValue(key, checked);
 				state = checked;
 			}
 
-			click_action(checked, $(this));
+			clickAction(checked, $(this));
 		});
 		// add to dom
 		$("#rlc-settings").append($option);
 		// init
-		click_action(state, $option);
+		clickAction(state, $option);
 	}
 
 /*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
@@ -228,16 +228,16 @@ ________________________________________________________________________________
 		let n = ("000000000" + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
 		
 		if (!n) return; var str = "";
-		str += (n[1] != 0) ? (digits[Number(n[1])] || tens[n[1][0]] + " " + digits[n[1][1]]) + "crore " : "";
-		str += (n[2] != 0) ? (digits[Number(n[2])] || tens[n[2][0]] + " " + digits[n[2][1]]) + "lakh " : "";
-		str += (n[3] != 0) ? (digits[Number(n[3])] || tens[n[3][0]] + " " + digits[n[3][1]]) + "thousand " : "";
-		str += (n[4] != 0) ? (digits[Number(n[4])] || tens[n[4][0]] + " " + digits[n[4][1]]) + "hundred " : "";
-		str += (n[5] != 0) ? ((str != "") ? "and " : "") + (digits[Number(n[5])] || tens[n[5][0]] + " " + digits[n[5][1]]) + " " : "";
+		str += (n[1] !== 0) ? (digits[Number(n[1])] || tens[n[1][0]] + " " + digits[n[1][1]]) + "crore " : "";
+		str += (n[2] !== 0) ? (digits[Number(n[2])] || tens[n[2][0]] + " " + digits[n[2][1]]) + "lakh " : "";
+		str += (n[3] !== 0) ? (digits[Number(n[3])] || tens[n[3][0]] + " " + digits[n[3][1]]) + "thousand " : "";
+		str += (n[4] !== 0) ? (digits[Number(n[4])] || tens[n[4][0]] + " " + digits[n[4][1]]) + "hundred " : "";
+		str += (n[5] !== 0) ? ((str !== "") ? "and " : "") + (digits[Number(n[5])] || tens[n[5][0]] + " " + digits[n[5][1]]) + " " : "";
 		return str;
 	}
 
 	// channel prefix removal
-	var remove_channel_key_from_message = function(message){
+	var removeChannelKeyFromMessage = function(message){
 		if ($("#rlc-chat").attr("data-channel-key")){
 			var offset = $("#rlc-chat").attr("data-channel-key").length;
 			if (offset === 0) return message;
@@ -309,6 +309,9 @@ ________________________________________________________________________________
 			randG/=modAmt;
 			randB/=modAmt;
 			break;
+		default:
+			console.log("This shouldn't happen! (LightenDarkenColor2 switch case)");
+			break;
 		}
 
 		var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
@@ -319,7 +322,7 @@ ________________________________________________________________________________
 	}
 
 	function messageMentionHandler(line, $usr, $ele) {
-		if (line.indexOf(robin_user) !== -1){
+		if (line.indexOf(robinUser) !== -1){
 			//add bold highlighting
 			$ele.addClass("user-mention");
 
@@ -359,13 +362,13 @@ ________________________________________________________________________________
 					"XD": "xhappy", 
 					":P": "tongue"};
 
-	function emoteSupport(line, $msg, first_line) {
+	function emoteSupport(line, $msg, firstLine) {
 		if (!GM_getValue("rlc-NoSmileys")){
 			$.each(emojiList, function(emoji,replace){
-				if (line.toLowerCase().indexOf(emoji.toLowerCase()) != -1 && line.indexOf("http") == -1){
-					if ($msg.has("h1").length===0 && $msg.has("li").length===0 && $msg.has("code").length===0 && $msg.has("table").length===0){
-						first_line.html(first_line.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
-						first_line.html(first_line.html().split(emoji.toLowerCase()).join("<span class='mrPumpkin mp_"+replace+"'></span>"));
+				if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
+					if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
+						firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
+						firstLine.html(firstLine.html().split(emoji.toLowerCase()).join("<span class='mrPumpkin mp_"+replace+"'></span>"));
 					}
 				}
 			});
@@ -482,27 +485,27 @@ ________________________________________________________________________________
 	}
 
 	//used differentiate initial and subsequent messages
-	var loading_initial_messages = 1; 
+	var loadingInitialMessages = 1; 
 
 	// track if username has been mentioned
 	var meMentioned = 0; 
 	// message display handling for new and old(rescan) messages
 	// add any proccessing for new messages in here
-	var handle_new_message = function($ele, rescan){
+	var handleNewMessage = function($ele, rescan){
 
 		console.log(rescan);
 		
 		var $msg = $ele.find(".body .md");
 		var $usr = $ele.find(".body .author");
 		var line = $msg.text().toLowerCase();
-		var first_line = $msg.find("p").first();
+		var firstLine = $msg.find("p").first();
 
 		meMentioned = 0; 
 
 		// /me support
 		if (line.indexOf("/me") === 0){
 			$ele.addClass("user-narration");
-			first_line.html(first_line.html().replace("/me", " " + $usr.text().replace("/u/", "")));
+			firstLine.html(firstLine.html().replace("/me", " " + $usr.text().replace("/u/", "")));
 			meMentioned = 1; 
 		}
 
@@ -510,7 +513,7 @@ ________________________________________________________________________________
 		$msg.find("a").attr("target", "_blank");
 
 		// prevent embedly iframe link handling
-		first_line.html(first_line.html()+" ");
+		firstLine.html(firstLine.html()+" ");
 
 		// insert time
 		$usr.before($ele.find("time"));
@@ -528,7 +531,7 @@ ________________________________________________________________________________
 		messageMentionHandler(line, $usr, $ele);
 
 		// emote support
-		emoteSupport(line, $msg, first_line);
+		emoteSupport(line, $msg, firstLine);
 
 		// easy multiline
 		$msg.html($msg.html().split("\n").join("<br>"));
@@ -547,16 +550,16 @@ ________________________________________________________________________________
 
 		messageClickHandler($usr, $msg, $ele);  // message click handling 
 
-		if (loading_initial_messages === 0) {
-			// console.log("loading_initial_messages = 0");
+		if (loadingInitialMessages === 0) {
+			// console.log("loadingInitialMessages = 0");
 			// stuff that should not be done to messages loaded on init, like TTS handling
-			if (rescan == true) {
+			if (rescan) {
 				console.log("This is the rescan. Do you copy? Not sure why we're reporting. Over and out.");
 				// this is rescan, do nothing. rescans happen when channel tabs are changed
 			}
 			else {
 				// not rescan, read aloud if TTS enabled
-				if (line.indexOf(robin_user) !== -1){
+				if (line.indexOf(robinUser) !== -1){
 					if ($("body").hasClass("rlc-notificationsound")) {
 						snd.play();
 					}
@@ -608,7 +611,7 @@ ________________________________________________________________________________
 101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
-	function get_numbers(input) {
+	function getNumbers(input) {
 		return input.match(/[0-9]+/g);
 	}
 
@@ -662,7 +665,7 @@ ________________________________________________________________________________
 		if (GM_getValue("rlc-TextToSpeech")) {
 			var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
 			var hasTripple = /(.)\1\1/.test(linetoread);
-			var numbermatches = get_numbers(linetoread);
+			var numbermatches = getNumbers(linetoread);
 			RLClog(linetoread);
 			$.each(numbermatches, function(i) {
 				linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
@@ -702,10 +705,10 @@ ________________________________________________________________________________
 					linetoread = linetoread.trim().slice(0, -2);
 					msg = new SpeechSynthesisUtterance(linetoread + " stated " + $usr.text() + "sarcastically");
 					break;
-				case checkingStr == checkingStr.toUpperCase(): //Check for screaming
+				case checkingStr === checkingStr.toUpperCase(): //Check for screaming
 					msg = new SpeechSynthesisUtterance(linetoread + " shouted " + $usr.text() + toneStr );
 					break;
-				case meMentioned == 1: //Check for /me 
+				case meMentioned === 1: //Check for /me 
 					msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
 					break;
 				default: // said
@@ -776,7 +779,7 @@ ________________________________________________________________________________
 		this.mode = "single";
 
 		// internals
-		this.unread_counts = {};
+		this.unreadCounts = {};
 		this.$el = null;
 		this.$opt = null;
 		this.defaultRoomClasses = "";
@@ -786,47 +789,47 @@ ________________________________________________________________________________
 		this.currentRooms = 0;
 
 		// When channel is clicked, toggle it on or off
-		this.toggle_channel = function(e){
+		this.toggleChannel = function(e){
 			var channel = $(e.target).data("filter");
 			if (channel===null)return; // no a channel
 
 			if (!$("#rlc-chat").hasClass("rlc-filter-" + channel)){
-				_self.enable_channel(channel);
+				_self.enableChannel(channel);
 				$(e.target).addClass("selected");
 				// clear unread counter
 				$(e.target).find("span").text(0);
-				_self.unread_counts[channel] = 0;
+				_self.unreadCounts[channel] = 0;
 			} else {
-				_self.disable_channel(channel);
+				_self.disableChannel(channel);
 				$(e.target).removeClass("selected");
 			}
 
 			// scroll everything correctly
-			_scroll_to_bottom();
+			scollToBottom();
 		};
 
 		// Enable a channel
-		this.enable_channel = function(channel_id){
+		this.enableChannel = function(channelID){
 			// if using room type "single", deslect other rooms on change
-			if (this.mode == "single"){
-				this.disable_all_channels();
+			if (this.mode === "single"){
+				this.disableAllChannels();
 			}
 
-			$("#rlc-chat").addClass("rlc-filter rlc-filter-" + channel_id);
-			$("#rlc-chat").attr("data-channel-key", this.channels[channel_id]);
+			$("#rlc-chat").addClass("rlc-filter rlc-filter-" + channelID);
+			$("#rlc-chat").attr("data-channel-key", this.channels[channelID]);
 			this.currentRooms++;
 			// unselect show all
 			_self.$el.find("span.all").removeClass("selected");
 		};
 
 		// disable a channel
-		this.disable_channel = function(channel_id){
-			$("#rlc-chat").removeClass("rlc-filter-" + channel_id);
+		this.disableChannel = function(channelID){
+			$("#rlc-chat").removeClass("rlc-filter-" + channelID);
 			this.currentRooms--;
 
 			// no rooms selcted, run "show all"
 			if (this.currentRooms === 0){
-				this.disable_all_channels();
+				this.disableAllChannels();
 			} else {
 				// Grab next channel name if u leave a room in multi mode
 				$("#rlc-chat").attr("data-channel-key", $(".rlc-filters span.selected").first().data("filter-name"));
@@ -834,13 +837,13 @@ ________________________________________________________________________________
 		};
 
 		// turn all channels off
-		this.disable_all_channels = function(){
+		this.disableAllChannels = function(){
 			$("#rlc-chat").attr("class", _self.defaultRoomClasses).attr("data-channel-key", "");
 			_self.$el.find(".rlc-filters > span").removeClass("selected");
 			this.currentRooms = 0;
 
 			_self.$el.find("span.all").addClass("selected");
-			_scroll_to_bottom();
+			scollToBottom();
 		};
 
 		// render tabs
@@ -864,10 +867,10 @@ ________________________________________________________________________________
 		};
 
 		// Add new channel
-		this.addChannel = function(new_channel){
-			if (this.channels.indexOf(new_channel) === -1){
-				this.channels.push(new_channel);
-				this.unread_counts[this.channels.length-1] = 0;
+		this.addChannel = function(newChannel){
+			if (this.channels.indexOf(newChannel) === -1){
+				this.channels.push(newChannel);
+				this.unreadCounts[this.channels.length-1] = 0;
 				this.updateChannelMatchCache();
 				this.saveChannelList();
 				this.drawTabs();
@@ -876,7 +879,7 @@ ________________________________________________________________________________
 				this.reScanChannels();
 
 				// refresh everything after redraw
-				this.disable_all_channels();
+				this.disableAllChannels();
 			}
 		};
 
@@ -893,7 +896,7 @@ ________________________________________________________________________________
 				this.reScanChannels();
 
 				// refresh everything after redraw
-				this.disable_all_channels();
+				this.disableAllChannels();
 			}
 		};
 
@@ -912,7 +915,7 @@ ________________________________________________________________________________
 			// swicth bolding
 			$(this).parent().find("span").css("font-weight", "normal");
 			$(this).css("font-weight", "bold");
-			_self.disable_all_channels();
+			_self.disableAllChannels();
 
 			// Update mode setting
 			GM_setValue("rlc-mode", _self.mode);
@@ -955,7 +958,7 @@ ________________________________________________________________________________
 				if (text.indexOf(channel) === 0){
 					$element.find(".body").append("<a class='channelname'>&nbsp;in&nbsp;"+channel+"</a>");
 					$element.addClass("rlc-filter-" + idx +" in-channel");
-					this.unread_counts[idx]++;
+					this.unreadCounts[idx]++;
 
 					// remove channel name in messages
 					var newele = $element.find(".body .md p").html().replace(channel, "");
@@ -967,21 +970,22 @@ ________________________________________________________________________________
 		};
 
 		// If in one channel, auto add channel keys
-		this.submit_helper = function(){
+		this.submitHelper = function(){
 			if ($("#rlc-chat").hasClass("rlc-filter")){
 				// auto add channel key
-				var channel_key = $("#rlc-chat").attr("data-channel-key");
+				let channelKey = $("#rlc-chat").attr("data-channel-key");
 
 				if ($("#new-update-form textarea").val().indexOf("/me") === 0){
-					$("#new-update-form textarea").val("/me " + channel_key + " " + $("#new-update-form textarea").val().substr(3));
+					$("#new-update-form textarea").val("/me " + channelKey + " " + $("#new-update-form textarea").val().substr(3));
 				} else if ($("#new-update-form textarea").val().indexOf("/") !== 0){
 					// if its not a "/" command, add channel
-					$("#new-update-form textarea").val(channel_key + " " + $("#new-update-form textarea").val());
+					$("#new-update-form textarea").val(channelKey + " " + $("#new-update-form textarea").val());
 				}
 			}
 			// else read from dropdown populated by channels
 			else {
-				var channelKey = $("#rlc-channel-dropdown option:selected" ).text();
+				let channelKey = $("#rlc-channel-dropdown option:selected" ).text();
+				
 				if (channelKey !== "") {
 					if ($("#new-update-form textarea").val().indexOf("/me") === 0){
 						$("#new-update-form textarea").val("/me " + channelKey + " " + $("#new-update-form textarea").val().substr(3));
@@ -997,12 +1001,12 @@ ________________________________________________________________________________
 		this.tick = function(){
 			_self.$el.find(".rlc-filters span").each(function(){
 				if ($(this).hasClass("selected")) return;
-				$(this).find("span").text(_self.unread_counts[$(this).data("filter")]);
+				$(this).find("span").text(_self.unreadCounts[$(this).data("filter")]);
 				/*if (badmanfixtts !== 0) {  // get rid of this asap. stops speech synthesis 1 second after page init
 					badmanfixtts = badmanfixtts - 1;
 					window.speechSynthesis.cancel()
 				}*/
-				loading_initial_messages = 0;
+				loadingInitialMessages = 0;
 				//UpdatealternateMsgBackground();
 			});
 			// rate limit disable
@@ -1021,7 +1025,7 @@ ________________________________________________________________________________
 
 			// init counters
 			for(var i in this.channels){
-				this.unread_counts[i] = 0;
+				this.unreadCounts[i] = 0;
 			}
 
 			// update channel cache
@@ -1035,26 +1039,26 @@ ________________________________________________________________________________
 			this.$opt = $("<div class='rlc-channel-add' style='display:none'><input name='add-channel'><button>Add channel</button> <span class='channel-mode'>Channel Mode: <span title='View one channel at a time' data-type='single'>Single</span> | <span title='View many channels at once' data-type='multi'>Multi</span></span></div>").insertAfter(this.$el);
 
 			// Attach events
-			this.$el.find(".rlc-filters").click(this.toggle_channel);
-			this.$el.find("span.all").click(this.disable_all_channels);
+			this.$el.find(".rlc-filters").click(this.toggleChannel);
+			this.$el.find("span.all").click(this.disableAllChannels);
 			this.$el.find("span.more").click(function(){ $(".rlc-channel-add").toggle(); $("body").toggleClass("rlc-addchanmenu"); });
 			this.$el.find(".rlc-filters").bind("contextmenu", function(e){
 				e.preventDefault();
 				e.stopPropagation();
-				var chan_id = $(e.target).data("filter");
-				if (chan_id===null)return; // no a channel
-				_self.removeChannel(_self.channels[chan_id]);
+				var chanID = $(e.target).data("filter");
+				if (chanID===null)return; // no a channel
+				_self.removeChannel(_self.channels[chanID]);
 			});
 			// Form events
 			this.$opt.find(".channel-mode span").click(this.changeChannelMode);
 			this.$opt.find("button").click(function(){
-				var new_chan = _self.$opt.find("input[name='add-channel']").val();
-				if (new_chan !== "") _self.addChannel(new_chan);
+				var newChan = _self.$opt.find("input[name='add-channel']").val();
+				if (newChan !== "") _self.addChannel(newChan);
 				_self.$opt.find("input[name='add-channel']").val("");
 			});
 
 
-			$(".save-button .btn").click(this.submit_helper);
+			$(".save-button .btn").click(this.submitHelper);
 
 			// store default room class
 			this.defaultRoomClasses = $("#rlc-chat").attr("class") ? $("#rlc-chat").attr("class") : "";
@@ -1080,24 +1084,24 @@ ________________________________________________________________________________
 
 	// messagebox event handling
 	function messageboxEventHandling() { 
-		var text_area = $(".usertext-edit.md-container textarea");
+		var textArea = $(".usertext-edit.md-container textarea");
 
 		// On post message, add it to history
 		$(".save-button .btn").click(function(){
-			var user_last_message = text_area.val();
+			var userLastMessage = textArea.val();
 
 			// if message history is to long, clear it out
 			if (messageHistory.length === 25){
 				messageHistory.shift();
 			}
-			messageHistory.push(remove_channel_key_from_message(user_last_message));
+			messageHistory.push(removeChannelKeyFromMessage(userLastMessage));
 			messageHistoryIndex = messageHistory.length;
 		});
 
 		//handling of keypresses in messagebox textarea
-		text_area.on("keydown", function(e) {
+		textArea.on("keydown", function(e) {
 			//tab autocomplete
-			if (e.keyCode == 9) { //Stole my old code from Parrot
+			if (e.keyCode === 9) { //Stole my old code from Parrot
 				processActiveUsersList();
 				e.preventDefault();
 				var sourceAlt= $(".usertext-edit textarea").val();
@@ -1109,13 +1113,13 @@ ________________________________________________________________________________
 				$.each(updateArray, function(ind,Lname){
 					if (Lname.indexOf(namePart) === 0){
 						namePart=Lname;
-						if (space!=-1)namePart=" "+namePart;
-						found=true;
+						if (space !== -1)namePart=" "+namePart;
+						found = true;
 						return true;
 					} else if (Lname.toLowerCase().indexOf(namePart.toLowerCase()) === 0){ // This is in an else because it should give priority to case Sensitive tab completion
-						namePart=Lname;
-						if (space!=-1)namePart=" "+namePart;
-						found=true;
+						namePart = Lname;
+						if (space !== -1)namePart=" "+namePart;
+						found = true;
 						return true;
 					}
 				});
@@ -1124,13 +1128,15 @@ ________________________________________________________________________________
 				}
 			}
 			// enter message send
-			if (e.keyCode == 13) {
+			if (e.keyCode === 13) {
 				if (e.shiftKey) { /* exit enter handling to allow shift+enter newline */  }
-				else if (text_area.val() === "" ) { e.preventDefault();  }
+				else if (textArea.val() === "" ) { e.preventDefault();  }
 				else if (ratelimit === 1) { e.preventDefault();console.log("rate limit hit");}
 				else {
-					if (text_area.val().indexOf("/version") === 0){
+					if (textArea.val().indexOf("/version") === 0){
+						/* eslint-disable camelcase */
 						$(this).val("RLC v."+GM_info.script.version+" has been released. Use the link in the sidebar to update.");
+						/* eslint-enable camelcase */
 					}
 					e.preventDefault();
 					$(".save-button .btn").click();
@@ -1138,26 +1144,19 @@ ________________________________________________________________________________
 					ratelimit = 1;
 				}
 			}
-			else if (e.keyCode == 38) {
+			else if (e.keyCode === 38) {
 				e.preventDefault();
-				if (messageHistoryIndex>0)
-					messageHistoryIndex--;
-				if (messageHistoryIndex == messageHistory.length-1){
-					lastTyped= $(this).val();
-				}
-				if (messageHistoryIndex > -1){
-					$(this).val(messageHistory[messageHistoryIndex]);
-				}
+				if (messageHistoryIndex > 0) messageHistoryIndex--;
+				if (messageHistoryIndex === messageHistory.length-1) lastTyped = $(this).val();
+				if (messageHistoryIndex > -1) $(this).val(messageHistory[messageHistoryIndex]);
 			}
-			else if (e.keyCode == 40){
+			else if (e.keyCode === 40){
 				e.preventDefault();
 				if (messageHistoryIndex < messageHistory.length){
 					messageHistoryIndex++;
 					$(this).val(messageHistory[messageHistoryIndex]);
 				}
-				if (messageHistoryIndex == messageHistory.length){
-					$(this).val(lastTyped);
-				}
+				if (messageHistoryIndex === messageHistory.length) $(this).val(lastTyped);
 			}
 		});
 
@@ -1169,8 +1168,8 @@ ________________________________________________________________________________
 		$("body").on("contextmenu", ".liveupdate .author", function (event) {
 			if (!$("body").hasClass("rlc-altauthorclick")) {
 				event.preventDefault();
-				var username = String($(this).text()).trim();
-				var source = String($(".usertext-edit.md-container textarea").val());
+				let username = String($(this).text()).trim();
+				let source = String($(".usertext-edit.md-container textarea").val());
 				// Focus textarea and set the value of textarea
 				$(".usertext-edit.md-container textarea").focus().val(source + " " + username + " ");
 			}
@@ -1189,7 +1188,7 @@ ________________________________________________________________________________
 			$( "#rlc-settings label:contains('TextToSpeech') input" ).click();
 		});
 
-		$("#rlc-togglesidebar").click(function(){   $("body").toggleClass("rlc-hidesidebar");   _scroll_to_bottom();  });
+		$("#rlc-togglesidebar").click(function(){   $("body").toggleClass("rlc-hidesidebar");   scollToBottom();  });
 		$("#rlc-toggleoptions").click(function(){   $("body").removeClass("rlc-showreadmebar"); $("body").toggleClass("rlc-showoptions");});
 		$("#rlc-toggleguide").click(function(){     $("body").removeClass("rlc-showoptions");   $("body").toggleClass("rlc-showreadmebar");});
 		$("#rlc-sendmessage").click(function(){     $(".save-button .btn").click();});
@@ -1239,7 +1238,9 @@ ________________________________________________________________________________
 
 		$("#rlc-main-sidebar").append("<div id='rlc-activeusers'><strong>Recent User Activity</strong><br><ul></ul></div>");
 		$("#rlc-main-sidebar").append("<div id='banlistcontainer'><strong>Muted Users</strong><div id='bannedlist'></div></div>");
+		/* eslint-disable camelcase */
 		$("#liveupdate-statusbar").prepend("<div id='versionnumber'>v." + GM_info.script.version + "</div>");
+		/* eslint-enable camelcase */
 	}
 
 	function rlcDocReadyModifications() {
@@ -1268,9 +1269,9 @@ ________________________________________________________________________________
 		$(".liveupdate-listing").on("DOMNodeInserted", function(e) {
 			if ($(e.target).is("li.liveupdate")) {
 				// Apply changes to line
-				handle_new_message($(e.target), false);
+				handleNewMessage($(e.target), false);
 				if ($(document.body).hasClass("AutoScroll")) {
-					_scroll_to_bottom();
+					scollToBottom();
 				}
 				//UpdatealternateMsgBackground(); //fix backgrounds, should happen on DELETE of a message but we cant catch the event.
 			}
@@ -1322,11 +1323,11 @@ ________________________________________________________________________________
 
 		// handle existing chat messages
 		$("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-			handle_new_message($(item), true);
+			handleNewMessage($(item), true);
 			console.log("handling new message from existing content");
 		});
 
-		_scroll_to_bottom();    //done adding/modding content, scroll to bottom
+		scollToBottom();    //done adding/modding content, scroll to bottom
 
 		
 
@@ -1338,7 +1339,7 @@ ________________________________________________________________________________
 
 		/* dident work
 	$(window).scroll(function(e) {
-	  if (loading_initial_messages = 1) {
+	  if (loadingInitialMessages = 1) {
 		e.preventDefault();
 	  }
 	});*/
@@ -1366,7 +1367,7 @@ ________________________________________________________________________________
 				$("#rlc-main").removeClass("show-colors");
 			}
 			// correct scroll after spam filter change
-			_scroll_to_bottom();
+			scollToBottom();
 		},false);
 		createOption("Dark Mode", function(checked){
 			if (checked){
@@ -1381,7 +1382,7 @@ ________________________________________________________________________________
 			} else {
 				$("body").removeClass("rlc-compact");
 			}
-			_scroll_to_bottom();
+			scollToBottom();
 		},false);
 		createOption("Notification Sound", function(checked){
 			if (checked){
@@ -1389,7 +1390,7 @@ ________________________________________________________________________________
 			} else {
 				$("body").removeClass("rlc-notificationsound");
 			}
-			_scroll_to_bottom();
+			scollToBottom();
 		},false);
 		createOption("Chrome Notifications", function(checked){
 			if (checked && Notification && !Notification.permission !== "granted"){
@@ -1407,7 +1408,7 @@ ________________________________________________________________________________
 			} else {
 				$("body").removeClass("rlc-customscrollbars");
 			}
-			_scroll_to_bottom();
+			scollToBottom();
 		},false);
 		createOption("No Smileys", function(checked){
 			if (checked){
