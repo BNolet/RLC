@@ -275,7 +275,7 @@ ________________________________________________________________________________
 		var randB = (Math.seededRandom(b*100,120,175));
 
 		// TODO-SUGGESTION: Code readability
-		var suppress = (Math.seededRandom(col*r*10,0,6));
+		var suppress = (Math.seededRandom(col*r*10,0,5));
 		var modAmt =2 ;
 		switch(suppress) {
 			case 0:
@@ -287,21 +287,21 @@ ________________________________________________________________________________
 			case 2:
 				randB/=modAmt;
 				break;
-			case 4:
+			case 3:
 				randR/=modAmt;
 				randG/=modAmt;
 				break;
-			case 5:
+			case 4:
 				randR/=modAmt;
 				randB/=modAmt;
 				break;
-			case 6:
+			case 5:
 				randG/=modAmt;
 				randB/=modAmt;
 				break;
 			default:
-				//console.log(suppress);
-				//console.log("This shouldn't happen! (LightenDarkenColor2 switch case)");
+				console.log(suppress);
+				console.log("This shouldn't happen! (LightenDarkenColor2 switch case)");
 				break;
 		}
 
