@@ -131,7 +131,7 @@ ________________________________________________________________________________
 	}
 
 	var b = GM_getValue("mutedUsers");
-	if(b.length>0){
+	if(b.length!=undefined){
 		var mutedUsers = b;
 		console.log(mutedUsers);
 	}else{
