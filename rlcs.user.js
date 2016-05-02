@@ -698,7 +698,7 @@ ________________________________________________________________________________
 					"xsmile": "with a big smile",
 					"xsad": "very sadly",
 					"xhappy": "very happily",
-					"tongue": "while sticking out a tounge"};
+					"tongue": "while sticking out a tongue"};
 	// Abbreviation Expansion (All keys must be in uppercase)
 	var replaceStrList = {	"WTF":
 							"What The Fuck",
