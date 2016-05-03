@@ -22,6 +22,9 @@
 101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
 ____________________________________________________________________________________________________________________________________________________________________________*/
 
+    // Settings Keys (used in /sharesettings
+    optionsArray = [];
+	
 	// set default states(on first load of RLC, otherwise presists via GM/TM local variables) for options ( ONLY NEEEDED FOR DEFAULT TRUE )
 	if (!GM_getValue("rlc-ChannelColors")) {                GM_setValue("rlc-ChannelColors",            true);}
 	if (!GM_getValue("rlc-AutoScroll")) {                   GM_setValue("rlc-AutoScroll",               true);}
@@ -198,6 +201,10 @@ ________________________________________________________________________________
 		var checkedMarkup;
 		var key = "rlc-" + name.replace(/\W/g, "");
 		var state = (typeof defaultState !== "undefined") ? defaultState : false;
+        // Add if not exist in optionsArray
+        if ( !(key in optionsArray) ){
+            optionsArray.push(key);
+        }
 		// Try and state if setting is defined
 		if (GM_getValue(key)){
 			state = GM_getValue(key);
@@ -1224,6 +1231,16 @@ ________________________________________________________________________________
 					if (textArea.val().indexOf("/version") === 0){
 						/* eslint-disable camelcase */
 						$(this).val(`RLC v.${GM_info.script.version} has been released. Use the link in the sidebar to update.`);
+						/* eslint-enable camelcase */
+					}
+					if (textArea.val().indexOf("/sharesettings") === 0){
+                        var str = "    {\n";
+                        str += optionsArray.map(function(key){
+                            return "    "+key+": "+GM_getValue(key);
+                        }).join(",\n");
+                        str += "\n    }"
+						/* eslint-disable camelcase */
+						$(this).val( "RLC settings (via /sharesettings ) : \n\n"+str );
 						/* eslint-enable camelcase */
 					}
 					e.preventDefault();
