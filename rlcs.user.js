@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.7.1
+// @version      3.7.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -733,7 +733,9 @@ ________________________________________________________________________________
 							"RTFM": "Read The Fucking Manual",
 							"TLDR": "Too Long, Didn't Read",
 							"FTW": "For The Win",
-							"FFS": "For Fucks Sake"};
+							"FFS": "For Fucks Sake",
+                            "Kretenkobr2": "KretenkobrTwo"
+                         };
 
 	var langSupport = ["en", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
@@ -753,7 +755,7 @@ ________________________________________________________________________________
 				$.each(numbermatches, function(i) {
 					linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
 				});
-				if (!hasTripple) {
+				if (!hasTripple) {                    
 					// Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
 					var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
 					linetoread = linetoread.split(" ").map(function(token){
@@ -780,7 +782,7 @@ ________________________________________________________________________________
                     var usr = $usr.text();
                     if (usr == "741456963789852123") { usr = "7 4 1"; } /* idea: if username is a lot of numbers, call them by the first 3 numbers seperated */
                     if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
-                    if (usr == "Stjerneklar") { usr = "King StjerneKlarr"; }
+                    if (usr == "Stjerneklar") { usr = "King StjerneKlar."; }
 	                if (!GM_getValue("rlc-TTSUsernameNarration")) {
 	                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
 	                } else {
