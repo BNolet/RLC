@@ -755,11 +755,11 @@ ________________________________________________________________________________
 				$.each(numbermatches, function(i) {
 					linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
 				});
-				if (!hasTripple) {                    
+				if (!hasTripple) {
 					// Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
 					var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
 					linetoread = linetoread.split(" ").map(function(token){
-						if ( token.toUpperCase() in replaceStrList ){return replaceStrList[token];} else {return token;}
+						if ( token.toUpperCase() in replaceStrList ){return replaceStrList[token.toUpperCase()];} else {return token;}
 					}).join(" ");
 					// Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
 					var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
