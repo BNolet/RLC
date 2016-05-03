@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.7.10
+// @version      3.7.11
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -346,7 +346,7 @@ ________________________________________________________________________________
 	// Message background alternation via js
 	var rowAlternator = false;
 	// Modify color by amount
-	function LightenDarkenColor2(col, amt) {
+	function LightenDarkenColor(col, amt) {
 		var r = col.slice(0,2);
 		var g = col.slice(2,4);
 		var b = col.slice(4,6);
@@ -381,7 +381,7 @@ ________________________________________________________________________________
 				randB/=modAmt;
 				break;
 			default:
-				console.log("This shouldn't happen! (LightenDarkenColor2 switch case)");
+				console.log("This shouldn't happen! (LightenDarkenColor switch case)");
 				break;
 		}
 
@@ -466,11 +466,11 @@ ________________________________________________________________________________
 
 			// Variable brigtening of colors based on dark mode setting
 			if (GM_getValue("rlc-DarkMode")){
-				var lighterColor = LightenDarkenColor2(firstThree, 60);
+				var lighterColor = LightenDarkenColor(firstThree, 60);
 				$usr.css("color", "#"+lighterColor);
 			}
 			else {
-				var darkerColor = LightenDarkenColor2(firstThree, -40);
+				var darkerColor = LightenDarkenColor(firstThree, -40);
 				$usr.css("color", "#"+darkerColor);
 			}
 		} else {
@@ -782,7 +782,7 @@ ________________________________________________________________________________
 	}
 
 	// Select Emoji to narration tone
-	var toneList = {"smile": "with a smile",
+	var toneList = {"smile": "smiling",
 					"angry": "angrily",
 					"frown": "while frowning",
 					"silly": "pulling a silly face",
@@ -799,8 +799,7 @@ ________________________________________________________________________________
 					"xhappy": "very happily",
 					"tongue": "while sticking out a tongue"};
 	// Abbreviation Expansion (All keys must be in uppercase)
-	var replaceStrList = {	"WTF":
-							"What The Fuck",
+	var replaceStrList = {	"WTF": "What The Fuck",
 							"BTW": "By The Way",
 							"NVM": "Nevermind",
 							"AFAIK": "As Far As I Know",
@@ -817,10 +816,12 @@ ________________________________________________________________________________
 							"TLDR": "Too Long, Didn't Read",
 							"FTW": "For The Win",
 							"FFS": "For Fucks Sake",
-                            "Kretenkobr2": "KretenkobrTwo"
+                            "Kretenkobr2": "KretenkobrTwo",
+                            "N1": "Nice One",
+                            "RLC": "Reddit Live Chat"
                          };
 
-	var langSupport = ["en", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
+	var langSupport = ["en","en-GB", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
 	function strSeededRandInt (str, min = 0, max = 256, code = 0){
 		for(let i = 0; i < str.length; i++){
@@ -1501,13 +1502,47 @@ ________________________________________________________________________________
 
 		/* Create options */
         /* Format: Option name, function(dont touch), state(dont touch), Description(optional) */
-        createOption("Auto Scroll", function(checked){
+        createOption("Full Size", function(checked){
 			if (checked){
-				$("body").addClass("AutoScroll");
+                $("body").addClass("rlc-fullwidth");
 			} else {
-				$("body").removeClass("AutoScroll");
+				$("body").removeClass("rlc-fullwidth");
 			}
-		},false, "scroll chat on new message");
+		},false, "remove RLC max width/height");
+		
+		createOption("Dark Mode", function(checked){
+			if (checked){
+				$("body").addClass("dark-background");
+			} else {
+				$("body").removeClass("dark-background");
+			}
+		},false);
+        
+        createOption("Left Panel", function(checked){
+			if (checked){
+				$("body").addClass("left-panel");
+			} else {
+				$("body").removeClass("left-panel");
+			}
+		},false, "show left panel for content embedding. click in message with embedded content to display in panel");
+		
+		createOption("Robin Colors", function(checked){
+			if (checked){
+				$("body").addClass("rlc-RobinColors");
+			} else {
+				$("body").removeClass("rlc-RobinColors");
+			}
+		},false, "color usernames via robin algorithm");
+		
+		createOption("Compact Mode", function(checked){
+			if (checked){
+				$("body").addClass("rlc-compact");
+			} else {
+				$("body").removeClass("rlc-compact");
+			}
+			scollToBottom();
+		},false, "hide header");
+
 		createOption("Channel Colors", function(checked){
 			if (checked){
 				$("#rlc-main").addClass("show-colors");
@@ -1517,21 +1552,30 @@ ________________________________________________________________________________
 			// Correct scroll after spam filter change
 			scollToBottom();
 		},false, "give channels background colors");
-		createOption("Dark Mode", function(checked){
+		createOption("24-hour Timestamps", function(checked){
 			if (checked){
-				$("body").addClass("dark-background");
+				$("body").addClass("rlc-24hrTimeStamps");
 			} else {
-				$("body").removeClass("dark-background");
+				$("body").removeClass("rlc-24hrTimeStamps");
 			}
-		},false);
-		createOption("Compact Mode", function(checked){
+		},false, "change 11 PM to 23:00");
+        
+        createOption("Show Channels UI", function(checked){
 			if (checked){
-				$("body").addClass("rlc-compact");
+                $("body").addClass("rlc-showChannelsUI");
 			} else {
-				$("body").removeClass("rlc-compact");
+				$("body").removeClass("rlc-showChannelsUI");
 			}
-			scollToBottom();
-		},false, "hide header");
+		},false,"show channel tabs and message channel selector");
+
+        createOption("Hide Channels in Global", function(checked){
+			if (checked){
+                $("body").addClass("rlc-hideChannelsInGlobal");
+			} else {
+				$("body").removeClass("rlc-hideChannelsInGlobal");
+			}
+		},false, "hide in-channel messages in global tab (note: you must have the channel added for this to work)");
+		
 		createOption("Notification Sound", function(checked){
 			if (checked){
 				$("body").addClass("rlc-notificationsound");
@@ -1540,6 +1584,7 @@ ________________________________________________________________________________
 			}
 			scollToBottom();
 		},false, "play sound when you are mentioned");
+		
 		createOption("Chrome Notifications", function(checked){
 			if (checked && Notification && !Notification.permission !== "granted"){
 				Notification.requestPermission();
@@ -1550,6 +1595,7 @@ ________________________________________________________________________________
 				}
 			}
 		},false, "show notice when you are mentioned");
+		
 		createOption("Chrome Scroll Bars", function(checked){
 			if (checked){
 				$("body").addClass("rlc-customscrollbars");
@@ -1558,13 +1604,7 @@ ________________________________________________________________________________
 			}
 			scollToBottom();
 		},false, "use custom scrollbars");
-		createOption("No Emotes", function(checked){
-			if (checked){
-				$("body").addClass("rlc-noemotes");
-			} else {
-				$("body").removeClass("rlc-noemotes");
-			}
-		},false, "disable smileys");
+		
 		createOption("Text To Speech (TTS)", function(checked){
 			if (checked){
 				$("body").addClass("rlc-TextToSpeech");
@@ -1573,13 +1613,15 @@ ________________________________________________________________________________
 				window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel();
 			}
 		},false, "read messsges aloud");
-           createOption("TTS Username Narration", function(checked){
+        
+        createOption("TTS Username Narration", function(checked){
 			if (!checked) {
 
 			} else {
 
 			}
 		},false, "example: [message] said [name]");
+		
 		createOption("Disable User-based Voices", function(checked){
 			if (checked){
 				$("body").addClass("rlc-NoUserVoices");
@@ -1587,48 +1629,22 @@ ________________________________________________________________________________
 				$("body").removeClass("rlc-NoUserVoices");
 			}
 		},false, "do not modify TTS voices based on usernames");
-		createOption("Robin Colors", function(checked){
+		
+        createOption("Auto Scroll", function(checked){
 			if (checked){
-				$("body").addClass("rlc-RobinColors");
+				$("body").addClass("AutoScroll");
 			} else {
-				$("body").removeClass("rlc-RobinColors");
+				$("body").removeClass("AutoScroll");
 			}
-		},false, "color usernames via robin algorithm");
-		createOption("24-hour Timestamps", function(checked){
+		},false, "scroll chat on new message");
+
+		createOption("No Emotes", function(checked){
 			if (checked){
-				$("body").addClass("rlc-24hrTimeStamps");
+				$("body").addClass("rlc-noemotes");
 			} else {
-				$("body").removeClass("rlc-24hrTimeStamps");
+				$("body").removeClass("rlc-noemotes");
 			}
-		},false, "eg 11 PM becomes 23:00 (NOT WORKING ATM)");
-        createOption("Left Panel", function(checked){
-			if (checked){
-				$("body").addClass("left-panel");
-			} else {
-				$("body").removeClass("left-panel");
-			}
-		},false, "show left panel for content embedding. click copy embed in user-click menu of message with embedded content to display in panel");
-        createOption("Full Size", function(checked){
-			if (checked){
-                $("body").addClass("rlc-fullwidth");
-			} else {
-				$("body").removeClass("rlc-fullwidth");
-			}
-		},false, "remove RLC max width/height");
-        createOption("Show Channels UI", function(checked){
-			if (checked){
-                $("body").addClass("rlc-showChannelsUI");
-			} else {
-				$("body").removeClass("rlc-showChannelsUI");
-			}
-		},false,"show channel tabs and message channel selector");
-        createOption("Hide Channels in Global", function(checked){
-			if (checked){
-                $("body").addClass("rlc-hideChannelsInGlobal");
-			} else {
-				$("body").removeClass("rlc-hideChannelsInGlobal");
-			}
-		},false, "only show non-channel messages in global (note: you must have the channel added)");
+		},false, "disable smileys");
 	});
 
 	// Channel styles
