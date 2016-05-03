@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.7.4
+// @version      3.7.5
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -524,7 +524,7 @@ ________________________________________________________________________________
 
 		// Target blank all message links
 		$msg.find("a").attr("target", "_blank");
-
+        if (loadingInitialMessages === 0) {
         if (GM_getValue("rlc-LeftPanel")) { 
             /* embedded content detection - removes links and their contents to see if that was the only content, if so, treat as embed */
             /* need to check like this since the iframes dont exist when our code is run */
@@ -540,10 +540,9 @@ ________________________________________________________________________________
         }
         else {
             firstLine.html(firstLine.html()+" ");
-            $("#rlc-main iframe").remove();
         // Prevent embedly iframe link handling
         }
-        
+        }
 
 
 
@@ -1340,10 +1339,10 @@ ________________________________________________________________________________
 		$("#rlc-readmebar a").attr("target", "_blank");
 		$("#rlc-guidebar a").attr("target", "_blank");
 
-		// Remove iframes
-		if (GM_getValue("rlc-LeftPanel")) { 
-		//$("#rlc-main iframe").remove();
-		}
+		// Remove initial iframes TODO: handle them like new message embeds
+		
+		$("#rlc-main iframe").remove();
+		
 	}
 
 	function rlcInitEventListeners() {
