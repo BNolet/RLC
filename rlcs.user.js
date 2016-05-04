@@ -1,9 +1,15 @@
 // ==UserScript==
 // @name           RLC
-// @namespace      http://tampermonkey.net/
-// @version        3.8
+// @version        3.8.1
 // @description    Chat-like functionality for Reddit Live
-// @author         FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
+// @author         FatherDerp
+// @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
+// @website        https://github.com/BNolet/RLC/
+// @namespace      http://tampermonkey.net/
+// @updateURL      https://github.com/BNolet/RLC/blob/master/rlcs.user.js
+// @downloadURL    https://github.com/BNolet/RLC/blob/master/rlcs.user.js
+// @run-at         document-idle
+// @noframes
 // @include        https://www.reddit.com/live/*
 // @exclude        https://www.reddit.com/live/
 // @exclude        https://www.reddit.com/live
@@ -18,6 +24,7 @@
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_getResourceText
+// @grant          GM_setClipboard
 // ==/UserScript==
 (function() {
  /*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
@@ -179,12 +186,12 @@ if (isNaN(majorVersion)) {
 010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
 101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
 ____________________________________________________________________________________________________________________________________________________________________________*/
-    
-    
-
+ 
    // Scroll chat back to bottom
-	var scollToBottom = function(){
-		$("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
+	var scrollToBottom = function(){
+        $("#rlc-chat").mCustomScrollbar("scrollTo","bottom",{
+            scrollEasing:"easeOut"
+        });
 	};
 
 	// Manipulate native reddit live into loading old messages
@@ -196,7 +203,7 @@ ________________________________________________________________________________
 			loadingInitialMessages = 1;
 			$("body").toggleClass("allowHistoryScroll");
 			$("body").scrollTop($("body")[0].scrollHeight);
-			scollToBottom();
+			scrollToBottom();
 			$("body").toggleClass("allowHistoryScroll");
 		}
 	}
@@ -242,7 +249,7 @@ ________________________________________________________________________________
 			$(this).remove();  // Remove this element from the muted list
 			mutedUsers.splice(targetPosition, 1);  // Remove target from the muted array
 			updateMutedUsers(); // Update
-			scollToBottom();
+			scrollToBottom();
 		});
 		GM_setValue("mutedUsers", mutedUsers);
 	}
@@ -602,7 +609,7 @@ ________________________________________________________________________________
 					$msg.addClass("longMessageClosed");
 					$msg.find('.extendButton').val('+');
 				}
-                scollToBottom();
+                scrollToBottom();
 			});
 		}
 
@@ -627,11 +634,6 @@ ________________________________________________________________________________
         // Prevent embedly iframe link handling
         }
         }
-
-        $("#rlc-chat").mCustomScrollbar("scrollTo","bottom",{
-            scrollEasing:"easeOut"
-        });
-
 
         // Insert time
 		$usr.before($el.find("time"));
@@ -986,7 +988,7 @@ ________________________________________________________________________________
 			}
 
 			// scroll everything correctly
-			scollToBottom();
+			scrollToBottom();
 		};
 
 		// Enable a channel
@@ -1024,7 +1026,7 @@ ________________________________________________________________________________
 			this.currentRooms = 0;
 
 			_self.$el.find("span.all").addClass("selected");
-			scollToBottom();
+			scrollToBottom();
 		};
 
 		// render tabs
@@ -1179,23 +1181,22 @@ ________________________________________________________________________________
 		};
 
 		// Update everythang
-        var waitabit = 1;
+        var waitabit = 0;
 		this.tick = function(){
 			_self.$el.find(".rlc-filters span").each(function(){
 				if ($(this).hasClass("selected")) return;
-				$(this).find("span").text(_self.unreadCounts[$(this).data("filter")]);
-				/* only log initial messages for one second from load */
-				loadingInitialMessages = 0;
-                if (waitabit == 0) { 
-                    // handle existing chat messages
-                    $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-                        handleNewMessage($(item), true);
-                    });
-                }
-                waitabit--;
-                
+				$(this).find("span").text(_self.unreadCounts[$(this).data("filter")]);               
             });
-			// Rate limit disable
+            /* delay loading messages from load */
+            loadingInitialMessages = 0;
+            if (waitabit === 0) { 
+                // handle existing chat messages
+                $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+                    handleNewMessage($(item), true);
+                });
+            }
+            waitabit--;
+            // Rate limit disable
 			rateLimit = 0;
 		};
 
@@ -1386,7 +1387,7 @@ ________________________________________________________________________________
 			$( "#rlc-settings label:contains('Text To Speech (TTS)') input" ).click();
 		});
 
-		//$("#rlc-togglesidebar").click(function(){   $("body").toggleClass("rlc-hidesidebar");   scollToBottom();  });
+		//$("#rlc-togglesidebar").click(function(){   $("body").toggleClass("rlc-hidesidebar");   scrollToBottom();  });
 		$("#rlc-toggleoptions").click(function(){   $("body").removeClass("rlc-showreadmebar"); $("body").toggleClass("rlc-showoptions");});
 		$("#rlc-toggleguide").click(function(){     $("body").removeClass("rlc-showoptions");   $("body").toggleClass("rlc-showreadmebar");});
 		$("#rlc-sendmessage").click(function(){     $(".save-button .btn").click();});
@@ -1463,7 +1464,7 @@ ________________________________________________________________________________
 				// Apply changes to line
 				handleNewMessage($(e.target), false);
 				if ($(document.body).hasClass("AutoScroll")) {
-					scollToBottom();
+					scrollToBottom();
 				}
 			}
 			// Remove separators
@@ -1498,14 +1499,16 @@ ________________________________________________________________________________
 
         if (GM_getValue("rlc-DarkMode")) {
             $("#rlc-chat").mCustomScrollbar({theme:"light-thin"});
+            $("#rlc-sidebar").mCustomScrollbar({theme:"light-thin"});
         }
         else {
             $("#rlc-chat").mCustomScrollbar({theme:"dark-thin"});
+            $("#rlc-sidebar").mCustomScrollbar({theme:"dark-thin"});
         }
 
 		updateMutedUsers();
 		rowAlternator=!rowAlternator;
-		scollToBottom();    //done adding/modding content, scroll to bottom
+		scrollToBottom();    //done adding/modding content, scroll to bottom
 
 /*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
 																			  RLC OPTIONS DEFINITION SECTION BELOW
@@ -1553,7 +1556,7 @@ ________________________________________________________________________________
 			} else {
 				$("body").removeClass("rlc-compact");
 			}
-			scollToBottom();
+			scrollToBottom();
 		},false, "hide header");
 
 		createOption("Channel Colors", function(checked){
@@ -1563,8 +1566,9 @@ ________________________________________________________________________________
 				$("#rlc-main").removeClass("show-colors");
 			}
 			// Correct scroll after spam filter change
-			scollToBottom();
+			scrollToBottom();
 		},false, "give channels background colors");
+        
 		createOption("24-hour Timestamps", function(checked){
 			if (checked){
 				$("body").addClass("rlc-24hrTimeStamps");
@@ -1595,7 +1599,7 @@ ________________________________________________________________________________
 			} else {
 				$("body").removeClass("rlc-notificationsound");
 			}
-			scollToBottom();
+			scrollToBottom();
 		},false, "play sound when you are mentioned");
 		
 		createOption("Chrome Notifications", function(checked){
@@ -1608,16 +1612,7 @@ ________________________________________________________________________________
 				}
 			}
 		},false, "show notice when you are mentioned");
-		
-		createOption("Chrome Scroll Bars", function(checked){
-			if (checked){
-				$("body").addClass("rlc-customscrollbars");
-			} else {
-				$("body").removeClass("rlc-customscrollbars");
-			}
-			scollToBottom();
-		},false, "use custom scrollbars");
-		
+
 		createOption("Text To Speech (TTS)", function(checked){
 			if (checked){
 				$("body").addClass("rlc-TextToSpeech");
@@ -1627,7 +1622,7 @@ ________________________________________________________________________________
 			}
 		},false, "read messsges aloud");
         
-        createOption("TTS Username Narration", function(checked){
+        	createOption("TTS Username Narration", function(checked){
 			if (!checked) {
 
 			} else {
