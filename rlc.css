@@ -756,3 +756,13 @@ div#rlc-settings input {
 #mCSB_1 {
     max-height: none!important;
 }
+
+.rlc-compact #rlc-wrapper {
+    margin-top: 75px;
+}
+.rlc-compact #rlc-header {
+    border-top: 1px solid rgba(227, 227, 224, 0.44);
+}
+.rlc-compact.rlc-fullwidth #rlc-wrapper {
+    margin-top: 0px;
+}
