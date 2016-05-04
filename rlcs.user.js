@@ -790,12 +790,12 @@ ________________________________________________________________________________
 					"meh": " in a disinterested manner",
 					"shocked": "in shock",
 					"happy": "happily",
-					"sad": "sadly",
-					"crying": "tearfully",
+					"sad": "looking sad",
+					"crying": "with tears in his eyes",
 					"wink": " while winking",
 					"zen": "in zen mode",
 					"annoyed": "expressing annoyance",
-					"xsmile": "with a big smile",
+					"xsmile": "with a grinning broadly",
 					"xsad": "very sadly",
 					"xhappy": "very happily",
 					"tongue": "while sticking out a tongue"};
@@ -810,7 +810,7 @@ ________________________________________________________________________________
 							"ASAP": "As Soon As Possible",
 							"CYA": "See Ya",
 							"IKR": "I Know Right",
-							"IMO": "In My Own Opinion",
+							"IMO": "In My Opinion",
 							"JK": "Just Kidding",
 							"OMG": "Oh My God",
 							"RTFM": "Read The Fucking Manual",
@@ -820,8 +820,8 @@ ________________________________________________________________________________
 							"G2G": "got to go",
                             "KRETENKOBR2": "KretenkobrTwo",
                             "N1": "Nice One",
-							"M8": "Mate",
-							"GTFO": "Go The Fuck Away",
+							"MATE": "M8",
+							"GTFO": "Get The Fuck Out",
                             "RLC": "Reddit Live Chat"
                          };
 
@@ -873,8 +873,9 @@ ________________________________________________________________________________
                     var usr = $usr.text();
                     if (usr == "741456963789852123") { usr = "7 4 1"; } /* idea: if username is a lot of numbers, call them by the first 3 numbers seperated */
                     if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
-                    if (usr == "Stjerneklar") { usr = "King StjerneKlar."; }
-	                if (!GM_getValue("rlc-TTSUsernameNarration")) {
+                    if (usr == "Stjerneklar") { usr = "Stjærneklær"; }
+                    if (usr == "mofosyne") { usr = "Møføsyne"; }
+                    if (!GM_getValue("rlc-TTSUsernameNarration")) {
 	                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
 	                } else {
 	                    switch (true) {   //These are causing AutoScroll not to work..? (FF)
