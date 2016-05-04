@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.8.8
+// @version        3.8.9
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -840,7 +840,7 @@ ________________________________________________________________________________
 					"<": 	"Kleinerdong"
                      };	
 
-    var langSupport = ["en","en-GB", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
+    var langSupport = ["af","af-ZA","ar","ar-AE","ar-BH","ar-DZ","ar-EG","ar-IQ","ar-JO","ar-KW","ar-LB","ar-LY","ar-MA","ar-OM","ar-QA","ar-SA","ar-SY","ar-TN","ar-YE","az","az-AZ","az-AZ","be","be-BY","bg","bg-BG","bs-BA","ca","ca-ES","cs","cs-CZ","cy","cy-GB","da","da-DK","de","de-AT","de-CH","de-DE","de-LI","de-LU","dv","dv-MV","el","el-GR","en","en-AU","en-BZ","en-CA","en-CB","en-GB","en-IE","en-JM","en-NZ","en-PH","en-TT","en-US","en-ZA","en-ZW","eo","es","es-AR","es-BO","es-CL","es-CO","es-CR","es-DO","es-EC","es-ES","es-ES","es-GT","es-HN","es-MX","es-NI","es-PA","es-PE","es-PR","es-PY","es-SV","es-UY","es-VE","et","et-EE","eu","eu-ES","fa","fa-IR","fi","fi-FI","fo","fo-FO","fr","fr-BE","fr-CA","fr-CH","fr-FR","fr-LU","fr-MC","gl","gl-ES","gu","gu-IN","he","he-IL","hi","hi-IN","hr","hr-BA","hr-HR","hu","hu-HU","hy","hy-AM","id","id-ID","is","is-IS","it","it-CH","it-IT","ja","ja-JP","ka","ka-GE","kk","kk-KZ","kn","kn-IN","ko","ko-KR","kok","kok-IN","ky","ky-KG","lt","lt-LT","lv","lv-LV","mi","mi-NZ","mk","mk-MK","mn","mn-MN","mr","mr-IN","ms","ms-BN","ms-MY","mt","mt-MT","nb","nb-NO","nl","nl-BE","nl-NL","nn-NO","ns","ns-ZA","pa","pa-IN","pl","pl-PL","ps","ps-AR","pt","pt-BR","pt-PT","qu","qu-BO","qu-EC","qu-PE","ro","ro-RO","ru","ru-RU","sa","sa-IN","se","se-FI","se-FI","se-FI","se-NO","se-NO","se-NO","se-SE","se-SE","se-SE","sk","sk-SK","sl","sl-SI","sq","sq-AL","sr-BA","sr-BA","sr-SP","sr-SP","sv","sv-FI","sv-SE","sw","sw-KE","syr","syr-SY","ta","ta-IN","te","te-IN","th","th-TH","tl","tl-PH","tn","tn-ZA","tr","tr-TR","tt","tt-RU","ts","uk","uk-UA","ur","ur-PK","uz","uz-UZ","uz-UZ","vi","vi-VN","xh","xh-ZA","zh","zh-CN","zh-HK","zh-MO","zh-SG","zh-TW","zu","zu-ZA"];
 
 	function strSeededRandInt (str, min = 0, max = 256, code = 0){
 		for(let i = 0; i < str.length; i++){
@@ -853,10 +853,8 @@ ________________________________________________________________________________
 		if (GM_getValue("rlc-TextToSpeechTTS")) { 
 		if($msg.text().length<250){
 				var linetoread = $msg.text(); // Load in message string
-				var hasTripple = /(.)\1\1/.test(linetoread); // Check for single character spamming
+				var hasTripple = /([^. ])\1\1/.test(linetoread); // Check for single character spamming
 				if (!hasTripple) {
-					//replace 3 dots with elipsis character
-					linetoread = linetoread.split("...").join("\u2026"); 
 					// Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
 					var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
 					linetoread = linetoread.split(" ").map(function(token){
