@@ -590,7 +590,6 @@ div#rlc-settings input {
     height: 61px;
     padding-top: 20px;
     /* text-decoration: underline; */
-    color: white;
     z-index: 1000;
 }
 
@@ -660,7 +659,7 @@ height: calc(100vh - 215px);
     color: #ccc
 }
 
-.dark-background #rlc-messagebox textarea,.dark-background #rlc-sidebar li,.dark-background #rlc-wrapper,.dark-background #rlc-wrapper a,.dark-background #rlc-wrapper h1#liveupdate-title,.dark-background #rlc-wrapper p,.dark-background .longMessageClosed:after,.dark-background .rlc-channel-add button,.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown {
+.dark-background .md.hasEmbed:before, .dark-background #rlc-messagebox textarea,.dark-background #rlc-sidebar li,.dark-background #rlc-wrapper,.dark-background #rlc-wrapper a,.dark-background #rlc-wrapper h1#liveupdate-title,.dark-background #rlc-wrapper p,.dark-background .longMessageClosed:after,.dark-background .rlc-channel-add button,.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown {
     color: #f5f5f5
 }
 
