@@ -561,11 +561,13 @@ div#rlc-settings input {
 }
 
 .md.hasEmbed iframe {
-    position: absolute;
-    right: 0;
-    top: -95px;
+    /* position: absolute; */
+    /* right: 0; */
+    /* top: -95px; */
     width: 50%;
-    transform: scale(.25,.25)
+    transform: scale(.25,.25);
+    position: fixed;
+    bottom: 0;
 }
 
 .md.hasEmbed .provider {
@@ -575,16 +577,21 @@ div#rlc-settings input {
 .md.hasEmbed {
     position: relative;
     height: 80px;
-    cursor: pointer
+    cursor: pointer;
+    overflow: hidden;
 }
 
 .md.hasEmbed:before {
     content: "Embedded content, click to view";
     display: block;
     position: relative;
-    top: 8px;
-    font-size: 12px;
-    text-decoration: underline
+    top: 0px;
+    font-size: 16px;
+    height: 61px;
+    padding-top: 20px;
+    /* text-decoration: underline; */
+    color: white;
+    z-index: 1000;
 }
 
 .rlc-compact #header {
