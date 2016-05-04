@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.8.7
+// @version        3.8.8
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -773,71 +773,73 @@ ________________________________________________________________________________
 		str += (n[5] != 0) ? ((str != "") ? "and " : "") + (digits[Number(n[5])] || tens[n[5][0]] + " " + digits[n[5][1]]) + " " : "";
 		return str.trim();
 	}
+
+    function getNumbers(input) {
+        return input.match(/[0-9]+/g);
+    }
+
+    // Select Emoji to narration tone
+    var toneList = {"smile":   "smiling",
+                    "angry":   "angrily",
+                    "frown":   "while frowning",
+                    "silly":   "pulling a silly face",
+                    "meh": 	   "in a disinterested manner",
+                    "shocked": "in shock",
+                    "happy":   "happily",
+                    "sad": 	   "looking sad",
+                    "crying":  "with tears in his eyes",
+                    "wink":    "while winking",
+                    "zen":     "in zen mode",
+                    "annoyed": "expressing annoyance",
+                    "xsmile":  "with a grinning broadly",
+                    "xsad":    "very sadly",
+                    "xhappy":  "very happily",
+                    "tongue":  "while sticking out a tongue"};
     
-	function getNumbers(input) {
-		return input.match(/[0-9]+/g);
-	}
+    // Abbreviation Expansion (All keys must be in uppercase)
+    var replaceStrList = {
+					"AFAIK":   "As Far As I Know",
+					"AFK": 	   "Away From Keyboard",
+					"AKA": 	   "Also Known As",
+					"ASAP":    "As Soon As Possible",
+					"BRB":     "Be right back",
+					"B8":      "Bait",
+					"BTW": 	   "By The Way",
+					"CYA": 	   "See Ya",
+					"DIY": 	   "Do it yourself",
+					"FTW": 	   "For The Win",
+					"FK": 	   "Fuck",
+					"FTFY":    "Fixed that for you",
+					"FFS": 	   "For Fucks Sake",
+					"G2G": 	   "got to go",
+					"GR8": 	   "Great",
+					"GL":      "Good luck",
+					"GTFO":    "Get The Fuck Out",
+					"IRL": 	   "In real life",
+					"IIRC":    "If I recall correctly",
+					"IKR": 	   "I Know Right",
+					"IMO": 	   "In My Opinion",
+					"JK":      "Just Kidding",
+					"MATE":    "M8",
+					"NVM":     "Nevermind",
+					"N1":      "Nice One",
+					"NP":      "No problem",
+					"OFC":     "Of Course",
+					"OMG":     "Oh My God",
+					"RTFM":    "Read The Fucking Manual",
+					"R8":      "Rate",
+					"RLC":     "Reddit Live Chat",
+					"TLDR":    "Too Long, Didn't Read",
+					"TTS":     "Text to speech",
+					"TIL":     "Today I learned",
+					"TY":      "Thanks",
+					"YW":      "You're welcome",
+					"TBH":     "To be honest",
+					"WTF":     "What The Fuck",
+					"KRETENKOBR2": "KretenkobrTwo",
+                     };	
 
-	// Select Emoji to narration tone
-	var toneList = {"smile": "smiling",
-					"angry": "angrily",
-					"frown": "while frowning",
-					"silly": "pulling a silly face",
-					"meh": " in a disinterested manner",
-					"shocked": "in shock",
-					"happy": "happily",
-					"sad": "looking sad",
-					"crying": "with tears in his eyes",
-					"wink": " while winking",
-					"zen": "in zen mode",
-					"annoyed": "expressing annoyance",
-					"xsmile": "with a grinning broadly",
-					"xsad": "very sadly",
-					"xhappy": "very happily",
-					"tongue": "while sticking out a tongue"};
-	// Abbreviation Expansion (All keys must be in uppercase)
-	var replaceStrList = {	"WTF": "What The Fuck",
-							"BTW": "By The Way",
-							"NVM": "Nevermind",
-							"AFAIK": "As Far As I Know",
-							"OFC": "Of Course",
-							"AFK": "Away From Keyboard",
-							"AKA": "Also Known As",
-							"ASAP": "As Soon As Possible",
-							"CYA": "See Ya",
-							"IKR": "I Know Right",
-							"IMO": "In My Opinion",
-							"JK": "Just Kidding",
-							"OMG": "Oh My God",
-							"RTFM": "Read The Fucking Manual",
-							"TLDR": "Too Long, Didn't Read",
-							"FTW": "For The Win",
-							"FFS": "For Fucks Sake",
-							"G2G": "got to go",
-                                                        "KRETENKOBR2": "KretenkobrTwo",
-                                                        "N1": "Nice One",
-                                                        "TTS": "Text to speech",
-                                                        "IRL": "In real life",
-                                                        "IIRC": "If I recall correctly",
-                                                        "TIL": "Today I learned",
-                                                        "FTFY": "Fixed that for you",
-                                                        "DIY": "Do it yourself",
-                                                        "BRB": "Be right back",
-                                                        "GR8": "Great",
-                                                        "B8": "Bait",
-                                                        "R8": "Rate",
-                                                        "TY": "Thanks",
-                                                        "NP": "No problem",
-                                                        "YW": "You're welcome",
-                                                        "GL": "Good luck",
-                                                        "TBH": "To be honest",
-                                                        "FK": "Fuck",
-							"MATE": "M8",
-							"GTFO": "Get The Fuck Out",
-                            "RLC": "Reddit Live Chat"
-                         };
-
-	var langSupport = ["en","en-GB", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
+    var langSupport = ["en","en-GB", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
 	function strSeededRandInt (str, min = 0, max = 256, code = 0){
 		for(let i = 0; i < str.length; i++){
@@ -886,7 +888,6 @@ ________________________________________________________________________________
                     if (usr == "741456963789852123") { usr = "7 4 1"; } /* idea: if username is a lot of numbers, call them by the first 3 numbers seperated */
                     if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
                     if (usr == "Stjerneklar") { usr = "Stjærneklær"; }
-                    if (usr == "mofosyne") { usr = "Mawfosuny"; }
                     if (!GM_getValue("rlc-TTSUsernameNarration")) {
 	                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
 	                } else {
@@ -914,7 +915,7 @@ ________________________________________________________________________________
 	                }
 					
 					// Console Logging
-					console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
+					// console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
 					
 					// Now speak the sentence
 					 msg.voiceURI = 'native';
