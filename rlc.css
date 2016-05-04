@@ -116,17 +116,15 @@ div#rlc-sidebar {
 
 #rlc-sidebar {
     width: 24%;
-    overflow-y: auto;
     overflow-x: hidden;
     height: calc(100vh - 114px);
     padding-top: 20px;
-    border-left: 2px solid #FCFCFC
+    border-left: 2px solid #FCFCFC;
 }
 
 #rlc-chat {
-    height: calc(100vh - 213px);
-    max-height: 451px;
-    padding-top: 10px;
+    height: calc(100vh - 202px);
+    max-height: 461px;
 }
 
 #rlc-main .liveupdate-listing {
@@ -607,8 +605,8 @@ div#rlc-settings input {
 }
 
 .rlc-compact #rlc-chat {
-    height: calc(100vh - 253px);
-    max-height: 451px;
+    height: calc(100vh - 263px);
+    max-height: 458px
 }
 
 .rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar {
@@ -634,15 +632,7 @@ div#rlc-settings input {
 }
 
 .rlc-compact.rlc-fullwidth #rlc-chat {
-    height: calc(100vh - 150px);
-}
-
-.rlc-compact.rlc-fullwidth #mCSB_1 {
-    max-height: none!important;
-}
-
-.rlc-fullwidth #mCSB_1 {
-    max-height: none!important;
+    height: calc(100vh - 135px)
 }
 
 .rlc-compact.rlc-fullwidth #rlc-sidebar {
@@ -761,4 +751,8 @@ div#rlc-settings input {
 
 .user-narration a.author {
     display: none
+}
+
+#mCSB_1 {
+    max-height: none!important;
 }
