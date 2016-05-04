@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.8.3
+// @version        3.8.4
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
-// @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
+// @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
 // @updateURL      https://github.com/BNolet/RLC/blob/master/rlcs.user.js
@@ -818,9 +818,9 @@ ________________________________________________________________________________
 							"FTW": "For The Win",
 							"FFS": "For Fucks Sake",
 							"G2G": "got to go",
-                            "Kretenkobr2": "KretenkobrTwo",
-                            "N1": "Nice One",
-                            "RLC": "Reddit Live Chat"
+							"KRETENKOBRTWO": "KretenkobrTwo",
+							"NONE": "Nice One",
+							"RLC": "Reddit Live Chat"
                          };
 
 	var langSupport = ["en","en-GB", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
