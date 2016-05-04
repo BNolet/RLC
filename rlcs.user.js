@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.8.4
+// @version        3.8.5
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -818,8 +818,10 @@ ________________________________________________________________________________
 							"FTW": "For The Win",
 							"FFS": "For Fucks Sake",
 							"G2G": "got to go",
-							"KRETENKOBRTWO": "KretenkobrTwo",
+							"KRETENKOBR2": "Kretenkobr Two",
 							"NONE": "Nice One",
+							"N1": "Night",
+							"M8": "Mate",
 							"RLC": "Reddit Live Chat"
                          };
 
@@ -835,18 +837,21 @@ ________________________________________________________________________________
 	function messageTextToSpeechHandler($msg, $usr) {
 		if (GM_getValue("rlc-TextToSpeechTTS")) { 
 		if($msg.text().length<250){
-				var linetoread = $msg.text().split("...").join("\u2026"); //replace 3 dots with elipsis character
-				var hasTripple = /(.)\1\1/.test(linetoread);
-				var numbermatches = getNumbers(linetoread);
-				$.each(numbermatches, function(i) {
-					linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
-				});
+				var linetoread = $msg.text(); // Load in message string
+				var hasTripple = /(.)\1\1/.test(linetoread); // Check for single character spamming
 				if (!hasTripple) {
-					// Narrator logic based on content (Btw: http://www.regexpal.com/ is useful for regex testing)
+					//replace 3 dots with elipsis character
+					linetoread = linetoread.split("...").join("\u2026"); 
+					// Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
 					var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
 					linetoread = linetoread.split(" ").map(function(token){
 						if ( token.toUpperCase() in replaceStrList ){return replaceStrList[token.toUpperCase()];} else {return token;}
 					}).join(" ");
+					// Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
+					var numbermatches = getNumbers(linetoread);
+					$.each(numbermatches, function(i) {
+						linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
+					});
 					// Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
 					var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
 					var domEmoji = "";
@@ -863,11 +868,13 @@ ________________________________________________________________________________
 					if ( domEmoji in toneList ){
 						toneStr = " " + toneList[domEmoji];
 					}
+					// 
+					console.log(linetoread);
 					// Narration Style
 					var msg;
                     var usr = $usr.text();
                     if (usr == "741456963789852123") { usr = "7 4 1"; } /* idea: if username is a lot of numbers, call them by the first 3 numbers seperated */
-                    if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
+                    if (usr == "Kretenkobr2") { usr = "Kretenkobr Two"; }
                     if (usr == "Stjerneklar") { usr = "King StjerneKlar."; }
 	                if (!GM_getValue("rlc-TTSUsernameNarration")) {
 	                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
