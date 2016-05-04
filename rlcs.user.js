@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name         RLC
 // @namespace    http://tampermonkey.net/
-// @version      3.7.9
+// @version      3.8.2
 // @description  Chat-like functionality for Reddit Live
 // @author       FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @include      https://www.reddit.com/live/*
@@ -95,21 +95,11 @@ ________________________________________________________________________________
 								<li id="PMUser"><a>PM User</a></li>
 								<li id="deleteCom"><a>Delete Comment</a></li>
 								<li id="copyMessage"><a>Copy Message</a></li>
+								<li id="speakMessage"><a>Speak Message</a></li>
 							</ul>
 						</div>
                     </div>`;
 
-/*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
-																			  RLC CSS SECTION BELOW
-010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
-101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
-____________________________________________________________________________________________________________________________________________________________________________*/
-
-/* CSS tip: use cssminifier.com instead of messing around with line continuation, unpack in editor and re-minify before reinsertion via cssminifier.com */
-GM_addStyle('.dark-background .liveupdate code{color:#000}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.save-button{display:none}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#rlc-sendmessage,#rlc-wrapper{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#rlc-header,#rlc-wrapper,body{overflow:hidden}#rlc-chat,#rlc-header,#rlc-sidebar hr{background:#FCFCFC}#new-update-form{margin:0}.liveupdate time.live-timestamp,.liveupdate ul.buttonrow{display:none!important}#filter_tabs,#liveupdate-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown{display:none}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in ";color:#000}h1#liveupdate-title{font-size:1.5em;color:#9c9c9c;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background:0 0!important}#rlc-wrapper .liveupdate .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;background-color:#EFEFED;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid #e3e3e0;border-top:0;box-sizing:border-box}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;float:right;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);padding-top:20px;box-sizing:border-box;border-left:2px solid #FCFCFC}#rlc-chat{height:calc(100vh - 202px);overflow-y:scroll;max-height:461px}#rlc-main .liveupdate-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{height:34px;margin:0;border-radius:2px;padding:6px}#rlc-messagebox{padding:10px}#rlc-sendmessage{background-color:#FCFCFC;height:32px;margin:0;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;padding:6px;text-align:center;cursor:pointer;font-size:1.5em;box-sizing:border-box}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{float:left;box-sizing:border-box;text-align:center;padding:4px 0 8px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);box-shadow:0 1px 2px 0 rgba(166,166,166,1);background:#FCFCFC;width:100%;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0}.liveupdate .simpletime{float:left;padding-left:5px;box-sizing:border-box;width:70px;text-transform:uppercase;color:#A7A6B8;line-height:32px}.liveupdate a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.liveupdate-listing li.liveupdate .body .md{float:right;width:calc(100% - 210px);max-width:none;box-sizing:border-box;padding-right:10px}li.liveupdate.in-channel .body .md{width:calc(100% - 310px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;position:relative;top:-10px}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0;color:#FCFCFC}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}.dark-background{background:#404040!important}.dark-background #rlc-wrapper{color:#f5f5f5}.dark-background h1#liveupdate-title:before{color:#ccc}.dark-background #rlc-wrapper a,.dark-background #rlc-wrapper h1#liveupdate-title,.dark-background #rlc-wrapper p{color:#EAEAEA}.dark-background #rlc-header,.dark-background #rlc-messagebox textarea,.dark-background #rlc-sendmessage,.dark-background #rlc-toggleguide,.dark-background #rlc-toggleoptions,.dark-background #rlc-update,.dark-background #rlc-wrapper #rlc-sidebar a{background:#404040;color:rgba(245,245,245,.74)}.dark-background #rlc-sidebar{border-color:transparent}.dark-background #rlc-chat,.dark-background #rlc-sidebar hr,.dark-background #rlc-wrapper{background:#404040}.dark-background #rlc-sidebar h3{color:rgba(245,245,245,.67)}.alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}.dark-background .alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.liveupdate.user-narration .body .md{font-style:italic}.liveupdate.user-mention .body .md p{font-weight:700}body.allowHistoryScroll{height:105%;overflow:auto}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}.rlc-customscrollbars ::-webkit-scrollbar{width:10px}.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#262626}.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#4C4C4C;border:1px solid #262626}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;}.liveupdate pre{margin:0;padding:0;background:rgba(128,128,128,.5);border:#FCFCFC;box-sizing:border-box}.liveupdate a.author,.liveupdate p{line-height:32px;min-height:32px}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}.rlc-channel-add button{background:0 0;border:1px solid #A9A9A9;margin:0;padding:4px;border-top:0;border-bottom:0}.mrPumpkin{height:24px;width:24px;display:inline-block;border-radius:3px;background-size:144px;position:relative;top:6px}.dark-background .mrPumpkin{border-radius:5px}.mp_frown{background-position:-24px 0}.mp_silly{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_zen{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}#filter_tabs,div#rlc-sendmessage{border:none;box-sizing:border-box}.channelname{color:#A9A9A9!important;display:block;float:left;width:100px;line-height:32px}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute;display:none}.dark-background #filter_tabs{background:#404040;border-bottom:2px solid #262626}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:5px 2px;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:2px solid #262626}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:2px solid #262626}#filter_tabs>span.more{padding:0 30px;border-left:2px solid #262626}.rlc-channel-add input{border:0;padding:0;height:24px}#rlc-leftpanel{display:none}.left-panel #rlc-leftpanel{width:14%;float:left;display:block}.left-panel #rlc-sidebar,.left-panel #rlc-statusbar{width:18%}.left-panel #rlc-main{width:68%}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth.left-panel #rlc-statusbar{width:18%}.rlc-fullwidth.left-panel #rlc-titlebar{width:81%}.rlc-compact #header{display:none}.rlc-compact #rlc-chat{height:calc(100vh - 263px);max-height:458px}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 135px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}#liveupdate-description{margin-left:10px;float:left}.md{max-width:none!important}div#rlc-settingsbar a{display:inline-block}.liveupdate-listing li.liveupdate p{font-size:13px!important}.rlc-showChannelsUI #new-update-form{width:85%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:15%;height:34px;float:left;background-color:transparent}.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{color:rgba(245,245,245,.74)}.rlc-showChannelsUI #rlc-sendmessage{width:100%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100;background:#EFEFED}.rlc-channel-add,.rlc-hideChannelsInGlobal .liveupdate.in-channel,.rlc-showChannelsUI .rlc-filter .liveupdate{display:none}.dark-background option,.dark-background.rlc-showChannelsUI div#filter_tabs{background:#404040}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:26px;width:100%;z-index:100;padding:10px;box-sizing:border-box;background:#EFEFED}.dark-background .rlc-channel-add input{background:#000;color:#fff}.dark-background .rlc-channel-add button{color:#fff}.dark-background .rlc-channel-add{background:#404040}div#rlc-togglebar{float:right;display:block;height:100%}.dark-background.AutoScroll #s2autoscroll,.dark-background.rlc-TextToSpeech #s2tts{background:rgba(239,247,255,.25)}.AutoScroll #s2autoscroll,.rlc-TextToSpeech #s2tts{background:rgba(0,0,0,.15)}#s2autoscroll,#s2loadhist,#s2tts{float:right;box-sizing:border-box;text-align:center;padding:4px 0 8px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:100px;margin-left:20px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid #fff}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}.rlc-fullwidth div#rlc-chat{max-height:none}.md.hasEmbed iframe{height:80px;margin-top:20px;position:absolute;right:0;top:-20px;width:50%}.md.hasEmbed{position:relative;height:80px;cursor:pointer}.md.hasEmbed:before{content:"Embedded content, click to view";display:block;position:relative;top:8px;font-size:12px;text-decoration:underline}.md.hasEmbed .provider{display:none}div#rlc-sidebar{max-height:550px}.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-wrapper{height:100%}');
-
-/* base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian  */
-GM_addStyle('.mrPumpkin{background-image:url(data:image/png;base64,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)}');
 
 /*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
 																			  RLC INIT LOGIC SECTION BELOW
@@ -346,7 +336,7 @@ ________________________________________________________________________________
 	// Message background alternation via js
 	var rowAlternator = false;
 	// Modify color by amount
-	function LightenDarkenColor2(col, amt) {
+	function LightenDarkenColor(col, amt) {
 		var r = col.slice(0,2);
 		var g = col.slice(2,4);
 		var b = col.slice(4,6);
@@ -381,7 +371,7 @@ ________________________________________________________________________________
 				randB/=modAmt;
 				break;
 			default:
-				console.log("This shouldn't happen! (LightenDarkenColor2 switch case)");
+				//console.log("This shouldn't happen! (LightenDarkenColor switch case)");
 				break;
 		}
 
@@ -466,11 +456,11 @@ ________________________________________________________________________________
 
 			// Variable brigtening of colors based on dark mode setting
 			if (GM_getValue("rlc-DarkMode")){
-				var lighterColor = LightenDarkenColor2(firstThree, 60);
+				var lighterColor = LightenDarkenColor(firstThree, 60);
 				$usr.css("color", "#"+lighterColor);
 			}
 			else {
-				var darkerColor = LightenDarkenColor2(firstThree, -40);
+				var darkerColor = LightenDarkenColor(firstThree, -40);
 				$usr.css("color", "#"+darkerColor);
 			}
 		} else {
@@ -511,7 +501,7 @@ ________________________________________________________________________________
 		var $menu = $("#myContextMenu");
         $(".hasEmbed").click(function(){
             $("#rlc-leftpanel").empty();
-            $("#rlc-leftpanel").append("I.O.U. 1 better design");
+            $("#rlc-leftpanel").append("&nbsp;");
             $("#rlc-leftpanel").append($msg.find("iframe"));
             //$(this).hide();
         });
@@ -547,6 +537,9 @@ ________________________________________________________________________________
 					if ($id === "copyMessage"){
 						var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
 						$(".usertext-edit.md-container textarea").focus().val(copystring);
+					}
+                    if ($id === "speakMessage"){
+                        messageTextToSpeechHandler($msg, $usr);
 					}
 					$menu.css({"left":0, "top":0, "display": "none"}); //close menu
 				});
@@ -782,7 +775,7 @@ ________________________________________________________________________________
 	}
 
 	// Select Emoji to narration tone
-	var toneList = {"smile": "with a smile",
+	var toneList = {"smile": "smiling",
 					"angry": "angrily",
 					"frown": "while frowning",
 					"silly": "pulling a silly face",
@@ -799,8 +792,7 @@ ________________________________________________________________________________
 					"xhappy": "very happily",
 					"tongue": "while sticking out a tongue"};
 	// Abbreviation Expansion (All keys must be in uppercase)
-	var replaceStrList = {	"WTF":
-							"What The Fuck",
+	var replaceStrList = {	"WTF": "What The Fuck",
 							"BTW": "By The Way",
 							"NVM": "Nevermind",
 							"AFAIK": "As Far As I Know",
@@ -817,10 +809,12 @@ ________________________________________________________________________________
 							"TLDR": "Too Long, Didn't Read",
 							"FTW": "For The Win",
 							"FFS": "For Fucks Sake",
-                            "Kretenkobr2": "KretenkobrTwo"
+                            "Kretenkobr2": "KretenkobrTwo",
+                            "N1": "Nice One",
+                            "RLC": "Reddit Live Chat"
                          };
 
-	var langSupport = ["en", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
+	var langSupport = ["en","en-GB", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
 	function strSeededRandInt (str, min = 0, max = 256, code = 0){
 		for(let i = 0; i < str.length; i++){
@@ -1316,7 +1310,7 @@ ________________________________________________________________________________
 					}
                     if (textArea.val().indexOf("/sharebrowser") === 0){
                         /* eslint-disable camelcase */
-						$(this).val( "Browser Details (via /sharebrowser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
+						$(this).val( "___ Browser Details (via /sharebrowser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
 						/* eslint-enable camelcase */
                     }
 					if (textArea.val().indexOf("/sharesettings") === 0){
@@ -1501,13 +1495,47 @@ ________________________________________________________________________________
 
 		/* Create options */
         /* Format: Option name, function(dont touch), state(dont touch), Description(optional) */
-        createOption("Auto Scroll", function(checked){
+        createOption("Full Size", function(checked){
 			if (checked){
-				$("body").addClass("AutoScroll");
+                $("body").addClass("rlc-fullwidth");
 			} else {
-				$("body").removeClass("AutoScroll");
+				$("body").removeClass("rlc-fullwidth");
 			}
-		},false, "scroll chat on new message");
+		},false, "remove RLC max width/height");
+		
+		createOption("Dark Mode", function(checked){
+			if (checked){
+				$("body").addClass("dark-background");
+			} else {
+				$("body").removeClass("dark-background");
+			}
+		},false);
+        
+        createOption("Left Panel", function(checked){
+			if (checked){
+				$("body").addClass("left-panel");
+			} else {
+				$("body").removeClass("left-panel");
+			}
+		},false, "show left panel for content embedding. click in message with embedded content to display in panel");
+		
+		createOption("Robin Colors", function(checked){
+			if (checked){
+				$("body").addClass("rlc-RobinColors");
+			} else {
+				$("body").removeClass("rlc-RobinColors");
+			}
+		},false, "color usernames via robin algorithm");
+		
+		createOption("Compact Mode", function(checked){
+			if (checked){
+				$("body").addClass("rlc-compact");
+			} else {
+				$("body").removeClass("rlc-compact");
+			}
+			scollToBottom();
+		},false, "hide header");
+
 		createOption("Channel Colors", function(checked){
 			if (checked){
 				$("#rlc-main").addClass("show-colors");
@@ -1517,21 +1545,30 @@ ________________________________________________________________________________
 			// Correct scroll after spam filter change
 			scollToBottom();
 		},false, "give channels background colors");
-		createOption("Dark Mode", function(checked){
+		createOption("24-hour Timestamps", function(checked){
 			if (checked){
-				$("body").addClass("dark-background");
+				$("body").addClass("rlc-24hrTimeStamps");
 			} else {
-				$("body").removeClass("dark-background");
+				$("body").removeClass("rlc-24hrTimeStamps");
 			}
-		},false);
-		createOption("Compact Mode", function(checked){
+		},false, "change 11 PM to 23:00");
+        
+        createOption("Show Channels UI", function(checked){
 			if (checked){
-				$("body").addClass("rlc-compact");
+                $("body").addClass("rlc-showChannelsUI");
 			} else {
-				$("body").removeClass("rlc-compact");
+				$("body").removeClass("rlc-showChannelsUI");
 			}
-			scollToBottom();
-		},false, "hide header");
+		},false,"show channel tabs and message channel selector");
+
+        createOption("Hide Channels in Global", function(checked){
+			if (checked){
+                $("body").addClass("rlc-hideChannelsInGlobal");
+			} else {
+				$("body").removeClass("rlc-hideChannelsInGlobal");
+			}
+		},false, "hide in-channel messages in global tab (note: you must have the channel added for this to work)");
+		
 		createOption("Notification Sound", function(checked){
 			if (checked){
 				$("body").addClass("rlc-notificationsound");
@@ -1540,6 +1577,7 @@ ________________________________________________________________________________
 			}
 			scollToBottom();
 		},false, "play sound when you are mentioned");
+		
 		createOption("Chrome Notifications", function(checked){
 			if (checked && Notification && !Notification.permission !== "granted"){
 				Notification.requestPermission();
@@ -1550,6 +1588,7 @@ ________________________________________________________________________________
 				}
 			}
 		},false, "show notice when you are mentioned");
+		
 		createOption("Chrome Scroll Bars", function(checked){
 			if (checked){
 				$("body").addClass("rlc-customscrollbars");
@@ -1558,13 +1597,7 @@ ________________________________________________________________________________
 			}
 			scollToBottom();
 		},false, "use custom scrollbars");
-		createOption("No Emotes", function(checked){
-			if (checked){
-				$("body").addClass("rlc-noemotes");
-			} else {
-				$("body").removeClass("rlc-noemotes");
-			}
-		},false, "disable smileys");
+		
 		createOption("Text To Speech (TTS)", function(checked){
 			if (checked){
 				$("body").addClass("rlc-TextToSpeech");
@@ -1573,13 +1606,15 @@ ________________________________________________________________________________
 				window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel();
 			}
 		},false, "read messsges aloud");
-           createOption("TTS Username Narration", function(checked){
+        
+        createOption("TTS Username Narration", function(checked){
 			if (!checked) {
 
 			} else {
 
 			}
 		},false, "example: [message] said [name]");
+		
 		createOption("Disable User-based Voices", function(checked){
 			if (checked){
 				$("body").addClass("rlc-NoUserVoices");
@@ -1587,48 +1622,22 @@ ________________________________________________________________________________
 				$("body").removeClass("rlc-NoUserVoices");
 			}
 		},false, "do not modify TTS voices based on usernames");
-		createOption("Robin Colors", function(checked){
+		
+        createOption("Auto Scroll", function(checked){
 			if (checked){
-				$("body").addClass("rlc-RobinColors");
+				$("body").addClass("AutoScroll");
 			} else {
-				$("body").removeClass("rlc-RobinColors");
+				$("body").removeClass("AutoScroll");
 			}
-		},false, "color usernames via robin algorithm");
-		createOption("24-hour Timestamps", function(checked){
+		},false, "scroll chat on new message");
+
+		createOption("No Emotes", function(checked){
 			if (checked){
-				$("body").addClass("rlc-24hrTimeStamps");
+				$("body").addClass("rlc-noemotes");
 			} else {
-				$("body").removeClass("rlc-24hrTimeStamps");
+				$("body").removeClass("rlc-noemotes");
 			}
-		},false, "eg 11 PM becomes 23:00 (NOT WORKING ATM)");
-        createOption("Left Panel", function(checked){
-			if (checked){
-				$("body").addClass("left-panel");
-			} else {
-				$("body").removeClass("left-panel");
-			}
-		},false, "show left panel for content embedding. click copy embed in user-click menu of message with embedded content to display in panel");
-        createOption("Full Size", function(checked){
-			if (checked){
-                $("body").addClass("rlc-fullwidth");
-			} else {
-				$("body").removeClass("rlc-fullwidth");
-			}
-		},false, "remove RLC max width/height");
-        createOption("Show Channels UI", function(checked){
-			if (checked){
-                $("body").addClass("rlc-showChannelsUI");
-			} else {
-				$("body").removeClass("rlc-showChannelsUI");
-			}
-		},false,"show channel tabs and message channel selector");
-        createOption("Hide Channels in Global", function(checked){
-			if (checked){
-                $("body").addClass("rlc-hideChannelsInGlobal");
-			} else {
-				$("body").removeClass("rlc-hideChannelsInGlobal");
-			}
-		},false, "only show non-channel messages in global (note: you must have the channel added)");
+		},false, "disable smileys");
 	});
 
 	// Channel styles
@@ -1636,7 +1645,7 @@ ________________________________________________________________________________
 	for(var c = 0; c < 35; c++){
 		color = colors[(c % (colors.length))];
 
-		GM_addStyle(`#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-€{c} { background: ${color};}`, 0);
+		GM_addStyle(`#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-${c} { background: ${color};}`, 0);
 		GM_addStyle(`#rlc-chat.rlc-filter.rlc-filter-${c} li.liveupdate.rlc-filter-${c} { display:block;}`, 0);
 	}
 })();
@@ -1653,4 +1662,15 @@ ________________________________________________________________________________
     s.parentNode.insertBefore(wf, s);
   })();
 
-/* END */
+
+/*¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨
+																			  RLC CSS SECTION BELOW
+010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
+101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
+____________________________________________________________________________________________________________________________________________________________________________*/
+
+/* CSS tip: use cssminifier.com instead of messing around with line continuation, unpack in editor and re-minify before reinsertion via cssminifier.com */
+GM_addStyle('.extendButton{margin-right:5px}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.save-button{display:none}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#rlc-sendmessage,#rlc-wrapper{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#rlc-header,#rlc-wrapper,body{overflow:hidden}#new-update-form{margin:0}.liveupdate time.live-timestamp,.liveupdate ul.buttonrow{display:none!important}#filter_tabs,#liveupdate-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown{display:none}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in ";color:#000}h1#liveupdate-title{font-size:1.5em;color:#9c9c9c;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background:0 0!important}#rlc-wrapper .liveupdate .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px;background-color:#EFEFED}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid #e3e3e0;border-top:0;box-sizing:border-box}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);padding-top:20px;border-left:2px solid #FCFCFC}#rlc-chat{height:calc(100vh - 202px);overflow-y:scroll;max-height:461px}#rlc-main .liveupdate-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{height:34px;margin:0;border-radius:2px;padding:6px}#rlc-messagebox{padding:10px;background-color:#EFEFED;width:100%}#rlc-sendmessage{background-color:#FCFCFC;height:32px;margin:0;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;padding:6px;text-align:center;cursor:pointer;font-size:1.5em;box-sizing:border-box}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{float:left;box-sizing:border-box;text-align:center;padding:4px 0 8px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);box-shadow:0 1px 2px 0 rgba(166,166,166,1);background:#FCFCFC;width:100%;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0}.liveupdate .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;color:#A7A6B8;line-height:32px}.liveupdate a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.liveupdate-listing li.liveupdate .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box;padding-right:10px}li.liveupdate.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;position:relative;top:-10px}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0;color:#FCFCFC}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}.liveupdate.user-narration .body .md{font-style:italic}.liveupdate.user-mention .body .md p{font-weight:700}body.allowHistoryScroll{height:105%;overflow:auto}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}.rlc-customscrollbars ::-webkit-scrollbar{width:10px}.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#262626}.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#4C4C4C;border:1px solid #262626}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}.liveupdate pre{margin:0;padding:0;background:rgba(128,128,128,.5);border:#FCFCFC;box-sizing:border-box}.liveupdate a.author,.liveupdate p{line-height:32px;min-height:32px}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}.rlc-channel-add button{background:0 0;border:1px solid #A9A9A9;margin:0;padding:4px;border-top:0;border-bottom:0}#filter_tabs,div#rlc-sendmessage{border:none;box-sizing:border-box}.channelname{color:#A9A9A9!important;display:block;float:left;width:100px;line-height:32px}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute;display:none}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:5px 2px;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:2px solid #262626}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:2px solid #262626}#filter_tabs>span.more{padding:0 30px;border-left:2px solid #262626}.rlc-channel-add input{border:0;padding:0;height:24px}#rlc-leftpanel{display:none}.left-panel #rlc-leftpanel{width:14%;float:left;display:block;background-color:#EFEFED;height:calc(100vh - 114px)}.left-panel #rlc-sidebar,.left-panel #rlc-statusbar{width:18%}.left-panel #rlc-main{width:68%}#liveupdate-description{margin-left:10px;float:left}.md{max-width:none!important}div#rlc-settingsbar a{display:inline-block}.liveupdate-listing li.liveupdate p{font-size:13px!important}.rlc-showChannelsUI #new-update-form{width:85%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:15%;height:34px;float:left;background-color:#FCFCFC}.rlc-showChannelsUI #rlc-sendmessage{width:100%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100;background:#EFEFED}.rlc-channel-add,.rlc-hideChannelsInGlobal .liveupdate.in-channel,.rlc-showChannelsUI .rlc-filter .liveupdate{display:none}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:26px;width:100%;z-index:100;padding:10px;box-sizing:border-box;background:#EFEFED}div#rlc-togglebar{float:right;display:block;height:100%}.AutoScroll #s2autoscroll,.rlc-TextToSpeech #s2tts{background:rgba(0,0,0,.15)}#s2autoscroll,#s2loadhist,#s2tts{float:right;box-sizing:border-box;text-align:center;padding:4px 0 8px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:100px;margin-left:20px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid #fff}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}.md.hasEmbed iframe{position:absolute;right:0;top:-95px;width:50%;transform:scale(.25,.25)}.md.hasEmbed .provider{display:none}.md.hasEmbed{position:relative;height:80px;cursor:pointer}.md.hasEmbed:before{content:"Embedded content, click to view";display:block;position:relative;top:8px;font-size:12px;text-decoration:underline}.rlc-compact #header{display:none}.rlc-compact #rlc-chat{height:calc(100vh - 263px);max-height:458px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth.left-panel #rlc-statusbar{width:18%}.rlc-fullwidth.left-panel #rlc-titlebar{width:81%}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 135px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.dark-background.AutoScroll #s2autoscroll,.dark-background.rlc-TextToSpeech #s2tts{background:rgba(239,247,255,.25)}.dark-background,.dark-background #rlc-leftpanel,.dark-background #rlc-messagebox,.dark-background #rlc-messagebox textarea,.dark-background #rlc-sendmessage,.dark-background #rlc-sidebar,.dark-background #rlc-toggleguide,.dark-background #rlc-toggleoptions,.dark-background #rlc-update,.dark-background .rlc-channel-add,.dark-background option,.dark-background.rlc-showChannelsUI div#filter_tabs{background:#404040}.dark-background #rlc-sidebar{border:transparent}.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{background:0 0}.dark-background .liveupdate code{color:#000}.dark-background #rlc-sidebar h2,.dark-background #rlc-sidebar h3,.dark-background #rlc-sidebar h4,.dark-background h1#liveupdate-title:before{color:#ccc}.dark-background #rlc-messagebox textarea,.dark-background #rlc-sidebar li,.dark-background #rlc-wrapper,.dark-background #rlc-wrapper a,.dark-background #rlc-wrapper h1#liveupdate-title,.dark-background #rlc-wrapper p,.dark-background .longMessageClosed:after,.dark-background .rlc-channel-add button,.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{color:#f5f5f5}.dark-background .alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}.mrPumpkin{height:24px;width:24px;display:inline-block;border-radius:3px;background-size:144px;position:relative;top:6px}.dark-background .mrPumpkin{border-radius:5px}.mp_frown{background-position:-24px 0}.mp_silly{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_zen{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.user-narration a.author{display:none}');
+
+/* base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian  */
+GM_addStyle('.mrPumpkin{background-image:url(data:image/png;base64,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)}');
