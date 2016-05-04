@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.8.5
+// @version        3.8.3
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
-// @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
+// @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari)
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
 // @updateURL      https://github.com/BNolet/RLC/blob/master/rlcs.user.js
@@ -818,11 +818,11 @@ ________________________________________________________________________________
 							"FTW": "For The Win",
 							"FFS": "For Fucks Sake",
 							"G2G": "got to go",
-							"KRETENKOBR2": "Kretenkobr Two",
-							"NONE": "Nice One",
-							"N1": "Night",
+                            "KRETENKOBR2": "KretenkobrTwo",
+                            "N1": "Nice One",
 							"M8": "Mate",
-							"RLC": "Reddit Live Chat"
+							"GTFO": "Go The Fuck Away",
+                            "RLC": "Reddit Live Chat"
                          };
 
 	var langSupport = ["en","en-GB", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
@@ -868,13 +868,11 @@ ________________________________________________________________________________
 					if ( domEmoji in toneList ){
 						toneStr = " " + toneList[domEmoji];
 					}
-					// 
-					console.log(linetoread);
 					// Narration Style
 					var msg;
                     var usr = $usr.text();
                     if (usr == "741456963789852123") { usr = "7 4 1"; } /* idea: if username is a lot of numbers, call them by the first 3 numbers seperated */
-                    if (usr == "Kretenkobr2") { usr = "Kretenkobr Two"; }
+                    if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
                     if (usr == "Stjerneklar") { usr = "King StjerneKlar."; }
 	                if (!GM_getValue("rlc-TTSUsernameNarration")) {
 	                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
@@ -901,7 +899,11 @@ ________________________________________________________________________________
 	                            break;
 	                    }
 	                }
-						// Now speak the sentence
+					
+					// Console Logging
+					console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
+					
+					// Now speak the sentence
 					// msg.voiceURI = 'native';
 
 					// Set variable voice type
