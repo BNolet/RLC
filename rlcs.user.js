@@ -837,6 +837,7 @@ ________________________________________________________________________________
 					"TBH":     "To be honest",
 					"WTF":     "What The Fuck",
 					"KRETENKOBR2": "KretenkobrTwo",
+					"<": 	"Kleinerdong"
                      };	
 
     var langSupport = ["en","en-GB", "en-US", "ja", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
