@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.8.6
+// @version        3.8.7
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -814,8 +814,24 @@ ________________________________________________________________________________
 							"FTW": "For The Win",
 							"FFS": "For Fucks Sake",
 							"G2G": "got to go",
-                            "KRETENKOBR2": "KretenkobrTwo",
-                            "N1": "Nice One",
+                                                        "KRETENKOBR2": "KretenkobrTwo",
+                                                        "N1": "Nice One",
+                                                        "TTS": "Text to speech",
+                                                        "IRL": "In real life",
+                                                        "IIRC": "If I recall correctly",
+                                                        "TIL": "Today I learned",
+                                                        "FTFY": "Fixed that for you",
+                                                        "DIY": "Do it yourself",
+                                                        "BRB": "Be right back",
+                                                        "GR8": "Great",
+                                                        "B8": "Bait",
+                                                        "R8": "Rate",
+                                                        "TY": "Thanks",
+                                                        "NP": "No problem",
+                                                        "YW": "You're welcome",
+                                                        "GL": "Good luck",
+                                                        "TBH": "To be honest",
+                                                        "FK": "Fuck",
 							"MATE": "M8",
 							"GTFO": "Get The Fuck Out",
                             "RLC": "Reddit Live Chat"
