@@ -297,19 +297,6 @@ body.allowHistoryScroll {
     -ms-user-select: none
 }
 
-.rlc-customscrollbars ::-webkit-scrollbar {
-    width: 10px
-}
-
-.rlc-customscrollbars ::-webkit-scrollbar-track {
-    background-color: #262626
-}
-
-.rlc-customscrollbars ::-webkit-scrollbar-thumb {
-    background-color: #4C4C4C;
-    border: 1px solid #262626
-}
-
 #myContextMenu {
     display: none;
     position: absolute;
