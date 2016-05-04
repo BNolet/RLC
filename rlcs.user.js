@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.8.11
+// @version        3.8.12
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -841,7 +841,7 @@ ________________________________________________________________________________
                      "stfu": "Shut The Front Door"
                      };	
 
-                 var langSupport = ["en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
+    var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
 	function strSeededRandInt (str, min = 0, max = 256, code = 0){
 		for(let i = 0; i < str.length; i++){
