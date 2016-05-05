@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.9
+// @version        3.9.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -786,10 +786,10 @@ ________________________________________________________________________________
                     "angry":   "angrily",
                     "frown":   "while frowning",
                     "silly":   "pulling a silly face",
-                    "meh": 	   "in a disinterested manner",
+                    "meh":     "in a disinterested manner",
                     "shocked": "in shock",
                     "happy":   "happily",
-                    "sad": 	   "looking sad",
+                    "sad":     "looking sad",
                     "crying":  "with tears in his eyes",
                     "wink":    "while winking",
                     "zen":     "in zen mode",
@@ -809,6 +809,7 @@ ________________________________________________________________________________
         "B8":      "Bait",
         "BTW": 	   "By The Way",
         "CYA": 	   "See Ya",
+        "DEF":     "Definitely",
         "DIY": 	   "Do it yourself",
         "FTW": 	   "For The Win",
         "FK": 	   "Fuck",
@@ -818,10 +819,12 @@ ________________________________________________________________________________
         "GR8": 	   "Great",
         "GL":      "Good luck",
         "GTFO":    "Get The Fuck Out",
+        "HF":      "Have fun",
         "IRL": 	   "In real life",
         "IIRC":    "If I recall correctly",
         "IKR": 	   "I Know Right",
         "IMO": 	   "In My Opinion",
+        "IDK":     "I don't know",
         "JK":      "Just Kidding",
         "MATE":    "M8",
         "NVM":     "Nevermind",
@@ -829,19 +832,23 @@ ________________________________________________________________________________
         "NP":      "No problem",
         "OFC":     "Of Course",
         "OMG":     "Oh My God",
+        "PLZ":     "Please",
+        "PLS":     "Please",
+        "RLY":     "Really",
         "RTFM":    "Read The Fucking Manual",
         "R8":      "Rate",
         "RLC":     "Reddit Live Chat",
+        "STFU":    "Shut The Fuck Up",
         "TLDR":    "Too Long, Didn't Read",
         "TTS":     "Text to speech",
         "TIL":     "Today I learned",
         "TY":      "Thanks",
-        "YW":      "You're welcome",
         "TBH":     "To be honest",
         "WTF":     "What The Fuck",
+        "WP":      "Well played",
+        "YW":      "You're welcome",
         "KRETENKOBR2": "KretenkobrTwo",
-        "<": 	"Kleinerdong",
-        "stfu": "Shut The Front Door"
+        "<":   	"Kleinerdong"
     };	
 
     var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
