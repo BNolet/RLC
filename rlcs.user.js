@@ -547,7 +547,7 @@ ________________________________________________________________________________
                         $(".usertext-edit.md-container textarea").focus().val(copystring);
                     }
                     if ($id === "speakMessage"){
-                        messageTextToSpeechHandler($msg, $usr, meMentioned);
+                        messageTextToSpeechHandler($msg, $usr);
                     }
                     $menu.css({"left":0, "top":0, "display": "none"}); //close menu
                 });
@@ -685,7 +685,7 @@ ________________________________________________________________________________
                     }
                 }
                 if(!$msg.parent().hasClass('muted')){
-                    messageTextToSpeechHandler($msg, $usr, meMentioned);
+                    messageTextToSpeechHandler($msg, $usr);
                 }
             }
         }
@@ -786,10 +786,10 @@ ________________________________________________________________________________
                     "angry":   "angrily",
                     "frown":   "while frowning",
                     "silly":   "pulling a silly face",
-                    "meh": 	   "in a disinterested manner",
+                    "meh":     "in a disinterested manner",
                     "shocked": "in shock",
                     "happy":   "happily",
-                    "sad": 	   "looking sad",
+                    "sad":     "looking sad",
                     "crying":  "with tears in his eyes",
                     "wink":    "while winking",
                     "zen":     "in zen mode",
@@ -824,8 +824,8 @@ ________________________________________________________________________________
         "IIRC":    "If I recall correctly",
         "IKR": 	   "I Know Right",
         "IMO": 	   "In My Opinion",
+        "IDK":     "I don't know",
         "JK":      "Just Kidding",
-        "K":       "OK"
         "MATE":    "M8",
         "NVM":     "Nevermind",
         "N1":      "Nice One",
@@ -858,7 +858,7 @@ ________________________________________________________________________________
         return code % (1 + max - min) + min;
     }
 
-    function messageTextToSpeechHandler($msg, $usr, meMentioned) {
+    function messageTextToSpeechHandler($msg, $usr) {
         if (GM_getValue("rlc-TextToSpeechTTS")) { 
             if($msg.text().length<250){
                 var linetoread = $msg.text(); // Load in message string
