@@ -832,6 +832,8 @@ ________________________________________________________________________________
         "NP":      "No problem",
         "OFC":     "Of Course",
         "OMG":     "Oh My God",
+        "PLZ":     "Please",
+        "PLS":     "Please",
         "RLY":     "Really",
         "RTFM":    "Read The Fucking Manual",
         "R8":      "Rate",
