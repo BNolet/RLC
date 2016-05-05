@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.9
+// @version        3.9.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -547,7 +547,7 @@ ________________________________________________________________________________
                         $(".usertext-edit.md-container textarea").focus().val(copystring);
                     }
                     if ($id === "speakMessage"){
-                        messageTextToSpeechHandler($msg, $usr);
+                        messageTextToSpeechHandler($msg, $usr, meMentioned);
                     }
                     $menu.css({"left":0, "top":0, "display": "none"}); //close menu
                 });
@@ -685,7 +685,7 @@ ________________________________________________________________________________
                     }
                 }
                 if(!$msg.parent().hasClass('muted')){
-                    messageTextToSpeechHandler($msg, $usr);
+                    messageTextToSpeechHandler($msg, $usr, meMentioned);
                 }
             }
         }
@@ -809,6 +809,7 @@ ________________________________________________________________________________
         "B8":      "Bait",
         "BTW": 	   "By The Way",
         "CYA": 	   "See Ya",
+        "DEF":     "Definitely",
         "DIY": 	   "Do it yourself",
         "FTW": 	   "For The Win",
         "FK": 	   "Fuck",
@@ -818,30 +819,34 @@ ________________________________________________________________________________
         "GR8": 	   "Great",
         "GL":      "Good luck",
         "GTFO":    "Get The Fuck Out",
+        "HF":      "Have fun",
         "IRL": 	   "In real life",
         "IIRC":    "If I recall correctly",
         "IKR": 	   "I Know Right",
         "IMO": 	   "In My Opinion",
         "JK":      "Just Kidding",
+        "K":       "OK"
         "MATE":    "M8",
         "NVM":     "Nevermind",
         "N1":      "Nice One",
         "NP":      "No problem",
         "OFC":     "Of Course",
         "OMG":     "Oh My God",
+        "RLY":     "Really",
         "RTFM":    "Read The Fucking Manual",
         "R8":      "Rate",
         "RLC":     "Reddit Live Chat",
+        "STFU":    "Shut The Fuck Up",
         "TLDR":    "Too Long, Didn't Read",
         "TTS":     "Text to speech",
         "TIL":     "Today I learned",
         "TY":      "Thanks",
-        "YW":      "You're welcome",
         "TBH":     "To be honest",
         "WTF":     "What The Fuck",
+        "WP":      "Well played",
+        "YW":      "You're welcome",
         "KRETENKOBR2": "KretenkobrTwo",
-        "<": 	"Kleinerdong",
-        "stfu": "Shut The Front Door"
+        "<":   	"Kleinerdong"
     };	
 
     var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
@@ -853,7 +858,7 @@ ________________________________________________________________________________
         return code % (1 + max - min) + min;
     }
 
-    function messageTextToSpeechHandler($msg, $usr) {
+    function messageTextToSpeechHandler($msg, $usr, meMentioned) {
         if (GM_getValue("rlc-TextToSpeechTTS")) { 
             if($msg.text().length<250){
                 var linetoread = $msg.text(); // Load in message string
