@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.9.3
+// @version        3.9.4
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -154,7 +154,7 @@
             // TODO: Switch to something more user-friendly. Message in the chat?
             alert("You have TextToSpeech enabled, please disable to load old messages.");
         } else {
-            loadingInitialMessages = 1;		//prevent tts/notifications
+            loadingInitialMessages = 1;     //prevent tts/notifications
             $("body").addClass("allowHistoryScroll"); 
             $("body").scrollTop($("body")[0].scrollHeight);
             scrollToBottom();
@@ -216,8 +216,8 @@
             } else if (updateArray.indexOf(activeUserArray[i]) > -1) {
                 /* TODO: Add things.
 
-				   Add message counter value
-				   Check if timestamp is recent enough? */
+                   Add message counter value
+                   Check if timestamp is recent enough? */
             }
         }
     }
@@ -446,7 +446,7 @@ function createOptions() {
     // Grab users username + play nice with RES
     var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
 
-	// Time converter for active user list
+    // Time converter for active user list
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
         if (time.indexOf("am") !== -1 && hours === 12) time = time.replace("12", "0");
@@ -558,7 +558,8 @@ function createOptions() {
     }
 
     // emoji trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
-    var emojiList={	":)": "smile",
+    var emojiList={ ":)": "smile",
+                   "3:D ": "stjerneklar",
                    ":((": "angry",
                    ":(": "frown",
                    ":s": "silly",
@@ -577,8 +578,8 @@ function createOptions() {
                    "X(": "xsad",
                    "XD": "xhappy",
                    "ZXY": "evilsmile",
-                   "STJ": "stjerneklar",
-                   ":P": "tongue"};
+                   ":P": "tongue"
+                  };
 
     function emoteSupport(line, $msg, firstLine) {
         if (!GM_getValue("rlc-NoEmotes")){
@@ -980,6 +981,7 @@ function createOptions() {
 
     // Select Emoji to narration tone
     var toneList = {"smile":   "smiling",
+                    "evilsmile": "with an evil smile",
                     "angry":   "angrily",
                     "frown":   "while frowning",
                     "silly":   "pulling a silly face",
@@ -994,33 +996,34 @@ function createOptions() {
                     "xsmile":  "with a grinning broadly",
                     "xsad":    "very sadly",
                     "xhappy":  "very happily",
-                    "tongue":  "while sticking out a tongue"};
+                    "tongue":  "while sticking out a tongue"
+                   };
 
     // Abbreviation Expansion (All keys must be in uppercase)
     var replaceStrList = {
         "AFAIK":   "As Far As I Know",
-        "AFK": 	   "Away From Keyboard",
-        "AKA": 	   "Also Known As",
+        "AFK":     "Away From Keyboard",
+        "AKA":     "Also Known As",
         "ASAP":    "As Soon As Possible",
         "BRB":     "Be right back",
         "B8":      "Bait",
-        "BTW": 	   "By The Way",
-        "CYA": 	   "See Ya",
+        "BTW":     "By The Way",
+        "CYA":     "See Ya",
         "DEF":     "Definitely",
-        "DIY": 	   "Do it yourself",
-        "FTW": 	   "For The Win",
-        "FK": 	   "Fuck",
+        "DIY":     "Do it yourself",
+        "FTW":     "For The Win",
+        "FK":      "Fuck",
         "FTFY":    "Fixed that for you",
-        "FFS": 	   "For Fucks Sake",
-        "G2G": 	   "got to go",
-        "GR8": 	   "Great",
+        "FFS":     "For Fucks Sake",
+        "G2G":     "got to go",
+        "GR8":     "Great",
         "GL":      "Good luck",
         "GTFO":    "Get The Fuck Out",
         "HF":      "Have fun",
-        "IRL": 	   "In real life",
+        "IRL":     "In real life",
         "IIRC":    "If I recall correctly",
-        "IKR": 	   "I Know Right",
-        "IMO": 	   "In My Opinion",
+        "IKR":     "I Know Right",
+        "IMO":     "In My Opinion",
         "IDK":     "I don't know",
         "JK":      "Just Kidding",
         "MATE":    "M8",
@@ -1045,8 +1048,8 @@ function createOptions() {
         "WP":      "Well played",
         "YW":      "You're welcome",
         "KRETENKOBR2": "KretenkobrTwo",
-        "<":   	"Kleinerdong"
-    };	
+        "<":    "Kleinerdong"
+    };  
 
     var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
@@ -1156,8 +1159,8 @@ function createOptions() {
                     window.speechSynthesis.speak(msg);
                     // get supported voices
                     /*speechSynthesis.getVoices().forEach(function(voice) {
-							console.log(voice.lang, voice.name);
-						});*/
+                            console.log(voice.lang, voice.name);
+                        });*/
                 }
             }
         }
@@ -1177,13 +1180,11 @@ function createOptions() {
  *       Whole code was ported over by a great man whos name time has forgotten... well actually i just dont remeber right now.                                                                                                                                  
  */
 
-    // rate limiter for prevention of message send withn 1 sec on previous user message, see Tick and Event Handlers
-    var rateLimit = 0;
 
     // channel tabs megafunction
     var tabbedChannels = new function(){
         /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
-	 * and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); to each line detected by the system */
+     * and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); to each line detected by the system */
         var _self = this;
 
         // Default options
@@ -1417,14 +1418,13 @@ function createOptions() {
             /* delay loading messages from load */
             loadingInitialMessages = 0;
             if (waitabit === 0) { 
+                console.log("ticker initiated message handling")
                 // handle existing chat messages
                 $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
                     handleNewMessage($(item), true);
                 });
             }
             waitabit--;
-            // Rate limit disable
-            rateLimit = 0;
         };
 
         // Init tab zone
@@ -1552,32 +1552,30 @@ function createOptions() {
             if (e.keyCode === 13) {
                 if (e.shiftKey) { /* Exit enter handling to allow shift+enter newline */  }
                 else if (textArea.val() === "" ) { e.preventDefault();  }
-                else if (rateLimit === 1) { e.preventDefault();console.log("rate limit hit");}
                 else {
                     if (textArea.val().indexOf("/version") === 0){
                         /* eslint-disable camelcase */
-                        $(this).val(`RLC v.${GM_info.script.version} has been released. Use the link in the sidebar to update.`);
+                        $(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
                         /* eslint-enable camelcase */
                     }
-                    if (textArea.val().indexOf("/sharebrowser") === 0){
+                    if (textArea.val().indexOf("/browser") === 0){
                         /* eslint-disable camelcase */
-                        $(this).val( "___ Browser Details (via /sharebrowser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
+                        $(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
                         /* eslint-enable camelcase */
                     }
-                    if (textArea.val().indexOf("/sharesettings") === 0){
+                    if (textArea.val().indexOf("/settings") === 0){
                         var str = "    {\n";
                         str += optionsArray.map(function(key){
                             return "    "+key+": "+GM_getValue(key);
                         }).join(",\n");
                         str += "\n    }"
                         /* eslint-disable camelcase */
-                        $(this).val( "RLC settings (via /sharesettings ) : \n\n"+str );
+                        $(this).val( "||| RLC settings (via /settings ) : \n\n"+str );
                         /* eslint-enable camelcase */
                     }
                     e.preventDefault();
                     $(".save-button .btn").click();
                     $("#new-update-form textarea").val("");
-                    rateLimit = 1;
                 }
             }
             else if (e.keyCode === 38) {
@@ -1803,7 +1801,7 @@ function createOptions() {
         rowAlternator=!rowAlternator;
       
         // run options setup
-	    createOptions();
+        createOptions();
 
     });
 
@@ -1873,7 +1871,7 @@ WebFontConfig = {
  *    Save the script in your userscript editor and reload RLC sans CSS, use dev tools and insert the copied CSS via inspector stylesheet.
  *    Use the buildt in {} formatting button to format the minified CSS into a readable structure. 
  *
- *	  To save your changes, use cssminifier.com to re-minify your resulting CSS and insert it in the GM_addstyle that you left empty.                          
+ *    To save your changes, use cssminifier.com to re-minify your resulting CSS and insert it in the GM_addstyle that you left empty.                          
  *                                
  */
 
@@ -1885,46 +1883,3 @@ GM_addStyle('.mrPumpkin{height:24px;width:24px;display:inline-block;border-radiu
 
 /* base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian, added to by kreten  */
 GM_addStyle('.mrPumpkin{background-image:url("data:image/png;base64,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")}');
-
-/*         .m.                                   ,_
-         ' ;M;                                ,;m `
-           ;M;.           ,      ,           ;SMM;
-          ;;Mm;         ,;  ____  ;,         ;SMM;
-         ;;;MM;        ; (.MMMMMM.) ;       ,SSMM;;
-       ,;;;mMp'        l  ';mmmm;/  j       SSSMM;;
-     .;;;;;MM;         .\,.mmSSSm,,/,      ,SSSMM;;;
-    ;;;;;;mMM;        .;MMmSSSSSSSmMm;     ;MSSMM;;;;
-   ;;;;;;mMSM;     ,_ ;MMmS;;;;;;mmmM;  -,;MMMMMMm;;;;
-  ;;;;;;;MMSMM;     \"*;M;( ( '') );m;*"/ ;MMMMMM;;;;;,
- .;;;;;;mMMSMM;      \(@;! _     _ !;@)/ ;MMMMMMMM;;;;;,
- ;;;;;;;MMSSSM;       ;,;.*o*> <*o*.;m; ;MMMMMMMMM;;;;;;,
-.;;;;;;;MMSSSMM;     ;Mm;           ;M;,MMMMMMMMMMm;;;;;;.
-;;;;;;;mmMSSSMMMM,   ;Mm;,   '-    ,;M;MMMMMMMSMMMMm;;;;;;;
-;;;;;;;MMMSSSMMMMMMMm;Mm;;,  ___  ,;SmM;MMMMMMSSMMMM;;;;;;;;
-;;'";;;MMMSSSSMMMMMM;MMmS;;,  "  ,;SmMM;MMMMMMSSMMMM;;;;;;;;.
-!   ;;;MMMSSSSSMMMMM;MMMmSS;;._.;;SSmMM;MMMMMMSSMMMM;;;;;;;;;
-    ;;;;*MSSSSSSMMMP;Mm*"'q;'   `;p*"*M;MMMMMSSSSMMM;;;;;;;;;
-    ';;;  ;SS*SSM*M;M;'     `-.        ;;MMMMSSSSSMM;;;;;;;;;,
-     ;;;. ;P  `q; qMM.                 ';MMMMSSSSSMp' ';;;;;;;
-     ;;;; ',    ; .mm!     \.   `.   /  ;MMM' `qSS'    ';;;;;;
-     ';;;       ' mmS';     ;     ,  `. ;'M'   `S       ';;;;;
-      `;;.        mS;;`;    ;     ;    ;M,!     '        ';;;;
-       ';;       .mS;;, ;   '. o  ;   oMM;                ;;;;
-        ';;      MMmS;; `,   ;._.' -_.'MM;                 ;;;
-         `;;     MMmS;;; ;   ;      ;  MM;                 ;;;
-           `'.   'MMmS;; `;) ',    .' ,M;'                 ;;;
-              \    '' ''; ;   ;    ;  ;'                   ;;
-               ;        ; `,  ;    ;  ;                   ;;
-                        |. ;  ; (. ;  ;      _.-.         ;;
-           .-----..__  /   ;  ;   ;' ;\  _.-" .- `.      ;;
-         ;' ___      `*;   `; ';  ;  ; ;'  .-'    :      ;
-         ;     """*-.   `.  ;  ;  ;  ; ' ,'      /       |
-         ',          `-_    (.--',`--'..'      .'        ',
-           `-_          `*-._'.\\\;||\\)     ,'
-              `"*-._        "*`-ll_ll'l    ,'
-                 ,==;*-._           "-.  .'
-              _-'    "*-=`*;-._        ;'
-            ."            ;'  ;"*-.    `
-            ;   ____      ;//'     "-   `,
-            `+   .-/                 ".\\;
-              `*" /                    "' */
