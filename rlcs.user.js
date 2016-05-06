@@ -40,6 +40,8 @@
 //    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.                                                                              
 //      - Stjerneklar
 
+
+
 //
 //   /$$$$$$$ /$$$$$$$  /$$$$$$ /$$      /$$ /$$$$$$ /$$$$$$$$/$$$$$$$        /$$$$$$/$$   /$$/$$$$$$$$/$$$$$$ 
 //  | $$__  $| $$__  $$/$$__  $| $$  /$ | $$/$$__  $| $$_____| $$__  $$      |_  $$_| $$$ | $| $$_____/$$__  $$
@@ -50,12 +52,12 @@
 //  | $$$$$$$| $$  | $|  $$$$$$| $$/   \  $|  $$$$$$| $$$$$$$| $$  | $$       /$$$$$| $$ \  $| $$    |  $$$$$$/
 //  |_______/|__/  |__/\______/|__/     \__/\______/|________|__/  |__/      |______|__/  \__|__/     \______/ 
 //                                                                                                             
-//  Code status: bloated?                                                                                                           
+//                                                                                                        
 //                                                                                                             
-
 
 // Settings Keys (used in /sharesettings)
 var optionsArray = [];
+
 //Check and store browser details
 var nVer = navigator.appVersion;
 var nAgt = navigator.userAgent;
@@ -71,6 +73,7 @@ var browser = {
     msie: false,
     safari: false
 };  
+
 // In Opera 15+, the true version is after "OPR/" 
 if ((verOffset=nAgt.indexOf("OPR/"))!=-1) {
     browserName = "Opera";
@@ -140,7 +143,6 @@ if (isNaN(majorVersion)) {
 //  Code status: needs some love                                                                                                                           
 //                                                                                                                             
 
-
 // Scroll chat back to bottom
 var scrollToBottom = function(){
     $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
@@ -160,14 +162,15 @@ function loadHistory() {
     }
 }
 
-var b = GM_getValue("mutedUsers");
-if(b!=undefined){
-    var mutedUsers = b;
+var storedMuteList = GM_getValue("mutedUsers");
+if(storedMuteList!=undefined){
+    var mutedUsers = storedMuteList;
 }else{
     var mutedUsers = [];
 }
 
 function updateMutedUsers() {
+
     // Reset by removing CSS and userlist
     $("#mystyle").remove();
     $("#bannedlist").empty();
@@ -842,26 +845,6 @@ var handleNewMessage = function($el, rescan){
 
     // Target blank all message links
     $msg.find("a").attr("target", "_blank");
-    /*if (loadingInitialMessages === 0) {*/
-    /*if (GM_getValue("rlc-LeftPanel")) { 
-                /* embedded content detection - removes links and their contents to see if that was the only content, if so, treat as embed */
-    /* need to check like this since the iframes dont exist when our code is run */
-    /*          
-                var $messageNoLink = $msg;
-                $messageNoLink.find("a").contents().remove();
-                $messageNoLink.remove("a");
-                //console.log($messageNoLink.text().length);
-                //console.log($messageNoLink.text());
-                if ($messageNoLink.text().length === 1) { 
-                    $msg.addClass("hasEmbed");
-                }
-*/
-    /*}
-            else {
-
-
-            }*/
-    /*    } */
 
     // Prevent embedly iframe link handling by interrupting links
     firstLine.html(firstLine.html()+" ");
@@ -897,19 +880,24 @@ var handleNewMessage = function($el, rescan){
 
     // Timestamp modification & user activity tracking
     timeAndUserTracking($el, $usr);
-    messageUserColor($usr); // User color
 
-    messageClickHandler($usr, $msg, $el);  // Message click handling
+    // User color
+    messageUserColor($usr); 
 
-    if(mutedUsers.indexOf($usr.text())!=-1){ //deal with muting
+    // Message click handling
+    messageClickHandler($usr, $msg, $el);  
+
+    //deal with muting
+    if(mutedUsers.indexOf($usr.text())!=-1){ 
         $msg.parent().addClass('muted'); 
     }
+
     // Stuff that should not be done to messages loaded on init, like TTS handling
     if (loadingInitialMessages === 0) {
         reAlternate();
         if (rescan) {
-            //console.log("This is the rescan. Do you copy? Not sure why we're reporting. Over and out.");
-            // This is rescan, do nothing. rescans happen when channel tabs are changed
+            // This is rescan, do nothing.
+            console.log(rescan);
         }
         else {
             if (line.indexOf(robinUser) !== -1){
@@ -966,24 +954,25 @@ function getNumbers(input) {
 }
 
 // Select Emoji to narration tone
-var toneList = {"smile":   "smiling",
-                "evilsmile": "with an evil smile",
-                "angry":   "angrily",
-                "frown":   "while frowning",
-                "silly":   "pulling a silly face",
-                "meh":     "in a disinterested manner",
-                "shocked": "in shock",
-                "happy":   "happily",
-                "sad":     "looking sad",
-                "crying":  "with tears in his eyes",
-                "wink":    "while winking",
-                "zen":     "in zen mode",
-                "annoyed": "expressing annoyance",
-                "xsmile":  "with a grinning broadly",
-                "xsad":    "very sadly",
-                "xhappy":  "very happily",
-                "tongue":  "while sticking out a tongue"
-               };
+var toneList = {
+    "smile":   "smiling",
+    "evilsmile": "with an evil smile",
+    "angry":   "angrily",
+    "frown":   "while frowning",
+    "silly":   "pulling a silly face",
+    "meh":     "in a disinterested manner",
+    "shocked": "in shock",
+    "happy":   "happily",
+    "sad":     "looking sad",
+    "crying":  "with tears in his eyes",
+    "wink":    "while winking",
+    "zen":     "in zen mode",
+    "annoyed": "expressing annoyance",
+    "xsmile":  "with a grinning broadly",
+    "xsad":    "very sadly",
+    "xhappy":  "very happily",
+    "tongue":  "while sticking out a tongue"
+   };
 
 // Abbreviation Expansion (All keys must be in uppercase)
 var replaceStrList = {
@@ -1038,7 +1027,6 @@ var replaceStrList = {
     "<":    "Kleinerdong"
 };  
 
-var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
 function strSeededRandInt (str, min = 0, max = 256, code = 0){
     for(let i = 0; i < str.length; i++){
@@ -1047,116 +1035,129 @@ function strSeededRandInt (str, min = 0, max = 256, code = 0){
     return code % (1 + max - min) + min;
 }
 
-    function messageTextToSpeechHandler($msg, $usr) {
+var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
 
-        if (GM_getValue("rlc-TextToSpeechTTS")) { 
+function messageTextToSpeechHandler($msg, $usr) {
 
-            if($msg.text().length<250){
+    if (GM_getValue("rlc-TextToSpeechTTS")) { 
 
-                // Load in message string
-                var linetoread = $msg.text(); 
-                var hasTripple = /([^. ])\1\1/.test(linetoread); // Check for single character spamming
-                if (!hasTripple) {
-                    // Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
-                    var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
-                    linetoread = linetoread.split(" ").map(function(token){
-                        if ( token.toUpperCase() in replaceStrList ){return replaceStrList[token.toUpperCase()];} else {return token;}
-                    }).join(" ");
-                    // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
-                    var numbermatches = getNumbers(linetoread);
-                    $.each(numbermatches, function(i) {
-                        linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
+        if($msg.text().length<250){
+
+            // Load in message string
+            var linetoread = $msg.text(); 
+
+            var hasTripple = /([^. ])\1\1/.test(linetoread); 
+            // Check for single character spamming
+            if (!hasTripple) {
+
+                // Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
+                var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
+
+                linetoread = linetoread.split(" ").map(function(token){
+                    if ( token.toUpperCase() in replaceStrList ){return replaceStrList[token.toUpperCase()];} else {return token;}
+                }).join(" ");
+
+                // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
+                var numbermatches = getNumbers(linetoread);
+
+                $.each(numbermatches, function(i) {
+                    linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
+                });
+
+                // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
+                var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
+                var domEmoji = "";
+
+                if (msgemotes.length) {
+                    var finalemote;
+
+                    $.each(msgemotes, function() {
+                        finalemote = $(this).attr("class");
+
                     });
-                    // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
-                    var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
-                    var domEmoji = "";
-                    if (msgemotes.length) {
-                        var finalemote;
-                        $.each(msgemotes, function() {
-                            finalemote = $(this).attr("class");
 
-                        });
-                        var lastEmote = finalemote.split(" ")[1].split("mp_")[1]; // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy` (Note: This can be fragile if "mp_" is changed to something else)
-                        domEmoji = lastEmote;
-                    }
-                    var toneStr="";
-                    if ( domEmoji in toneList ){
-                        toneStr = " " + toneList[domEmoji];
-                    }
-                    //meMentioned replacement
-                    var meMentioned = $msg.parent().parent().hasClass("user-narration");
-
-                    // Narration Style
-                    var msg;
-                    var usr = $usr.text();
-                    if (usr == "741456963789852123") { usr = "7 4 1"; } //idea: if username is a lot of numbers, call them by the first 3 numbers seperated 
-                    if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
-                    if (usr == "s3cur1ty") { return false; }
-                    if (!GM_getValue("rlc-TTSUsernameNarration")) {
-                        msg = new SpeechSynthesisUtterance(linetoread + toneStr);
-                    } else {
-                        switch (true) {   //These are causing AutoScroll not to work..? (FF)
-                            case meMentioned === true: //Check for /me
-                                msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
-                                break;
-                            case /.+\?$/.test(checkingStr): // Questioned
-                                msg = new SpeechSynthesisUtterance(linetoread + " questioned " + usr + toneStr );
-                                break;
-                            case /.+\!$/.test(checkingStr):   // Exclaimed
-                                msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + usr + toneStr );
-                                break;
-                            case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
-                                linetoread = linetoread.trim().slice(0, -2);
-                                msg = new SpeechSynthesisUtterance(linetoread + " stated " + usr + "sarcastically");
-                                break;
-                            case checkingStr === checkingStr.toUpperCase(): //Check for screaming
-                                msg = new SpeechSynthesisUtterance(linetoread + " shouted " + usr + toneStr );
-                                break;
-                            default: // said
-                                msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
-                                break;
-                        }
-                    }
-
-                    // Console Logging
-                    // console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
-
-                    // Now speak the sentence
-                    msg.voiceURI = 'native';
-
-                    // Set variable voice type
-
-                    if (!$("body").hasClass("rlc-NoUserVoices")){ // You want to be able to disable this in options.
-                        // Select voices that english users can use, even if its not for english exactly...
-                        var voiceList = speechSynthesis.getVoices().filter(function(voice) {
-                            for (var key in langSupport) {
-                                if ( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
-                            }
-                        });
-                        
-                        // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
-                        msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
-                        msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
-                        msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
-                        console.log(msg.voice);
-                        // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
-                        if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
-                        {
-                            msg.pitch = 1;
-                            msg.rate = 1;
-                        }
-
-                    }
-                    msg.volume = 1; // 0 to 1
-                    //msg.rate = 1; // 0.1 to 10
-                    //msg.pitch = 1; //0 to 2
-                    window.speechSynthesis.speak(msg);
-                    // get supported voices
-                    //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
+                    // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy` 
+                    // (Note: This can be fragile if "mp_" is changed to something else)
+                    var lastEmote = finalemote.split(" ")[1].split("mp_")[1]; 
+                    domEmoji = lastEmote;
                 }
+                var toneStr="";
+                if ( domEmoji in toneList ){
+                    toneStr = " " + toneList[domEmoji];
+                }
+                //meMentioned replacement
+                var meMentioned = $msg.parent().parent().hasClass("user-narration");
+
+                // Narration Style
+                var msg;
+                var usr = $usr.text();
+                //idea: if username is a lot of numbers, call them by the first 3 numbers seperated 
+                if (usr == "741456963789852123") { usr = "7 4 1"; } 
+                if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
+                if (usr == "s3cur1ty") { return false; }
+
+                if (!GM_getValue("rlc-TTSUsernameNarration")) {
+                    msg = new SpeechSynthesisUtterance(linetoread + toneStr);
+                } else {
+                    switch (true) {   //These are causing AutoScroll not to work..? (FF)
+                        case meMentioned === true: //Check for /me
+                            msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
+                            break;
+                        case /.+\?$/.test(checkingStr): // Questioned
+                            msg = new SpeechSynthesisUtterance(linetoread + " questioned " + usr + toneStr );
+                            break;
+                        case /.+\!$/.test(checkingStr):   // Exclaimed
+                            msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + usr + toneStr );
+                            break;
+                        case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
+                            linetoread = linetoread.trim().slice(0, -2);
+                            msg = new SpeechSynthesisUtterance(linetoread + " stated " + usr + "sarcastically");
+                            break;
+                        case checkingStr === checkingStr.toUpperCase(): //Check for screaming
+                            msg = new SpeechSynthesisUtterance(linetoread + " shouted " + usr + toneStr );
+                            break;
+                        default: // said
+                            msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
+                            break;
+                    }
+                }
+
+                // console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
+
+                msg.voiceURI = 'native';
+
+                // Set variable voice type
+                if (!$("body").hasClass("rlc-NoUserVoices")){ 
+                    // Select voices that english users can use, even if its not for english exactly...
+                    var voiceList = speechSynthesis.getVoices().filter(function(voice) {
+                        for (var key in langSupport) {
+                            if ( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
+                        }
+                    });
+                    
+                    // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
+                    msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
+                    msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
+                    msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
+                    console.log(msg.voice);
+                    // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
+                    if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
+                    {
+                        msg.pitch = 1;
+                        msg.rate = 1;
+                    }
+
+                }
+                msg.volume = 1; // 0 to 1
+                //msg.rate = 1; // 0.1 to 10
+                //msg.pitch = 1; //0 to 2
+                window.speechSynthesis.speak(msg);
+                // get supported voices
+                //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
             }
         }
     }
+}
 
 //
 //   /$$$$$$$$/$$$$$$ /$$$$$$$ /$$$$$$$ /$$$$$$$$/$$$$$$$         /$$$$$$ /$$   /$$ /$$$$$$ /$$   /$$/$$   /$$/$$$$$$$$/$$       /$$$$$$ 
