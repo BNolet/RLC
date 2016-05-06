@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.9.5
+// @version        3.9.6
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -1046,6 +1046,7 @@ function createOptions() {
         "WTF":     "What The Fuck",
         "WP":      "Well played",
         "YW":      "You're welcome",
+        "STJERN":  "Stjerneklar",
         "KRETENKOBR2": "KretenkobrTwo",
         "<":    "Kleinerdong"
     };  
@@ -1101,6 +1102,9 @@ function createOptions() {
                         msg = new SpeechSynthesisUtterance(linetoread + toneStr);
                     } else {
                         switch (true) {   //These are causing AutoScroll not to work..? (FF)
+                            case meMentioned === 1: //Check for /me
+                                msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
+                                break;
                             case /.+\?$/.test(checkingStr): // Questioned
                                 msg = new SpeechSynthesisUtterance(linetoread + " questioned " + usr + toneStr );
                                 break;
@@ -1113,9 +1117,6 @@ function createOptions() {
                                 break;
                             case checkingStr === checkingStr.toUpperCase(): //Check for screaming
                                 msg = new SpeechSynthesisUtterance(linetoread + " shouted " + usr + toneStr );
-                                break;
-                            case meMentioned === 1: //Check for /me
-                                msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
                                 break;
                             default: // said
                                 msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
