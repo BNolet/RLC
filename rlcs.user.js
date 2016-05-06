@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.9.4
+// @version        3.9.5
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -559,7 +559,7 @@ function createOptions() {
 
     // emoji trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
     var emojiList={ ":)": "smile",
-                   "3:D ": "stjerneklar",
+                   "3:D": "evilsmile",
                    ":((": "angry",
                    ":(": "frown",
                    ":s": "silly",
@@ -577,7 +577,6 @@ function createOptions() {
                    "X)": "xsmile",
                    "X(": "xsad",
                    "XD": "xhappy",
-                   "ZXY": "evilsmile",
                    ":P": "tongue"
                   };
 
