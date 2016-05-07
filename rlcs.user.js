@@ -2,8 +2,8 @@
 // @name           RLC
 // @version        3.12
 // @description    Chat-like functionality for Reddit Live
-// @author         FatherDerp
-// @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
+// @author         FatherDerp & Stjerneklar
+// @contributor    FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
 // @updateURL      https://github.com/BNolet/RLC/blob/master/rlcs.user.js
