@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.11.3
+// @version        3.11.4
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp
 // @contributor    Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -26,18 +26,18 @@
 
 //     /$$$$$$$ /$$       /$$$$$$        /$$$$$$           /$$                      
 //    | $$__  $| $$      /$$__  $$      |_  $$_/          | $$                      
-//    | $$  \ $| $$     | $$  \__/        | $$  /$$$$$$$ /$$$$$$   /$$$$$$  /$$$$$$ 
+//    | $$  \ $| $$     | $$  \__/        | $$  /$$$$$$$ /$$$$$$   /$$$$$$  /$$$$$$
 //    | $$$$$$$| $$     | $$              | $$ | $$__  $|_  $$_/  /$$__  $$/$$__  $$
 //    | $$__  $| $$     | $$              | $$ | $$  \ $$ | $$   | $$  \__| $$  \ $$
 //    | $$  \ $| $$     | $$    $$        | $$ | $$  | $$ | $$ /$| $$     | $$  | $$
 //    | $$  | $| $$$$$$$|  $$$$$$/       /$$$$$| $$  | $$ |  $$$$| $$     |  $$$$$$/
-//    |__/  |__|________/\______/       |______|__/  |__/  \___/ |__/      \______/ 
-//                                                                                  
-//    Welcome to Reddit Live Chat source code, enjoy your visit.                                                                                
+//    |__/  |__|________/\______/       |______|__/  |__/  \___/ |__/      \______/
+//
+//    Welcome to Reddit Live Chat source code, enjoy your visit.
 //    Please group your variables with the relevant functions and follow existing structure.
 //    (Unless you are willing to rewrite the structure into something more sane)
 //    To get a good idea of whats going on, start from window.load near the bottom.
-//    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.                                                                              
+//    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.
 //      - Stjerneklar
 
 
@@ -846,8 +846,7 @@ var handleNewMessage = function($el, rescan){
     // Target blank all message links
     $msg.find("a").attr("target", "_blank");
 
-    // Prevent embedly iframe link handling by interrupting links
-    firstLine.html(firstLine.html()+" ");
+
 
     // Insert time
     $usr.before($el.find("time"));
@@ -892,12 +891,16 @@ var handleNewMessage = function($el, rescan){
         $msg.parent().addClass('muted'); 
     }
 
+    console.log("msgHandled - html: "+$msg.html()+" rescan:"+rescan+" loadInitialMsgs:"+loadingInitialMessages)
+    
     // Stuff that should not be done to messages loaded on init, like TTS handling
     if (loadingInitialMessages === 0) {
         reAlternate();
         if (rescan) {
             // This is rescan, do nothing.
             console.log(rescan);
+            // Prevent embedly iframe link handling by interrupting links
+            firstLine.html(firstLine.html()+" ");
         }
         else {
             if (line.indexOf(robinUser) !== -1){
@@ -1093,7 +1096,8 @@ function messageTextToSpeechHandler($msg, $usr) {
                 var usr = $usr.text();
                 //idea: if username is a lot of numbers, call them by the first 3 numbers seperated 
                 if (usr == "741456963789852123") { usr = "7 4 1"; } 
-                if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
+                //if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
+                if (usr == "Kretenkobr2") { usr = "A guy who should be studying"; }
                 if (usr == "s3cur1ty") { return false; }
 
                 if (!GM_getValue("rlc-TTSUsernameNarration")) {
@@ -1729,7 +1733,7 @@ function rlcDocReadyModifications() {
     $("#rlc-guidebar a").attr("target", "_blank");
 
     // Remove initial iframes TODO: handle them better
-    $("#rlc-main iframe").remove();
+    //$("#rlc-main iframe").remove();
 }
 
 function rlcInitEventListeners() {
@@ -1753,12 +1757,15 @@ function rlcInitEventListeners() {
     mouseClicksEventHandling();
 }
 function handleInitialMessages() {
-            console.log("ticker initiated message handling")
-            // handle existing chat messages
-            $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-                handleNewMessage($(item), true);
-            });
-            $("#rlc-preloader").fadeOut();   
+
+    // handle existing chat messages
+    $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+        handleNewMessage($(item), true);
+    });
+
+    // wait for iframes, then remove preloader and scroll to bottom
+    setTimeout($("#rlc-preloader").fadeOut(), 2500);  
+    setTimeout(scrollToBottom, 2000);
 }
 
 //
@@ -1798,7 +1805,7 @@ $(window).load(function() {
     // run options setup
     createOptions();
     
-    setTimeout(handleInitialMessages, 1000);
+    setTimeout(handleInitialMessages, 500);
 
 });
 
