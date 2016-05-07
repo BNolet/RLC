@@ -643,7 +643,7 @@ $(document).mousemove(function(e){
 function messageClickHandler($usr, $msg, $el) {
     var $menu = $("#myContextMenu");
     
-    $el.on("contextmenu", ".rlc-hasEmbed", function (event) {
+    $msg.on("contextmenu", ".rlc-hasEmbed", function (event) {
         event.preventDefault();
         console.log("embed rightclicked");
         
@@ -739,8 +739,12 @@ var handleNewMessage = function($el, rescan){
     var line = $msg.text().toLowerCase();
     var firstLine = $msg.find("p").first();
        
-    //console.log("msgHandled - html:"+$msg.html()+" rescan:"+rescan+" loadInitialMsgs:"+loadingInitialMessages);   
     
+    //temporary: disable the fucking links again for master branch.
+    firstLine.html(firstLine.html()+" ");
+    
+    //console.log("msgHandled - html:"+$msg.html()+" rescan:"+rescan+" loadInitialMsgs:"+loadingInitialMessages);   
+    /*
     //finds iframes
     var embedFinder = $msg.find("iframe").length;
     if (embedFinder === 1) { $el.addClass("rlc-hasEmbed"); }
@@ -758,7 +762,7 @@ var handleNewMessage = function($el, rescan){
         if (typeof aza === "undefined") { 
             $el.addClass("rlc-hasEmbed");
         }
-    }
+    }*/
 
     // /me support (if in channel see proccessline)
     if (line.indexOf("/me") === 0){
@@ -834,7 +838,7 @@ var handleNewMessage = function($el, rescan){
             // This is rescan, do nothing.
             console.log(rescan);
             // Prevent embedly iframe link handling by interrupting links
-            //firstLine.html(firstLine.html()+" ");
+            
         }
         else {
             if (line.indexOf(robinUser) !== -1){
@@ -1769,7 +1773,7 @@ function rlcDocReadyModifications() {
     $("#rlc-guidebar a").attr("target", "_blank");
 
     // Remove initial iframes TODO: handle them better
-    //$("#rlc-main iframe").remove();
+    $("#rlc-main iframe").remove();
 }
 
 function rlcInitEventListeners() {
