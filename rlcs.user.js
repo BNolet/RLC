@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.12.5
+// @version        3.12.6
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
