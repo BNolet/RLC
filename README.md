@@ -1,6 +1,3 @@
-# THIS IS THE TESTING BRANCH. All unfinalized commits are to be committed here. 
-
-
 # RLC - Reddit Live Chat 
 
 This is a script made for [reddit live](https://www.reddit.com/live). RLC makes it possible to use the live feature as a fully functional chat. 
