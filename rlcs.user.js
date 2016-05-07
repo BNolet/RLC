@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.12.2
+// @version        3.12.3
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -40,95 +40,6 @@
 //    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.
 //      - Stjerneklar
 
-
-
-//
-//   /$$$$$$$ /$$$$$$$  /$$$$$$ /$$      /$$ /$$$$$$ /$$$$$$$$/$$$$$$$        /$$$$$$/$$   /$$/$$$$$$$$/$$$$$$ 
-//  | $$__  $| $$__  $$/$$__  $| $$  /$ | $$/$$__  $| $$_____| $$__  $$      |_  $$_| $$$ | $| $$_____/$$__  $$
-//  | $$  \ $| $$  \ $| $$  \ $| $$ /$$$| $| $$  \__| $$     | $$  \ $$        | $$ | $$$$| $| $$    | $$  \ $$
-//  | $$$$$$$| $$$$$$$| $$  | $| $$/$$ $$ $|  $$$$$$| $$$$$  | $$$$$$$/        | $$ | $$ $$ $| $$$$$ | $$  | $$
-//  | $$__  $| $$__  $| $$  | $| $$$$_  $$$$\____  $| $$__/  | $$__  $$        | $$ | $$  $$$| $$__/ | $$  | $$
-//  | $$  \ $| $$  \ $| $$  | $| $$$/ \  $$$/$$  \ $| $$     | $$  \ $$        | $$ | $$\  $$| $$    | $$  | $$
-//  | $$$$$$$| $$  | $|  $$$$$$| $$/   \  $|  $$$$$$| $$$$$$$| $$  | $$       /$$$$$| $$ \  $| $$    |  $$$$$$/
-//  |_______/|__/  |__/\______/|__/     \__/\______/|________|__/  |__/      |______|__/  \__|__/     \______/ 
-//                                                                                                             
-//                                                                                                        
-//                                                                                                             
-
-// Settings Keys (used in /sharesettings)
-var optionsArray = [];
-
-//Check and store browser details
-var nVer = navigator.appVersion;
-var nAgt = navigator.userAgent;
-var browserName  = navigator.appName;
-var fullVersion  = ''+parseFloat(navigator.appVersion); 
-var majorVersion = parseInt(navigator.appVersion,10);
-var nameOffset,verOffset,ix;
-
-var browser = {
-    chrome: false,
-    mozilla: false,
-    opera: false,
-    msie: false,
-    safari: false
-};  
-
-// In Opera 15+, the true version is after "OPR/" 
-if ((verOffset=nAgt.indexOf("OPR/"))!=-1) {
-    browserName = "Opera";
-    fullVersion = nAgt.substring(verOffset+4);
-}
-// In older Opera, the true version is after "Opera" or after "Version"
-else if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
-    browserName = "Opera";
-    fullVersion = nAgt.substring(verOffset+6);
-    if ((verOffset=nAgt.indexOf("Version"))!=-1) 
-        fullVersion = nAgt.substring(verOffset+8);
-}
-// In MSIE, the true version is after "MSIE" in userAgent
-else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
-    browserName = "Microsoft Internet Explorer";
-    fullVersion = nAgt.substring(verOffset+5);
-}
-// In Chrome, the true version is after "Chrome" 
-else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
-    browserName = "Chrome";
-    fullVersion = nAgt.substring(verOffset+7);
-}
-// In Safari, the true version is after "Safari" or after "Version" 
-else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
-    browserName = "Safari";
-    fullVersion = nAgt.substring(verOffset+7);
-    if ((verOffset=nAgt.indexOf("Version"))!=-1) 
-        fullVersion = nAgt.substring(verOffset+8);
-}
-// In Firefox, the true version is after "Firefox" 
-else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
-    browserName = "Firefox";
-    fullVersion = nAgt.substring(verOffset+8);
-}
-// In most other browsers, "name/version" is at the end of userAgent 
-else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < 
-         (verOffset=nAgt.lastIndexOf('/')) ) 
-{
-    browserName = nAgt.substring(nameOffset,verOffset);
-    fullVersion = nAgt.substring(verOffset+1);
-    if (browserName.toLowerCase()==browserName.toUpperCase()) {
-        browserName = navigator.appName;
-    }
-}
-// trim the fullVersion string at semicolon/space if present
-if ((ix=fullVersion.indexOf(";"))!=-1)
-    fullVersion=fullVersion.substring(0,ix);
-if ((ix=fullVersion.indexOf(" "))!=-1)
-    fullVersion=fullVersion.substring(0,ix);
-
-majorVersion = parseInt(''+fullVersion,10);
-if (isNaN(majorVersion)) {
-    fullVersion  = ''+parseFloat(navigator.appVersion); 
-    majorVersion = parseInt(navigator.appVersion,10);
-}
 
 //
 //   /$$    /$$ /$$$$$$ /$$$$$$$ /$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$        /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$ 
@@ -701,7 +612,7 @@ function reAlternate($objComment){
 //  | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$      |  $$$$$$| $$$$$$$$/$$$$$|  $$$$$$| $$ \  $$
 //  |__/     |__|________/\______/ \______/|__/  |__/\______/|________/       \______/|________|______/\______/|__/  \__/
 //                                                                                                                       
-//  Code status: needs a little more love                                                                                                                      
+//  Code status: OH GOD KILL IT                                                                                                                  
 //                                                                                                                       
 
 function OpenUserPM(name) {
@@ -728,19 +639,10 @@ $(document).mousemove(function(e){
 });
 
 // I'm not even going to try to clear this up.
+// sigh. TODO: move this out of messagehandling and do like in event handling.
 function messageClickHandler($usr, $msg, $el) {
     var $menu = $("#myContextMenu");
-    
-    $msg.click(function(event){
-        
-        var itsclass = $(this).parent().parent().hasClass("rlc-hasEmbed");
-        
-        if (itsclass) {
-            $(this).parent().parent().addClass("rlc-hasEmbedExpanded");
-        }
-
-    });
-    
+       
     $usr.click(function(event){
         event.preventDefault();
         if ($menu.css("display") === "none" && !isNaN(divPos["left"]) && !isNaN(divPos["top"]) ) {
@@ -915,9 +817,7 @@ var handleNewMessage = function($el, rescan){
     if(mutedUsers.indexOf($usr.text())!=-1){ 
         $msg.parent().addClass('muted'); 
     }
-
-
-    
+   
     // Stuff that should not be done to messages loaded on init, like TTS handling
     if (loadingInitialMessages === 0) {
         reAlternate();
@@ -959,10 +859,10 @@ var handleNewMessage = function($el, rescan){
 //     Code status: could be better organized but pretty good, the spoiled brat section of RLC.                                                                                                                       
 //                                                                                                                            
 
-// Numbers to english words for TTS
 var digits = ["", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "],
     tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 
+// Numbers to english words for TTS
 function numberToEnglish (num) {
     if ((num = num.toString()).length > 8) return "Overflow in numberToEnglish function.";
     let n = ("000000000" + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
@@ -1054,7 +954,7 @@ var replaceStrList = {
     "<":    "Kleinerdong"
 };  
 
-
+// used for TTS voice username-based randomization
 function strSeededRandInt (str, min = 0, max = 256, code = 0){
     for(let i = 0; i < str.length; i++){
         code += str.charCodeAt(i);
@@ -1164,6 +1064,7 @@ function messageTextToSpeechHandler($msg, $usr) {
                         }
                     });
                     
+                    // TODO do voice calculations once per user, store voices, perhaps in gmvalues?
                     // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
                     msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
                     msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
@@ -1506,6 +1407,94 @@ var tabbedChannels = new function(){
 }();
 
 //
+//   /$$$$$$$ /$$$$$$$  /$$$$$$ /$$      /$$ /$$$$$$ /$$$$$$$$/$$$$$$$        /$$$$$$/$$   /$$/$$$$$$$$/$$$$$$ 
+//  | $$__  $| $$__  $$/$$__  $| $$  /$ | $$/$$__  $| $$_____| $$__  $$      |_  $$_| $$$ | $| $$_____/$$__  $$
+//  | $$  \ $| $$  \ $| $$  \ $| $$ /$$$| $| $$  \__| $$     | $$  \ $$        | $$ | $$$$| $| $$    | $$  \ $$
+//  | $$$$$$$| $$$$$$$| $$  | $| $$/$$ $$ $|  $$$$$$| $$$$$  | $$$$$$$/        | $$ | $$ $$ $| $$$$$ | $$  | $$
+//  | $$__  $| $$__  $| $$  | $| $$$$_  $$$$\____  $| $$__/  | $$__  $$        | $$ | $$  $$$| $$__/ | $$  | $$
+//  | $$  \ $| $$  \ $| $$  | $| $$$/ \  $$$/$$  \ $| $$     | $$  \ $$        | $$ | $$\  $$| $$    | $$  | $$
+//  | $$$$$$$| $$  | $|  $$$$$$| $$/   \  $|  $$$$$$| $$$$$$$| $$  | $$       /$$$$$| $$ \  $| $$    |  $$$$$$/
+//  |_______/|__/  |__/\______/|__/     \__/\______/|________|__/  |__/      |______|__/  \__|__/     \______/ 
+//                                                                                                             
+//                                                                                                        
+//                                                                                                             
+
+// Settings Keys (used in /sharesettings)
+var optionsArray = [];
+
+//Check and store browser details
+var nVer = navigator.appVersion;
+var nAgt = navigator.userAgent;
+var browserName  = navigator.appName;
+var fullVersion  = ''+parseFloat(navigator.appVersion); 
+var majorVersion = parseInt(navigator.appVersion,10);
+var nameOffset,verOffset,ix;
+
+var browser = {
+    chrome: false,
+    mozilla: false,
+    opera: false,
+    msie: false,
+    safari: false
+};  
+
+// In Opera 15+, the true version is after "OPR/" 
+if ((verOffset=nAgt.indexOf("OPR/"))!=-1) {
+    browserName = "Opera";
+    fullVersion = nAgt.substring(verOffset+4);
+}
+// In older Opera, the true version is after "Opera" or after "Version"
+else if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
+    browserName = "Opera";
+    fullVersion = nAgt.substring(verOffset+6);
+    if ((verOffset=nAgt.indexOf("Version"))!=-1) 
+        fullVersion = nAgt.substring(verOffset+8);
+}
+// In MSIE, the true version is after "MSIE" in userAgent
+else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
+    browserName = "Microsoft Internet Explorer";
+    fullVersion = nAgt.substring(verOffset+5);
+}
+// In Chrome, the true version is after "Chrome" 
+else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
+    browserName = "Chrome";
+    fullVersion = nAgt.substring(verOffset+7);
+}
+// In Safari, the true version is after "Safari" or after "Version" 
+else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
+    browserName = "Safari";
+    fullVersion = nAgt.substring(verOffset+7);
+    if ((verOffset=nAgt.indexOf("Version"))!=-1) 
+        fullVersion = nAgt.substring(verOffset+8);
+}
+// In Firefox, the true version is after "Firefox" 
+else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
+    browserName = "Firefox";
+    fullVersion = nAgt.substring(verOffset+8);
+}
+// In most other browsers, "name/version" is at the end of userAgent 
+else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < 
+         (verOffset=nAgt.lastIndexOf('/')) ) 
+{
+    browserName = nAgt.substring(nameOffset,verOffset);
+    fullVersion = nAgt.substring(verOffset+1);
+    if (browserName.toLowerCase()==browserName.toUpperCase()) {
+        browserName = navigator.appName;
+    }
+}
+// trim the fullVersion string at semicolon/space if present
+if ((ix=fullVersion.indexOf(";"))!=-1)
+    fullVersion=fullVersion.substring(0,ix);
+if ((ix=fullVersion.indexOf(" "))!=-1)
+    fullVersion=fullVersion.substring(0,ix);
+
+majorVersion = parseInt(''+fullVersion,10);
+if (isNaN(majorVersion)) {
+    fullVersion  = ''+parseFloat(navigator.appVersion); 
+    majorVersion = parseInt(navigator.appVersion,10);
+}
+
+//
 //   /$$$$$$$$/$$    /$$/$$$$$$$$/$$   /$$/$$$$$$$$       /$$   /$$ /$$$$$$ /$$   /$$/$$$$$$$ /$$      /$$$$$$/$$   /$$ /$$$$$$ 
 //  | $$_____| $$   | $| $$_____| $$$ | $|__  $$__/      | $$  | $$/$$__  $| $$$ | $| $$__  $| $$     |_  $$_| $$$ | $$/$$__  $$
 //  | $$     | $$   | $| $$     | $$$$| $$  | $$         | $$  | $| $$  \ $| $$$$| $| $$  \ $| $$       | $$ | $$$$| $| $$  \__/
@@ -1639,6 +1628,13 @@ function mouseClicksEventHandling() {
     $("#togglebarLoadHist").click(function(){
         loadHistory();
     });     
+
+    $(".liveupdate .md").click(function(event){
+        var itsclass = $(this).parent().parent().hasClass("rlc-hasEmbed");
+          if (itsclass) {
+            $(this).parent().parent().addClass("rlc-hasEmbedExpanded");
+        }
+    });
 
     // Easy access options
     $("#togglebarAutoscroll").click(function(){
@@ -1846,34 +1842,10 @@ $(window).load(function() {
     // run options setup
     createOptions();
     
+    // handle initial messages
     setTimeout(handleInitialMessages, 500);
   
 });
-
-//
-//    /$$$$$$ /$$   /$$ /$$$$$$ /$$   /$$/$$   /$$/$$$$$$$$/$$              /$$$$$$ /$$$$$$$$/$$     /$$/$$      /$$$$$$$$ /$$$$$$ 
-//   /$$__  $| $$  | $$/$$__  $| $$$ | $| $$$ | $| $$_____| $$             /$$__  $|__  $$__|  $$   /$$| $$     | $$_____//$$__  $$
-//  | $$  \__| $$  | $| $$  \ $| $$$$| $| $$$$| $| $$     | $$            | $$  \__/  | $$   \  $$ /$$/| $$     | $$     | $$  \__/
-//  | $$     | $$$$$$$| $$$$$$$| $$ $$ $| $$ $$ $| $$$$$  | $$            |  $$$$$$   | $$    \  $$$$/ | $$     | $$$$$  |  $$$$$$ 
-//  | $$     | $$__  $| $$__  $| $$  $$$| $$  $$$| $$__/  | $$             \____  $$  | $$     \  $$/  | $$     | $$__/   \____  $$
-//  | $$    $| $$  | $| $$  | $| $$\  $$| $$\  $$| $$     | $$             /$$  \ $$  | $$      | $$   | $$     | $$      /$$  \ $$
-//  |  $$$$$$| $$  | $| $$  | $| $$ \  $| $$ \  $| $$$$$$$| $$$$$$$$      |  $$$$$$/  | $$      | $$   | $$$$$$$| $$$$$$$|  $$$$$$/
-//   \______/|__/  |__|__/  |__|__/  \__|__/  \__|________|________/       \______/   |__/      |__/   |________|________/\______/ 
-//                                                                                                                                 
-//  Generate colors and identifiers for 35 channels. Channel Tabs uses these to filter messages. 
-//  Code status: good.                                                                                                                                
-//                                                                                                                                 
-
-// Channel Colours
-var colors = ["rgba(255,0,0,0.1)", "rgba(0,255,0,0.1)", "rgba(0,0,255,0.1)", "rgba(0,255,255,0.1)", "rgba(255,0,255,0.1)", "rgba(255,255,0,0.1)", "rgba(211,211,211, .1)", "rgba(0,100,0, .1)", "rgba(255,20,147, .1)", "rgba(184,134,11, .1)"];
-
-var color;
-for(var c = 0; c < 35; c++){
-    color = colors[(c % (colors.length))];
-
-    GM_addStyle(`#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-${c} { background: ${color};}`, 0);
-    GM_addStyle(`#rlc-chat.rlc-filter.rlc-filter-${c} li.liveupdate.rlc-filter-${c} { display:block;}`, 0);
-}
 
 //
 //   /$$$$$$$$/$$$$$$ /$$   /$$/$$$$$$$$
@@ -1925,3 +1897,28 @@ GM_addStyle('.mrPumpkin{height:24px;width:24px;display:inline-block;border-radiu
 
 // base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian, added to by kreten  
 GM_addStyle('.mrPumpkin{background-image:url("data:image/png;base64,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")}');
+
+//
+//    /$$$$$$ /$$   /$$ /$$$$$$ /$$   /$$/$$   /$$/$$$$$$$$/$$              /$$$$$$ /$$$$$$$$/$$     /$$/$$      /$$$$$$$$ /$$$$$$ 
+//   /$$__  $| $$  | $$/$$__  $| $$$ | $| $$$ | $| $$_____| $$             /$$__  $|__  $$__|  $$   /$$| $$     | $$_____//$$__  $$
+//  | $$  \__| $$  | $| $$  \ $| $$$$| $| $$$$| $| $$     | $$            | $$  \__/  | $$   \  $$ /$$/| $$     | $$     | $$  \__/
+//  | $$     | $$$$$$$| $$$$$$$| $$ $$ $| $$ $$ $| $$$$$  | $$            |  $$$$$$   | $$    \  $$$$/ | $$     | $$$$$  |  $$$$$$ 
+//  | $$     | $$__  $| $$__  $| $$  $$$| $$  $$$| $$__/  | $$             \____  $$  | $$     \  $$/  | $$     | $$__/   \____  $$
+//  | $$    $| $$  | $| $$  | $| $$\  $$| $$\  $$| $$     | $$             /$$  \ $$  | $$      | $$   | $$     | $$      /$$  \ $$
+//  |  $$$$$$| $$  | $| $$  | $| $$ \  $| $$ \  $| $$$$$$$| $$$$$$$$      |  $$$$$$/  | $$      | $$   | $$$$$$$| $$$$$$$|  $$$$$$/
+//   \______/|__/  |__|__/  |__|__/  \__|__/  \__|________|________/       \______/   |__/      |__/   |________|________/\______/ 
+//                                                                                                                                 
+//  Generate colors and identifiers for 35 channels. Channel Tabs uses these to filter messages. 
+//  Code status: good.                                                                                                                                
+//                                                                                                                                 
+
+// Channel Colours
+var colors = ["rgba(255,0,0,0.1)", "rgba(0,255,0,0.1)", "rgba(0,0,255,0.1)", "rgba(0,255,255,0.1)", "rgba(255,0,255,0.1)", "rgba(255,255,0,0.1)", "rgba(211,211,211, .1)", "rgba(0,100,0, .1)", "rgba(255,20,147, .1)", "rgba(184,134,11, .1)"];
+
+var color;
+for(var c = 0; c < 35; c++){
+    color = colors[(c % (colors.length))];
+
+    GM_addStyle(`#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-${c} { background: ${color};}`, 0);
+    GM_addStyle(`#rlc-chat.rlc-filter.rlc-filter-${c} li.liveupdate.rlc-filter-${c} { display:block;}`, 0);
+}
