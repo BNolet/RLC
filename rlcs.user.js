@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.12
+// @version        3.12.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -1055,7 +1055,6 @@ var replaceStrList = {
     "WTF":     "What The Fuck",
     "WP":      "Well played",
     "YW":      "You're welcome",
-    "STJERN":  "Stjerneklar",
     "KRETENKOBR2": "KretenkobrTwo",
     "<":    "Kleinerdong"
 };  
@@ -1125,11 +1124,12 @@ function messageTextToSpeechHandler($msg, $usr) {
                 var msg;
                 var usr = $usr.text();
                 //idea: if username is a lot of numbers, call them by the first 3 numbers seperated 
-                if (usr == "741456963789852123") { usr = "7 4 1"; } 
+                if (usr == "741456963789852123") { usr = "74"; } 
                 //if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
                 if (usr == "Kretenkobr2") { usr = "A guy who should be studying"; }
-                if (usr == "s3cur1ty") { return false; }
-
+                if (usr == "s3cur1ty") { usr = "Security"; }
+                if (usr == "Stjerneklar") { usr = "Steeairneklaahr";} 
+                
                 if (!GM_getValue("rlc-TTSUsernameNarration")) {
                     msg = new SpeechSynthesisUtterance(linetoread + toneStr);
                 } else {
