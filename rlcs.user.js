@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.12.6
+// @version        3.12.7
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -24,8 +24,8 @@
 // @noframes
 // ==/UserScript==
 
-//     /$$$$$$$ /$$       /$$$$$$        /$$$$$$           /$$                      
-//    | $$__  $| $$      /$$__  $$      |_  $$_/          | $$                      
+//     /$$$$$$$ /$$       /$$$$$$        /$$$$$$           /$$
+//    | $$__  $| $$      /$$__  $$      |_  $$_/          | $$
 //    | $$  \ $| $$     | $$  \__/        | $$  /$$$$$$$ /$$$$$$   /$$$$$$  /$$$$$$
 //    | $$$$$$$| $$     | $$              | $$ | $$__  $|_  $$_/  /$$__  $$/$$__  $$
 //    | $$__  $| $$     | $$              | $$ | $$  \ $$ | $$   | $$  \__| $$  \ $$
@@ -42,17 +42,17 @@
 
 
 //
-//   /$$    /$$ /$$$$$$ /$$$$$$$ /$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$        /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$ 
+//   /$$    /$$ /$$$$$$ /$$$$$$$ /$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$        /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$
 //  | $$   | $$/$$__  $| $$__  $|_  $$_//$$__  $| $$  | $$/$$__  $$      | $$_____| $$  | $| $$$ | $$/$$__  $|__  $$__/$$__  $$
 //  | $$   | $| $$  \ $| $$  \ $$ | $$ | $$  \ $| $$  | $| $$  \__/      | $$     | $$  | $| $$$$| $| $$  \__/  | $$ | $$  \__/
-//  |  $$ / $$| $$$$$$$| $$$$$$$/ | $$ | $$  | $| $$  | $|  $$$$$$       | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$ 
+//  |  $$ / $$| $$$$$$$| $$$$$$$/ | $$ | $$  | $| $$  | $|  $$$$$$       | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$
 //   \  $$ $$/| $$__  $| $$__  $$ | $$ | $$  | $| $$  | $$\____  $$      | $$__/  | $$  | $| $$  $$$| $$        | $$  \____  $$
 //    \  $$$/ | $$  | $| $$  \ $$ | $$ | $$  | $| $$  | $$/$$  \ $$      | $$     | $$  | $| $$\  $$| $$    $$  | $$  /$$  \ $$
 //     \  $/  | $$  | $| $$  | $$/$$$$$|  $$$$$$|  $$$$$$|  $$$$$$/      | $$     |  $$$$$$| $$ \  $|  $$$$$$/  | $$ |  $$$$$$/
-//      \_/   |__/  |__|__/  |__|______/\______/ \______/ \______/       |__/      \______/|__/  \__/\______/   |__/  \______/ 
-//                                                                                                                             
-//  Code status: needs some love                                                                                                                           
-//                                                                                                                             
+//      \_/   |__/  |__|__/  |__|______/\______/ \______/ \______/       |__/      \______/|__/  \__/\______/   |__/  \______/
+//
+//  Code status: needs some love
+//
 
 // Scroll chat back to bottom
 var scrollToBottom = function(){
@@ -66,7 +66,7 @@ function loadHistory() {
         alert("You have TextToSpeech enabled, please disable to load old messages.");
     } else {
         loadingInitialMessages = 1;     //prevent tts/notifications
-        $("body").addClass("allowHistoryScroll"); 
+        $("body").addClass("allowHistoryScroll");
         $("body").scrollTop($("body")[0].scrollHeight);
         scrollToBottom();
         $("body").removeClass("allowHistoryScroll");
@@ -135,17 +135,17 @@ function processActiveUsersList() {
 }
 
 //
-//    /$$$$$$ /$$$$$$$ /$$$$$$$$/$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$    
-//   /$$__  $| $$__  $|__  $$__|_  $$_//$$__  $| $$$ | $$/$$__  $$   
-//  | $$  \ $| $$  \ $$  | $$    | $$ | $$  \ $| $$$$| $| $$  \__/   
-//  | $$  | $| $$$$$$$/  | $$    | $$ | $$  | $| $$ $$ $|  $$$$$$    
-//  | $$  | $| $$____/   | $$    | $$ | $$  | $| $$  $$$$\____  $$   
-//  | $$  | $| $$        | $$    | $$ | $$  | $| $$\  $$$/$$  \ $$   
-//  |  $$$$$$| $$        | $$   /$$$$$|  $$$$$$| $$ \  $|  $$$$$$/   
-//   \______/|__/        |__/  |______/\______/|__/  \__/\______/    
-//                                                                                                                    
-//  Calls createOption to set up lables, GM values and body classes based on stored GM values if set.                                                                                                                  
-//  Code status: very nice.                                                                                                                  
+//    /$$$$$$ /$$$$$$$ /$$$$$$$$/$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$
+//   /$$__  $| $$__  $|__  $$__|_  $$_//$$__  $| $$$ | $$/$$__  $$
+//  | $$  \ $| $$  \ $$  | $$    | $$ | $$  \ $| $$$$| $| $$  \__/
+//  | $$  | $| $$$$$$$/  | $$    | $$ | $$  | $| $$ $$ $|  $$$$$$
+//  | $$  | $| $$____/   | $$    | $$ | $$  | $| $$  $$$$\____  $$
+//  | $$  | $| $$        | $$    | $$ | $$  | $| $$\  $$$/$$  \ $$
+//  |  $$$$$$| $$        | $$   /$$$$$|  $$$$$$| $$ \  $|  $$$$$$/
+//   \______/|__/        |__/  |______/\______/|__/  \__/\______/
+//
+//  Calls createOption to set up lables, GM values and body classes based on stored GM values if set.
+//  Code status: very nice.
 
 // Create persistant option
 function createOption(name, clickAction, defaultState, description){
@@ -181,20 +181,20 @@ function createOption(name, clickAction, defaultState, description){
     // Add to DOM
     $("#rlc-settings").append($option);
     clickAction(state, $option);
-    //uncomment below to output option key/value 
+    //uncomment below to output option key/value
     //console.log(key+" = "+state);
 }
 
 function createOptions() {
 
-    // set default states(on first load of RLC, otherwise presists via GM/TM local variables) 
-    // ONLY NEEEDED FOR DEFAULT TRUE 
+    // set default states(on first load of RLC, otherwise presists via GM/TM local variables)
+    // ONLY NEEEDED FOR DEFAULT TRUE
     if (!GM_getValue("rlc-ChannelColors")) {        GM_setValue("rlc-ChannelColors",            true);}
     if (!GM_getValue("rlc-AutoScroll")) {           GM_setValue("rlc-AutoScroll",               true);}
     if (!GM_getValue("rlc-FullSize")) {             GM_setValue("rlc-FullSize",                 true);}
     if (!GM_getValue("rlc-ShowChannelsUI")) {       GM_setValue("rlc-ShowChannelsUI",           true);}
 
-    // Format: name, function, state, description(optional) 
+    // Format: name, function, state, description(optional)
     createOption("Full Size", function(checked){
         if (checked){
             $("body").addClass("rlc-fullwidth");
@@ -341,17 +341,17 @@ function createOptions() {
 }
 
 //
-//   /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$       /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$ 
+//   /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$       /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$
 //  | $$$    /$$| $$_____//$$__  $$/$$__  $$/$$__  $$/$$__  $| $$_____/      | $$_____| $$  | $| $$$ | $$/$$__  $|__  $$__/$$__  $$
 //  | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$            | $$     | $$  | $| $$$$| $| $$  \__/  | $$ | $$  \__/
-//  | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$         | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$ 
+//  | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$         | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$
 //  | $$  $$$| $| $$__/   \____  $$\____  $| $$__  $| $$|_  $| $$__/         | $$__/  | $$  | $| $$  $$$| $$        | $$  \____  $$
 //  | $$\  $ | $| $$      /$$  \ $$/$$  \ $| $$  | $| $$  \ $| $$            | $$     | $$  | $| $$\  $$| $$    $$  | $$  /$$  \ $$
 //  | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$      | $$     |  $$$$$$| $$ \  $|  $$$$$$/  | $$ |  $$$$$$/
-//  |__/     |__|________/\______/ \______/|__/  |__/\______/|________/      |__/      \______/|__/  \__/\______/   |__/  \______/ 
-//                                                                                                                                 
-//  Code status: needs some love                                                                                                                              
-//                                                                                                                                 
+//  |__/     |__|________/\______/ \______/|__/  |__/\______/|________/      |__/      \______/|__/  \__/\______/   |__/  \______/
+//
+//  Code status: needs some love
+//
 
 // Grab users username + play nice with RES
 var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
@@ -605,15 +605,15 @@ function reAlternate($objComment){
 //
 //   /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$        /$$$$$$ /$$      /$$$$$$ /$$$$$$ /$$   /$$
 //  | $$$    /$$| $$_____//$$__  $$/$$__  $$/$$__  $$/$$__  $| $$_____/       /$$__  $| $$     |_  $$_//$$__  $| $$  /$$/
-//  | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$            | $$  \__| $$       | $$ | $$  \__| $$ /$$/ 
-//  | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$         | $$     | $$       | $$ | $$     | $$$$$/  
-//  | $$  $$$| $| $$__/   \____  $$\____  $| $$__  $| $$|_  $| $$__/         | $$     | $$       | $$ | $$     | $$  $$  
-//  | $$\  $ | $| $$      /$$  \ $$/$$  \ $| $$  | $| $$  \ $| $$            | $$    $| $$       | $$ | $$    $| $$\  $$ 
+//  | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$            | $$  \__| $$       | $$ | $$  \__| $$ /$$/
+//  | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$         | $$     | $$       | $$ | $$     | $$$$$/
+//  | $$  $$$| $| $$__/   \____  $$\____  $| $$__  $| $$|_  $| $$__/         | $$     | $$       | $$ | $$     | $$  $$
+//  | $$\  $ | $| $$      /$$  \ $$/$$  \ $| $$  | $| $$  \ $| $$            | $$    $| $$       | $$ | $$    $| $$\  $$
 //  | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$      |  $$$$$$| $$$$$$$$/$$$$$|  $$$$$$| $$ \  $$
 //  |__/     |__|________/\______/ \______/|__/  |__/\______/|________/       \______/|________|______/\______/|__/  \__/
-//                                                                                                                       
-//  Code status: OH GOD KILL IT                                                                                                                  
-//                                                                                                                       
+//
+//  Code status: OH GOD KILL IT
+//
 
 function OpenUserPM(name) {
     var $url = "https://www.reddit.com/message/compose/?to=";
@@ -642,16 +642,16 @@ $(document).mousemove(function(e){
 // sigh. TODO: move this out of messagehandling and do like in event handling.
 function messageClickHandler($usr, $msg, $el) {
     var $menu = $("#myContextMenu");
-    
+
     $msg.on("contextmenu", ".rlc-hasEmbed", function (event) {
         event.preventDefault();
         console.log("embed rightclicked");
-        
+
             $("#rlc-leftpanel").append("&nbsp;");
             $("#rlc-leftpanel").append($(this).find("iframe"));
             //$(this).hide();
     });
-       
+
     $usr.click(function(event){
         event.preventDefault();
         if ($menu.css("display") === "none" && !isNaN(divPos["left"]) && !isNaN(divPos["top"]) ) {
@@ -705,15 +705,15 @@ function messageClickHandler($usr, $msg, $el) {
 //
 //   /$$   /$$/$$$$$$$$/$$      /$$       /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$
 //  | $$$ | $| $$_____| $$  /$ | $$      | $$$    /$$| $$_____//$$__  $$/$$__  $$/$$__  $$/$$__  $| $$_____/
-//  | $$$$| $| $$     | $$ /$$$| $$      | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$      
-//  | $$ $$ $| $$$$$  | $$/$$ $$ $$      | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$   
-//  | $$  $$$| $$__/  | $$$$_  $$$$      | $$  $$$| $| $$__/   \____  $$\____  $| $$__  $| $$|_  $| $$__/   
-//  | $$\  $$| $$     | $$$/ \  $$$      | $$\  $ | $| $$      /$$  \ $$/$$  \ $| $$  | $| $$  \ $| $$      
+//  | $$$$| $| $$     | $$ /$$$| $$      | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$
+//  | $$ $$ $| $$$$$  | $$/$$ $$ $$      | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$
+//  | $$  $$$| $$__/  | $$$$_  $$$$      | $$  $$$| $| $$__/   \____  $$\____  $| $$__  $| $$|_  $| $$__/
+//  | $$\  $$| $$     | $$$/ \  $$$      | $$\  $ | $| $$      /$$  \ $$/$$  \ $| $$  | $| $$  \ $| $$
 //  | $$ \  $| $$$$$$$| $$/   \  $$      | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$
 //  |__/  \__|________|__/     \__/      |__/     |__|________/\______/ \______/|__/  |__/\______/|________/
-//                                                                                                          
-//  Code status: needs some love                                                                                                        
-//                                                                                                          
+//
+//  Code status: needs some love
+//
 
 // Notification sound in base64 encoding
 var base64sound ="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QECBtFxREzTNkMyfLLVlM9UgS6aQnkPEo3DJRYkUyVQacP6j+5rqMc4TaCiVCxzSEDIKUTvMec6D7tk0aS4CEYQqahfEu6jh/We1NrVrQzhbTKZBgYbi8YbecRuLTMpTvUoAIIlynCMCimNNtBMWwDOcZIMABFMmDZPSCQgzPrLBYvUyQFMUd6UR1kbzgIGfWKw/SrqKgg5coZaKgUBQzOtyEaucSrOTBlGOqpGMNYXtGwYFhwTdfZ/nmjb0QUrCKicsj8alcPp0y7KmpuOEVAQSvUg25SKDofWuZEBtKidNLZhQJ0oGpdfVeGhJgUUEjARAINH4cGP3olbJAcdDR4gdl/onWtSmuw1xa2WVPSOy6CJ4qHBgSoO8r9UmcZiT4P+YkAhcKf+BJTTY44/cYFV5vLKV2XeYQShgODRoQoL8Kv/7ksTXgBhp4TbVygAE2sIlAzuwAJ5JQRVudDXlr7DoQRA6LbSquF6tu7RZb5t9nGr1bOOvx+64QknJBvtR///////////////6R48LQFE////////////////2AwDFdBkACAVhVSstnYaa015ymstdiCPRbJK5R0zROkwvcAhgeoNiRyAwEGJhpENIsbJLJknUCBC5jw5QzRuQEc0uCEwauFwjqEFhBYXEVxjQyKGKSXFmigRmTxeLx0mUjEumrUkklJJLLpqogQ5x4mhziLGyJdRatHrRLrooskk6Jq6Jqj1o/qSSqS/60UZkXmUkk9FFGtFH/9aPRRZRkXmSLyT0W/0UaLKSSWYl1zFMQU1FMy45OC4yqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpMQU1FMy45OC4yqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr/+5LEoQPVgaL0XYiAAAAANIAAAASqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
@@ -738,28 +738,29 @@ var handleNewMessage = function($el, rescan){
     var $usr = $el.find(".body .author");
     var line = $msg.text().toLowerCase();
     var firstLine = $msg.find("p").first();
-       
-    
+
+
     //temporary: disable the fucking links again for master branch.
     firstLine.html(firstLine.html()+" ");
-    
-    //console.log("msgHandled - html:"+$msg.html()+" rescan:"+rescan+" loadInitialMsgs:"+loadingInitialMessages);   
+
+    //console.log("msgHandled - html:"+$msg.html()+" rescan:"+rescan+" loadInitialMsgs:"+loadingInitialMessages);
     /*
     //finds iframes
     var embedFinder = $msg.find("iframe").length;
     if (embedFinder === 1) { $el.addClass("rlc-hasEmbed"); }
-    
+
     console.log($msg.find("a").length);
-    
+
+
     // if theres a link in the message
-    if ($msg.find("a").length === 1) { 
-        
+    if ($msg.find("a").length === 1) {
+
         // aza is the result of splitting message text at space and picking the second piece.
         var aza = line.split(" ")[1];
         console.log(aza);
-        
+
         // if we had a link and splitting it at space results in an undefined aza, the only thing in the message was the link.
-        if (typeof aza === "undefined") { 
+        if (typeof aza === "undefined") {
             $el.addClass("rlc-hasEmbed");
         }
     }*/
@@ -821,16 +822,16 @@ var handleNewMessage = function($el, rescan){
     timeAndUserTracking($el, $usr);
 
     // User color
-    messageUserColor($usr); 
+    messageUserColor($usr);
 
     // Message click handling
-    messageClickHandler($usr, $msg, $el);  
+    messageClickHandler($usr, $msg, $el);
 
     //deal with muting
-    if(mutedUsers.indexOf($usr.text())!=-1){ 
-        $msg.parent().addClass('muted'); 
+    if(mutedUsers.indexOf($usr.text())!=-1){
+        $msg.parent().addClass('muted');
     }
-   
+
     // Stuff that should not be done to messages loaded on init, like TTS handling
     if (loadingInitialMessages === 0) {
         reAlternate();
@@ -838,7 +839,7 @@ var handleNewMessage = function($el, rescan){
             // This is rescan, do nothing.
             console.log(rescan);
             // Prevent embedly iframe link handling by interrupting links
-            
+
         }
         else {
             if (line.indexOf(robinUser) !== -1){
@@ -857,7 +858,7 @@ var handleNewMessage = function($el, rescan){
             }
         }
     }
-};  
+};
 
 //
 //   /$$$$$$$$/$$$$$$$$/$$   /$$/$$$$$$$$       /$$$$$$$$/$$$$$$         /$$$$$$ /$$$$$$$ /$$$$$$$$/$$$$$$$$ /$$$$$$ /$$   /$$
@@ -868,9 +869,9 @@ var handleNewMessage = function($el, rescan){
 //     | $$  | $$      /$$/\  $$  | $$            | $$ | $$  | $$       /$$  \ $| $$     | $$     | $$     | $$    $| $$  | $$
 //     | $$  | $$$$$$$| $$  \ $$  | $$            | $$ |  $$$$$$/      |  $$$$$$| $$     | $$$$$$$| $$$$$$$|  $$$$$$| $$  | $$
 //     |__/  |________|__/  |__/  |__/            |__/  \______/        \______/|__/     |________|________/\______/|__/  |__/
-//                                                                                                                            
-//     Code status: could be better organized but pretty good, the spoiled brat section of RLC.                                                                                                                       
-//                                                                                                                            
+//
+//     Code status: could be better organized but pretty good, the spoiled brat section of RLC.
+//
 
 var digits = ["", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "],
     tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
@@ -880,7 +881,7 @@ function numberToEnglish (num) {
     if ((num = num.toString()).length > 8) return "Overflow in numberToEnglish function.";
     let n = ("000000000" + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
 
-    // NOTE: IF YOU REPLACE != with !== below, the numbers are read wrong 
+    // NOTE: IF YOU REPLACE != with !== below, the numbers are read wrong
     if (!n) return; var str = "";
     str += (n[1] != 0) ? (digits[Number(n[1])] || tens[n[1][0]] + " " + digits[n[1][1]]) + "crore " : "";
     str += (n[2] != 0) ? (digits[Number(n[2])] || tens[n[2][0]] + " " + digits[n[2][1]]) + "lakh " : "";
@@ -965,7 +966,7 @@ var replaceStrList = {
     "YW":      "You're welcome",
     "KRETENKOBR2": "KretenkobrTwo",
     "<":    "Kleinerdong"
-};  
+};
 
 // used for TTS voice username-based randomization
 function strSeededRandInt (str, min = 0, max = 256, code = 0){
@@ -979,14 +980,14 @@ var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN",
 
 function messageTextToSpeechHandler($msg, $usr) {
 
-    if (GM_getValue("rlc-TextToSpeechTTS")) { 
+    if (GM_getValue("rlc-TextToSpeechTTS")) {
 
         if($msg.text().length<250){
 
             // Load in message string
-            var linetoread = $msg.text(); 
+            var linetoread = $msg.text();
 
-            var hasTripple = /([^. ])\1\1/.test(linetoread); 
+            var hasTripple = /([^. ])\1\1/.test(linetoread);
             // Check for single character spamming
             if (!hasTripple) {
 
@@ -1016,9 +1017,9 @@ function messageTextToSpeechHandler($msg, $usr) {
 
                     });
 
-                    // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy` 
+                    // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
                     // (Note: This can be fragile if "mp_" is changed to something else)
-                    var lastEmote = finalemote.split(" ")[1].split("mp_")[1]; 
+                    var lastEmote = finalemote.split(" ")[1].split("mp_")[1];
                     domEmoji = lastEmote;
                 }
                 var toneStr="";
@@ -1031,12 +1032,12 @@ function messageTextToSpeechHandler($msg, $usr) {
                 // Narration Style
                 var msg;
                 var usr = $usr.text();
-                //idea: if username is a lot of numbers, call them by the first 3 numbers seperated 
-                if (usr == "741456963789852123") { usr = "74"; } 
+                //idea: if username is a lot of numbers, call them by the first 3 numbers seperated
+                if (usr == "741456963789852123") { usr = "74"; }
                 if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
                 if (usr == "s3cur1ty") { usr = "Security"; }
-                //if (usr == "Stjerneklar") { usr = "Steeairneklaahr";} 
-                
+                //if (usr == "Stjerneklar") { usr = "Steeairneklaahr";}
+
                 if (!GM_getValue("rlc-TTSUsernameNarration")) {
                     msg = new SpeechSynthesisUtterance(linetoread + toneStr);
                 } else {
@@ -1068,14 +1069,14 @@ function messageTextToSpeechHandler($msg, $usr) {
                 msg.voiceURI = 'native';
 
                 // Set variable voice type
-                if (!$("body").hasClass("rlc-NoUserVoices")){ 
+                if (!$("body").hasClass("rlc-NoUserVoices")){
                     // Select voices that english users can use, even if its not for english exactly...
                     var voiceList = speechSynthesis.getVoices().filter(function(voice) {
                         for (var key in langSupport) {
                             if ( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
                         }
                     });
-                    
+
                     // TODO do voice calculations once per user, store voices, perhaps in gmvalues?
                     // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
                     msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
@@ -1110,8 +1111,8 @@ function messageTextToSpeechHandler($msg, $usr) {
 //     | $$ | $$  | $| $$  \ $| $$  \ $| $$     | $$  | $$      | $$    $| $$  | $| $$  | $| $$\  $$| $$\  $$| $$     | $$      /$$  \ $$
 //     | $$ | $$  | $| $$$$$$$| $$$$$$$| $$$$$$$| $$$$$$$/      |  $$$$$$| $$  | $| $$  | $| $$ \  $| $$ \  $| $$$$$$$| $$$$$$$|  $$$$$$/
 //     |__/ |__/  |__|_______/|_______/|________|_______/        \______/|__/  |__|__/  |__|__/  \__|__/  \__|________|________/\______/ 
-//                                                                                                                                       
-//                                                                                                                                     
+//
+//
 //
 
 // channel tabs megafunction
@@ -1351,12 +1352,12 @@ var tabbedChannels = new function(){
     this.tick = function(){
         _self.$el.find(".rlc-filters span").each(function(){
             if ($(this).hasClass("selected")) return;
-            $(this).find("span").text(_self.unreadCounts[$(this).data("filter")]);               
+            $(this).find("span").text(_self.unreadCounts[$(this).data("filter")]);
         });
-        // delay loading messages from load 
+        // delay loading messages from load
         loadingInitialMessages = 0;
-        if (waitabit === 0) { 
-         
+        if (waitabit === 0) {
+
         }
         waitabit--;
     };
@@ -1419,17 +1420,17 @@ var tabbedChannels = new function(){
 }();
 
 //
-//   /$$$$$$$ /$$$$$$$  /$$$$$$ /$$      /$$ /$$$$$$ /$$$$$$$$/$$$$$$$        /$$$$$$/$$   /$$/$$$$$$$$/$$$$$$ 
+//   /$$$$$$$ /$$$$$$$  /$$$$$$ /$$      /$$ /$$$$$$ /$$$$$$$$/$$$$$$$        /$$$$$$/$$   /$$/$$$$$$$$/$$$$$$
 //  | $$__  $| $$__  $$/$$__  $| $$  /$ | $$/$$__  $| $$_____| $$__  $$      |_  $$_| $$$ | $| $$_____/$$__  $$
 //  | $$  \ $| $$  \ $| $$  \ $| $$ /$$$| $| $$  \__| $$     | $$  \ $$        | $$ | $$$$| $| $$    | $$  \ $$
 //  | $$$$$$$| $$$$$$$| $$  | $| $$/$$ $$ $|  $$$$$$| $$$$$  | $$$$$$$/        | $$ | $$ $$ $| $$$$$ | $$  | $$
 //  | $$__  $| $$__  $| $$  | $| $$$$_  $$$$\____  $| $$__/  | $$__  $$        | $$ | $$  $$$| $$__/ | $$  | $$
 //  | $$  \ $| $$  \ $| $$  | $| $$$/ \  $$$/$$  \ $| $$     | $$  \ $$        | $$ | $$\  $$| $$    | $$  | $$
 //  | $$$$$$$| $$  | $|  $$$$$$| $$/   \  $|  $$$$$$| $$$$$$$| $$  | $$       /$$$$$| $$ \  $| $$    |  $$$$$$/
-//  |_______/|__/  |__/\______/|__/     \__/\______/|________|__/  |__/      |______|__/  \__|__/     \______/ 
-//                                                                                                             
-//                                                                                                        
-//                                                                                                             
+//  |_______/|__/  |__/\______/|__/     \__/\______/|________|__/  |__/      |______|__/  \__|__/     \______/
+//
+//
+//
 
 // Settings Keys (used in /sharesettings)
 var optionsArray = [];
@@ -1438,7 +1439,7 @@ var optionsArray = [];
 var nVer = navigator.appVersion;
 var nAgt = navigator.userAgent;
 var browserName  = navigator.appName;
-var fullVersion  = ''+parseFloat(navigator.appVersion); 
+var fullVersion  = ''+parseFloat(navigator.appVersion);
 var majorVersion = parseInt(navigator.appVersion,10);
 var nameOffset,verOffset,ix;
 
@@ -1448,9 +1449,9 @@ var browser = {
     opera: false,
     msie: false,
     safari: false
-};  
+};
 
-// In Opera 15+, the true version is after "OPR/" 
+// In Opera 15+, the true version is after "OPR/"
 if ((verOffset=nAgt.indexOf("OPR/"))!=-1) {
     browserName = "Opera";
     fullVersion = nAgt.substring(verOffset+4);
@@ -1459,7 +1460,7 @@ if ((verOffset=nAgt.indexOf("OPR/"))!=-1) {
 else if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
     browserName = "Opera";
     fullVersion = nAgt.substring(verOffset+6);
-    if ((verOffset=nAgt.indexOf("Version"))!=-1) 
+    if ((verOffset=nAgt.indexOf("Version"))!=-1)
         fullVersion = nAgt.substring(verOffset+8);
 }
 // In MSIE, the true version is after "MSIE" in userAgent
@@ -1467,26 +1468,26 @@ else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
     browserName = "Microsoft Internet Explorer";
     fullVersion = nAgt.substring(verOffset+5);
 }
-// In Chrome, the true version is after "Chrome" 
+// In Chrome, the true version is after "Chrome"
 else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
     browserName = "Chrome";
     fullVersion = nAgt.substring(verOffset+7);
 }
-// In Safari, the true version is after "Safari" or after "Version" 
+// In Safari, the true version is after "Safari" or after "Version"
 else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
     browserName = "Safari";
     fullVersion = nAgt.substring(verOffset+7);
-    if ((verOffset=nAgt.indexOf("Version"))!=-1) 
+    if ((verOffset=nAgt.indexOf("Version"))!=-1)
         fullVersion = nAgt.substring(verOffset+8);
 }
-// In Firefox, the true version is after "Firefox" 
+// In Firefox, the true version is after "Firefox"
 else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
     browserName = "Firefox";
     fullVersion = nAgt.substring(verOffset+8);
 }
-// In most other browsers, "name/version" is at the end of userAgent 
-else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < 
-         (verOffset=nAgt.lastIndexOf('/')) ) 
+// In most other browsers, "name/version" is at the end of userAgent
+else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) <
+         (verOffset=nAgt.lastIndexOf('/')) )
 {
     browserName = nAgt.substring(nameOffset,verOffset);
     fullVersion = nAgt.substring(verOffset+1);
@@ -1502,22 +1503,22 @@ if ((ix=fullVersion.indexOf(" "))!=-1)
 
 majorVersion = parseInt(''+fullVersion,10);
 if (isNaN(majorVersion)) {
-    fullVersion  = ''+parseFloat(navigator.appVersion); 
+    fullVersion  = ''+parseFloat(navigator.appVersion);
     majorVersion = parseInt(navigator.appVersion,10);
 }
 
 //
-//   /$$$$$$$$/$$    /$$/$$$$$$$$/$$   /$$/$$$$$$$$       /$$   /$$ /$$$$$$ /$$   /$$/$$$$$$$ /$$      /$$$$$$/$$   /$$ /$$$$$$ 
+//   /$$$$$$$$/$$    /$$/$$$$$$$$/$$   /$$/$$$$$$$$       /$$   /$$ /$$$$$$ /$$   /$$/$$$$$$$ /$$      /$$$$$$/$$   /$$ /$$$$$$
 //  | $$_____| $$   | $| $$_____| $$$ | $|__  $$__/      | $$  | $$/$$__  $| $$$ | $| $$__  $| $$     |_  $$_| $$$ | $$/$$__  $$
 //  | $$     | $$   | $| $$     | $$$$| $$  | $$         | $$  | $| $$  \ $| $$$$| $| $$  \ $| $$       | $$ | $$$$| $| $$  \__/
 //  | $$$$$  |  $$ / $$| $$$$$  | $$ $$ $$  | $$         | $$$$$$$| $$$$$$$| $$ $$ $| $$  | $| $$       | $$ | $$ $$ $| $$ /$$$$
 //  | $$__/   \  $$ $$/| $$__/  | $$  $$$$  | $$         | $$__  $| $$__  $| $$  $$$| $$  | $| $$       | $$ | $$  $$$| $$|_  $$
 //  | $$       \  $$$/ | $$     | $$\  $$$  | $$         | $$  | $| $$  | $| $$\  $$| $$  | $| $$       | $$ | $$\  $$| $$  \ $$
 //  | $$$$$$$$  \  $/  | $$$$$$$| $$ \  $$  | $$         | $$  | $| $$  | $| $$ \  $| $$$$$$$| $$$$$$$$/$$$$$| $$ \  $|  $$$$$$/
-//  |________/   \_/   |________|__/  \__/  |__/         |__/  |__|__/  |__|__/  \__|_______/|________|______|__/  \__/\______/ 
-//                                                                                                                              
-//  Code status: not bad, old but it works.                                                                                                                          
-//                                                                                                                              
+//  |________/   \_/   |________|__/  \__/  |__/         |__/  |__|__/  |__|__/  \__|_______/|________|______|__/  \__/\______/
+//
+//  Code status: not bad, old but it works.
+//
 
 // Message history
 var messageHistory = [],
@@ -1621,9 +1622,9 @@ function mouseClicksEventHandling() {
         // Focus textarea and set the value of textarea
         $(".usertext-edit.md-container textarea").focus().val(source + " " + username + " ");
     });
-    
-    
-    
+
+
+
     $("body").on("contextmenu", "#rlc-leftpanel iframe", function (event) {
         event.preventDefault();
         $(this).remove();
@@ -1632,7 +1633,7 @@ function mouseClicksEventHandling() {
     // Load old messages
     $("#togglebarLoadHist").click(function(){
         loadHistory();
-    });     
+    });
 
     $(".liveupdate .md").click(function(event){
         var itsclass = $(this).parent().parent().hasClass("rlc-hasEmbed");
@@ -1657,17 +1658,17 @@ function mouseClicksEventHandling() {
 }
 
 //
-//   /$$$$$$/$$   /$$/$$$$$$/$$$$$$$$       /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$   
-//  |_  $$_| $$$ | $|_  $$_|__  $$__/      | $$_____| $$  | $| $$$ | $$/$$__  $|__  $$__/$$__  $$  
-//    | $$ | $$$$| $$ | $$    | $$         | $$     | $$  | $| $$$$| $| $$  \__/  | $$ | $$  \__/  
-//    | $$ | $$ $$ $$ | $$    | $$         | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$   
-//    | $$ | $$  $$$$ | $$    | $$         | $$__/  | $$  | $| $$  $$$| $$        | $$  \____  $$  
-//    | $$ | $$\  $$$ | $$    | $$         | $$     | $$  | $| $$\  $$| $$    $$  | $$  /$$  \ $$  
+//   /$$$$$$/$$   /$$/$$$$$$/$$$$$$$$       /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$
+//  |_  $$_| $$$ | $|_  $$_|__  $$__/      | $$_____| $$  | $| $$$ | $$/$$__  $|__  $$__/$$__  $$
+//    | $$ | $$$$| $$ | $$    | $$         | $$     | $$  | $| $$$$| $| $$  \__/  | $$ | $$  \__/
+//    | $$ | $$ $$ $$ | $$    | $$         | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$
+//    | $$ | $$  $$$$ | $$    | $$         | $$__/  | $$  | $| $$  $$$| $$        | $$  \____  $$
+//    | $$ | $$\  $$$ | $$    | $$         | $$     | $$  | $| $$\  $$| $$    $$  | $$  /$$  \ $$
 //   /$$$$$| $$ \  $$/$$$$$$  | $$         | $$     |  $$$$$$| $$ \  $|  $$$$$$/  | $$ |  $$$$$$/$$
 //  |______|__/  \__|______/  |__/         |__/      \______/|__/  \__/\______/   |__/  \______|__/
-//                                                                                                 
-//  Code status: Good.                                                                                               
-//                                                                                                 
+//
+//  Code status: Good.
+//
 
 // RLC Containers & UI HTML for injection
 var htmlPayload = `
@@ -1728,7 +1729,7 @@ function rlcSetupContainers() {
     $(".liveupdate-listing").prependTo("#rlc-chat");
     $("#new-update-form").insertBefore("#rlc-sendmessage");
     $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
-    $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");        
+    $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
     $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
 
     tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
@@ -1781,13 +1782,13 @@ function rlcInitEventListeners() {
     // Detect new content being added
     $(".liveupdate-listing").on("DOMNodeInserted", function(e) {
         if ($(e.target).is("li.liveupdate")) {
-            
+
             // Apply changes to line
             handleNewMessage($(e.target), false);
             if ($(document.body).hasClass("AutoScroll")) {
                 scrollToBottom();
-            }          
-            
+            }
+
         }
         // Remove separators
         else if ($(e.target).is(".separator")) {
@@ -1806,22 +1807,22 @@ function handleInitialMessages() {
     });
 
     // wait for iframes, then remove preloader and scroll to bottom
-    setTimeout($("#rlc-preloader").fadeOut(), 250);  
+    setTimeout($("#rlc-preloader").fadeOut(), 250);
     setTimeout(scrollToBottom, 250);
 }
 
 //
-//   /$$      /$$/$$$$$$/$$   /$$/$$$$$$$  /$$$$$$ /$$      /$$                 /$$       /$$$$$$  /$$$$$$ /$$$$$$$ 
+//   /$$      /$$/$$$$$$/$$   /$$/$$$$$$$  /$$$$$$ /$$      /$$                 /$$       /$$$$$$  /$$$$$$ /$$$$$$$
 //  | $$  /$ | $|_  $$_| $$$ | $| $$__  $$/$$__  $| $$  /$ | $$                | $$      /$$__  $$/$$__  $| $$__  $$
 //  | $$ /$$$| $$ | $$ | $$$$| $| $$  \ $| $$  \ $| $$ /$$$| $$                | $$     | $$  \ $| $$  \ $| $$  \ $$
 //  | $$/$$ $$ $$ | $$ | $$ $$ $| $$  | $| $$  | $| $$/$$ $$ $$                | $$     | $$  | $| $$$$$$$| $$  | $$
 //  | $$$$_  $$$$ | $$ | $$  $$$| $$  | $| $$  | $| $$$$_  $$$$                | $$     | $$  | $| $$__  $| $$  | $$
 //  | $$$/ \  $$$ | $$ | $$\  $$| $$  | $| $$  | $| $$$/ \  $$$                | $$     | $$  | $| $$  | $| $$  | $$
 //  | $$/   \  $$/$$$$$| $$ \  $| $$$$$$$|  $$$$$$| $$/   \  $$       /$$      | $$$$$$$|  $$$$$$| $$  | $| $$$$$$$/
-//  |__/     \__|______|__/  \__|_______/ \______/|__/     \__/      |__/      |________/\______/|__/  |__|_______/ 
-//                                                                                                                  
-//  Code status: good.                                                                                                                                                                                                                                                    
-//                                                                                                                  
+//  |__/     \__|______|__/  \__|_______/ \______/|__/     \__/      |__/      |________/\______/|__/  |__|_______/
+//
+//  Code status: good.
+//
 
 // Boot
 $(window).load(function() {
@@ -1846,24 +1847,24 @@ $(window).load(function() {
 
     // run options setup
     createOptions();
-    
+
     // handle initial messages
     setTimeout(handleInitialMessages, 500);
-  
+
 });
 
 //
 //   /$$$$$$$$/$$$$$$ /$$   /$$/$$$$$$$$
 //  | $$_____/$$__  $| $$$ | $|__  $$__/
-//  | $$    | $$  \ $| $$$$| $$  | $$   
-//  | $$$$$ | $$  | $| $$ $$ $$  | $$   
-//  | $$__/ | $$  | $| $$  $$$$  | $$   
-//  | $$    | $$  | $| $$\  $$$  | $$   
-//  | $$    |  $$$$$$| $$ \  $$  | $$   
-//  |__/     \______/|__/  \__/  |__/   
-//                                      
-//  Open Sans Google font                                    
-//                                      
+//  | $$    | $$  \ $| $$$$| $$  | $$
+//  | $$$$$ | $$  | $| $$ $$ $$  | $$
+//  | $$__/ | $$  | $| $$  $$$$  | $$
+//  | $$    | $$  | $| $$\  $$$  | $$
+//  | $$    |  $$$$$$| $$ \  $$  | $$
+//  |__/     \______/|__/  \__/  |__/
+//
+//  Open Sans Google font
+//
 
 WebFontConfig = {
     google: { families: [ 'Open+Sans:400,400italic,600,600italic:latin' ] }
@@ -1878,42 +1879,42 @@ WebFontConfig = {
 })();
 
 //
-//    /$$$$$$  /$$$$$$  /$$$$$$ 
+//    /$$$$$$  /$$$$$$  /$$$$$$
 //   /$$__  $$/$$__  $$/$$__  $$
 //  | $$  \__| $$  \__| $$  \__/
-//  | $$     |  $$$$$$|  $$$$$$ 
+//  | $$     |  $$$$$$|  $$$$$$
 //  | $$      \____  $$\____  $$
 //  | $$    $$/$$  \ $$/$$  \ $$
 //  |  $$$$$$|  $$$$$$|  $$$$$$/
-//   \______/ \______/ \______/ 
-//                              
+//   \______/ \______/ \______/
+//
 //  Minified - tip: to edit, cut the contents of the RLC-CORE, leaving it empty as so: GM_addstyle('').
 //  Save the script in your userscript editor and reload RLC sans CSS, use dev tools and insert the copied CSS via inspector stylesheet.
-//  Use the buildt in {} formatting button to format the minified CSS into a readable structure. 
+//  Use the buildt in {} formatting button to format the minified CSS into a readable structure.
 //
-//  To save your changes, use cssminifier.com to re-minify your resulting CSS and insert it in the GM_addstyle that you left empty.                                                     
+//  To save your changes, use cssminifier.com to re-minify your resulting CSS and insert it in the GM_addstyle that you left empty.
 //
 
-// RLC-CORE 
+// RLC-CORE
 GM_addStyle('#rlc-leftpanel .embedFrame{border:0;width:100%;max-width:100%;padding-top:20px!important;background:grey!important}#rlc-leftpanel:before{content:"right click above a frame to remove it";padding-left:30px}div#rlc-leftpanel{overflow-x:scroll}.rlc-hasEmbed .md{position:relative}.rlc-hasEmbed .md:after{content:" ";position:absolute;left:0;width:100%;height:100%;top:0}.rlc-hasEmbedExpanded .md:after{display:none}.rlc-hasEmbed iframe{height:28px!important}.rlc-hasEmbed.rlc-hasEmbedExpanded iframe{height:auto!important;min-height:270px!important}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}.rlc-customscrollbars div#filter_tabs{width:calc(100% - 12px)}.dark-background #rlc-preloader{background:#404040}#rlc-preloader{background:#fff;left:0;right:0;bottom:96px;top:0;position:absolute;z-index:10000;padding-top:14%;font-size:3em;TEXT-ALIGN:CENTER;box-sizing:border-box}.extendButton{margin-right:5px}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.save-button{display:none}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#rlc-sendmessage,#rlc-wrapper{box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#rlc-header,#rlc-wrapper,body{overflow:hidden}#new-update-form{margin:0}.liveupdate time.live-timestamp,.liveupdate ul.buttonrow{display:none!important}#filter_tabs,#liveupdate-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown{display:none}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in ";color:#000}h1#liveupdate-title{font-size:1.5em;color:#9c9c9c;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background:0 0!important}#rlc-wrapper .liveupdate .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px;background-color:#EFEFED}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid #e3e3e0;border-top:0;box-sizing:border-box}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:2px solid #FCFCFC;padding:5px 0}#rlc-chat{height:calc(100vh - 202px);overflow-y:scroll;max-height:461px}#rlc-main .liveupdate-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(128,128,128,.26);float:left;height:34px;margin:0;border-radius:2px;padding:6px}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:100%;float:left;text-align:center;box-sizing:border-box;cursor:pointer}#rlc-messagebox{padding:10px;background-color:#EFEFED;width:100%}#rlc-sendmessage{background-color:#FCFCFC;height:32px;margin:10px 0 0;-moz-border-radius:2px;-webkit-border-radius:2px;padding:6px;font-size:1.5em}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 8px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);background:#FCFCFC;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0}.liveupdate .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;color:#A7A6B8;line-height:32px}.liveupdate a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.liveupdate-listing li.liveupdate .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.liveupdate.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:10px 0 20px;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0;color:#FCFCFC}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}.liveupdate.user-narration .body .md{font-style:italic}.liveupdate.user-mention .body .md p{font-weight:700}.liveupdate pre{margin:0;padding:0;background:rgba(128,128,128,.5);border:#FCFCFC;box-sizing:border-box}.liveupdate a.author,.liveupdate p{line-height:32px;min-height:32px}#liveupdate-description{margin-left:10px;float:left}.md{max-width:none!important}.liveupdate-listing li.liveupdate p{font-size:13px!important}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:30px}.AutoScroll #togglebarAutoscroll,.rlc-TextToSpeech #togglebarTTS{background:rgba(0,0,0,.15)}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{float:right;box-sizing:border-box;text-align:center;padding:5px 10px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:90px;margin-left:10px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid #fff}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{background:0 0;border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.channelname{color:#A9A9A9!important;display:block;float:left;width:100px;line-height:32px}.rlc-showChannelsUI #new-update-form{width:85%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:15%;height:34px;float:left;background-color:#FCFCFC;border:1px solid rgba(128,128,128,.26)}.rlc-showChannelsUI #rlc-sendmessage{width:100%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100;background:#EFEFED}#filter_tabs,.rlc-channel-add,.rlc-hideChannelsInGlobal .liveupdate.in-channel,.rlc-showChannelsUI .rlc-filter .liveupdate,.user-narration a.author{display:none}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;background:#EFEFED;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid grey}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid grey}#filter_tabs>span.more{padding:0 30px;border-left:1px solid grey}.rlc-channel-add input{border:1px solid rgba(128,128,128,.32);padding:0;height:24px}#rlc-leftpanel{display:none}.left-panel #rlc-leftpanel{width:14%;float:left;display:block;background-color:#EFEFED;height:calc(100vh - 114px)}.left-panel #rlc-sidebar,.left-panel #rlc-statusbar{width:18%}.left-panel #rlc-main{width:68%}.mrPumpkin{height:24px;width:24px;display:inline-block;border-radius:3px;background-size:144px;position:relative;top:6px}.dark-background .mrPumpkin{border-radius:5px}.mp_frown{background-position:-24px 0}.mp_confused{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_bored{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.mp_evilsmile{background-position:-72px 24px}.mp_stjerneklar{background-position:-72px 48px}.mp_fatherderp{background-position:-24px 24px}.mp_s3cur1ty{background-position:-48px 24px}.dark-background .alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}.rlc-compact #header{display:none}.rlc-compact #rlc-chat{height:calc(100vh - 263px);max-height:451px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 215px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth.left-panel #rlc-statusbar{width:18%}.rlc-fullwidth.left-panel #rlc-titlebar{width:81%}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 145px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.dark-background.AutoScroll #togglebarAutoscroll,.dark-background.rlc-TextToSpeech #togglebarTTS{background:rgba(239,247,255,.25)}.dark-background,.dark-background #rlc-leftpanel,.dark-background #rlc-messagebox,.dark-background #rlc-messagebox textarea,.dark-background #rlc-sendmessage,.dark-background #rlc-sidebar,.dark-background #rlc-toggleguide,.dark-background #rlc-toggleoptions,.dark-background #rlc-update,.dark-background .rlc-channel-add,.dark-background option{background:#404040}.dark-background.rlc-showChannelsUI div#filter_tabs{background-color:#5C5C5C}.dark-background #rlc-sidebar{border:transparent}.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{background:0 0}.dark-background .liveupdate code{color:#000}.dark-background #rlc-sidebar h2,.dark-background #rlc-sidebar h3,.dark-background #rlc-sidebar h4,.dark-background h1#liveupdate-title:before{color:#ccc}.dark-background #rlc-wrapper a{color:#7878ff}.dark-background #rlc-messagebox textarea,.dark-background #rlc-sidebar li,.dark-background #rlc-wrapper,.dark-background #rlc-wrapper h1,.dark-background #rlc-wrapper h1#liveupdate-title,.dark-background #rlc-wrapper li,.dark-background #rlc-wrapper p,.dark-background .longMessageClosed:after,.dark-background .rlc-channel-add button,.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{color:#f5f5f5}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body.allowHistoryScroll{height:105%;overflow:auto}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}.rlc-customscrollbars ::-webkit-scrollbar{width:12px}.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#FCFCFC}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#5C5C5C}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#404040;border:2px solid #5C5C5C}.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#E4E4E4;border:2px solid #FCFCFC}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}');
 
 
-// base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian, added to by kreten  
+// base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian, added to by kreten
 GM_addStyle('.mrPumpkin{background-image:url("data:image/png;base64,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")}');
 
 //
-//    /$$$$$$ /$$   /$$ /$$$$$$ /$$   /$$/$$   /$$/$$$$$$$$/$$              /$$$$$$ /$$$$$$$$/$$     /$$/$$      /$$$$$$$$ /$$$$$$ 
+//    /$$$$$$ /$$   /$$ /$$$$$$ /$$   /$$/$$   /$$/$$$$$$$$/$$              /$$$$$$ /$$$$$$$$/$$     /$$/$$      /$$$$$$$$ /$$$$$$
 //   /$$__  $| $$  | $$/$$__  $| $$$ | $| $$$ | $| $$_____| $$             /$$__  $|__  $$__|  $$   /$$| $$     | $$_____//$$__  $$
 //  | $$  \__| $$  | $| $$  \ $| $$$$| $| $$$$| $| $$     | $$            | $$  \__/  | $$   \  $$ /$$/| $$     | $$     | $$  \__/
-//  | $$     | $$$$$$$| $$$$$$$| $$ $$ $| $$ $$ $| $$$$$  | $$            |  $$$$$$   | $$    \  $$$$/ | $$     | $$$$$  |  $$$$$$ 
+//  | $$     | $$$$$$$| $$$$$$$| $$ $$ $| $$ $$ $| $$$$$  | $$            |  $$$$$$   | $$    \  $$$$/ | $$     | $$$$$  |  $$$$$$
 //  | $$     | $$__  $| $$__  $| $$  $$$| $$  $$$| $$__/  | $$             \____  $$  | $$     \  $$/  | $$     | $$__/   \____  $$
 //  | $$    $| $$  | $| $$  | $| $$\  $$| $$\  $$| $$     | $$             /$$  \ $$  | $$      | $$   | $$     | $$      /$$  \ $$
 //  |  $$$$$$| $$  | $| $$  | $| $$ \  $| $$ \  $| $$$$$$$| $$$$$$$$      |  $$$$$$/  | $$      | $$   | $$$$$$$| $$$$$$$|  $$$$$$/
-//   \______/|__/  |__|__/  |__|__/  \__|__/  \__|________|________/       \______/   |__/      |__/   |________|________/\______/ 
-//                                                                                                                                 
-//  Generate colors and identifiers for 35 channels. Channel Tabs uses these to filter messages. 
-//  Code status: good.                                                                                                                                
-//                                                                                                                                 
+//   \______/|__/  |__|__/  |__|__/  \__|__/  \__|________|________/       \______/   |__/      |__/   |________|________/\______/
+//
+//  Generate colors and identifiers for 35 channels. Channel Tabs uses these to filter messages.
+//  Code status: good.
+//
 
 // Channel Colours
 var colors = ["rgba(255,0,0,0.1)", "rgba(0,255,0,0.1)", "rgba(0,0,255,0.1)", "rgba(0,255,255,0.1)", "rgba(255,0,255,0.1)", "rgba(255,255,0,0.1)", "rgba(211,211,211, .1)", "rgba(0,100,0, .1)", "rgba(255,20,147, .1)", "rgba(184,134,11, .1)"];
