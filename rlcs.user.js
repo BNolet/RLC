@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.12.11
+// @version        3.13
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -1290,6 +1290,13 @@
         var line = $msg.text().toLowerCase();
         var firstLine = $msg.find("p").first();
 
+        if (line.indexOf("rlc-image") === 0){
+            $el.addClass("rlc-imageWithin");
+            var url = $msg.find("a").attr("href");
+            console.log(url);
+            firstLine.html("gif via /giphy: <br> <img class='rlc-image' src='"+url+"'"+"</img>");
+        }
+                
         //temporary: disable the fucking links again for master branch.
         firstLine.html(firstLine.html()+" ");
 
@@ -1301,7 +1308,7 @@
         else { 
         // Remove the /u/ in author name
         $usr.text($usr.text().replace("/u/", ""));
-        }
+        }      
         
         // long message collapsing
         collapseLongMessage($msg,firstLine);
@@ -1546,11 +1553,11 @@
                     }
                     if (textArea.val().indexOf("/giphy") === 0){
                         var giphyQuery = $(this).val().split(" ")[1];
-                        const GIPHY_API_KEY = "dc6zaTOxFJmzC";
+                        const GIPHY_API_KEY = "dc6zaTOxFJmzC";   // public test key, replace with production version.
                         jQuery.getJSON( `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${giphyQuery}` ,function( XHRObj ) {
                             image_url = XHRObj.data.image_url;
                             var textArea = $(".usertext-edit.md-container textarea");
-                            textArea.val(textArea.val()+"\n"+image_url);
+                            textArea.val("rlc-image "+image_url);
                             $(".save-button .btn").click();
                         });
                         return false;
