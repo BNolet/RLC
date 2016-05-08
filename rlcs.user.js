@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13
+// @version        3.13.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -1291,10 +1291,12 @@
         var firstLine = $msg.find("p").first();
 
         if (line.indexOf("rlc-image") === 0){
-            $el.addClass("rlc-imageWithin");
             var url = $msg.find("a").attr("href");
-            console.log(url);
-            firstLine.html("gif via /giphy: <br> <img class='rlc-image' src='"+url+"'"+"</img>");
+            if (url) { 
+                $el.addClass("rlc-imageWithin");
+                firstLine.html("gif via /giphy: <br> <img class='rlc-image' src='"+"https"+url.split("http")[1]+"'"+"</img>");
+                scrollToBottom();
+            }
         }
                 
         //temporary: disable the fucking links again for master branch.
@@ -1555,10 +1557,11 @@
                         var giphyQuery = $(this).val().split(" ")[1];
                         const GIPHY_API_KEY = "dc6zaTOxFJmzC";   // public test key, replace with production version.
                         jQuery.getJSON( `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${giphyQuery}` ,function( XHRObj ) {
-                            image_url = XHRObj.data.image_url;
+                            image_url = XHRObj.data.fixed_width_small_url;
+                            console.log(XHRObj.data);
                             var textArea = $(".usertext-edit.md-container textarea");
                             textArea.val("rlc-image "+image_url);
-                            $(".save-button .btn").click();
+                            $(".save-button .btn").click();                           
                         });
                         return false;
                     }
