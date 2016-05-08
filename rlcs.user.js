@@ -1359,7 +1359,7 @@
 
         // Stuff that should not be done to messages loaded on init, like TTS handling
         if (loadingInitialMessages === 0) {
-            reAlternate();
+            //reAlternate();
             if (rescan) {
                 // This is rescan, do nothing.
             }
