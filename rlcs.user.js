@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.4
+// @version        3.13.5
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -513,7 +513,9 @@
             this.drawTabs();
 
             // Start ticker
+            if (GM_getValue("rlc-ChannelMessageCounters")){
             setInterval(this.tick, 5000);
+            }
         };
     }();
 
