@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.1
+// @version        3.13.2
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    FatherDerp, Stjerneklar, thybag, mofosyne, jhon, 741456963789852123, MrSpicyWeiner, Concerned Hobbit (TheVarmari), Kretenkobr2
@@ -604,7 +604,7 @@
                 selectors.push(`.u_${mutedUsers[i]}{display:none;}`);      // Generate CSS display none rule for user in list
                 $('.u_'+mutedUsers[i]).addClass('muted');
                 $("#bannedlist").append(`<p>${mutedUsers[i]}</p>`);        // Generate interface element for disabling muting
-                reAlternate();
+                //reAlternate(); - seems to do nothing?
             }
         }
         $("body").append(`<style id='mystyle'>${selectors.join(" ")}</style>`); // Inject style tag with user rules
