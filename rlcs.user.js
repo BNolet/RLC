@@ -1534,7 +1534,7 @@
                         $(this).val( "||| RLC settings (via /settings ) : \n\n"+str );
                     }
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
-                        if (GM_getValue("rlc-HideGiphyImages")){
+                        if (!GM_getValue("rlc-HideGiphyImages")){
                         var giphyQueryList = $(this).val().split(" ");
                         giphyQueryList.shift();
                         var giphyQuery = giphyQueryList.join(" ");
