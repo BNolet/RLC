@@ -1308,7 +1308,7 @@
             
             if (url) {
                 $el.addClass("rlc-imageWithin");
-                firstLine.html("via <a href="+url_2nd+">/giphy "+searchTerm+": <br> <img class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img></a>");
+                firstLine.html("via <a href="+url_2nd+">/giphy "+decodeURI(searchTerm)+": <br> <img class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img></a>");
                 scrollToBottom();
             }
         }
@@ -1568,9 +1568,11 @@
                         $(this).val( "||| RLC settings (via /settings ) : \n\n"+str );
                     }
                     if (textArea.val().indexOf("/giphy") === 0){
-                        var giphyQuery = $(this).val().split(" ")[1];
+                        var giphyQueryList = $(this).val().split(" ");
+                        giphyQueryList.shift();
+                        var giphyQuery = giphyQueryList.join(" ");
                         const GIPHY_API_KEY = "dc6zaTOxFJmzC";   // public test key, replace with production version.
-                        jQuery.getJSON( `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${giphyQuery}` ,function( XHRObj ) {
+                        jQuery.getJSON( `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${giphyQueryList.join("+")}` ,function( XHRObj ) {
                             thumbnail_url = XHRObj.data.fixed_width_small_url;
                             image_url = XHRObj.data.url;
                             console.log(XHRObj.data);
