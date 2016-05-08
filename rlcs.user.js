@@ -1292,15 +1292,17 @@
 
         if (line.indexOf("rlc-image") === 0){
             var url = $msg.find("a").attr("href");
+            var splitByPipe = $msg.text().split("|");
+            var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
             //TODO: handle following cases: http or https in link, undefined link(maybe handle on send side)
             
-            if (url) { 
+            if (url) {
                 $el.addClass("rlc-imageWithin");
-                firstLine.html("gif via /giphy: <br> <img class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img>");
+                firstLine.html("gif via <code>/giphy "+searchTerm+"</code>: <br> <img class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img>");
                 scrollToBottom();
             }
         }
-                
+
         //temporary: disable the fucking links again for master branch.
         firstLine.html(firstLine.html()+" ");
 
@@ -1562,8 +1564,8 @@
                             image_url = XHRObj.data.fixed_width_small_url;
                             console.log(XHRObj.data);
                             var textArea = $(".usertext-edit.md-container textarea");
-                            textArea.val("rlc-image "+image_url);
-                            $(".save-button .btn").click();                           
+                            textArea.val("rlc-image "+image_url+" | "+giphyQuery);
+                            $(".save-button .btn").click();
                         });
                         return false;
                     }
