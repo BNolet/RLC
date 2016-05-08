@@ -1291,14 +1291,16 @@
         var firstLine = $msg.find("p").first();
 
         if (line.indexOf("rlc-image") === 0){
-            var url = $msg.find("a").attr("href");
+            var linksObj = $msg.find("a");
+            var url = linksObj.attr("href");
+            var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
             var splitByPipe = $msg.text().split("|");
             var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
             //TODO: handle following cases: http or https in link, undefined link(maybe handle on send side)
             
             if (url) {
                 $el.addClass("rlc-imageWithin");
-                firstLine.html("gif via <code>/giphy "+searchTerm+"</code>: <br> <img class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img>");
+                firstLine.html("via /giphy "+searchTerm+": <br> <a href="+url_2nd+"><img class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img></a>");
                 scrollToBottom();
             }
         }
@@ -1561,10 +1563,11 @@
                         var giphyQuery = $(this).val().split(" ")[1];
                         const GIPHY_API_KEY = "dc6zaTOxFJmzC";   // public test key, replace with production version.
                         jQuery.getJSON( `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${giphyQuery}` ,function( XHRObj ) {
-                            image_url = XHRObj.data.fixed_width_small_url;
+                            thumbnail_url = XHRObj.data.fixed_width_small_url;
+                            image_url = XHRObj.data.image_url;
                             console.log(XHRObj.data);
                             var textArea = $(".usertext-edit.md-container textarea");
-                            textArea.val("rlc-image "+image_url+" | "+giphyQuery);
+                            textArea.val("rlc-image "+thumbnail_url+" "+image_url+" | "+giphyQuery);
                             $(".save-button .btn").click();
                         });
                         return false;
