@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.13
+// @version        3.13.14
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -752,7 +752,7 @@
     }
 
     var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
-
+    var urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;    
     function messageTextToSpeechHandler($msg, $usr) {
 
         if (GM_getValue("rlc-TextToSpeechTTS")) {
@@ -762,6 +762,9 @@
 
                 // Load in message string
                 var linetoread = $msg.text();
+                
+                // Remove any URLs that match urlRegex
+                linetoread = linetoread.replace(urlRegex, "");
 
                 var hasTripple = /([^. ])\1\1/.test(linetoread);
                 // Check for single character spamming
