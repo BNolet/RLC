@@ -726,6 +726,7 @@
         "PLZ":     "Please",
         "PLS":     "Please",
         "RLY":     "Really",
+        "RN":      "Right Now",
         "RTFM":    "Read The Fucking Manual",
         "R8":      "Rate",
         "RLC":     "Reddit Live Chat",
