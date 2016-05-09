@@ -1533,7 +1533,7 @@
 
     function mouseClicksEventHandling() {
         // Right click author names in chat to copy to messagebox
-        $("body").on("contextmenu", ".liveupdate .author", function (event) {
+        $("body").on("click", ".liveupdate .author", function (event) {
             event.preventDefault();
             let username = String($(this).text()).trim();
             let source = String($(".usertext-edit.md-container textarea").val());
@@ -1541,7 +1541,7 @@
             $(".usertext-edit.md-container textarea").focus().val(source + " " + username + " ");
         });
         
-        $("body").on("click", ".liveupdate .author", function (event) {
+        $("body").on("contextmenu", ".liveupdate .author", function (event) {
             event.preventDefault();
             $el = $(this).parent().parent();
             var $menu = $("#myContextMenu");
