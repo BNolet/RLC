@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.9
+// @version        3.13.11
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -1173,11 +1173,14 @@
                 var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
                 var splitByPipe = $msg.text().split("|");
                 var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
+                var imgHeight = 0;
+                imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
+
                 //TODO: handle following cases: http or https in link, undefined link(maybe handle on send side)
                 
                 if (url) {
                     $el.addClass("rlc-imageWithin");
-                    firstLine.html(" <a href="+url_2nd+"><img class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
+                    firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
                 }
             }
         }
@@ -1457,7 +1460,7 @@
                             //TODO: use XHRObj.data.image_height to tag along height so we dont get resize problems.
                             //console.log(XHRObj.data);
                             var textArea = $(".usertext-edit.md-container textarea");
-                            textArea.val("rlc-image "+thumbnail_url+" "+image_url+" | "+giphyQuery);
+                            textArea.val("rlc-image "+thumbnail_url+" "+image_url+" | "+giphyQuery +"|"+ XHRObj.data.image_height);
                             $(".save-button .btn").click();
                         });
                         return false;
