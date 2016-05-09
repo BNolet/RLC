@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.11
+// @version        3.13.12
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -1502,13 +1502,6 @@
             $button.click();
         }
     }
-    var divPos = {};
-    $(document).mousemove(function(e){
-        divPos = {
-            left: e.pageX,
-            top: e.pageY
-        };
-    });
 
     function mouseClicksEventHandling() {
         // Right click author names in chat to copy to messagebox
@@ -1526,7 +1519,11 @@
             var $menu = $("#myContextMenu");
             var $msg = $el.find(".body .md");
             var $usr = $el.find(".body .author");
-
+            var thisPos = $el.position();
+            var divPos = {
+                left: thisPos.left,
+                top: thisPos.top
+            };
                 if ($menu.css("display") === "none" && !isNaN(divPos["left"]) && !isNaN(divPos["top"]) ) {
                     if (window.innerHeight-100 > divPos["top"]){
                         $menu.css({"left":divPos["left"], "top":divPos["top"], "display": "initial"}); //menu down
