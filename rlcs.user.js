@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.8
+// @version        3.13.9
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -843,7 +843,7 @@
                         msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
                         msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
                         msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
-                        console.log(msg.voice);
+                        //console.log(msg.voice);
                         // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
                         if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
                         {
@@ -1131,100 +1131,6 @@
         }
 
 //
-//   /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$        /$$$$$$ /$$      /$$$$$$ /$$$$$$ /$$   /$$
-//  | $$$    /$$| $$_____//$$__  $$/$$__  $$/$$__  $$/$$__  $| $$_____/       /$$__  $| $$     |_  $$_//$$__  $| $$  /$$/
-//  | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$            | $$  \__| $$       | $$ | $$  \__| $$ /$$/
-//  | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$         | $$     | $$       | $$ | $$     | $$$$$/
-//  | $$  $$$| $| $$__/   \____  $$\____  $| $$__  $| $$|_  $| $$__/         | $$     | $$       | $$ | $$     | $$  $$
-//  | $$\  $ | $| $$      /$$  \ $$/$$  \ $| $$  | $| $$  \ $| $$            | $$    $| $$       | $$ | $$    $| $$\  $$
-//  | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$      |  $$$$$$| $$$$$$$$/$$$$$|  $$$$$$| $$ \  $$
-//  |__/     |__|________/\______/ \______/|__/  |__/\______/|________/       \______/|________|______/\______/|__/  \__/
-//
-//  
-//
-
-    function OpenUserPM(name) {
-        var $url = "https://www.reddit.com/message/compose/?to=";
-        var win = window.open($url+name, "_blank");
-        win.focus();
-    }
-
-    function deleteComment($objComment){
-        if ($objComment.has(".buttonrow").length>0){
-            reAlternate($objComment);
-            var $button = $objComment.find(".delete").find("button");
-            $button.click();
-            $button = $objComment.find(".delete").find(".yes");
-            $button.click();
-        }
-    }
-    var divPos = {};
-    $(document).mousemove(function(e){
-        divPos = {
-            left: e.pageX,
-            top: e.pageY
-        };
-    });
-
-    // I'm not even going to try to clear this up.
-    // sigh. TODO: move this out of messagehandling and do like in event handling.
-    function messageClickHandler($el) {
-
-        var $menu = $("#myContextMenu");
-        var $msg = $el.find(".body .md");
-        var $usr = $el.find(".body .author");
-
-        $usr.click(function(event){
-            event.preventDefault();
-            if ($menu.css("display") === "none" && !isNaN(divPos["left"]) && !isNaN(divPos["top"]) ) {
-                if (window.innerHeight-100 > divPos["top"]){
-                    $menu.css({"left":divPos["left"], "top":divPos["top"], "display": "initial"}); //menu down
-                } else {
-                    $menu.css({"left":divPos["left"], "top":divPos["top"]-70, "display": "initial"}); //menu up
-                }
-
-                var $button = $(this).parent().siblings().find(".delete").find("button");
-                if ($button.length>0){
-                    $menu.find("#deleteCom").removeClass("disabled");
-                } else {
-                    $menu.find("#deleteCom").addClass("disabled");
-                }
-                $menu.find("ul li").unbind("click");
-                $menu.find("ul li").bind("click", function(){
-                    var $id = $(this).attr("id");
-                    if ($id === "deleteCom" && $(this).has(".disabled").length === 0){
-                        deleteComment($el);
-                    }
-                    if ($id === "PMUser"){
-                        OpenUserPM($usr.text());
-                    }
-                    if ($id === "mute"){
-                        var banusername = String($usr.text()).trim();
-                        mutedUsers.push(banusername);
-                        updateMutedUsers();
-                    }
-                    if ($id === "copyMessage"){
-                        var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
-                        $(".usertext-edit.md-container textarea").focus().val(copystring);
-                    }
-                    if ($id === "speakMessage"){
-                        messageTextToSpeechHandler($msg, $usr);
-                    }
-                    $menu.css({"left":0, "top":0, "display": "none"}); //close menu
-                });
-                $("body").unbind("click");
-                $("body").bind("click", function(e) {
-                    if ($(e.target).closest($usr).length === 0) {
-                        $menu.css({"left":0, "top":0, "display": "none"});
-                    }
-                });
-            } else {
-                $menu.css({"left":0, "top":0, "display": "none"}); //close menu
-            }
-        });
-    }
-
-//
 //   /$$   /$$/$$$$$$$$/$$      /$$       /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$
 //  | $$$ | $| $$_____| $$  /$ | $$      | $$$    /$$| $$_____//$$__  $$/$$__  $$/$$__  $$/$$__  $| $$_____/
 //  | $$$$| $| $$     | $$ /$$$| $$      | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$
@@ -1321,8 +1227,7 @@
         // User color
         messageUserColor($usr);
 
-        // Message click handling
-        messageClickHandler($el);
+        
 
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
@@ -1539,7 +1444,7 @@
                             thumbnail_url = XHRObj.data.image_url;
                             image_url = XHRObj.data.url;
                             //TODO: use XHRObj.data.image_height to tag along height so we dont get resize problems.
-                            console.log(XHRObj.data);
+                            //console.log(XHRObj.data);
                             var textArea = $(".usertext-edit.md-container textarea");
                             textArea.val("rlc-image "+thumbnail_url+" "+image_url+" | "+giphyQuery);
                             $(".save-button .btn").click();
@@ -1568,6 +1473,29 @@
         });
     }
 
+    function OpenUserPM(name) {
+        var $url = "https://www.reddit.com/message/compose/?to=";
+        var win = window.open($url+name, "_blank");
+        win.focus();
+    }
+
+    function deleteComment($objComment){
+        if ($objComment.has(".buttonrow").length>0){
+            reAlternate($objComment);
+            var $button = $objComment.find(".delete").find("button");
+            $button.click();
+            $button = $objComment.find(".delete").find(".yes");
+            $button.click();
+        }
+    }
+    var divPos = {};
+    $(document).mousemove(function(e){
+        divPos = {
+            left: e.pageX,
+            top: e.pageY
+        };
+    });
+
     function mouseClicksEventHandling() {
         // Right click author names in chat to copy to messagebox
         $("body").on("contextmenu", ".liveupdate .author", function (event) {
@@ -1577,6 +1505,54 @@
             // Focus textarea and set the value of textarea
             $(".usertext-edit.md-container textarea").focus().val(source + " " + username + " ");
         });
+        
+        $("body").on("click", ".liveupdate .author", function (event) {
+            event.preventDefault();
+            $el = $(this).parent().parent();
+            var $menu = $("#myContextMenu");
+            var $msg = $el.find(".body .md");
+            var $usr = $el.find(".body .author");
+
+                if ($menu.css("display") === "none" && !isNaN(divPos["left"]) && !isNaN(divPos["top"]) ) {
+                    if (window.innerHeight-100 > divPos["top"]){
+                        $menu.css({"left":divPos["left"], "top":divPos["top"], "display": "initial"}); //menu down
+                    } else {
+                        $menu.css({"left":divPos["left"], "top":divPos["top"]-70, "display": "initial"}); //menu up
+                    }
+
+                    var $button = $(this).parent().siblings().find(".delete").find("button");
+                    if ($button.length>0){
+                        $menu.find("#deleteCom").removeClass("disabled");
+                    } else {
+                        $menu.find("#deleteCom").addClass("disabled");
+                    }
+                    $menu.find("ul li").unbind("click");
+                    $menu.find("ul li").bind("click", function(){
+                        var $id = $(this).attr("id");
+                        if ($id === "deleteCom" && $(this).has(".disabled").length === 0){
+                            deleteComment($el);
+                        }
+                        if ($id === "PMUser"){
+                            OpenUserPM($usr.text());
+                        }
+                        if ($id === "mute"){
+                            var banusername = String($usr.text()).trim();
+                            mutedUsers.push(banusername);
+                            updateMutedUsers();
+                        }
+                        if ($id === "copyMessage"){
+                            var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
+                            $(".usertext-edit.md-container textarea").focus().val(copystring);
+                        }
+                        if ($id === "speakMessage"){
+                            messageTextToSpeechHandler($msg, $usr);
+                        }
+                        $menu.css({"left":0, "top":0, "display": "none"}); //close menu
+                    });
+                } else {
+                    $menu.css({"left":0, "top":0, "display": "none"}); //close menu
+                }
+        });       
 
         // Load old messages
         $("#togglebarLoadHist").click(function(){
@@ -1654,6 +1630,7 @@
                     </div>
                     <div id="myContextMenu">
                         <ul>
+                            <li><a>Close Menu</a></li>
                             <li id="mute"><a>Mute User</a></li>
                             <li id="PMUser"><a>PM User</a></li>
                             <li id="deleteCom"><a>Delete Comment</a></li>
