@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.7
+// @version        3.13.8
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -207,7 +207,7 @@
 
         createOption("No Emotes", function(checked){
         },false, "disable smileys");
-        
+
         createOption("Hide Giphy Images", function(checked){
         },false, "disable giphy gifs (effective on reload or new messages)");
     }
@@ -539,23 +539,20 @@
 
     // Scroll chat back to bottom
     var scrollToBottom = function(){
-         if (GM_getValue("rlc-AutoScroll")){
-             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
-                }
+        if (GM_getValue("rlc-AutoScroll")){
+            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
+        }
     };
 
     // Manipulate native reddit live into loading old messages
     function loadHistory() {
-        if (GM_getValue("rlc-TextToSpeechTTS")) {
-            // TODO: Switch to something more user-friendly. Message in the chat?
-            alert("You have TextToSpeech enabled, please disable to load old messages.");
-        } else {
-            loadingInitialMessages = 1;     //prevent tts/notifications
-            $("body").addClass("allowHistoryScroll");
-            $("body").scrollTop($("body")[0].scrollHeight);
-            scrollToBottom();
-            $("body").removeClass("allowHistoryScroll");
-        }
+        loadingInitialMessages = 1;     //prevent tts/notifications
+        
+        $("body").addClass("allowHistoryScroll");
+        $("body").scrollTop($("body")[0].scrollHeight);
+        $("body").removeClass("allowHistoryScroll");
+        scrollToBottom();
+        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
     }
 
     var storedMuteList = GM_getValue("mutedUsers");
@@ -1461,7 +1458,7 @@
 //  | $$$$$$$$  \  $/  | $$$$$$$| $$ \  $$  | $$         | $$  | $| $$  | $| $$ \  $| $$$$$$$| $$$$$$$$/$$$$$| $$ \  $|  $$$$$$/
 //  |________/   \_/   |________|__/  \__/  |__/         |__/  |__|__/  |__|__/  \__|_______/|________|______|__/  \__/\______/
 //
-//  Code status: not bad, old but it works.
+// 
 //
 
     // Message history
@@ -1534,7 +1531,6 @@
                         $(this).val( "||| RLC settings (via /settings ) : \n\n"+str );
                     }
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
-                        if (!GM_getValue("rlc-HideGiphyImages")){
                         var giphyQueryList = $(this).val().split(" ");
                         giphyQueryList.shift();
                         var giphyQuery = giphyQueryList.join(" ");
@@ -1549,7 +1545,6 @@
                             $(".save-button .btn").click();
                         });
                         return false;
-                        }
                     }
                     e.preventDefault();
                     $(".save-button .btn").click();
