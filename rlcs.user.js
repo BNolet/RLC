@@ -20,6 +20,8 @@
 // @grant          GM_getValue
 // @grant          GM_getResourceText
 // @grant          GM_setClipboard
+// @grant          GM_deleteValue
+// @grant          GM_listValues
 // @run-at         document-idle
 // @noframes
 // ==/UserScript==
@@ -1430,10 +1432,19 @@
                     if (textArea.val().indexOf("/settings") === 0){
                         var str = "    {\n";
                         str += optionsArray.map(function(key){
-                            return "    "+key+": "+GM_getValue(key);
+                            return "    \""+key+"\": \""+GM_getValue(key)+"\"";
                         }).join(",\n");
                         str += "\n    }"
-                        $(this).val( "||| RLC settings (via /settings ) : \n\n"+str );
+                        $(this).val( "||| RLC settings (via /settings ) : \n\n"+str +"\n Last Settings Reset: "+GM_getValue("rlc-lastReset"));
+                    }
+                    if (textArea.val().indexOf("/reset") === 0){
+                        var keys = GM_listValues();
+                        for (var i=0, key=null; key=keys[i]; i++) {
+                            GM_deleteValue(key);
+                        }
+                        GM_setValue("rlc-lastReset",Date());
+                        $(this).val( "resetting");
+                        location.reload();
                     }
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
                         var giphyQueryList = $(this).val().split(" ");
