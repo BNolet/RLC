@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.14.2
+// @version        3.14.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -1203,9 +1203,10 @@ function cropMessages(max) {
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
+
         var hexArray 	= GM_getValue("hexArrayStore", "") || []; //initialize hex and usr lookup list variables
     	var usrArray 	= GM_getValue("usrArrayStore", "") || [];
-        var colorSet 	= 0;
+        var colorSet 	= "penis";
         var $msg 		= $el.find(".body .md");
         var $usr 		= $el.find(".body .author");
         var line 		= $msg.text().toLowerCase();
@@ -1282,13 +1283,18 @@ function cropMessages(max) {
         // Timestamp modification & user activity tracking
         timeAndUserTracking($el, $usr);
 
-        // User color
+        // User color picker:
         if (GM_getValue("rlc-RobinColors")) {
-        	colorSet = 0;
-        } else if (GM_getValue("rlc-DarkMode") === true) {
         	colorSet = 2;
-        } else {
-        	colorSet = 1;
+        } 
+        else { 
+            if (GM_getValue("rlc-DarkMode")) {
+        	colorSet = 0;
+            }
+            // default non dark colors
+            else { 
+            colorSet = 1;
+            }
         }
 
         //Check if user exists and add user to list if they don't.
@@ -1301,7 +1307,6 @@ function cropMessages(max) {
         
         //Apply color through CSS to message author
         $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
-
 		
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
@@ -1712,7 +1717,6 @@ function cropMessages(max) {
                             <div id="rlc-toggleoptions" title="Show Options" class="noselect">Options</div>
                             <div id="rlc-update" class="noselect"><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update RLC</a></div>
                             <div id="rlc-toggleguide" title="Show Guide" class="noselect">Readme</div>
-                            <a target="_blank" href="https://github.com/BNolet/RLC/raw/testing/rlcs.user.js" rel="nofollow">Developer Version</a>
                         </div>
                         <div id="rlc-main-sidebar"></div>
                         <div id="rlc-readmebar">
