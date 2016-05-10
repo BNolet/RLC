@@ -1525,7 +1525,7 @@ function cropMessages(max) {
                             GM_deleteValue(key);
                         }
                         GM_setValue("rlc-lastReset",Date());
-                        $(this).val( "resetting");
+                        $(this).val( "||| Resetting RLC options (via /reset)");
                         location.reload();
                     }
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
