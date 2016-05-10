@@ -1059,9 +1059,7 @@
         //Cascading array used to add color schemes to master hex array on a 1:1 user:colorset basis
 		//AKA, arrays within an array (multidimensional array)
         tempArray.push(colors[n]);
-        console.log("pushed colorsn")
         hexArray.push(tempArray);
-        console.log("pushed")
         GM_setValue("hexArrayStore", hexArray); //Store array in scriptmonkey settings for later access
 
     }
@@ -1466,17 +1464,17 @@
                 else if (textArea.val() === "" ) { e.preventDefault();  }
                 else {
                     if (textArea.val().indexOf("/version") === 0){
-                        $(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
+                       	$(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
                     }
                     if (textArea.val().indexOf("/browser") === 0){
-                        $(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
+                       	$(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
                     }
-                    //if (textArea.val().indexOf("/console.log") === 0) {
-                     //   $(this).val("Console Logged With" + textArea.val().substring(textArea.val().indexOf("g") + 1));
-//
-  //                  }
+                    if (textArea.val().indexOf("/console.log") === 0) {
+                       	console.log(eval(textArea.val().substring(textArea.val().indexOf("g") + 2)));
+                       	$(".save-button .btn").click();
+                    }
                     if (textArea.val().indexOf("/settings") === 0){
-                        var str = "    {\n";
+                       	var str = "    {\n";
                         str += optionsArray.map(function(key){
                             return "    \""+key+"\": \""+GM_getValue(key)+"\"";
                         }).join(",\n");
