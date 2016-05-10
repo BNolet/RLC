@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.14
+// @version        3.14.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -1525,7 +1525,7 @@ function cropMessages(max) {
                             GM_deleteValue(key);
                         }
                         GM_setValue("rlc-lastReset",Date());
-                        $(this).val( "resetting");
+                        $(this).val( "||| Resetting RLC options (via /reset)");
                         location.reload();
                     }
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
