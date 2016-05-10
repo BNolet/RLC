@@ -1,7 +1,7 @@
 # RLC - Reddit Live Chat 
 
 This is a script made for [Reddit Live](https://www.reddit.com/live). 
-RLC modifies the page to work as a real-time chat.
+RLC modifies the page to work as a real-time chat platform.
 
 ![Screenshot](https://i.gyazo.com/d7fe1fcd810472b02176e6980583f12d.png)
 Note: This image is from dark mode on RLC v.3.8.1. We update the script very often and the layout may differ.
@@ -42,3 +42,4 @@ Note: development of RLC almost always outpaces this readme file. Check out the 
   * Chrome notifications for nickname mentions
   * Automatic scrolling
 * Activity list
+(and an amazing gitbot)
