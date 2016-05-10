@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.14.2
+// @version        3.14.3
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -565,31 +565,7 @@
 //  Code status: needs some love
 //
 
-    function cropMessages(max) {
-        $( ".liveupdate" ).each(function( index ) {
-            if (index > max) {
-                $( this ).remove();
-            }
-        });
-    }
 
-    // Scroll chat back to bottom
-    var scrollToBottom = function(){       
-        if (GM_getValue("rlc-AutoScroll")){
-            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
-        }
-    };
-
-    // Manipulate native reddit live into loading old messages
-    function loadHistory() {
-        loadingInitialMessages = 1;     //prevent tts/notifications
-        
-        $("body").addClass("allowHistoryScroll");
-        $("body").scrollTop($("body")[0].scrollHeight);
-        $("body").removeClass("allowHistoryScroll");
-        scrollToBottom();
-        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
-    }
 
     var storedMuteList = GM_getValue("mutedUsers");
     if(storedMuteList!=undefined){
@@ -931,6 +907,32 @@
     // Grab users username + play nice with RES
     var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
 
+    function cropMessages(max) {
+        $( ".liveupdate" ).each(function( index ) {
+            if (index > max) {
+                $( this ).remove();
+            }
+        });
+    }
+
+    // Scroll chat back to bottom
+    var scrollToBottom = function(){       
+        if (GM_getValue("rlc-AutoScroll")){
+            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
+        }
+    };
+
+    // Manipulate native reddit live into loading old messages
+    function loadHistory() {
+        loadingInitialMessages = 1;     //prevent tts/notifications
+        
+        $("body").addClass("allowHistoryScroll");
+        $("body").scrollTop($("body")[0].scrollHeight);
+        $("body").removeClass("allowHistoryScroll");
+        scrollToBottom();
+        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
+    }
+
     // Time converter for active user list
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
@@ -939,17 +941,6 @@
         return time.replace(/(am|pm)/, "");
     }
 
-    // Channel prefix removal
-    var removeChannelKeyFromMessage = function(message){
-        if ($("#rlc-chat").attr("data-channel-key")){
-            var offset = $("#rlc-chat").attr("data-channel-key").length;
-            if (offset === 0) return message;
-
-            if (message.indexOf("/me") === 0) return "/me "+ message.slice(offset+5);
-            return message.slice(offset+1);
-        }
-        return message;
-    };
 
     // Convert string to hex (for user colors)
     function toHex(str) {
@@ -1393,6 +1384,18 @@
         messageHistoryIndex = -1,
         lastTyped = "";
 
+   // Channel prefix removal
+   var removeChannelKeyFromMessage = function(message){
+       if ($("#rlc-chat").attr("data-channel-key")){
+           var offset = $("#rlc-chat").attr("data-channel-key").length;
+           if (offset === 0) return message;
+
+           if (message.indexOf("/me") === 0) return "/me "+ message.slice(offset+5);
+           return message.slice(offset+1);
+       }
+       return message;
+   };
+
     // Messagebox event handling
     function messageboxEventHandling() {
         var textArea = $(".usertext-edit.md-container textarea");
@@ -1680,13 +1683,14 @@
 
         $("body").append(htmlPayload);
 
-        $(".liveupdate-listing").prependTo("#rlc-chat");
-        $("#new-update-form").insertBefore("#rlc-sendmessage");
-        $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
-        $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
-        $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
+      $(".liveupdate-listing").prependTo("#rlc-chat");
+      $("#new-update-form").insertBefore("#rlc-sendmessage");
+      $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
+      $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
+      $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
+ 
+      tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
 
-        tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
     }
 
     function rlcParseSidebar() {
