@@ -198,9 +198,6 @@
 
         createOption("Disable User-based Voices", function(checked){
         },false, "do not modify TTS voices based on usernames");
-        
-        createOption("Disable Self-narration", function(checked){
-        },false, "don't read messages sent by me aloud");
 
         createOption("Auto Scroll", function(checked){
                         if (checked){
@@ -558,7 +555,6 @@
 
     // Scroll chat back to bottom
     var scrollToBottom = function(){
-       
         if (GM_getValue("rlc-AutoScroll")){
             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
@@ -766,7 +762,7 @@
     function messageTextToSpeechHandler($msg, $usr) {
 
         if (GM_getValue("rlc-TextToSpeechTTS")) {
-            
+
             // long messages break tts (<300 chars)  
             if($msg.text().length<250){
 
@@ -950,52 +946,6 @@
 
     // Message background alternation via js
     var rowAlternator = false;
-    // Modify color by amount
-    function LightenDarkenColor(col, amt) {
-        var r = col.slice(0,2);
-        var g = col.slice(2,4);
-        var b = col.slice(4,6);
-        if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
-        var randR = (Math.seededRandom(r*100,120,175));
-        var randG = (Math.seededRandom(g*100,120,175));
-        var randB = (Math.seededRandom(b*100,120,175));
-
-        // TODO-SUGGESTION: Code readability
-        var suppress = (Math.seededRandom(col*r*10,0,6));
-        var modAmt =2 ;
-        switch(suppress) {
-            case 0:
-                randR/=modAmt;
-                break;
-            case 1:
-                randG/=modAmt;
-                break;
-            case 2:
-                randB/=modAmt;
-                break;
-            case 4:
-                randR/=modAmt;
-                randG/=modAmt;
-                break;
-            case 5:
-                randR/=modAmt;
-                randB/=modAmt;
-                break;
-            case 6:
-                randG/=modAmt;
-                randB/=modAmt;
-                break;
-            default:
-                //console.log("This shouldn't happen! (LightenDarkenColor switch case)");
-                break;
-        }
-
-        var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
-        var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
-        var hexB = (parseInt(randB) + parseInt(amt)).toString(16);
-
-        return hexR + hexG + hexB;
-    }
 
     // trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
     var emojiList={ ":)": "smile",
@@ -1033,33 +983,80 @@
         }
     }
 
-    function messageUserColor($usr) {
-        if (!GM_getValue("rlc-RobinColors")) {
-            var hexName = toHex($usr.text()).split("");
-            var adder = 1;
-            $.each(hexName, function(ind,num){
-                num = (parseInt(num) + 1);
-                if (num !== 0 && !isNaN(num)){
-                    adder = adder * num;
-                }
-            });
-            adder = adder.toString().replace(".", "").split("0").join("");
-            let start = adder.length-10;
-            let end = adder.length-4;
-            var firstThree = adder.toString().substring(start, end);
+    function colorGen($usr) {
+    	var hexArray = JSON.parse (GM_getValue("hexArrayStore", null)) || [];
+    	var tempArray = [];
+    	var hexName = toHex($usr.text()).split("");
+        var adder = 1;
+        $.each(hexName, function(ind,num){
+        	num = (parseInt(num) + 1);
+            if (num !== 0 && !isNaN(num)){
+            	adder = adder * num;
+            }
+        });
+        adder = adder.toString().replace(".", "").split("0").join("");
+        let start = adder.length-10;
+        let end = adder.length-4;
+        var firstThree = adder.toString().substring(start, end);
+        var amt = 60;
 
-            // Variable brigtening of colors based on dark mode setting
-            if (GM_getValue("rlc-DarkMode")){
-                var lighterColor = LightenDarkenColor(firstThree, 60);
-                $usr.css("color", "#"+lighterColor);
-            }
-            else {
-                var darkerColor = LightenDarkenColor(firstThree, -40);
-                $usr.css("color", "#"+darkerColor);
-            }
-        } else {
-            $usr.css("color", getRobinColor($usr.text())); //ROBIN COLORS!!!!!
+        //Will loop twice
+        for (i=0;i<2;i++){
+            var r = firstThree.slice(0,2);
+        	var g = firstThree.slice(2,4);
+        	var b = firstThree.slice(4,6);
+        	if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
+        	var randR = (Math.seededRandom(r*100,120,175));
+        	var randG = (Math.seededRandom(g*100,120,175));
+        	var randB = (Math.seededRandom(b*100,120,175));		
+        	// TODO-SUGGESTION: Code readability
+        	var suppress = (Math.seededRandom(firstThree*r*10,0,6));
+        	var modAmt =2 ;
+        	switch(suppress) {
+            	case 0:
+                	randR/=modAmt;
+                	break;
+            	case 1:
+                	randG/=modAmt;
+                	break;
+            	case 2:
+                	randB/=modAmt;
+                	break;
+            	case 4:
+                	randR/=modAmt;
+                	randG/=modAmt;
+                	break;
+            	case 5:
+                	randR/=modAmt;
+                	randB/=modAmt;
+                	break;
+            	case 6:
+                	randG/=modAmt;
+                	randB/=modAmt;
+                	break;
+            	default:
+                	//console.log("This shouldn't happen! (LightenDarkenColor switch case)");
+                	break;
+        	}	
+        	var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
+        	var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
+        	var hexB = (parseInt(randB) + parseInt(amt)).toString(16);	
+	        amt=-40;
+	        tempArray.push(hexR + hexG + hexB);
         }
+
+        //Robin Colors
+        var colors = ["e50000", "db8e00", "ccc100", "02be01", "0083c7", "820080"];
+        var e = $usr.text().toLowerCase(),
+            t = e.replace(/[^a-z0-9]/g, ""),
+            n = parseInt(t, 36) % 6;
+        
+        tempArray.push(colors[n]);
+        console.log("pushed colorsn")
+        hexArray.push(tempArray);
+        console.log("pushed")
+        GM_setValue("hexArrayStore", JSON.stringify(hexArray));
+
     }
 
     // Timestamp modification & user activity tracking
@@ -1087,14 +1084,6 @@
 
         // Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
         processActiveUsersList();
-    }
-
-    function getRobinColor(username) {
-        var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
-        var e = username.toLowerCase(),
-            t = e.replace(/[^a-z0-9]/g, ""),
-            n = parseInt(t, 36) % 6;
-        return colors[n];
     }
 
     function alternateMsgBackground($el) {
@@ -1188,7 +1177,8 @@
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
-
+    	var hexArray = JSON.parse (GM_getValue("hexArrayStore", null));
+        var usrArray = JSON.parse (GM_getValue("usrArrayStore", null));
         var $msg = $el.find(".body .md");
         var $usr = $el.find(".body .author");
         var line = $msg.text().toLowerCase();
@@ -1257,7 +1247,27 @@
         timeAndUserTracking($el, $usr);
 
         // User color
-        messageUserColor($usr);
+        if (GM_getValue("rlc-RobinColors")) {
+        	var caseSet = 0;
+        } else if (GM_getValue("rlc-DarkMode") === true) {
+        	var caseSet = 2;
+        } else {
+        	var caseSet = 1;
+        }
+
+        if (usrArray.indexOf($usr.text()) === -1) {
+        	usrArray.push($usr.text());
+        	colorGen($usr);
+        	GM_setValue("usrArrayStore", JSON.stringify(usrArray));
+        	console.log(usrArray+"FUCK!!!! SHIT!!!!!");
+        }
+
+        console.log("hexArray["+usrArray.indexOf($usr.text())+"]["+caseSet+"]");
+        console.log(hexArray[usrArray.indexOf($usr.text())][caseSet])
+        console.log(hexArray);
+        console.log(usrArray);
+
+        $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][caseSet]));
 
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
@@ -1287,12 +1297,6 @@
                         });
                     }
                 }
-                //if option is checked, check if message user is "robin" user and do not play if so
-                    if (GM_getValue("rlc-DisableSelfnarration")){ 
-                        if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
-                        return false;  //end function before TTS is called.
-                        }
-                    }
                 // todo: check if we are in another channel and dont play tts if so.
                 if(!$msg.parent().hasClass('muted')){
                     messageTextToSpeechHandler($msg, $usr);
@@ -1462,6 +1466,10 @@
                     }
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
+                    }
+                    if (textArea.val().indexOf("/console.log") === 0) {
+                        $(this).val("Console Logged With" + textArea.val().substring(textArea.val().indexOf("g") + 1));
+
                     }
                     if (textArea.val().indexOf("/settings") === 0){
                         var str = "    {\n";
@@ -1702,21 +1710,21 @@
 
         // Put anything after -RLC-README- in the sidebar into the readme
         let str = $("#liveupdate-resources .md").html();
-        if (typeof str !== "undefined") {
-            let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
-            $("#liveupdate-resources .md").html(res[0]);
-            $("#rlc-readmebar .md").append(res[1]);
+        let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
+        $("#liveupdate-resources .md").html(res[0]);
+        $("#rlc-readmebar .md").append(res[1]);
 
-            // Put anything before -RLC-MAIN- in the sidebar into the guide
-            str = $("#liveupdate-resources .md").html();
-            res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
-            $("#liveupdate-resources .md").html(res[1]);
-            $("#rlc-guidebar .md").append(res[0]);
-        }
+        // Put anything before -RLC-MAIN- in the sidebar into the guide
+        str = $("#liveupdate-resources .md").html();
+        res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
+        $("#liveupdate-resources .md").html(res[1]);
+        $("#rlc-guidebar .md").append(res[0]);
+
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><ul></ul></div>");
         $("#rlc-main-sidebar").append("<div id='banlistcontainer'><div id='bannedlist'></div></div>");
 
         $("#rlc-statusbar").append("<div id='versionnumber'>Reddit Live Chat (RLC) v." + GM_info.script.version + "</div>");
+
     }
 
     function rlcDocReadyModifications() {
