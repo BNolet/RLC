@@ -1289,7 +1289,6 @@
                 }
                 //if option is checked, check if message user is "robin" user and do not play if so
                     if (GM_getValue("rlc-DisableSelfnarration")){ 
-                        console.log($usr.text()+robinUser);
                         if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
                         return false;  //end function before TTS is called.
                         }
