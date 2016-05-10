@@ -704,6 +704,7 @@
         "FTW":     "For The Win",
         "FK":      "Fuck",
         "FTFY":    "Fixed that for you",
+        "FTFY2":   "Fuck that, fuck you",
         "FFS":     "For Fucks Sake",
         "G2G":     "got to go",
         "GR8":     "Great",
@@ -729,6 +730,9 @@
         "RN":      "Right Now",
         "RTFM":    "Read The Fucking Manual",
         "R8":      "Rate",
+        "H8":      "Hate",
+        "D8":      "Date",
+        "HAATIVCALBE": "Hobbit's Awesome Abbreviation That Is Very Cool And Loved By Everyone",
         "RLC":     "Reddit Live Chat",
         "STFU":    "Shut The Fuck Up",
         "SRSLY":   "Seriously",
@@ -742,7 +746,10 @@
         "WP":      "Well played",
         "YW":      "You're welcome",
         "KRETENKOBR2": "KretenkobrTwo",
-        "<":    "Kleinerdong"
+        "<":       "Kleinerdong",
+        "PSA":     "Public Service Announcement",
+        "PR":      "Pull request",
+        "EASTEREGG": "Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo"
     };
 
     // used for TTS voice username-based randomization
