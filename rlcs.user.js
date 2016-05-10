@@ -1078,7 +1078,7 @@
         }
 
         // Add info to activeuserarray
-        activeUserArray.push($usr.text());
+        activeUserArray.push($usr.text().replace("/u/", ""));
         activeUserTimes.push(militarytime);
 
         // Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
