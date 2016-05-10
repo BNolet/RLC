@@ -6,8 +6,6 @@
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
-// @updateURL      https://github.com/BNolet/RLC/blob/master/rlcs.user.js
-// @downloadURL    https://github.com/BNolet/RLC/blob/master/rlcs.user.js
 // @include        https://www.reddit.com/live/*
 // @exclude        https://www.reddit.com/live/
 // @exclude        https://www.reddit.com/live
@@ -568,7 +566,7 @@
         $("body").scrollTop($("body")[0].scrollHeight);
         $("body").removeClass("allowHistoryScroll");
         scrollToBottom();
-        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
+        setTimeout(function(){ loadingInitialMessages = 0; }, 1000);
     }
 
     var storedMuteList = GM_getValue("mutedUsers");
@@ -991,7 +989,7 @@
     }
 
     function colorGen($usr) {
-    	var hexArray = JSON.parse (GM_getValue("hexArrayStore", null)) || [];
+    	var hexArray = GM_getValue("hexArrayStore", "") || [];
     	var tempArray = [];
     	var hexName = toHex($usr.text()).split("");
         var adder = 1;
@@ -1062,7 +1060,7 @@
         console.log("pushed colorsn")
         hexArray.push(tempArray);
         console.log("pushed")
-        GM_setValue("hexArrayStore", JSON.stringify(hexArray));
+        GM_setValue("hexArrayStore", hexArray);
 
     }
 
@@ -1180,16 +1178,19 @@
 
     // Used differentiate initial and subsequent messages
     var loadingInitialMessages = 1;
+    var hexArray 	= GM_getValue("hexArrayStore", "") || [];
+    var usrArray 	= GM_getValue("usrArrayStore", "") || [];
+    var z 			= 0;
 
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
-    	var hexArray = JSON.parse (GM_getValue("hexArrayStore", null));
-        var usrArray = JSON.parse (GM_getValue("usrArrayStore", null));
-        var $msg = $el.find(".body .md");
-        var $usr = $el.find(".body .author");
-        var line = $msg.text().toLowerCase();
-        var firstLine = $msg.find("p").first();
+    	z=z++;
+        var colorSet 	= 0;
+        var $msg 		= $el.find(".body .md");
+        var $usr 		= $el.find(".body .author");
+        var line 		= $msg.text().toLowerCase();
+        var firstLine 	= $msg.find("p").first();
         if (!GM_getValue("rlc-HideGiphyImages")){        
             if (line.indexOf("rlc-image") === 0){
                 var linksObj = $msg.find("a");
@@ -1255,27 +1256,27 @@
 
         // User color
         if (GM_getValue("rlc-RobinColors")) {
-        	var caseSet = 0;
+        	colorSet = 0;
         } else if (GM_getValue("rlc-DarkMode") === true) {
-        	var caseSet = 2;
+        	colorSet = 2;
         } else {
-        	var caseSet = 1;
+        	colorSet = 1;
         }
+
+        //console.log(usrArray);
+        //console.log(hexArray);
 
         if (usrArray.indexOf($usr.text()) === -1) {
         	usrArray.push($usr.text());
         	colorGen($usr);
-        	GM_setValue("usrArrayStore", JSON.stringify(usrArray));
-        	console.log(usrArray+"FUCK!!!! SHIT!!!!!");
-        }
-
-        console.log("hexArray["+usrArray.indexOf($usr.text())+"]["+caseSet+"]");
-        console.log(hexArray[usrArray.indexOf($usr.text())][caseSet])
-        console.log(hexArray);
-        console.log(usrArray);
-
-        $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][caseSet]));
-
+        	GM_setValue("usrArrayStore", usrArray);
+        	usrArray = GM_getValue("usrArrayStore", "");
+        } 
+        
+        if (z < 1) {
+        	$usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
+		}
+		
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
             $msg.parent().addClass('muted');
@@ -1474,10 +1475,10 @@
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
                     }
-                    if (textArea.val().indexOf("/console.log") === 0) {
-                        $(this).val("Console Logged With" + textArea.val().substring(textArea.val().indexOf("g") + 1));
-
-                    }
+                    //if (textArea.val().indexOf("/console.log") === 0) {
+                     //   $(this).val("Console Logged With" + textArea.val().substring(textArea.val().indexOf("g") + 1));
+//
+  //                  }
                     if (textArea.val().indexOf("/settings") === 0){
                         var str = "    {\n";
                         str += optionsArray.map(function(key){
@@ -1786,7 +1787,7 @@
         // wait for iframes, then remove preloader
         setTimeout(scrollToBottom, 250);
         //  and scroll to bottom
-        setTimeout($("#rlc-preloader").fadeOut(), 300);
+        setTimeout($("#rlc-preloader").fadeOut(), 500);
         // mark initial load as ended
         loadingInitialMessages = 0;
     }
