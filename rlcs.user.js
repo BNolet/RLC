@@ -982,11 +982,7 @@
     }
 
     function colorGen($usr) {
-<<<<<<< HEAD
     	var hexArray = GM_getValue("hexArrayStore", "") || [];
-=======
-    	var hexArray = JSON.parse (GM_getValue("hexArrayStore", null)) || [];
->>>>>>> 6d4cd43c7ae56434a220ed2e50c8dccf0386f2d9
     	var tempArray = [];
     	var hexName = toHex($usr.text()).split("");
         var adder = 1;
@@ -1057,11 +1053,7 @@
         console.log("pushed colorsn")
         hexArray.push(tempArray);
         console.log("pushed")
-<<<<<<< HEAD
         GM_setValue("hexArrayStore", hexArray);
-=======
-        GM_setValue("hexArrayStore", JSON.stringify(hexArray));
->>>>>>> 6d4cd43c7ae56434a220ed2e50c8dccf0386f2d9
 
     }
 
@@ -1186,21 +1178,12 @@
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
-<<<<<<< HEAD
     	z=z++;
         var colorSet 	= 0;
         var $msg 		= $el.find(".body .md");
         var $usr 		= $el.find(".body .author");
         var line 		= $msg.text().toLowerCase();
         var firstLine 	= $msg.find("p").first();
-=======
-    	var hexArray = JSON.parse (GM_getValue("hexArrayStore", null));
-        var usrArray = JSON.parse (GM_getValue("usrArrayStore", null));
-        var $msg = $el.find(".body .md");
-        var $usr = $el.find(".body .author");
-        var line = $msg.text().toLowerCase();
-        var firstLine = $msg.find("p").first();
->>>>>>> 6d4cd43c7ae56434a220ed2e50c8dccf0386f2d9
         if (!GM_getValue("rlc-HideGiphyImages")){        
             if (line.indexOf("rlc-image") === 0){
                 var linksObj = $msg.find("a");
@@ -1266,7 +1249,6 @@
 
         // User color
         if (GM_getValue("rlc-RobinColors")) {
-<<<<<<< HEAD
         	colorSet = 0;
         } else if (GM_getValue("rlc-DarkMode") === true) {
         	colorSet = 2;
@@ -1276,28 +1258,6 @@
 
         //console.log(usrArray);
         //console.log(hexArray);
-=======
-        	var caseSet = 0;
-        } else if (GM_getValue("rlc-DarkMode") === true) {
-        	var caseSet = 2;
-        } else {
-        	var caseSet = 1;
-        }
-
-        if (usrArray.indexOf($usr.text()) === -1) {
-        	usrArray.push($usr.text());
-        	colorGen($usr);
-        	GM_setValue("usrArrayStore", JSON.stringify(usrArray));
-        	console.log(usrArray+"FUCK!!!! SHIT!!!!!");
-        }
-
-        console.log("hexArray["+usrArray.indexOf($usr.text())+"]["+caseSet+"]");
-        console.log(hexArray[usrArray.indexOf($usr.text())][caseSet])
-        console.log(hexArray);
-        console.log(usrArray);
-
-        $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][caseSet]));
->>>>>>> 6d4cd43c7ae56434a220ed2e50c8dccf0386f2d9
 
         if (usrArray.indexOf($usr.text()) === -1) {
         	usrArray.push($usr.text());
@@ -1508,17 +1468,10 @@
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
                     }
-<<<<<<< HEAD
                     //if (textArea.val().indexOf("/console.log") === 0) {
                      //   $(this).val("Console Logged With" + textArea.val().substring(textArea.val().indexOf("g") + 1));
 //
   //                  }
-=======
-                    if (textArea.val().indexOf("/console.log") === 0) {
-                        $(this).val("Console Logged With" + textArea.val().substring(textArea.val().indexOf("g") + 1));
-
-                    }
->>>>>>> 6d4cd43c7ae56434a220ed2e50c8dccf0386f2d9
                     if (textArea.val().indexOf("/settings") === 0){
                         var str = "    {\n";
                         str += optionsArray.map(function(key){
