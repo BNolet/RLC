@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.18
+// @version        3.14
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -197,6 +197,9 @@
         createOption("Disable User-based Voices", function(checked){
         },false, "do not modify TTS voices based on usernames");
 
+        createOption("Disable Self-narration", function(checked){
+        },false, "don't read messages sent by me aloud");
+
         createOption("Auto Scroll", function(checked){
                         if (checked){
                 $("body").addClass("AutoScroll");
@@ -210,6 +213,14 @@
 
         createOption("Hide Giphy Images", function(checked){
         },false, "disable giphy gifs (effective on reload or new messages)");
+
+        createOption("Max Messages 25", function(checked){
+            if (checked){
+                cropMessages(25);
+            } else {
+
+            }
+        },false, "do not show more than 25 messages");
     }
 
 //
@@ -551,8 +562,17 @@
 //  Code status: needs some love
 //
 
+function cropMessages(max) {
+    $( ".liveupdate" ).each(function( index ) {
+        if (index > max) {
+            $( this ).remove();
+        }
+    });
+}
+
     // Scroll chat back to bottom
     var scrollToBottom = function(){
+       
         if (GM_getValue("rlc-AutoScroll")){
             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
@@ -566,7 +586,7 @@
         $("body").scrollTop($("body")[0].scrollHeight);
         $("body").removeClass("allowHistoryScroll");
         scrollToBottom();
-        setTimeout(function(){ loadingInitialMessages = 0; }, 1000);
+        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
     }
 
     var storedMuteList = GM_getValue("mutedUsers");
@@ -988,24 +1008,25 @@
         }
     }
 
+    //Generates the matching light, dark and Robin colors for username CSS and stores them in a persistent array
     function colorGen($usr) {
     	var hexArray = GM_getValue("hexArrayStore", "") || [];
     	var tempArray = [];
-    	var hexName = toHex($usr.text()).split("");
+    	var hexName = toHex($usr.text()).split("");//Splitting each character up with ""s and converting to hex
         var adder = 1;
         $.each(hexName, function(ind,num){
         	num = (parseInt(num) + 1);
-            if (num !== 0 && !isNaN(num)){
+            if (num !== 0 && !isNaN(num)){//math
             	adder = adder * num;
             }
         });
         adder = adder.toString().replace(".", "").split("0").join("");
         let start = adder.length-10;
         let end = adder.length-4;
-        var firstThree = adder.toString().substring(start, end);
+        var firstThree = adder.toString().substring(start, end);//moremath
         var amt = 60;
 
-        //Will loop twice
+        //Will loop twice, once for light and once for dark, then escapes to Robin colors
         for (i=0;i<2;i++){
             var r = firstThree.slice(0,2);
         	var g = firstThree.slice(2,4);
@@ -1014,7 +1035,7 @@
         	var randR = (Math.seededRandom(r*100,120,175));
         	var randG = (Math.seededRandom(g*100,120,175));
         	var randB = (Math.seededRandom(b*100,120,175));		
-        	// TODO-SUGGESTION: Code readability
+        	// This is the randomizer, not much to know about this. Buncha math
         	var suppress = (Math.seededRandom(firstThree*r*10,0,6));
         	var modAmt =2 ;
         	switch(suppress) {
@@ -1040,14 +1061,13 @@
                 	randB/=modAmt;
                 	break;
             	default:
-                	//console.log("This shouldn't happen! (LightenDarkenColor switch case)");
                 	break;
         	}	
         	var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
         	var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
         	var hexB = (parseInt(randB) + parseInt(amt)).toString(16);	
 	        amt=-40;
-	        tempArray.push(hexR + hexG + hexB);
+	        tempArray.push(hexR + hexG + hexB); //pushing the 6 character string to a temporary array, one for light, one for dark
         }
 
         //Robin Colors
@@ -1056,11 +1076,11 @@
             t = e.replace(/[^a-z0-9]/g, ""),
             n = parseInt(t, 36) % 6;
         
+        //Cascading array used to add color schemes to master hex array on a 1:1 user:colorset basis
+		//AKA, arrays within an array (multidimensional array)
         tempArray.push(colors[n]);
-        console.log("pushed colorsn")
         hexArray.push(tempArray);
-        console.log("pushed")
-        GM_setValue("hexArrayStore", hexArray);
+        GM_setValue("hexArrayStore", hexArray); //Store array in scriptmonkey settings for later access
 
     }
 
@@ -1178,19 +1198,29 @@
 
     // Used differentiate initial and subsequent messages
     var loadingInitialMessages = 1;
-    var hexArray 	= GM_getValue("hexArrayStore", "") || [];
-    var usrArray 	= GM_getValue("usrArrayStore", "") || [];
-    var z 			= 0;
-
+    
+    var maxmessages = 25;
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
-    	z=z++;
+        var hexArray 	= GM_getValue("hexArrayStore", "") || []; //initialize hex and usr lookup list variables
+    	var usrArray 	= GM_getValue("usrArrayStore", "") || [];
         var colorSet 	= 0;
         var $msg 		= $el.find(".body .md");
         var $usr 		= $el.find(".body .author");
         var line 		= $msg.text().toLowerCase();
         var firstLine 	= $msg.find("p").first();
+
+        if (GM_getValue("rlc-MaxMessages25")){
+            var totalmessages = $(".liveupdate").length;
+            
+            console.log(totalmessages);
+
+            if (totalmessages > maxmessages) {
+                $(".liveupdate").last().remove();
+            }        
+        }
+
         if (!GM_getValue("rlc-HideGiphyImages")){        
             if (line.indexOf("rlc-image") === 0){
                 var linksObj = $msg.find("a");
@@ -1210,8 +1240,6 @@
             }
         }
         
-        
-
         //temporary: disable the fucking links again for master branch.
         firstLine.html(firstLine.html()+" ");
 
@@ -1263,19 +1291,17 @@
         	colorSet = 1;
         }
 
-        //console.log(usrArray);
-        //console.log(hexArray);
-
+        //Check if user exists and add user to list if they don't.
         if (usrArray.indexOf($usr.text()) === -1) {
         	usrArray.push($usr.text());
-        	colorGen($usr);
-        	GM_setValue("usrArrayStore", usrArray);
-        	usrArray = GM_getValue("usrArrayStore", "");
-        } 
+        	colorGen($usr); //generate dark, light and Robin colorschemes for the user
+       		GM_setValue("usrArrayStore", usrArray); //Store usrArray into settings
+       		hexArray = GM_getValue("hexArrayStore", ""); //update hexArray to include new user's colors
+        }
         
-        if (z < 1) {
-        	$usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
-		}
+        //Apply color through CSS to message author
+        $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
+
 		
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
@@ -1305,6 +1331,12 @@
                         });
                     }
                 }
+                //if option is checked, check if message user is "robin" user and do not play if so
+                    if (GM_getValue("rlc-DisableSelfnarration")){ 
+                        if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
+                        return false;  //end function before TTS is called.
+                        }
+                    }
                 // todo: check if we are in another channel and dont play tts if so.
                 if(!$msg.parent().hasClass('muted')){
                     messageTextToSpeechHandler($msg, $usr);
@@ -1470,17 +1502,17 @@
                 else if (textArea.val() === "" ) { e.preventDefault();  }
                 else {
                     if (textArea.val().indexOf("/version") === 0){
-                        $(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
+                       	$(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
                     }
                     if (textArea.val().indexOf("/browser") === 0){
-                        $(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
+                       	$(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
                     }
-                    //if (textArea.val().indexOf("/console.log") === 0) {
-                     //   $(this).val("Console Logged With" + textArea.val().substring(textArea.val().indexOf("g") + 1));
-//
-  //                  }
+                    if (textArea.val().indexOf("/console.log") === 0) {
+                       	console.log(eval(textArea.val().substring(textArea.val().indexOf("g") + 2)));
+                       	$(".save-button .btn").click();
+                    }
                     if (textArea.val().indexOf("/settings") === 0){
-                        var str = "    {\n";
+                       	var str = "    {\n";
                         str += optionsArray.map(function(key){
                             return "    \""+key+"\": \""+GM_getValue(key)+"\"";
                         }).join(",\n");
@@ -1718,16 +1750,17 @@
 
         // Put anything after -RLC-README- in the sidebar into the readme
         let str = $("#liveupdate-resources .md").html();
-        let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
-        $("#liveupdate-resources .md").html(res[0]);
-        $("#rlc-readmebar .md").append(res[1]);
+        if (typeof str !== "undefined") {
+            let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
+            $("#liveupdate-resources .md").html(res[0]);
+            $("#rlc-readmebar .md").append(res[1]);
 
-        // Put anything before -RLC-MAIN- in the sidebar into the guide
-        str = $("#liveupdate-resources .md").html();
-        res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
-        $("#liveupdate-resources .md").html(res[1]);
-        $("#rlc-guidebar .md").append(res[0]);
-
+            // Put anything before -RLC-MAIN- in the sidebar into the guide
+            str = $("#liveupdate-resources .md").html();
+            res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
+            $("#liveupdate-resources .md").html(res[1]);
+            $("#rlc-guidebar .md").append(res[0]);
+        }
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><ul></ul></div>");
         $("#rlc-main-sidebar").append("<div id='banlistcontainer'><div id='bannedlist'></div></div>");
 
@@ -1787,7 +1820,7 @@
         // wait for iframes, then remove preloader
         setTimeout(scrollToBottom, 250);
         //  and scroll to bottom
-        setTimeout($("#rlc-preloader").fadeOut(), 500);
+        setTimeout($("#rlc-preloader").fadeOut(), 300);
         // mark initial load as ended
         loadingInitialMessages = 0;
     }
@@ -1880,7 +1913,7 @@
     channelColors();
 
     // RLC-CORE
-    GM_addStyle('#rlc-header,#rlc-wrapper,body{overflow:hidden}img.rlc-image{max-height:200px}.rlc-compact #rlc-chat{height:calc(100vh - 252px);max-height:495px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 168px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth.left-panel #rlc-statusbar{width:18%}.rlc-fullwidth.left-panel #rlc-titlebar{width:81%}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 106px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body{min-width:0}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#rlc-preloader{background:#fff;left:0;right:0;bottom:96px;top:0;position:absolute;z-index:10000;padding-top:14%;font-size:3em;TEXT-ALIGN:CENTER;box-sizing:border-box}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#new-update-form{margin:0;width:87%;float:left}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in ";color:#000}h1#liveupdate-title{font-size:1.5em;color:#9c9c9c;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background:0 0!important}#rlc-wrapper .liveupdate .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px;background-color:#EFEFED}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid #e3e3e0;border-top:0;box-sizing:border-box overflow: hidden}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:2px solid #FCFCFC;padding:5px 0}#rlc-chat{height:calc(100vh - 166px);overflow-y:scroll;max-height:495px}#rlc-main .liveupdate-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(128,128,128,.26);float:left;height:34px;margin:0;border-radius:2px;padding:6px}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:100%;float:left;text-align:center;box-sizing:border-box;cursor:pointer;-moz-border-radius:2px;-webkit-border-radius:2px;font-size:1.2em}#rlc-messagebox{padding:10px;background-color:#EFEFED;width:100%}#rlc-sendmessage{background-color:#FCFCFC;height:32px;width:13%;float:right;padding:8px 0}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 6px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);letter-spacing:1px;background:#FCFCFC;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0}.liveupdate .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;color:#A7A6B8;line-height:32px}.liveupdate a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.liveupdate-listing li.liveupdate .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.liveupdate.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:10px 0 20px;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0;color:#FCFCFC}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}.liveupdate.user-narration .body .md{font-style:italic}.liveupdate.user-mention .body .md p{font-weight:700}.liveupdate pre{margin:0;padding:0;background:rgba(128,128,128,.5);border:#FCFCFC;box-sizing:border-box}.liveupdate a.author,.liveupdate p{line-height:32px;min-height:32px}#liveupdate-description{margin-left:10px;float:left}.md{max-width:none!important}.liveupdate-listing li.liveupdate p{font-size:13px!important}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:10px}.AutoScroll #togglebarAutoscroll,.rlc-TextToSpeech #togglebarTTS{background:rgba(0,0,0,.15)}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{float:right;box-sizing:border-box;text-align:center;padding:5px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:auto;margin-left:8px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid #fff}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{background:0 0;border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.channelname{color:#A9A9A9!important;display:block;float:left;width:100px;line-height:32px}.rlc-showChannelsUI #new-update-form{width:77%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:10%;height:34px;float:left;background-color:#FCFCFC;border:1px solid rgba(128,128,128,.26)}.rlc-showChannelsUI #rlc-sendmessage{width:13%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100;background:#EFEFED}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;background:#EFEFED;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid grey}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid grey}#filter_tabs>span.more{padding:0 30px;border-left:1px solid grey}.rlc-channel-add input{border:1px solid rgba(128,128,128,.32);padding:0;height:24px}body.allowHistoryScroll{height:105%;overflow:auto}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}.rlc-imageWithin span.rlc-imgvia{float:right;margin-left:10px}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;position:relative;min-height:32px}.longMessageClosed p{position:relative;left:25px;top:-5px}.longMessageClosed .extendButton{position:absolute;top:7px;margin-right:5px}.longMessageClosed pre{position:absolute;left:25px}');
+    GM_addStyle('#rlc-header,#rlc-wrapper,body{overflow:hidden}img.rlc-image{max-height:200px}.rlc-compact #rlc-chat{height:calc(100vh - 252px);max-height:495px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 168px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth.left-panel #rlc-statusbar{width:18%}.rlc-fullwidth.left-panel #rlc-titlebar{width:81%}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 106px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body{min-width:0}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#rlc-preloader{background:#fff;left:0;right:0;bottom:96px;top:0;position:absolute;z-index:10000;padding-top:14%;font-size:3em;TEXT-ALIGN:CENTER;box-sizing:border-box}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#new-update-form{margin:0;width:87%;float:left}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in ";color:#000}h1#liveupdate-title{font-size:1.5em;color:#9c9c9c;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background:0 0!important}#rlc-wrapper .liveupdate .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px;background-color:#EFEFED}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid #e3e3e0;border-top:0;box-sizing:border-box overflow: hidden}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:2px solid #FCFCFC;padding:5px 0}#rlc-chat{height:calc(100vh - 166px);overflow-y:scroll;max-height:495px}#rlc-main .liveupdate-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(128,128,128,.26);float:left;height:34px;margin:0;border-radius:2px;padding:6px}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:calc(33.3% - 7px);float:left;text-align:center;box-sizing:border-box;cursor:pointer;-moz-border-radius:2px;-webkit-border-radius:2px;font-size:1.2em}#rlc-messagebox{padding:10px;background-color:#EFEFED;width:100%}#rlc-sendmessage{background-color:#FCFCFC;height:32px;width:13%;float:right;padding:8px 0}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 6px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);margin-right:10px;letter-spacing:1px;background:#FCFCFC;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0;margin-right:0}.liveupdate .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;color:#A7A6B8;line-height:32px}.liveupdate a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.liveupdate-listing li.liveupdate .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.liveupdate.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:5px 0;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0;color:#FCFCFC}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}.liveupdate.user-narration .body .md{font-style:italic}.liveupdate.user-mention .body .md p{font-weight:700}.liveupdate pre{margin:0;padding:0;background:rgba(128,128,128,.5);border:#FCFCFC;box-sizing:border-box}.liveupdate a.author,.liveupdate p{line-height:32px;min-height:32px}#liveupdate-description{margin-left:10px;float:left}.md{max-width:none!important}.liveupdate-listing li.liveupdate p{font-size:13px!important}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:10px}.AutoScroll #togglebarAutoscroll,.rlc-TextToSpeech #togglebarTTS{background:rgba(0,0,0,.15)}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{float:right;box-sizing:border-box;text-align:center;padding:5px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:auto;margin-left:8px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid #fff}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{background:0 0;border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.channelname{color:#A9A9A9!important;display:block;float:left;width:100px;line-height:32px}.rlc-showChannelsUI #new-update-form{width:77%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:10%;height:34px;float:left;background-color:#FCFCFC;border:1px solid rgba(128,128,128,.26)}.rlc-showChannelsUI #rlc-sendmessage{width:13%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100;background:#EFEFED}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;background:#EFEFED;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid grey}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid grey}#filter_tabs>span.more{padding:0 30px;border-left:1px solid grey}.rlc-channel-add input{border:1px solid rgba(128,128,128,.32);padding:0;height:24px}body.allowHistoryScroll{height:105%;overflow:auto}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}.rlc-imageWithin span.rlc-imgvia{float:right;margin-left:10px}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;position:relative;min-height:32px}.longMessageClosed p{position:relative;left:25px;top:-5px}.longMessageClosed .extendButton{position:absolute;top:7px;margin-right:5px}.longMessageClosed pre{position:absolute;left:25px}');
 
     // BG/Emoji/rarely changed/auxilary 
     GM_addStyle('.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}#filter_tabs,#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .liveupdate.in-channel,.rlc-showChannelsUI .rlc-filter .liveupdate,.save-button,.user-narration a.author{display:none}.dark-background.AutoScroll #togglebarAutoscroll,.dark-background.rlc-TextToSpeech #togglebarTTS{background:rgba(239,247,255,.25)}.dark-background,.dark-background #rlc-leftpanel,.dark-background #rlc-messagebox,.dark-background #rlc-messagebox textarea,.dark-background #rlc-sendmessage,.dark-background #rlc-sidebar,.dark-background #rlc-toggleguide,.dark-background #rlc-toggleoptions,.dark-background #rlc-update,.dark-background .rlc-channel-add,.dark-background option{background:#404040}.dark-background.rlc-showChannelsUI div#filter_tabs{background-color:#5C5C5C}.dark-background #rlc-sidebar{border:transparent}.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{background:0 0}.dark-background .liveupdate code{color:#000}.dark-background #rlc-sidebar h2,.dark-background #rlc-sidebar h3,.dark-background #rlc-sidebar h4,.dark-background h1#liveupdate-title:before{color:#ccc}.dark-background #rlc-wrapper a{color:#7878ff}.dark-background #rlc-preloader{background:#404040}.dark-background #rlc-messagebox textarea,.dark-background #rlc-sidebar li,.dark-background #rlc-wrapper,.dark-background #rlc-wrapper h1,.dark-background #rlc-wrapper h1#liveupdate-title,.dark-background #rlc-wrapper li,.dark-background #rlc-wrapper p,.dark-background .longMessageClosed:after,.dark-background .rlc-channel-add button,.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{color:#f5f5f5}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}.rlc-customscrollbars div#filter_tabs{width:calc(100% - 12px)}.rlc-customscrollbars ::-webkit-scrollbar{width:12px}.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#FCFCFC}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#5C5C5C}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#404040;border:2px solid #5C5C5C}.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#E4E4E4;border:2px solid #FCFCFC}.liveupdate time.live-timestamp,.liveupdate ul.buttonrow{display:none!important}#filter_tabs,#liveupdate-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown{display:none}.mrPumpkin{height:24px;width:24px;display:inline-block;border-radius:3px;background-size:144px;position:relative;top:6px}.dark-background .mrPumpkin{border-radius:5px}.mp_frown{background-position:-24px 0}.mp_confused{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_bored{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.mp_evilsmile{background-position:-72px 24px}.mp_stjerneklar{background-position:-72px 48px}.mp_fatherderp{background-position:-24px 24px}.mp_s3cur1ty{background-position:-48px 24px}.dark-background .alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}');
