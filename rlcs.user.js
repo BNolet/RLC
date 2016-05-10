@@ -1,13 +1,11 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.16
+// @version        3.13.18
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
-// @updateURL      https://github.com/BNolet/RLC/blob/master/rlcs.user.js
-// @downloadURL    https://github.com/BNolet/RLC/blob/master/rlcs.user.js
 // @include        https://www.reddit.com/live/*
 // @exclude        https://www.reddit.com/live/
 // @exclude        https://www.reddit.com/live
@@ -568,7 +566,7 @@
         $("body").scrollTop($("body")[0].scrollHeight);
         $("body").removeClass("allowHistoryScroll");
         scrollToBottom();
-        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
+        setTimeout(function(){ loadingInitialMessages = 0; }, 1000);
     }
 
     var storedMuteList = GM_getValue("mutedUsers");
@@ -946,52 +944,6 @@
 
     // Message background alternation via js
     var rowAlternator = false;
-    // Modify color by amount
-    function LightenDarkenColor(col, amt) {
-        var r = col.slice(0,2);
-        var g = col.slice(2,4);
-        var b = col.slice(4,6);
-        if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
-        var randR = (Math.seededRandom(r*100,120,175));
-        var randG = (Math.seededRandom(g*100,120,175));
-        var randB = (Math.seededRandom(b*100,120,175));
-
-        // TODO-SUGGESTION: Code readability
-        var suppress = (Math.seededRandom(col*r*10,0,6));
-        var modAmt =2 ;
-        switch(suppress) {
-            case 0:
-                randR/=modAmt;
-                break;
-            case 1:
-                randG/=modAmt;
-                break;
-            case 2:
-                randB/=modAmt;
-                break;
-            case 4:
-                randR/=modAmt;
-                randG/=modAmt;
-                break;
-            case 5:
-                randR/=modAmt;
-                randB/=modAmt;
-                break;
-            case 6:
-                randG/=modAmt;
-                randB/=modAmt;
-                break;
-            default:
-                //console.log("This shouldn't happen! (LightenDarkenColor switch case)");
-                break;
-        }
-
-        var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
-        var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
-        var hexB = (parseInt(randB) + parseInt(amt)).toString(16);
-
-        return hexR + hexG + hexB;
-    }
 
     // trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
     var emojiList={ ":)": "smile",
@@ -1029,33 +981,80 @@
         }
     }
 
-    function messageUserColor($usr) {
-        if (!GM_getValue("rlc-RobinColors")) {
-            var hexName = toHex($usr.text()).split("");
-            var adder = 1;
-            $.each(hexName, function(ind,num){
-                num = (parseInt(num) + 1);
-                if (num !== 0 && !isNaN(num)){
-                    adder = adder * num;
-                }
-            });
-            adder = adder.toString().replace(".", "").split("0").join("");
-            let start = adder.length-10;
-            let end = adder.length-4;
-            var firstThree = adder.toString().substring(start, end);
+    function colorGen($usr) {
+    	var hexArray = GM_getValue("hexArrayStore", "") || [];
+    	var tempArray = [];
+    	var hexName = toHex($usr.text()).split("");
+        var adder = 1;
+        $.each(hexName, function(ind,num){
+        	num = (parseInt(num) + 1);
+            if (num !== 0 && !isNaN(num)){
+            	adder = adder * num;
+            }
+        });
+        adder = adder.toString().replace(".", "").split("0").join("");
+        let start = adder.length-10;
+        let end = adder.length-4;
+        var firstThree = adder.toString().substring(start, end);
+        var amt = 60;
 
-            // Variable brigtening of colors based on dark mode setting
-            if (GM_getValue("rlc-DarkMode")){
-                var lighterColor = LightenDarkenColor(firstThree, 60);
-                $usr.css("color", "#"+lighterColor);
-            }
-            else {
-                var darkerColor = LightenDarkenColor(firstThree, -40);
-                $usr.css("color", "#"+darkerColor);
-            }
-        } else {
-            $usr.css("color", getRobinColor($usr.text())); //ROBIN COLORS!!!!!
+        //Will loop twice
+        for (i=0;i<2;i++){
+            var r = firstThree.slice(0,2);
+        	var g = firstThree.slice(2,4);
+        	var b = firstThree.slice(4,6);
+        	if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
+        	var randR = (Math.seededRandom(r*100,120,175));
+        	var randG = (Math.seededRandom(g*100,120,175));
+        	var randB = (Math.seededRandom(b*100,120,175));		
+        	// TODO-SUGGESTION: Code readability
+        	var suppress = (Math.seededRandom(firstThree*r*10,0,6));
+        	var modAmt =2 ;
+        	switch(suppress) {
+            	case 0:
+                	randR/=modAmt;
+                	break;
+            	case 1:
+                	randG/=modAmt;
+                	break;
+            	case 2:
+                	randB/=modAmt;
+                	break;
+            	case 4:
+                	randR/=modAmt;
+                	randG/=modAmt;
+                	break;
+            	case 5:
+                	randR/=modAmt;
+                	randB/=modAmt;
+                	break;
+            	case 6:
+                	randG/=modAmt;
+                	randB/=modAmt;
+                	break;
+            	default:
+                	//console.log("This shouldn't happen! (LightenDarkenColor switch case)");
+                	break;
+        	}	
+        	var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
+        	var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
+        	var hexB = (parseInt(randB) + parseInt(amt)).toString(16);	
+	        amt=-40;
+	        tempArray.push(hexR + hexG + hexB);
         }
+
+        //Robin Colors
+        var colors = ["e50000", "db8e00", "ccc100", "02be01", "0083c7", "820080"];
+        var e = $usr.text().toLowerCase(),
+            t = e.replace(/[^a-z0-9]/g, ""),
+            n = parseInt(t, 36) % 6;
+        
+        tempArray.push(colors[n]);
+        console.log("pushed colorsn")
+        hexArray.push(tempArray);
+        console.log("pushed")
+        GM_setValue("hexArrayStore", hexArray);
+
     }
 
     // Timestamp modification & user activity tracking
@@ -1083,14 +1082,6 @@
 
         // Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
         processActiveUsersList();
-    }
-
-    function getRobinColor(username) {
-        var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
-        var e = username.toLowerCase(),
-            t = e.replace(/[^a-z0-9]/g, ""),
-            n = parseInt(t, 36) % 6;
-        return colors[n];
     }
 
     function alternateMsgBackground($el) {
@@ -1180,15 +1171,19 @@
 
     // Used differentiate initial and subsequent messages
     var loadingInitialMessages = 1;
+    var hexArray 	= GM_getValue("hexArrayStore", "") || [];
+    var usrArray 	= GM_getValue("usrArrayStore", "") || [];
+    var z 			= 0;
 
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
-
-        var $msg = $el.find(".body .md");
-        var $usr = $el.find(".body .author");
-        var line = $msg.text().toLowerCase();
-        var firstLine = $msg.find("p").first();
+    	z=z++;
+        var colorSet 	= 0;
+        var $msg 		= $el.find(".body .md");
+        var $usr 		= $el.find(".body .author");
+        var line 		= $msg.text().toLowerCase();
+        var firstLine 	= $msg.find("p").first();
         if (!GM_getValue("rlc-HideGiphyImages")){        
             if (line.indexOf("rlc-image") === 0){
                 var linksObj = $msg.find("a");
@@ -1253,10 +1248,28 @@
         timeAndUserTracking($el, $usr);
 
         // User color
-        messageUserColor($usr);
+        if (GM_getValue("rlc-RobinColors")) {
+        	colorSet = 0;
+        } else if (GM_getValue("rlc-DarkMode") === true) {
+        	colorSet = 2;
+        } else {
+        	colorSet = 1;
+        }
 
+        //console.log(usrArray);
+        //console.log(hexArray);
+
+        if (usrArray.indexOf($usr.text()) === -1) {
+        	usrArray.push($usr.text());
+        	colorGen($usr);
+        	GM_setValue("usrArrayStore", usrArray);
+        	usrArray = GM_getValue("usrArrayStore", "");
+        } 
         
-
+        if (z < 1) {
+        	$usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
+		}
+		
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
             $msg.parent().addClass('muted');
@@ -1455,6 +1468,10 @@
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
                     }
+                    //if (textArea.val().indexOf("/console.log") === 0) {
+                     //   $(this).val("Console Logged With" + textArea.val().substring(textArea.val().indexOf("g") + 1));
+//
+  //                  }
                     if (textArea.val().indexOf("/settings") === 0){
                         var str = "    {\n";
                         str += optionsArray.map(function(key){
@@ -1763,7 +1780,7 @@
         // wait for iframes, then remove preloader
         setTimeout(scrollToBottom, 250);
         //  and scroll to bottom
-        setTimeout($("#rlc-preloader").fadeOut(), 300);
+        setTimeout($("#rlc-preloader").fadeOut(), 500);
         // mark initial load as ended
         loadingInitialMessages = 0;
     }
