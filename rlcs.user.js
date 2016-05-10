@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.16
+// @version        3.13.17
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -1694,21 +1694,21 @@
 
         // Put anything after -RLC-README- in the sidebar into the readme
         let str = $("#liveupdate-resources .md").html();
-        let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
-        $("#liveupdate-resources .md").html(res[0]);
-        $("#rlc-readmebar .md").append(res[1]);
+        if (typeof str !== "undefined") {
+            let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
+            $("#liveupdate-resources .md").html(res[0]);
+            $("#rlc-readmebar .md").append(res[1]);
 
-        // Put anything before -RLC-MAIN- in the sidebar into the guide
-        str = $("#liveupdate-resources .md").html();
-        res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
-        $("#liveupdate-resources .md").html(res[1]);
-        $("#rlc-guidebar .md").append(res[0]);
-
+            // Put anything before -RLC-MAIN- in the sidebar into the guide
+            str = $("#liveupdate-resources .md").html();
+            res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
+            $("#liveupdate-resources .md").html(res[1]);
+            $("#rlc-guidebar .md").append(res[0]);
+        }
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><ul></ul></div>");
         $("#rlc-main-sidebar").append("<div id='banlistcontainer'><div id='bannedlist'></div></div>");
 
         $("#rlc-statusbar").append("<div id='versionnumber'>Reddit Live Chat (RLC) v." + GM_info.script.version + "</div>");
-
     }
 
     function rlcDocReadyModifications() {
