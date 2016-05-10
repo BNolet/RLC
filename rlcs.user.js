@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.17
+// @version        3.13.18
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -198,6 +198,9 @@
 
         createOption("Disable User-based Voices", function(checked){
         },false, "do not modify TTS voices based on usernames");
+        
+        createOption("Disable Self-narration", function(checked){
+        },false, "don't read messages sent by me aloud");
 
         createOption("Auto Scroll", function(checked){
                         if (checked){
@@ -555,6 +558,7 @@
 
     // Scroll chat back to bottom
     var scrollToBottom = function(){
+       
         if (GM_getValue("rlc-AutoScroll")){
             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
@@ -762,7 +766,7 @@
     function messageTextToSpeechHandler($msg, $usr) {
 
         if (GM_getValue("rlc-TextToSpeechTTS")) {
-
+            
             // long messages break tts (<300 chars)  
             if($msg.text().length<250){
 
@@ -1255,8 +1259,6 @@
         // User color
         messageUserColor($usr);
 
-        
-
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
             $msg.parent().addClass('muted');
@@ -1285,6 +1287,13 @@
                         });
                     }
                 }
+                //if option is checked, check if message user is "robin" user and do not play if so
+                    if (GM_getValue("rlc-DisableSelfnarration")){ 
+                        console.log($usr.text()+robinUser);
+                        if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
+                        return false;  //end function before TTS is called.
+                        }
+                    }
                 // todo: check if we are in another channel and dont play tts if so.
                 if(!$msg.parent().hasClass('muted')){
                     messageTextToSpeechHandler($msg, $usr);
