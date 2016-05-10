@@ -981,24 +981,25 @@
         }
     }
 
+    //Generates the matching light, dark and Robin colors for username CSS and stores them in a persistent array
     function colorGen($usr) {
     	var hexArray = GM_getValue("hexArrayStore", "") || [];
     	var tempArray = [];
-    	var hexName = toHex($usr.text()).split("");
+    	var hexName = toHex($usr.text()).split("");//Splitting each character up with ""s and converting to hex
         var adder = 1;
         $.each(hexName, function(ind,num){
         	num = (parseInt(num) + 1);
-            if (num !== 0 && !isNaN(num)){
+            if (num !== 0 && !isNaN(num)){//math
             	adder = adder * num;
             }
         });
         adder = adder.toString().replace(".", "").split("0").join("");
         let start = adder.length-10;
         let end = adder.length-4;
-        var firstThree = adder.toString().substring(start, end);
+        var firstThree = adder.toString().substring(start, end);//moremath
         var amt = 60;
 
-        //Will loop twice
+        //Will loop twice, once for light and once for dark, then escapes to Robin colors
         for (i=0;i<2;i++){
             var r = firstThree.slice(0,2);
         	var g = firstThree.slice(2,4);
@@ -1007,7 +1008,7 @@
         	var randR = (Math.seededRandom(r*100,120,175));
         	var randG = (Math.seededRandom(g*100,120,175));
         	var randB = (Math.seededRandom(b*100,120,175));		
-        	// TODO-SUGGESTION: Code readability
+        	// This is the randomizer, not much to know about this. Buncha math
         	var suppress = (Math.seededRandom(firstThree*r*10,0,6));
         	var modAmt =2 ;
         	switch(suppress) {
@@ -1033,14 +1034,13 @@
                 	randB/=modAmt;
                 	break;
             	default:
-                	//console.log("This shouldn't happen! (LightenDarkenColor switch case)");
                 	break;
         	}	
         	var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
         	var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
         	var hexB = (parseInt(randB) + parseInt(amt)).toString(16);	
 	        amt=-40;
-	        tempArray.push(hexR + hexG + hexB);
+	        tempArray.push(hexR + hexG + hexB); //pushing the 6 character string to a temporary array, one for light, one for dark
         }
 
         //Robin Colors
@@ -1049,11 +1049,13 @@
             t = e.replace(/[^a-z0-9]/g, ""),
             n = parseInt(t, 36) % 6;
         
+        //Cascading array used to add color schemes to master hex array on a 1:1 user:colorset basis
+		//AKA, arrays within an array (multidimensional array)
         tempArray.push(colors[n]);
         console.log("pushed colorsn")
         hexArray.push(tempArray);
         console.log("pushed")
-        GM_setValue("hexArrayStore", hexArray);
+        GM_setValue("hexArrayStore", hexArray); //Store array in scriptmonkey settings for later access
 
     }
 
@@ -1171,14 +1173,12 @@
 
     // Used differentiate initial and subsequent messages
     var loadingInitialMessages = 1;
-    var hexArray 	= GM_getValue("hexArrayStore", "") || [];
-    var usrArray 	= GM_getValue("usrArrayStore", "") || [];
-    var z 			= 0;
 
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
-    	z=z++;
+        var hexArray 	= GM_getValue("hexArrayStore", "") || []; //initialize hex and usr lookup list variables
+    	var usrArray 	= GM_getValue("usrArrayStore", "") || [];
         var colorSet 	= 0;
         var $msg 		= $el.find(".body .md");
         var $usr 		= $el.find(".body .author");
@@ -1203,8 +1203,6 @@
             }
         }
         
-        
-
         //temporary: disable the fucking links again for master branch.
         firstLine.html(firstLine.html()+" ");
 
@@ -1256,19 +1254,17 @@
         	colorSet = 1;
         }
 
-        //console.log(usrArray);
-        //console.log(hexArray);
-
+        //Check if user exists and add user to list if they don't.
         if (usrArray.indexOf($usr.text()) === -1) {
         	usrArray.push($usr.text());
-        	colorGen($usr);
-        	GM_setValue("usrArrayStore", usrArray);
-        	usrArray = GM_getValue("usrArrayStore", "");
-        } 
+        	colorGen($usr); //generate dark, light and Robin colorschemes for the user
+       		GM_setValue("usrArrayStore", usrArray); //Store usrArray into settings
+       		hexArray = GM_getValue("hexArrayStore", ""); //update hexArray to include new user's colors
+        }
         
-        if (z < 1) {
-        	$usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
-		}
+        //Apply color through CSS to message author
+        $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
+
 		
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
