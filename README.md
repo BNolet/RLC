@@ -42,3 +42,4 @@ Note: development of RLC almost always outpaces this readme file. Check out the 
   * Chrome notifications for nickname mentions
   * Automatic scrolling
 * Activity list
+(and an amazing gitbot)
