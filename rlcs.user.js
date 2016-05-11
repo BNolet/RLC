@@ -1,13 +1,11 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.13.16
+// @version        3.14.4
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
-// @updateURL      https://github.com/BNolet/RLC/blob/master/rlcs.user.js
-// @downloadURL    https://github.com/BNolet/RLC/blob/master/rlcs.user.js
 // @include        https://www.reddit.com/live/*
 // @exclude        https://www.reddit.com/live/
 // @exclude        https://www.reddit.com/live
@@ -199,6 +197,9 @@
         createOption("Disable User-based Voices", function(checked){
         },false, "do not modify TTS voices based on usernames");
 
+        createOption("Disable Self-narration", function(checked){
+        },false, "don't read messages sent by me aloud");
+
         createOption("Auto Scroll", function(checked){
                         if (checked){
                 $("body").addClass("AutoScroll");
@@ -212,6 +213,14 @@
 
         createOption("Hide Giphy Images", function(checked){
         },false, "disable giphy gifs (effective on reload or new messages)");
+
+        createOption("Max Messages 25", function(checked){
+            if (checked){
+                cropMessages(25);
+            } else {
+
+            }
+        },false, "do not show more than 25 messages");
     }
 
 //
@@ -224,13 +233,13 @@
 //     | $$ | $$  | $| $$$$$$$| $$$$$$$| $$$$$$$| $$$$$$$/      |  $$$$$$| $$  | $| $$  | $| $$ \  $| $$ \  $| $$$$$$$| $$$$$$$|  $$$$$$/
 //     |__/ |__/  |__|_______/|_______/|________|_______/        \______/|__/  |__|__/  |__|__/  \__|__/  \__|________|________/\______/
 //
-//
+//      Channel tabs megafunction (and css adder friends)
 //
 
-    // channel tabs megafunction
     var tabbedChannels = new function(){
         /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
-         * and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); to each line detected by the system */
+           and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); 
+           to each line detected by the system */
         var _self = this;
 
         // Default options
@@ -540,6 +549,9 @@
     GM_addStyle(colorcollection);
     }
 
+    // Tabbed Channel Colors:
+    channelColors();
+
 //
 //   /$$    /$$ /$$$$$$ /$$$$$$$ /$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$        /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$
 //  | $$   | $$/$$__  $| $$__  $|_  $$_//$$__  $| $$  | $$/$$__  $$      | $$_____| $$  | $| $$$ | $$/$$__  $|__  $$__/$$__  $$
@@ -553,23 +565,7 @@
 //  Code status: needs some love
 //
 
-    // Scroll chat back to bottom
-    var scrollToBottom = function(){
-        if (GM_getValue("rlc-AutoScroll")){
-            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
-        }
-    };
 
-    // Manipulate native reddit live into loading old messages
-    function loadHistory() {
-        loadingInitialMessages = 1;     //prevent tts/notifications
-        
-        $("body").addClass("allowHistoryScroll");
-        $("body").scrollTop($("body")[0].scrollHeight);
-        $("body").removeClass("allowHistoryScroll");
-        scrollToBottom();
-        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
-    }
 
     var storedMuteList = GM_getValue("mutedUsers");
     if(storedMuteList!=undefined){
@@ -704,6 +700,7 @@
         "FTW":     "For The Win",
         "FK":      "Fuck",
         "FTFY":    "Fixed that for you",
+        "FTFY2":   "Fuck that, fuck you",
         "FFS":     "For Fucks Sake",
         "G2G":     "got to go",
         "GR8":     "Great",
@@ -726,8 +723,12 @@
         "PLZ":     "Please",
         "PLS":     "Please",
         "RLY":     "Really",
+        "RN":      "Right Now",
         "RTFM":    "Read The Fucking Manual",
         "R8":      "Rate",
+        "H8":      "Hate",
+        "D8":      "Date",
+        "HAATIVCALBE": "Hobbit's Awesome Abbreviation That Is Very Cool And Loved By Everyone",
         "RLC":     "Reddit Live Chat",
         "STFU":    "Shut The Fuck Up",
         "SRSLY":   "Seriously",
@@ -741,7 +742,10 @@
         "WP":      "Well played",
         "YW":      "You're welcome",
         "KRETENKOBR2": "KretenkobrTwo",
-        "<":    "Kleinerdong"
+        "<":       "Kleinerdong",
+        "PSA":     "Public Service Announcement",
+        "PR":      "Pull request",
+        "EASTEREGG": "Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo"
     };
 
     // used for TTS voice username-based randomization
@@ -903,6 +907,32 @@
     // Grab users username + play nice with RES
     var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
 
+    function cropMessages(max) {
+        $( ".liveupdate" ).each(function( index ) {
+            if (index > max) {
+                $( this ).remove();
+            }
+        });
+    }
+
+    // Scroll chat back to bottom
+    var scrollToBottom = function(){       
+        if (GM_getValue("rlc-AutoScroll")){
+            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
+        }
+    };
+
+    // Manipulate native reddit live into loading old messages
+    function loadHistory() {
+        loadingInitialMessages = 1;     //prevent tts/notifications
+        
+        $("body").addClass("allowHistoryScroll");
+        $("body").scrollTop($("body")[0].scrollHeight);
+        $("body").removeClass("allowHistoryScroll");
+        scrollToBottom();
+        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
+    }
+
     // Time converter for active user list
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
@@ -911,17 +941,6 @@
         return time.replace(/(am|pm)/, "");
     }
 
-    // Channel prefix removal
-    var removeChannelKeyFromMessage = function(message){
-        if ($("#rlc-chat").attr("data-channel-key")){
-            var offset = $("#rlc-chat").attr("data-channel-key").length;
-            if (offset === 0) return message;
-
-            if (message.indexOf("/me") === 0) return "/me "+ message.slice(offset+5);
-            return message.slice(offset+1);
-        }
-        return message;
-    };
 
     // Convert string to hex (for user colors)
     function toHex(str) {
@@ -945,52 +964,6 @@
 
     // Message background alternation via js
     var rowAlternator = false;
-    // Modify color by amount
-    function LightenDarkenColor(col, amt) {
-        var r = col.slice(0,2);
-        var g = col.slice(2,4);
-        var b = col.slice(4,6);
-        if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
-        var randR = (Math.seededRandom(r*100,120,175));
-        var randG = (Math.seededRandom(g*100,120,175));
-        var randB = (Math.seededRandom(b*100,120,175));
-
-        // TODO-SUGGESTION: Code readability
-        var suppress = (Math.seededRandom(col*r*10,0,6));
-        var modAmt =2 ;
-        switch(suppress) {
-            case 0:
-                randR/=modAmt;
-                break;
-            case 1:
-                randG/=modAmt;
-                break;
-            case 2:
-                randB/=modAmt;
-                break;
-            case 4:
-                randR/=modAmt;
-                randG/=modAmt;
-                break;
-            case 5:
-                randR/=modAmt;
-                randB/=modAmt;
-                break;
-            case 6:
-                randG/=modAmt;
-                randB/=modAmt;
-                break;
-            default:
-                //console.log("This shouldn't happen! (LightenDarkenColor switch case)");
-                break;
-        }
-
-        var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
-        var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
-        var hexB = (parseInt(randB) + parseInt(amt)).toString(16);
-
-        return hexR + hexG + hexB;
-    }
 
     // trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
     var emojiList={ ":)": "smile",
@@ -1028,33 +1001,80 @@
         }
     }
 
-    function messageUserColor($usr) {
-        if (!GM_getValue("rlc-RobinColors")) {
-            var hexName = toHex($usr.text()).split("");
-            var adder = 1;
-            $.each(hexName, function(ind,num){
-                num = (parseInt(num) + 1);
-                if (num !== 0 && !isNaN(num)){
-                    adder = adder * num;
-                }
-            });
-            adder = adder.toString().replace(".", "").split("0").join("");
-            let start = adder.length-10;
-            let end = adder.length-4;
-            var firstThree = adder.toString().substring(start, end);
+    //Generates the matching light, dark and Robin colors for username CSS and stores them in a persistent array
+    function colorGen($usr) {
+        var hexArray = GM_getValue("hexArrayStore", "") || [];
+        var tempArray = [];
+        var hexName = toHex($usr.text()).split("");//Splitting each character up with ""s and converting to hex
+        var adder = 1;
+        $.each(hexName, function(ind,num){
+            num = (parseInt(num) + 1);
+            if (num !== 0 && !isNaN(num)){//math
+                adder = adder * num;
+            }
+        });
+        adder = adder.toString().replace(".", "").split("0").join("");
+        let start = adder.length-10;
+        let end = adder.length-4;
+        var firstThree = adder.toString().substring(start, end);//moremath
+        var amt = 60;
 
-            // Variable brigtening of colors based on dark mode setting
-            if (GM_getValue("rlc-DarkMode")){
-                var lighterColor = LightenDarkenColor(firstThree, 60);
-                $usr.css("color", "#"+lighterColor);
-            }
-            else {
-                var darkerColor = LightenDarkenColor(firstThree, -40);
-                $usr.css("color", "#"+darkerColor);
-            }
-        } else {
-            $usr.css("color", getRobinColor($usr.text())); //ROBIN COLORS!!!!!
+        //Will loop twice, once for light and once for dark, then escapes to Robin colors
+        for (i=0;i<2;i++){
+            var r = firstThree.slice(0,2);
+            var g = firstThree.slice(2,4);
+            var b = firstThree.slice(4,6);
+            if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
+            var randR = (Math.seededRandom(r*100,120,175));
+            var randG = (Math.seededRandom(g*100,120,175));
+            var randB = (Math.seededRandom(b*100,120,175));     
+            // This is the randomizer, not much to know about this. Buncha math
+            var suppress = (Math.seededRandom(firstThree*r*10,0,6));
+            var modAmt =2 ;
+            switch(suppress) {
+                case 0:
+                    randR/=modAmt;
+                    break;
+                case 1:
+                    randG/=modAmt;
+                    break;
+                case 2:
+                    randB/=modAmt;
+                    break;
+                case 4:
+                    randR/=modAmt;
+                    randG/=modAmt;
+                    break;
+                case 5:
+                    randR/=modAmt;
+                    randB/=modAmt;
+                    break;
+                case 6:
+                    randG/=modAmt;
+                    randB/=modAmt;
+                    break;
+                default:
+                    break;
+            }   
+            var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
+            var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
+            var hexB = (parseInt(randB) + parseInt(amt)).toString(16);  
+            amt=-40;
+            tempArray.push(hexR + hexG + hexB); //pushing the 6 character string to a temporary array, one for light, one for dark
         }
+
+        //Robin Colors
+        var colors = ["e50000", "db8e00", "ccc100", "02be01", "0083c7", "820080"];
+        var e = $usr.text().toLowerCase(),
+            t = e.replace(/[^a-z0-9]/g, ""),
+            n = parseInt(t, 36) % 6;
+        
+        //Cascading array used to add color schemes to master hex array on a 1:1 user:colorset basis
+        //AKA, arrays within an array (multidimensional array)
+        tempArray.push(colors[n]);
+        hexArray.push(tempArray);
+        GM_setValue("hexArrayStore", hexArray); //Store array in scriptmonkey settings for later access
+
     }
 
     // Timestamp modification & user activity tracking
@@ -1077,19 +1097,11 @@
         }
 
         // Add info to activeuserarray
-        activeUserArray.push($usr.text());
+        activeUserArray.push($usr.text().replace("/u/", ""));
         activeUserTimes.push(militarytime);
 
         // Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
         processActiveUsersList();
-    }
-
-    function getRobinColor(username) {
-        var colors = ["#e50000", "#db8e00", "#ccc100", "#02be01", "#0083c7", "#820080"];
-        var e = username.toLowerCase(),
-            t = e.replace(/[^a-z0-9]/g, ""),
-            n = parseInt(t, 36) % 6;
-        return colors[n];
     }
 
     function alternateMsgBackground($el) {
@@ -1179,36 +1191,53 @@
 
     // Used differentiate initial and subsequent messages
     var loadingInitialMessages = 1;
-
+    
+    var maxmessages = 25;
+        
+        // note from stjern: no reason to set these for every message
+        var hexArray    = GM_getValue("hexArrayStore", "") || []; //initialize hex and usr lookup list variables
+        var usrArray    = GM_getValue("usrArrayStore", "") || [];
+        var colorSet    = "penis"; //if this value is ever used, options are fucked
+        
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
 
-        var $msg = $el.find(".body .md");
-        var $usr = $el.find(".body .author");
-        var line = $msg.text().toLowerCase();
-        var firstLine = $msg.find("p").first();
+        //variables used troughout the function, all relating to the currently proccessed message
+        var $msg        = $el.find(".body .md");
+        var $usr        = $el.find(".body .author");
+        var line        = $msg.text().toLowerCase();
+        var firstLine   = $msg.find("p").first();
+
+        // remove the oldest message if there are more than 25 if that option is on.
+        if (GM_getValue("rlc-MaxMessages25")){
+            var totalmessages = $(".liveupdate").length;
+            if (totalmessages > maxmessages) {
+                $(".liveupdate").last().remove();
+            }        
+        }
+
+        //handle giphy images
         if (!GM_getValue("rlc-HideGiphyImages")){        
             if (line.indexOf("rlc-image") === 0){
                 var linksObj = $msg.find("a");
                 var url = linksObj.attr("href");
-                var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
-                var splitByPipe = $msg.text().split("|");
-                var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
-                var imgHeight = 0;
-                imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
-
-                //TODO: handle following cases: http or https in link, undefined link(maybe handle on send side)
-                
                 if (url) {
+                    var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
+                    var splitByPipe = $msg.text().split("|");
+                    var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
+                    var imgHeight = 0;
+                    imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
+
+                    url = url.replace(/^http:\/\//i, 'https://'); //force usage of https 
+                    
                     $el.addClass("rlc-imageWithin");
-                    firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+"http"+url.split("http")[1]+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
+                    
+                    firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
                 }
             }
         }
         
-        
-
         //temporary: disable the fucking links again for master branch.
         firstLine.html(firstLine.html()+" ");
 
@@ -1251,11 +1280,31 @@
         // Timestamp modification & user activity tracking
         timeAndUserTracking($el, $usr);
 
-        // User color
-        messageUserColor($usr);
+        // User color picker:
+        if (GM_getValue("rlc-RobinColors")) {
+            colorSet = 2;
+        } 
+        else { 
+            if (GM_getValue("rlc-DarkMode")) {
+            colorSet = 0;
+            }
+            // default non dark colors
+            else { 
+            colorSet = 1;
+            }
+        }
 
+        //Check if user exists and add user to list if they don't.
+        if (usrArray.indexOf($usr.text()) === -1) {
+            usrArray.push($usr.text());
+            colorGen($usr); //generate dark, light and Robin colorschemes for the user
+            GM_setValue("usrArrayStore", usrArray); //Store usrArray into settings
+            hexArray = GM_getValue("hexArrayStore", ""); //update hexArray to include new user's colors
+        }
         
-
+        //Apply color through CSS to message author
+        $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
+        
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
             $msg.parent().addClass('muted');
@@ -1268,7 +1317,7 @@
 
         // Stuff that should not be done to messages loaded on init, like TTS handling
         if (loadingInitialMessages === 0) {
-            //reAlternate();
+            //reAlternate(); -- no, just no.
             if (rescan) {
                 // This is rescan, do nothing.
             }
@@ -1284,6 +1333,12 @@
                         });
                     }
                 }
+                //if option is checked, check if message user is "robin" user and do not play if so
+                    if (GM_getValue("rlc-DisableSelfnarration")){ 
+                        if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
+                        return false;  //end function before TTS is called.
+                        }
+                    }
                 // todo: check if we are in another channel and dont play tts if so.
                 if(!$msg.parent().hasClass('muted')){
                     messageTextToSpeechHandler($msg, $usr);
@@ -1291,95 +1346,7 @@
             }
         }
     };
-
-//
-//   /$$$$$$$ /$$$$$$$  /$$$$$$ /$$      /$$ /$$$$$$ /$$$$$$$$/$$$$$$$        /$$$$$$/$$   /$$/$$$$$$$$/$$$$$$
-//  | $$__  $| $$__  $$/$$__  $| $$  /$ | $$/$$__  $| $$_____| $$__  $$      |_  $$_| $$$ | $| $$_____/$$__  $$
-//  | $$  \ $| $$  \ $| $$  \ $| $$ /$$$| $| $$  \__| $$     | $$  \ $$        | $$ | $$$$| $| $$    | $$  \ $$
-//  | $$$$$$$| $$$$$$$| $$  | $| $$/$$ $$ $|  $$$$$$| $$$$$  | $$$$$$$/        | $$ | $$ $$ $| $$$$$ | $$  | $$
-//  | $$__  $| $$__  $| $$  | $| $$$$_  $$$$\____  $| $$__/  | $$__  $$        | $$ | $$  $$$| $$__/ | $$  | $$
-//  | $$  \ $| $$  \ $| $$  | $| $$$/ \  $$$/$$  \ $| $$     | $$  \ $$        | $$ | $$\  $$| $$    | $$  | $$
-//  | $$$$$$$| $$  | $|  $$$$$$| $$/   \  $|  $$$$$$| $$$$$$$| $$  | $$       /$$$$$| $$ \  $| $$    |  $$$$$$/
-//  |_______/|__/  |__/\______/|__/     \__/\______/|________|__/  |__/      |______|__/  \__|__/     \______/
-//
-//
-//
-
-    // Settings Keys (used in /sharesettings)
-    var optionsArray = [];
-
-    //Check and store browser details
-    var nVer = navigator.appVersion;
-    var nAgt = navigator.userAgent;
-    var browserName  = navigator.appName;
-    var fullVersion  = ''+parseFloat(navigator.appVersion);
-    var majorVersion = parseInt(navigator.appVersion,10);
-    var nameOffset,verOffset,ix;
-
-    var browser = {
-        chrome: false,
-        mozilla: false,
-        opera: false,
-        msie: false,
-        safari: false
-    };
-
-    // In Opera 15+, the true version is after "OPR/"
-    if ((verOffset=nAgt.indexOf("OPR/"))!=-1) {
-        browserName = "Opera";
-        fullVersion = nAgt.substring(verOffset+4);
-    }
-    // In older Opera, the true version is after "Opera" or after "Version"
-    else if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
-        browserName = "Opera";
-        fullVersion = nAgt.substring(verOffset+6);
-        if ((verOffset=nAgt.indexOf("Version"))!=-1)
-            fullVersion = nAgt.substring(verOffset+8);
-    }
-    // In MSIE, the true version is after "MSIE" in userAgent
-    else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
-        browserName = "Microsoft Internet Explorer";
-        fullVersion = nAgt.substring(verOffset+5);
-    }
-    // In Chrome, the true version is after "Chrome"
-    else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
-        browserName = "Chrome";
-        fullVersion = nAgt.substring(verOffset+7);
-    }
-    // In Safari, the true version is after "Safari" or after "Version"
-    else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
-        browserName = "Safari";
-        fullVersion = nAgt.substring(verOffset+7);
-        if ((verOffset=nAgt.indexOf("Version"))!=-1)
-            fullVersion = nAgt.substring(verOffset+8);
-    }
-    // In Firefox, the true version is after "Firefox"
-    else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
-        browserName = "Firefox";
-        fullVersion = nAgt.substring(verOffset+8);
-    }
-    // In most other browsers, "name/version" is at the end of userAgent
-    else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) <
-             (verOffset=nAgt.lastIndexOf('/')) )
-    {
-        browserName = nAgt.substring(nameOffset,verOffset);
-        fullVersion = nAgt.substring(verOffset+1);
-        if (browserName.toLowerCase()==browserName.toUpperCase()) {
-            browserName = navigator.appName;
-        }
-    }
-    // trim the fullVersion string at semicolon/space if present
-    if ((ix=fullVersion.indexOf(";"))!=-1)
-        fullVersion=fullVersion.substring(0,ix);
-    if ((ix=fullVersion.indexOf(" "))!=-1)
-        fullVersion=fullVersion.substring(0,ix);
-
-    majorVersion = parseInt(''+fullVersion,10);
-    if (isNaN(majorVersion)) {
-        fullVersion  = ''+parseFloat(navigator.appVersion);
-        majorVersion = parseInt(navigator.appVersion,10);
-    }
-
+   
 //
 //   /$$$$$$$$/$$    /$$/$$$$$$$$/$$   /$$/$$$$$$$$       /$$   /$$ /$$$$$$ /$$   /$$/$$$$$$$ /$$      /$$$$$$/$$   /$$ /$$$$$$
 //  | $$_____| $$   | $| $$_____| $$$ | $|__  $$__/      | $$  | $$/$$__  $| $$$ | $| $$__  $| $$     |_  $$_| $$$ | $$/$$__  $$
@@ -1393,10 +1360,42 @@
 // 
 //
 
+    //browser info getter from http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
+    navigator.sayswho= (function(){
+        var ua= navigator.userAgent, tem,
+        M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+        if(/trident/i.test(M[1])){
+            tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
+            return 'IE '+(tem[1] || '');
+        }
+        if(M[1]=== 'Chrome'){
+            tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
+            if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+        }
+        M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+        if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+        return M.join(' ');
+    })();
+
+    // Settings Keys (used in /sharesettings)
+    var optionsArray = [];
+
     // Message history
     var messageHistory = [],
         messageHistoryIndex = -1,
         lastTyped = "";
+
+   // Channel prefix removal
+   var removeChannelKeyFromMessage = function(message){
+       if ($("#rlc-chat").attr("data-channel-key")){
+           var offset = $("#rlc-chat").attr("data-channel-key").length;
+           if (offset === 0) return message;
+
+           if (message.indexOf("/me") === 0) return "/me "+ message.slice(offset+5);
+           return message.slice(offset+1);
+       }
+       return message;
+   };
 
     // Messagebox event handling
     function messageboxEventHandling() {
@@ -1452,7 +1451,11 @@
                         $(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
                     }
                     if (textArea.val().indexOf("/browser") === 0){
-                        $(this).val( "||| Browser Details (via /browser ) : \n\n"+nVer+ "\n" +browserName+ "\n" );
+                        $(this).val(`||| Browser Details (via /browser ) : ${navigator.sayswho}`);
+                    }
+                    if (textArea.val().indexOf("/console.log") === 0) {
+                        console.log(eval(textArea.val().substring(textArea.val().indexOf("g") + 2)));
+                        $(".save-button .btn").click();
                     }
                     if (textArea.val().indexOf("/settings") === 0){
                         var str = "    {\n";
@@ -1468,7 +1471,7 @@
                             GM_deleteValue(key);
                         }
                         GM_setValue("rlc-lastReset",Date());
-                        $(this).val( "resetting");
+                        $(this).val( "||| Resetting RLC options (via /reset)");
                         location.reload();
                     }
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
@@ -1532,7 +1535,7 @@
 
     function mouseClicksEventHandling() {
         // Right click author names in chat to copy to messagebox
-        $("body").on("contextmenu", ".liveupdate .author", function (event) {
+        $("body").on("click", ".liveupdate .author", function (event) {
             event.preventDefault();
             let username = String($(this).text()).trim();
             let source = String($(".usertext-edit.md-container textarea").val());
@@ -1540,7 +1543,7 @@
             $(".usertext-edit.md-container textarea").focus().val(source + " " + username + " ");
         });
         
-        $("body").on("click", ".liveupdate .author", function (event) {
+        $("body").on("contextmenu", ".liveupdate .author", function (event) {
             event.preventDefault();
             $el = $(this).parent().parent();
             var $menu = $("#myContextMenu");
@@ -1678,31 +1681,34 @@
                 </div>`;
 
     function rlcSetupContainers() {
+
         $("body").append(htmlPayload);
 
-        $(".liveupdate-listing").prependTo("#rlc-chat");
-        $("#new-update-form").insertBefore("#rlc-sendmessage");
-        $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
-        $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
-        $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
+      $(".liveupdate-listing").prependTo("#rlc-chat");
+      $("#new-update-form").insertBefore("#rlc-sendmessage");
+      $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
+      $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
+      $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
+ 
+      tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
 
-        tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
     }
 
     function rlcParseSidebar() {
 
         // Put anything after -RLC-README- in the sidebar into the readme
         let str = $("#liveupdate-resources .md").html();
-        let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
-        $("#liveupdate-resources .md").html(res[0]);
-        $("#rlc-readmebar .md").append(res[1]);
+        if (typeof str !== "undefined") {
+            let res = str.split("<p>--RLC-SIDEBAR-GUIDE--</p>");
+            $("#liveupdate-resources .md").html(res[0]);
+            $("#rlc-readmebar .md").append(res[1]);
 
-        // Put anything before -RLC-MAIN- in the sidebar into the guide
-        str = $("#liveupdate-resources .md").html();
-        res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
-        $("#liveupdate-resources .md").html(res[1]);
-        $("#rlc-guidebar .md").append(res[0]);
-
+            // Put anything before -RLC-MAIN- in the sidebar into the guide
+            str = $("#liveupdate-resources .md").html();
+            res = str.split("<p>--RLC-SIDEBAR-MAIN--</p>");
+            $("#liveupdate-resources .md").html(res[1]);
+            $("#rlc-guidebar .md").append(res[0]);
+        }
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><ul></ul></div>");
         $("#rlc-main-sidebar").append("<div id='banlistcontainer'><div id='bannedlist'></div></div>");
 
@@ -1748,10 +1754,10 @@
                 $(e.target).remove();
             }
         });
-
         messageboxEventHandling();
         mouseClicksEventHandling();
     }
+
     function handleInitialMessages() {
 
         // handle existing chat messages
@@ -1761,8 +1767,8 @@
 
         // wait for iframes, then remove preloader
         setTimeout(scrollToBottom, 250);
-        //  and scroll to bottom
         setTimeout($("#rlc-preloader").fadeOut(), 300);
+
         // mark initial load as ended
         loadingInitialMessages = 0;
     }
@@ -1798,11 +1804,11 @@
         // Persistant user muting
         updateMutedUsers();
 
-        // not really sure, but related to message background alternation
-        rowAlternator=!rowAlternator;
-
         // run options setup
         createOptions();
+ 
+        // not really sure, but related to message background alternation
+        rowAlternator=!rowAlternator;
 
         // handle initial messages
         setTimeout(handleInitialMessages, 500);
@@ -1851,11 +1857,8 @@
 //  To save your changes, use cssminifier.com to re-minify your resulting CSS and insert it in the GM_addstyle that you left empty.
 //
 
-    // Tabbed Channel Colors:
-    channelColors();
-
     // RLC-CORE
-    GM_addStyle('#rlc-header,#rlc-wrapper,body{overflow:hidden}img.rlc-image{max-height:200px}.rlc-compact #rlc-chat{height:calc(100vh - 252px);max-height:495px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 168px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth.left-panel #rlc-statusbar{width:18%}.rlc-fullwidth.left-panel #rlc-titlebar{width:81%}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 106px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body{min-width:0}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#rlc-preloader{background:#fff;left:0;right:0;bottom:96px;top:0;position:absolute;z-index:10000;padding-top:14%;font-size:3em;TEXT-ALIGN:CENTER;box-sizing:border-box}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#new-update-form{margin:0;width:87%;float:left}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in ";color:#000}h1#liveupdate-title{font-size:1.5em;color:#9c9c9c;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background:0 0!important}#rlc-wrapper .liveupdate .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px;background-color:#EFEFED}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid #e3e3e0;border-top:0;box-sizing:border-box overflow: hidden}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:2px solid #FCFCFC;padding:5px 0}#rlc-chat{height:calc(100vh - 166px);overflow-y:scroll;max-height:495px}#rlc-main .liveupdate-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(128,128,128,.26);float:left;height:34px;margin:0;border-radius:2px;padding:6px}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:100%;float:left;text-align:center;box-sizing:border-box;cursor:pointer;-moz-border-radius:2px;-webkit-border-radius:2px;font-size:1.2em}#rlc-messagebox{padding:10px;background-color:#EFEFED;width:100%}#rlc-sendmessage{background-color:#FCFCFC;height:32px;width:13%;float:right;padding:8px 0}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 6px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);letter-spacing:1px;background:#FCFCFC;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0}.liveupdate .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;color:#A7A6B8;line-height:32px}.liveupdate a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.liveupdate-listing li.liveupdate .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.liveupdate.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:10px 0 20px;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0;color:#FCFCFC}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}.liveupdate.user-narration .body .md{font-style:italic}.liveupdate.user-mention .body .md p{font-weight:700}.liveupdate pre{margin:0;padding:0;background:rgba(128,128,128,.5);border:#FCFCFC;box-sizing:border-box}.liveupdate a.author,.liveupdate p{line-height:32px;min-height:32px}#liveupdate-description{margin-left:10px;float:left}.md{max-width:none!important}.liveupdate-listing li.liveupdate p{font-size:13px!important}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:10px}.AutoScroll #togglebarAutoscroll,.rlc-TextToSpeech #togglebarTTS{background:rgba(0,0,0,.15)}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{float:right;box-sizing:border-box;text-align:center;padding:5px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:auto;margin-left:8px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid #fff}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{background:0 0;border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.channelname{color:#A9A9A9!important;display:block;float:left;width:100px;line-height:32px}.rlc-showChannelsUI #new-update-form{width:77%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:10%;height:34px;float:left;background-color:#FCFCFC;border:1px solid rgba(128,128,128,.26)}.rlc-showChannelsUI #rlc-sendmessage{width:13%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100;background:#EFEFED}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;background:#EFEFED;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid grey}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid grey}#filter_tabs>span.more{padding:0 30px;border-left:1px solid grey}.rlc-channel-add input{border:1px solid rgba(128,128,128,.32);padding:0;height:24px}body.allowHistoryScroll{height:105%;overflow:auto}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}.rlc-imageWithin span.rlc-imgvia{float:right;margin-left:10px}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;position:relative;min-height:32px}.longMessageClosed p{position:relative;left:25px;top:-5px}.longMessageClosed .extendButton{position:absolute;top:7px;margin-right:5px}.longMessageClosed pre{position:absolute;left:25px}');
+    GM_addStyle('#rlc-header,#rlc-wrapper,body{overflow:hidden}img.rlc-image{max-height:200px}.rlc-compact #rlc-chat{height:calc(100vh - 252px);max-height:495px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 168px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth.left-panel #rlc-statusbar{width:18%}.rlc-fullwidth.left-panel #rlc-titlebar{width:81%}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 106px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body{min-width:0}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#rlc-preloader{background:#fff;left:0;right:0;bottom:96px;top:0;position:absolute;z-index:10000;padding-top:14%;font-size:3em;TEXT-ALIGN:CENTER;box-sizing:border-box}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#new-update-form{margin:0;width:87%;float:left}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in ";color:#000}h1#liveupdate-title{font-size:1.5em;color:#9c9c9c;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background:0 0!important}#rlc-wrapper .liveupdate .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px;background-color:#EFEFED}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid #e3e3e0;border-top:0;box-sizing:border-box overflow: hidden}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:2px solid #FCFCFC;padding:5px 0}#rlc-chat{height:calc(100vh - 166px);overflow-y:scroll;max-height:495px}#rlc-main .liveupdate-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(128,128,128,.26);float:left;height:34px;margin:0;border-radius:2px;padding:6px}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:calc(33.3% - 7px);float:left;text-align:center;box-sizing:border-box;cursor:pointer;-moz-border-radius:2px;-webkit-border-radius:2px;font-size:1.2em}#rlc-messagebox{padding:10px;background-color:#EFEFED;width:100%}#rlc-sendmessage{background-color:#FCFCFC;height:32px;width:13%;float:right;padding:8px 0}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 6px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);margin-right:10px;letter-spacing:1px;background:#FCFCFC;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0;margin-right:0}.liveupdate .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;color:#A7A6B8;line-height:32px}.liveupdate a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.liveupdate-listing li.liveupdate .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.liveupdate.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:5px 0;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0;color:#FCFCFC}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}.liveupdate.user-narration .body .md{font-style:italic}.liveupdate.user-mention .body .md p{font-weight:700}.liveupdate pre{margin:0;padding:0;background:rgba(128,128,128,.5);border:#FCFCFC;box-sizing:border-box}.liveupdate a.author,.liveupdate p{line-height:32px;min-height:32px}#liveupdate-description{margin-left:10px;float:left}.md{max-width:none!important}.liveupdate-listing li.liveupdate p{font-size:13px!important}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:10px}.AutoScroll #togglebarAutoscroll,.rlc-TextToSpeech #togglebarTTS{background:rgba(0,0,0,.15)}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{float:right;box-sizing:border-box;text-align:center;padding:5px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:auto;margin-left:8px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:2px solid #fff}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{background:0 0;border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.channelname{color:#A9A9A9!important;display:block;float:left;width:100px;line-height:32px}.rlc-showChannelsUI #new-update-form{width:77%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:10%;height:34px;float:left;background-color:#FCFCFC;border:1px solid rgba(128,128,128,.26)}.rlc-showChannelsUI #rlc-sendmessage{width:13%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100;background:#EFEFED}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;background:#EFEFED;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid grey}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid grey}#filter_tabs>span.more{padding:0 30px;border-left:1px solid grey}.rlc-channel-add input{border:1px solid rgba(128,128,128,.32);padding:0;height:24px}body.allowHistoryScroll{height:105%;overflow:auto}#myContextMenu{display:none;position:absolute;background:#bbb;box-shadow:1px 1px 2px #888}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;color:#000;display:block}#myContextMenu ul li:not(.disabled) a:hover{background:#ccc;color:#333;cursor:pointer}#myContextMenu ul li.disabled a{background:#ddd;color:#666}.rlc-imageWithin span.rlc-imgvia{float:right;margin-left:10px}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;position:relative;min-height:32px}.longMessageClosed p{position:relative;left:25px;top:-5px}.longMessageClosed .extendButton{position:absolute;top:7px;margin-right:5px}.longMessageClosed pre{position:absolute;left:25px}');
 
     // BG/Emoji/rarely changed/auxilary 
     GM_addStyle('.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}#filter_tabs,#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .liveupdate.in-channel,.rlc-showChannelsUI .rlc-filter .liveupdate,.save-button,.user-narration a.author{display:none}.dark-background.AutoScroll #togglebarAutoscroll,.dark-background.rlc-TextToSpeech #togglebarTTS{background:rgba(239,247,255,.25)}.dark-background,.dark-background #rlc-leftpanel,.dark-background #rlc-messagebox,.dark-background #rlc-messagebox textarea,.dark-background #rlc-sendmessage,.dark-background #rlc-sidebar,.dark-background #rlc-toggleguide,.dark-background #rlc-toggleoptions,.dark-background #rlc-update,.dark-background .rlc-channel-add,.dark-background option{background:#404040}.dark-background.rlc-showChannelsUI div#filter_tabs{background-color:#5C5C5C}.dark-background #rlc-sidebar{border:transparent}.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{background:0 0}.dark-background .liveupdate code{color:#000}.dark-background #rlc-sidebar h2,.dark-background #rlc-sidebar h3,.dark-background #rlc-sidebar h4,.dark-background h1#liveupdate-title:before{color:#ccc}.dark-background #rlc-wrapper a{color:#7878ff}.dark-background #rlc-preloader{background:#404040}.dark-background #rlc-messagebox textarea,.dark-background #rlc-sidebar li,.dark-background #rlc-wrapper,.dark-background #rlc-wrapper h1,.dark-background #rlc-wrapper h1#liveupdate-title,.dark-background #rlc-wrapper li,.dark-background #rlc-wrapper p,.dark-background .longMessageClosed:after,.dark-background .rlc-channel-add button,.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{color:#f5f5f5}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}.rlc-customscrollbars div#filter_tabs{width:calc(100% - 12px)}.rlc-customscrollbars ::-webkit-scrollbar{width:12px}.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#FCFCFC}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-track{background-color:#5C5C5C}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#404040;border:2px solid #5C5C5C}.rlc-customscrollbars ::-webkit-scrollbar-thumb{background-color:#E4E4E4;border:2px solid #FCFCFC}.liveupdate time.live-timestamp,.liveupdate ul.buttonrow{display:none!important}#filter_tabs,#liveupdate-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown{display:none}.mrPumpkin{height:24px;width:24px;display:inline-block;border-radius:3px;background-size:144px;position:relative;top:6px}.dark-background .mrPumpkin{border-radius:5px}.mp_frown{background-position:-24px 0}.mp_confused{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_bored{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.mp_evilsmile{background-position:-72px 24px}.mp_stjerneklar{background-position:-72px 48px}.mp_fatherderp{background-position:-24px 24px}.mp_s3cur1ty{background-position:-48px 24px}.dark-background .alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.alt-bgcolor{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}');
