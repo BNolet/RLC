@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.15.1
+// @version        3.15.2
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -236,24 +236,52 @@
         },false, "do not show more than 25 messages");
 
         createOption("Custom Background", function(checked){
-            console.log(checked);
             if (checked === true){
-                $("body").addClass("rlc-customBg"); //add body class
-                if (loadingInitialMessages != 1) {
-                    $("#customBGstyle").remove(); //clear existing background
-                var bgurl = prompt("enter background url", "http://i.imgur.com/uy50nCx.jpg");  //prompt user for url with default
+                $("body").addClass("rlc-customBg"); 
 
-                if (bgurl != null) {
-                    var bgimagecss = `body {background-image: url(${bgurl})!important;`
-                    $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`);
+                if (loadingInitialMessages != 1) {  // avoid triggering during init
+                    
+                    var bgurlsuggestion; //try to get a saved background url depending on dark mode setting
+                    if (GM_getValue("rlc-DarkMode")) { bgurlsuggestion = GM_getValue("customBGdark")}
+                        else { bgurlsuggestion = GM_getValue("customBGlight");}
+
+                    // if we cant, use the sample url
+                    if (typeof bgurlsuggestion === "undefined" ) { 
+                        bgurlsuggestion = "http://i.imgur.com/uy50nCx.jpg";
+                    }
+
+                    var bgurl = prompt("enter background url", bgurlsuggestion);  //prompt user for url with default or saved url suggested
+
+                    if (bgurl != null) { //if the user filled out the prompt
+                        $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
+
+                        //save bgurl to seperate variables depending on light/dark mode
+                        if (GM_getValue("rlc-DarkMode")) {  GM_setValue("customBGdark",bgurl)}
+                        else { GM_setValue("customBGlight",bgurl) }
+
+                        var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
+                        $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
+                    }
                 }
-                }
-                else { $("body").append(`<style id='customBGstyle'>body {background-image: url(http://i.imgur.com/uy50nCx.jpg)!important;</style>`);  }
-            } else {
+                else { 
+                    //same as above but without the prompt. this code runs on init if option is enabled
+                    var bgurl;
+
+                    if (GM_getValue("rlc-DarkMode")) { bgurl = GM_getValue("customBGdark")}
+                        else { bgurl = GM_getValue("customBGlight");}
+
+                    if (typeof bgurl === "undefined" ) { 
+                        bgurl = "http://i.imgur.com/uy50nCx.jpg";
+                    }
+                        var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
+                        $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
+                    }
+            } 
+            else {
                 $("body").removeClass("rlc-customBg");
-                $("#customBGstyle").remove(); //clear existing background
+                $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
             }
-        },false, "do not show more than 25 messages");
+        },false, "sample image works best in dark mode");
     }
 
 //
