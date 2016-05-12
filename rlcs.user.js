@@ -1695,10 +1695,10 @@
                     <div id="rlc-header">
                         <div id="rlc-titlebar">
                             <div id="rlc-togglebar">
-                                <div id="togglebarTTS">TextToSpeech</div>
                                 <div id="togglebarLoadHist">Load History</div>
+                                <div id="togglebarTTS">TextToSpeech</div>
                                 <div id="togglebarAutoscroll">Autoscroll</div>
-                                <div id="togglesidebar">Sidebar</div>
+                                <div class="selected" id="togglesidebar">Sidebar</div>
                             </div>
                         </div>
                         <div id="rlc-statusbar"></div>
