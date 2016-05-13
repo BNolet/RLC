@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.15.5
+// @version        3.15.6
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -78,13 +78,14 @@
         // Render option
         var $option = $(`<label id='option-${key}'><input type='checkbox' ${checkedMarkup}>${name}<span>${description}</span></label>`).click(function(e){
             var checked = $(this).find("input").is(":checked");
-            console.log("option set to "+checked);
             
-            var eventTargetIsOption = e.target.id.indexOf("option");
-            if (eventTargetIsOption === 0) {
-                console.log("label click prevented");
+            // exit click handler if event is not being callled on the checkbox.
+            // sidesteps the issue that the event fires multiple times when clicking anything other than the checkbox.
+            var target = $( e.target );
+            if ( !target.is( "input" ) ) {
                 return false;
             }
+            //console.log("option set to "+checked);
 
             // Persist state
             if (checked !== state){
@@ -1282,7 +1283,7 @@
             }        
         }
 
-        //handle giphy images
+        //handle giphy images 
         if (!GM_getValue("rlc-HideGiphyImages")){        
             if (line.indexOf("rlc-image") === 0){
                 var linksObj = $msg.find("a");
@@ -1303,8 +1304,7 @@
             }
         }
         
-        //temporary: disable the fucking links again for master branch.
-        firstLine.html(firstLine.html()+" ");
+
 
         // /me support (if in channel see proccessline)
         if (line.indexOf("/me") === 0){
@@ -1314,8 +1314,8 @@
         else { 
         // Remove the /u/ in author name
         $usr.text($usr.text().replace("/u/", ""));
-        }      
-        
+        }
+
         // long message collapsing
         collapseLongMessage($msg,firstLine);
 
@@ -1344,6 +1344,27 @@
 
         // Timestamp modification & user activity tracking
         timeAndUserTracking($el, $usr);
+        
+        //finds iframes
+        var embedFinder = $msg.find("iframe").length;
+        if (embedFinder === 1) { $el.addClass("rlc-hasEmbed"); }
+
+        console.log($msg.find("a").length);
+
+        // if theres a link in the message
+        if ($msg.find("a").length === 1) { 
+
+            // aza is the result of splitting message text at space and picking the second piece.
+            var aza = line.split(" ")[1];
+            console.log(aza);
+
+            // if we had a link and splitting it at space results in an undefined aza, the only thing in the message was the link.
+            if (typeof aza === "undefined") { 
+                $el.addClass("rlc-hasEmbed");
+                var $dede = $msg.find("a").clone().addClass("embedLinkClone");
+                $dede.insertBefore($msg);
+            }
+        }
 
         // User color picker:
         if (GM_getValue("rlc-RobinColors")) {
@@ -1365,6 +1386,8 @@
             colorGen($usr); //generate dark, light and Robin colorschemes for the user
             GM_setValue("usrArrayStore", usrArray); //Store usrArray into settings
             hexArray = GM_getValue("hexArrayStore", ""); //update hexArray to include new user's colors
+            
+            $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
         }
         
         //Apply color through CSS to message author
@@ -1385,6 +1408,8 @@
             //reAlternate(); -- no, just no.
             if (rescan) {
                 // This is rescan, do nothing.
+                        //temporary: disable the fucking links again for master branch.
+        firstLine.html(firstLine.html()+" ");
             }
             else {
                 if (line.indexOf(robinUser) !== -1){
@@ -1585,8 +1610,11 @@
         });
     }
 
-    function embedLinker($msg, $usr){
-    console.log($msg.find(".md a"));
+    function embedLinker($el){
+        var $msg = $el.find(".body .md");
+        $("#rlc-leftPanel").empty();
+                $("#rlc-leftPanel").append("&nbsp;");
+            $("#rlc-leftPanel").append($msg.find("iframe").clone());
     }
 
     function OpenUserPM(name) {
@@ -1613,6 +1641,17 @@
             let source = String($(".usertext-edit.md-container textarea").val());
             // Focus textarea and set the value of textarea
             $(".usertext-edit.md-container textarea").focus().val(source + " " + username + " ");
+        });
+        
+        $("body").on("contextmenu", ".embedLinkClone", function (event) {
+            event.preventDefault();
+            embedLinker($(this).parent().parent());
+        });
+        
+        $("body").on("click", ".liveupdate.rlc-hasEmbed .body .md", function (event) {
+            event.preventDefault();
+            alert("This");
+            //$(this).find("a").click();
         });
         
         $("body").on("contextmenu", ".liveupdate .author", function (event) {
@@ -1661,9 +1700,6 @@
                         }
                         if ($id === "speakMessage"){
                             messageTextToSpeechHandler($msg, $usr);
-                        }
-                        if ($id === "embedLink"){
-                            embedLinker($msg, $usr);
                         }
                         $menu.css({"left":0, "top":0, "display": "none"}); //close menu
                     });
@@ -1734,7 +1770,7 @@
                         </div>
                         <div id="rlc-statusbar"></div>
                     </div>
-                    <div id="rlc-leftPanel"> penitse </div>
+                    <div id="rlc-leftPanel"> &nbsp; </div>
                     <div id="rlc-main">
                         <div id="rlc-preloader">Loading Messages</div>
                         <div id="rlc-chat"></div>
@@ -1771,7 +1807,6 @@
                             <li id="deleteCom"><a>Delete Comment</a></li>
                             <li id="copyMessage"><a>Copy Message</a></li>
                             <li id="speakMessage"><a>Speak Message</a></li>
-<li id="embedLink"><a>Embed Link</a></li>
                         </ul>
                     </div>
                 </div>`;
@@ -1829,8 +1864,7 @@
         $("#rlc-readmebar a").attr("target", "_blank");
         $("#rlc-guidebar a").attr("target", "_blank");
 
-        // Remove initial iframes TODO: handle them better
-        $("#rlc-main iframe").remove();
+
         $("#rlc-main .separator").remove();
     }
 
@@ -1857,11 +1891,11 @@
     function handleInitialMessages() {
 
         // wait for iframes, then remove preloader
-        setTimeout(scrollToBottom, 250);
-        setTimeout($("#rlc-preloader").fadeOut(), 300);
+        setTimeout(scrollToBottom, 500);
+        setTimeout($("#rlc-preloader").fadeOut(), 500);
+        // Remove initial iframes TODO: handle them better - removes any message containing an iframe on load
+        $("#rlc-main .rlc-hasEmbed").remove();
 
-        // mark initial load as ended
-        loadingInitialMessages = 0;
     }
 
 //
@@ -1878,7 +1912,7 @@
 //
 
     // Boot
-    $(window).load(function() {
+    $(document).ready(function() {
 
         // Move default elements into custom containers defined in htmlPayload
         rlcSetupContainers();
@@ -1907,7 +1941,10 @@
         });
         
         // handle init
-        setTimeout(handleInitialMessages, 500);
+        handleInitialMessages();
+        
+        // mark initial load as ended
+        setTimeout(function(){loadingInitialMessages = 0;},500);
 
     });
 
@@ -2714,6 +2751,10 @@ body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg
     text-shadow: 0 0 8px rgba(0,0,0,1)!important
 }
 
+body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md,.rlc-customBg #rlc-wrapper .rlc-channel-add button {
+    text-shadow: 0 0 8px rgba(255,255,255,1)!important
+}
+
 .dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a {
     color: #add8e6
 }
@@ -2740,6 +2781,16 @@ body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg
     float: left;
 display:block;
 }
+
+.rlc-hasEmbed .md {
+display: none!important;
+}
+
+a.embedLinkClone {
+    width: calc(100% - 220px);
+    float: right;
+}
+
 `);
 
     // BG alternation - breaks minifier 
