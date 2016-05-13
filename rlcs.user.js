@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.15.6
+// @version        3.15.7
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
@@ -1380,8 +1380,6 @@
             colorGen($usr); //generate dark, light and Robin colorschemes for the user
             GM_setValue("usrArrayStore", usrArray); //Store usrArray into settings
             hexArray = GM_getValue("hexArrayStore", ""); //update hexArray to include new user's colors
-            
-            $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
         }
         
         //Apply color through CSS to message author
@@ -1402,8 +1400,6 @@
             //reAlternate(); -- no, just no.
             if (rescan) {
                 // This is rescan, do nothing.
-                        //temporary: disable the fucking links again for master branch.
-        firstLine.html(firstLine.html()+" ");
             }
             else {
                 if (line.indexOf(robinUser) !== -1){
@@ -1541,7 +1537,7 @@
                         $(this).val(`||| Browser Details (via /browser ) : ${navigator.sayswho}`);
                     }
                     if (textArea.val().indexOf("/console.log") === 0) {
-                        //console.log(eval(textArea.val().substring(textArea.val().indexOf("g") + 2)));
+                        console.log(eval(textArea.val().substring(textArea.val().indexOf("g") + 2)));
                         $(".save-button .btn").click();
                     }
                     if (textArea.val().indexOf("/settings") === 0){
@@ -1570,8 +1566,6 @@
                         jQuery.getJSON( `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${giphyQueryList.join("+")}` ,function( XHRObj ) {
                             thumbnail_url = XHRObj.data.image_url;
                             image_url = XHRObj.data.url;
-                            //TODO: use XHRObj.data.image_height to tag along height so we dont get resize problems.
-                            //console.log(XHRObj.data);
                             var textArea = $(".usertext-edit.md-container textarea");
                             textArea.val("rlc-image "+thumbnail_url+" "+image_url+" | "+giphyQuery +"|"+ XHRObj.data.image_height);
                             
@@ -1857,7 +1851,6 @@
         $("#rlc-sidebar a").attr("target", "_blank");
         $("#rlc-readmebar a").attr("target", "_blank");
         $("#rlc-guidebar a").attr("target", "_blank");
-
 
         $("#rlc-main .separator").remove();
     }
