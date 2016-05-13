@@ -1197,7 +1197,7 @@
         //AKA, arrays within an array (multidimensional array)
         tempArray.push(colors[n]);
         hexArray.push(tempArray);
-        console.log(hexArray);
+        //console.log(hexArray);
         GM_setValue("hexArrayStore", hexArray); //Store array in scriptmonkey settings for later access
     }
 
@@ -1345,14 +1345,12 @@
         var embedFinder = $msg.find("iframe").length;
         if (embedFinder === 1) { $el.addClass("rlc-hasEmbed"); }
 
-        console.log($msg.find("a").length);
-
         // if theres a link in the message
         if ($msg.find("a").length === 1) { 
 
             // aza is the result of splitting message text at space and picking the second piece.
             var aza = line.split(" ")[1];
-            console.log(aza);
+           // console.log(aza);
 
             // if we had a link and splitting it at space results in an undefined aza, the only thing in the message was the link.
             if (typeof aza === "undefined") { 
@@ -1543,7 +1541,7 @@
                         $(this).val(`||| Browser Details (via /browser ) : ${navigator.sayswho}`);
                     }
                     if (textArea.val().indexOf("/console.log") === 0) {
-                        console.log(eval(textArea.val().substring(textArea.val().indexOf("g") + 2)));
+                        //console.log(eval(textArea.val().substring(textArea.val().indexOf("g") + 2)));
                         $(".save-button .btn").click();
                     }
                     if (textArea.val().indexOf("/settings") === 0){
