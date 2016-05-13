@@ -1737,8 +1737,7 @@
         $("#togglebarTTS").click(function(){
             $( "#rlc-settings label:contains('Text To Speech (TTS)') input" ).click();
         });
-
-        //toggle sidebar via css classes
+//toggle sidebar via css classes
         $("#togglesidebar").click(function(){ 
             $("body").toggleClass("rlc-hidesidebar"); 
             $(this).toggleClass("selected");  
@@ -1754,8 +1753,7 @@
             $("body").removeClass("rlc-showoptions");
             $("body").toggleClass("rlc-showreadmebar");
         });
-
-        // this makes the RLC send button click on the hidden native reddit live button
+	// this makes the RLC send button click on the hidden native reddit live button	
         $("#rlc-sendmessage").click(function(){
             $(".save-button .btn").click();
         });
@@ -1840,7 +1838,7 @@
       $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
       $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
  
-      // start up filter tabs by inserting them (from original tabbed channels)
+      // start up filter tabs by inserting them
       tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
     }
 
@@ -1950,6 +1948,7 @@
         
         // wait for iframes, and then scroll the chat window to the bottom.
         setTimeout(scrollToBottom, 500);
+        setTimeout(function(){loadHistoryMessageException = 0}, 500);
         
         // this removes all the embedded stuff that we cant get rid of on load. 
         // they reallly shoulld just be made into links but i seem to have lost the ability to do this some how.
