@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.16
+// @version        3.16.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1349,6 +1349,7 @@
             });
         ajaxLoadCurrentMessages.complete(function() {
             loadHistoryMessageException = 0;
+            reAlternate();
         });
 
 
