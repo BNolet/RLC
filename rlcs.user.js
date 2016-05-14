@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.16.1
+// @version        3.16.2
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1569,6 +1569,9 @@ function getOldMessages() {
                 // This is rescan, do nothing.
             }
             else {
+                
+                scrollToBottom();
+                
                 if (line.indexOf(robinUser) !== -1){
                     if (GM_getValue("rlc-NotificationSound")){
                         snd.play();
@@ -2032,8 +2035,6 @@ function getOldMessages() {
 
                 // Apply changes to line
                 handleNewMessage($(e.target), false);
-                scrollToBottom();
-
             }
             // Remove separators
             else if ($(e.target).is(".separator")) {
