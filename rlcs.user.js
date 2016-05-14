@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.16.2
+// @version        3.16.3
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1113,37 +1113,9 @@
             }
     }
 
-    function reAlternate($objComment){
-        if($objComment===undefined){
-            var alt=false;
-            for(i=$('.rlc-message-listing').children().length;i>=0;i--){
-                var obj=$('.rlc-message-listing').children()[i];
-                if(!$(obj).hasClass('muted')){
-                    $(obj).removeClass('alt-bgcolor');
-                    if(alt){
-                        $(obj).addClass('alt-bgcolor');
-                    }
-                    alt=!alt;
-                }
-            }
-        }else{
-            var found;
-            var alt;
-            for(i=$('.rlc-message-listing').children().length;i>=0;i--){
-                var obj=$('.rlc-message-listing').children()[i];
-                if(obj == $objComment.context) {
-                    found=true;
-                    alt = $($('.rlc-message-listing').children()[i+1]).hasClass("alt-bgcolor");
-                }
-                if(found){
-                    $($('.rlc-message-listing').children()[i]).removeClass('alt-bgcolor');
-                    if(alt){
-                        $($('.rlc-message-listing').children()[i]).addClass('alt-bgcolor');
-                    }
-                    alt=!alt;
-                }
-            }
-        }
+    function reAlternate(){
+       $('.rlc-message').removeClass('alt-bgcolor');
+       $('.rlc-message:odd').addClass('alt-bgcolor');
     }
 
     // Generate random value based on seed, max and minimum (for user colors)
@@ -1294,7 +1266,7 @@
                 var finaltimestamp = readAbleDate.toLocaleTimeString().replace(".", ":").split(".")[0];
 
                 var fakeMessage = `
-                <li class="rlc-message rlc-id-${msgID}">
+                <li class="rlc-message" name="rlc-id-${msgID}">
                     <div class="body">${msgbody}
                         <div class="simpletime">${finaltimestamp}</div>
                         <a href="/user/${usr}" class="author">${usr}</a>
@@ -1309,6 +1281,12 @@
                 //console.log('user count', payload.count);    
                 
                 break;
+
+            case 'delete':
+            	console.log("message deleted:"+msg.payload);
+            	var messageToDelete = "rlc-id-"+msg.payload;
+            	$( "li[name='"+messageToDelete+"']" ).remove();
+                reAlternate();
             }
 
         };
@@ -1505,9 +1483,7 @@ function getOldMessages() {
 
         // Track channels
         tabbedChannels.proccessLine(line, $el, rescan);
-
-
-        
+       
         //finds iframes
         var embedFinder = $msg.find("iframe").length;
         if (embedFinder === 1) { $el.addClass("rlc-hasEmbed"); }
@@ -1563,12 +1539,7 @@ function getOldMessages() {
         }
 
         // Stuff that should not be done to messages loaded on init, like TTS handling
-        if (loadHistoryMessageException === 0) {
-            //reAlternate(); -- no, just no.
-            if (rescan) {
-                // This is rescan, do nothing.
-            }
-            else {
+        if (loadHistoryMessageException === 0 && rescan != true) {
                 
                 scrollToBottom();
                 
@@ -1593,7 +1564,7 @@ function getOldMessages() {
                 if(!$msg.parent().hasClass('muted')){
                     messageTextToSpeechHandler($msg, $usr);
                 }
-            }
+            
         }
     };
    
@@ -1786,12 +1757,17 @@ function getOldMessages() {
     }
 
     function deleteComment($objComment){
-        if ($objComment.has(".buttonrow").length>0){
-            reAlternate($objComment);
-            var $button = $objComment.find(".delete").find("button");
-            $button.click();
-            $button = $objComment.find(".delete").find(".yes");
-            $button.click();
+       
+        var selectorstring = "." + $objComment.attr("name").split("rlc-")[1];
+        var $liveupdateEl = $(selectorstring);
+
+        if ($liveupdateEl.has(".buttonrow").length>0){
+
+            var $button = $liveupdateEl.find(".delete").find("button");
+             $button.click();
+            
+            var $button2 = $liveupdateEl.find(".delete").find(".yes");
+            $button2.click();
         }
     }
 
@@ -1963,7 +1939,7 @@ function getOldMessages() {
                             <li><a>Close Menu</a></li>
                             <li id="mute"><a>Mute User</a></li>
                             <li id="PMUser"><a>PM User</a></li>
-                            <li id="deleteCom"><a>Delete Comment</a></li>
+                            <li id="deleteCom"><a>Delete Comment</a></li> 
                             <li id="copyMessage"><a>Copy Message</a></li>
                             <li id="speakMessage"><a>Speak Message</a></li>
                         </ul>
@@ -2082,9 +2058,11 @@ function getOldMessages() {
         // not really sure, but related to message background alternation
         rowAlternator=!rowAlternator;
       
-        // wait for iframes, and then scroll the chat window to the bottom.
-        setTimeout(scrollToBottom, 500);
-        setTimeout(function(){loadHistoryMessageException = 0}, 500);
+        // wait initial load to be , and then scroll the chat window to the bottom.
+        setTimeout(function(){
+        	scrollToBottom();
+        	loadHistoryMessageException = 0
+        }, 500);
         
         // this removes all the embedded stuff that we cant get rid of on load. 
         // they reallly shoulld just be made into links but i seem to have lost the ability to do this some how.
@@ -2900,8 +2878,6 @@ body.allowHistoryScroll {
 .tw_smorc {
     background-position: 0px -55px
 }
-
-
 
 #rlc-wrapper .md pre {
     background-color: transparent!important
