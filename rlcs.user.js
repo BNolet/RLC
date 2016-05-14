@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.15.9
+// @version        3.16
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
-// @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2
+// @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
 // @include        https://www.reddit.com/live/*
-// @exclude        https://www.reddit.com/live/ 
+// @exclude        https://www.reddit.com/live/
 // @exclude        https://www.reddit.com/live
 // @exclude        https://www.reddit.com/live/*/edit*
 // @exclude        https://www.reddit.com/live/*/contributors*
@@ -158,9 +158,6 @@
             }
             // Correct scroll after spam filter change
         },false, "give channels background colors");
-
-        createOption("24-hour Timestamps", function(checked){
-        },false, "11 PM / 23:00 (existing messages are not modified)");
 
         createOption("Show Channels UI", function(checked){
             if (checked){
@@ -397,7 +394,7 @@
 
         // After creation of a new channel, go find if any content (not matched by a channel already) is relevant
         this.reScanChannels = function(){
-            $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
+            $("#rlc-chat").find("li.rlc-message").each(function(idx,item){
                 var line = $(item).find(".body .md").text().toLowerCase();
                 tabbedChannels.proccessLine(line, $(item), true);
             });
@@ -613,8 +610,8 @@
     for(var c = 0; c < 10; c++){  // c reduced from 35
         color = colors[(c % (colors.length))];
 
-        colorcollection = colorcollection + `#rlc-main.show-colors #rlc-chat li.liveupdate.rlc-filter-${c} { background: ${color};}`;
-        colorcollection = colorcollection + `#rlc-chat.rlc-filter.rlc-filter-${c} li.liveupdate.rlc-filter-${c} { display:block;}`;
+        colorcollection = colorcollection + `#rlc-main.show-colors #rlc-chat li.rlc-message.rlc-filter-${c} { background: ${color};}`;
+        colorcollection = colorcollection + `#rlc-chat.rlc-filter.rlc-filter-${c} li.rlc-message.rlc-filter-${c} { display:block;}`;
     }
     GM_addStyle(colorcollection);
 
@@ -746,7 +743,7 @@
         "xsmile":  "with a grinning broadly",
         "xsad":    "very sadly",
         "xhappy":  "very happily",
-        "tongue":  "while sticking out a tongue",
+        "tongue":  "while sticking out a tongue"
        };
 
     // Abbreviation Expansion (All keys must be in uppercase)
@@ -1076,26 +1073,12 @@
 
     // Timestamp modification & user activity tracking
     function timeAndUserTracking($el, $usr) {
-        var shortTime = $el.find(".body time").attr("title").split(" ");
-        var amPm = shortTime[4].toLowerCase();
-
-        if (!(amPm === "am" || amPm === "pm")) { amPm = " "; }
-
-        var militarytime = convertTo24Hour(shortTime[3] + " " + amPm);
-        if (GM_getValue("rlc-24hourTimestamps")){
-            shortTime = convertTo24Hour(shortTime[3] + " " + amPm);
-        } else {
-            shortTime = shortTime[3]+" "+amPm;
-        }
-
-        // Add simplified timestamps
-        if ($el.find(".body .simpletime").length <= 0) {
-            $el.find(".body time").before(`<div class='simpletime'>${shortTime}</div>`);
-        }
-
+        var shortTime = $el.find(".simpletime");
+   
         // Add info to activeuserarray
-        activeUserArray.push($usr.text().replace("/u/", ""));
-        activeUserTimes.push(militarytime);
+        activeUserArray.push($usr.text());
+        //activeUserTimes.push(militarytime);
+        activeUserTimes.push(shortTime.text());
 
         // Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
         processActiveUsersList();
@@ -1120,7 +1103,7 @@
 
     function alternateMsgBackground($el) {
             if (loadHistoryMessageException === 0) {
-                var $child = $('.liveupdate-listing:not(.muted)').children()[1];
+                var $child = $('.rlc-message-listing:not(.muted)').children()[1];
                 rowAlternator=($($child).hasClass('alt-bgcolor'));
             }else{
                 rowAlternator=!rowAlternator;
@@ -1133,8 +1116,8 @@
     function reAlternate($objComment){
         if($objComment===undefined){
             var alt=false;
-            for(i=$('.liveupdate-listing').children().length;i>=0;i--){
-                var obj=$('.liveupdate-listing').children()[i];
+            for(i=$('.rlc-message-listing').children().length;i>=0;i--){
+                var obj=$('.rlc-message-listing').children()[i];
                 if(!$(obj).hasClass('muted')){
                     $(obj).removeClass('alt-bgcolor');
                     if(alt){
@@ -1146,16 +1129,16 @@
         }else{
             var found;
             var alt;
-            for(i=$('.liveupdate-listing').children().length;i>=0;i--){
-                var obj=$('.liveupdate-listing').children()[i];
+            for(i=$('.rlc-message-listing').children().length;i>=0;i--){
+                var obj=$('.rlc-message-listing').children()[i];
                 if(obj == $objComment.context) {
                     found=true;
-                    alt = $($('.liveupdate-listing').children()[i+1]).hasClass("alt-bgcolor");
+                    alt = $($('.rlc-message-listing').children()[i+1]).hasClass("alt-bgcolor");
                 }
                 if(found){
-                    $($('.liveupdate-listing').children()[i]).removeClass('alt-bgcolor');
+                    $($('.rlc-message-listing').children()[i]).removeClass('alt-bgcolor');
                     if(alt){
-                        $($('.liveupdate-listing').children()[i]).addClass('alt-bgcolor');
+                        $($('.rlc-message-listing').children()[i]).addClass('alt-bgcolor');
                     }
                     alt=!alt;
                 }
@@ -1261,7 +1244,7 @@
 
 // meta msg functs
     function cropMessages(max) {
-        $( ".liveupdate" ).each(function( index ) {
+        $( ".rlc-message" ).each(function( index ) {
             if (index > max) {
                 $( this ).remove();
             }
@@ -1275,42 +1258,139 @@
         }
     };
 
-	    // Manipulate native reddit live into loading old messages
-	    function loadHistory() {
-	        loadHistoryMessageException = 1;     //this variable is checked in new message function to prevent 
-	        								     //tts/notifications from messages loaded this way. while operating, we set it to one to "enable" it.
-	        
-	        /* summary for the following 3 lines of code(all manipulating the $("body")):
+/* new new message */
++function(){
 
-				This is a very hacky way of getting old messages to load.
-				In native reddit live rooms, you can scroll down to load older messages, as only the first 25 messages in a room are shown normaly.
-				This method is purely based on the observation that scrolling the body html element to the bottom causes the load.
-				
-				In RLC we dont let the user scroll the body element, since we put the messages inside an interface that is either in a box or full size.
-				Allowing users to scroll the body element would trigger constant unintended loading of old messages.
+    $.getJSON("/live/wpytzw1guzg2/about.json", function(data) {
 
-				The loadHistory function uses this behavior in a controlled manner, applying a css class to the body html element which does two things:
-				Set the bodys vertical scroll to scroll rather than overflow, and expand the body to 105%, causing scrolling to become possible.
-				(note, this is probably why it does not work in firefox)
+        var websocket_url = data.data.websocket_url;
+        
+        //console.log('websocket_url', websocket_url);
 
-				The second line involving scrollHeight scrolls the body to the bottom, triggering the now possible load event.
+        var ws = new WebSocket(websocket_url);
 
-				The third line simply removes the body class that was enabling the scrolling behavior. 
+        ws.onmessage = function (evt) { 
+            var msg = JSON.parse(evt.data);
 
-	        */
-	        $("body").addClass("allowHistoryScroll");
+           // console.log(msg);
+            
+            switch(msg.type) {
+            case 'update':
 
-	        $("body").scrollTop($("body")[0].scrollHeight);
-	        
-	        $("body").removeClass("allowHistoryScroll");
-	        
-	        // scroll the chat window to the bottom. this is required in order to be able to trigger load history,
-	        // since both the body and the chat window must be at bottom scroll position to force native history loading.
-	        scrollToBottom();					
-			
-			//after waiting a second to be sure messages are loaded, "disable" the variable.
-	        setTimeout(function(){ loadHistoryMessageException = 0; }, 1000);  
-	    }
+                var payload = msg.payload.data;
+                //console.log(payload);    
+                var usr = payload.author;
+                var msgbody = payload.body_html;
+                var msgID = payload.name;
+                
+                var created = payload.created_utc;
+                var utcSeconds = created;
+                var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                readAbleDate.setUTCSeconds(utcSeconds);
+                    
+                    // super intuitive alternative i guess
+                    //console.log('posted at', new Date(payload.created_utc * 1000));
+                    
+                var finaltimestamp = readAbleDate.toLocaleTimeString().replace(".", ":").split(".")[0];
+
+                var fakeMessage = `
+                <li class="rlc-message rlc-id-${msgID}">
+                    <div class="body">${msgbody}
+                        <div class="simpletime">${finaltimestamp}</div>
+                        <a href="/user/${usr}" class="author">${usr}</a>
+                    </div>
+                </li>`
+                $(".rlc-message-listing").prepend(fakeMessage);
+                break;
+
+            case 'activity':
+
+                //var payload = msg.payload;
+                //console.log('user count', payload.count);    
+                
+                break;
+            }
+
+        };
+
+    });
+
+}();
+
+      // load the 25 most recent messages via getJSON calling the rooms .json info 
+      var ajaxLoadCurrentMessages =     $.getJSON( ".json", function( data ) {
+                var oldmessages = data.data.children;  //navigate the data to the object containing the messages
+                $.each( oldmessages, function( ) {
+                    var msg = $(this).toArray()[0].data; //navigate to the message data level we want
+                    //console.log(msg);
+                    var msgID = msg.name;
+                    var $msgbody = msg.body_html;
+                    var usr = msg.author;
+                    var utcSeconds = msg.created_utc;
+                    
+                    // translate created_utc to a human readable version
+                    var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                    readAbleDate.setUTCSeconds(utcSeconds);
+                    
+                    var finaltimestamp = readAbleDate.toLocaleTimeString().replace(".", ":").split(".")[0];
+
+                    // Unescaped html escaped string by way of crazy voodo magic.
+                    $msgbody = $("<textarea/>").html($msgbody).val() 
+                   
+                    var fakeMessage = `
+                    <li class="rlc-message" name="rlc-id-${msgID}">
+                        <div class="body">${$msgbody}
+                            <div class="simpletime">${finaltimestamp}</div>
+                            <a href="/user/${usr}" class="author">${usr}</a>
+                        </div>
+                    </li>`
+                    $(".rlc-message-listing").append(fakeMessage);
+                });
+            });
+        ajaxLoadCurrentMessages.complete(function() {
+            loadHistoryMessageException = 0;
+        });
+
+
+function getOldMessages() {
+      // load the 25 most recent messages via getJSON calling the rooms .json info 
+   loadHistoryMessageException = 1;
+     var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];  
+     var ajaxLoadOldMessages =     $.getJSON( ".json?after="+lastMessageName, function( data ) {
+                var oldmessages = data.data.children;  //navigate the data to the object containing the messages
+                $.each( oldmessages, function( ) {
+                    var msg = $(this).toArray()[0].data; //navigate to the message data level we want
+                    //console.log(msg);
+                    var msgID = msg.name;
+                    var $msgbody = msg.body_html;
+                    var usr = msg.author;
+                    var utcSeconds = msg.created_utc;
+                    
+                    // translate created_utc to a human readable version
+                    var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                    readAbleDate.setUTCSeconds(utcSeconds);
+                    
+                    var finaltimestamp = readAbleDate.toLocaleTimeString().replace(".", ":").split(".")[0];
+
+                    // Unescaped html escaped string by way of crazy voodo magic.
+                    $msgbody = $("<textarea/>").html($msgbody).val() 
+                   
+                    var fakeMessage = `
+                    <li class="rlc-message" name="rlc-id-${msgID}">
+                        <div class="body">${$msgbody}
+                            <div class="simpletime">${finaltimestamp}</div>
+                            <a href="/user/${usr}" class="author">${usr}</a>
+                        </div>
+                    </li>`
+                    $(".rlc-message-listing").append(fakeMessage);
+                });
+            });
+        ajaxLoadOldMessages.complete(function() {
+            loadHistoryMessageException = 0;
+               reAlternate();
+        });
+}
+
 
 //
 //   /$$   /$$/$$$$$$$$/$$      /$$       /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$
@@ -1351,21 +1431,21 @@
 
         //variables used troughout the function, all relating to the currently proccessed message
         var $msg        = $el.find(".body .md");
-        var $usr        = $el.find(".body .author");
+        var $usr        = $el.find(".author");
         var line        = $msg.text().toLowerCase();
         var firstLine   = $msg.find("p").first();
-
+        
         // remove the oldest message if there are more than 25 if that option is on.
         if (GM_getValue("rlc-MaxMessages25")){
-            var totalmessages = $(".liveupdate").length;
+            var totalmessages = $(".rlc-message").length;
             if (totalmessages > maxmessages) {
-                $(".liveupdate").last().remove();
+                $(".rlc-message").last().remove();
             }        
         }
 
         //handle giphy images 
         if (!GM_getValue("rlc-HideGiphyImages")){        
-            if (line.indexOf("rlc-image") === 0){
+            if (line.trim().indexOf("rlc-image") === 0){
                 var linksObj = $msg.find("a");
                 var url = linksObj.attr("href");
                 if (url) {
@@ -1384,8 +1464,6 @@
             }
         }
         
-
-
         // /me support (if in channel see proccessline)
         if (line.indexOf("/me") === 0){
             $el.addClass("user-narration");
@@ -1396,14 +1474,14 @@
         $usr.text($usr.text().replace("/u/", ""));
         }
 
+                // Timestamp modification & user activity tracking
+        timeAndUserTracking($el, $usr);
+        
         // long message collapsing
         collapseLongMessage($msg,firstLine);
 
         // Target blank all message links
         $msg.find("a").attr("target", "_blank");
-
-        // Insert time
-        $usr.before($el.find("time"));
 
         // Tag message with user identifier for muting
         $el.addClass("u_"+$usr.text());
@@ -1427,8 +1505,7 @@
         // Track channels
         tabbedChannels.proccessLine(line, $el, rescan);
 
-        // Timestamp modification & user activity tracking
-        timeAndUserTracking($el, $usr);
+
         
         //finds iframes
         var embedFinder = $msg.find("iframe").length;
@@ -1444,8 +1521,8 @@
             // if we had a link and splitting it at space results in an undefined aza, the only thing in the message was the link.
             if (typeof aza === "undefined") { 
                 $el.addClass("rlc-hasEmbed");
-                var $dede = $msg.find("a").clone().addClass("embedLinkClone");
-                $dede.insertBefore($msg);
+              /*  var $dede = $msg.find("a").clone().addClass("embedLinkClone");
+                $dede.insertBefore($msg);*/
             }
         }
 
@@ -1483,8 +1560,6 @@
             // Add bold highlighting
             $el.addClass("user-mention");
         }
-
-        //firstLine.html(firstLine.html() + " ");
 
         // Stuff that should not be done to messages loaded on init, like TTS handling
         if (loadHistoryMessageException === 0) {
@@ -1689,8 +1764,12 @@
         });
     }
 
+    // show the linked content in the left panel
+    // rewritten to find the original liveupdate and take the iframe from there 
     function embedLinker($el){
-        var $msg = $el.find(".body .md");
+        var selectorstring = "." + $el.attr("name").split("rlc-")[1];
+        var $liveupdateEl = $(selectorstring);
+        var $msg = $liveupdateEl.find(".body .md");
         $("#rlc-leftPanel").empty();
                 $("#rlc-leftPanel").append("&nbsp;");
             $("#rlc-leftPanel").append($msg.find("iframe").clone());
@@ -1714,7 +1793,7 @@
 
     function mouseClicksEventHandling() {
         // Right click author names in chat to copy to messagebox
-        $("body").on("click", ".liveupdate .author", function (event) {
+        $("body").on("click", ".rlc-message .author", function (event) {
             event.preventDefault();
             let username = String($(this).text()).trim();
             let source = String($(".usertext-edit.md-container textarea").val());
@@ -1722,23 +1801,17 @@
             $(".usertext-edit.md-container textarea").focus().val(source + " " + username + " ");
         });
         
-        $("body").on("contextmenu", ".embedLinkClone", function (event) {
+        $("body").on("contextmenu", ".rlc-message.rlc-hasEmbed .body .md", function (event) {
             event.preventDefault();
             embedLinker($(this).parent().parent());
         });
         
-        $("body").on("click", ".liveupdate.rlc-hasEmbed .body .md", function (event) {
-            event.preventDefault();
-            alert("This");
-            //$(this).find("a").click();
-        });
-        
-        $("body").on("contextmenu", ".liveupdate .author", function (event) {
+        $("body").on("contextmenu", ".rlc-message .author", function (event) {
             event.preventDefault();
             $el = $(this).parent().parent();
             var $menu = $("#myContextMenu");
             var $msg = $el.find(".body .md");
-            var $usr = $el.find(".body .author");
+            var $usr = $el.find(".author");
             var thisPos = $el.position();
             var divPos = {
                 left: thisPos.left,
@@ -1789,7 +1862,7 @@
 
         // Load old messages
         $("#togglebarLoadHist").click(function(){
-            loadHistory();
+            getOldMessages();
         });
                 
         // Easy access options
@@ -1851,7 +1924,11 @@
                     </div>
                     <div id="rlc-leftPanel"> &nbsp; </div>
                     <div id="rlc-main">
-                        <div id="rlc-chat"></div>
+                        <div id="rlc-chat">
+                            <ol class="rlc-message-listing">
+
+                            </ol>
+                        </div>
                         <div id="rlc-messagebox">
                             <select id="rlc-channel-dropdown">
                                 <option></option>
@@ -1895,7 +1972,6 @@
       $("body").append(htmlPayload);
 
       // move various reddit live elements to RLCs custom HTML
-      $(".liveupdate-listing").prependTo("#rlc-chat");
       $("#new-update-form").insertBefore("#rlc-sendmessage");
       $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
       $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
@@ -1950,8 +2026,8 @@
     function rlcInitEventListeners() {
 
         // Detect new content being added
-        $(".liveupdate-listing").on("DOMNodeInserted", function(e) {
-            if ($(e.target).is("li.liveupdate")) {
+        $(".rlc-message-listing").on("DOMNodeInserted", function(e) {
+            if ($(e.target).is("li.rlc-message")) {
 
                 // Apply changes to line
                 handleNewMessage($(e.target), false);
@@ -2003,12 +2079,7 @@
  
         // not really sure, but related to message background alternation
         rowAlternator=!rowAlternator;
-
-        // run the new message handling function on each message in the chat window. the value of "true" is sent to represent that this is a "rescan", meaning that certain code is not run. see handleNewMessage.
-        $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
-            handleNewMessage($(item), true);
-        });
-        
+      
         // wait for iframes, and then scroll the chat window to the bottom.
         setTimeout(scrollToBottom, 500);
         setTimeout(function(){loadHistoryMessageException = 0}, 500);
@@ -2181,7 +2252,7 @@ h1#liveupdate-title {
     background-color: transparent
 }
 
-#rlc-wrapper .liveupdate .body {
+#rlc-wrapper .rlc-message .body {
     max-width: none!important;
     margin: 0;
     font-size: 13px;
@@ -2231,7 +2302,7 @@ div#rlc-sidebar {
     margin-top: 30px
 }
 
-#rlc-main .liveupdate-listing {
+#rlc-main .rlc-message-listing {
     max-width: 100%;
     padding: 0 0 0 15px;
     box-sizing: border-box;
@@ -2287,7 +2358,7 @@ div#rlc-sidebar {
     margin-right: 0
 }
 
-.liveupdate .simpletime {
+.rlc-message .simpletime {
     float: left;
     padding-left: 10px;
     box-sizing: border-box;
@@ -2296,7 +2367,7 @@ div#rlc-sidebar {
     line-height: 32px
 }
 
-.liveupdate a.author {
+.rlc-message a.author {
     float: left;
     padding-right: 10px;
     margin: 0;
@@ -2305,14 +2376,14 @@ div#rlc-sidebar {
     width: 130px
 }
 
-.liveupdate-listing li.liveupdate .body .md {
+.rlc-message-listing li.rlc-message .body .md {
     float: right;
     width: calc(100% - 220px);
     max-width: none;
     box-sizing: border-box
 }
 
-li.liveupdate.in-channel .body .md {
+li.rlc-message.in-channel .body .md {
     width: calc(100% - 320px)
 }
 
@@ -2361,15 +2432,15 @@ li.liveupdate.in-channel .body .md {
     padding-top: 5px
 }
 
-.liveupdate.user-narration .body .md {
+.rlc-message.user-narration .body .md {
     font-style: italic
 }
 
-.liveupdate.user-mention .body .md p {
+.rlc-message.user-mention .body .md p {
     font-weight: 700
 }
 
-.liveupdate a.author,.liveupdate p {
+.rlc-message a.author,.rlc-message p {
     line-height: 32px;
     min-height: 32px
 }
@@ -2383,7 +2454,7 @@ li.liveupdate.in-channel .body .md {
     max-width: none!important
 }
 
-.liveupdate-listing li.liveupdate p {
+.rlc-message-listing li.rlc-message p {
     font-size: 13px!important
 }
 
@@ -2398,7 +2469,7 @@ div#rlc-togglebar {
     padding-right: 10px
 }
 
-.liveupdate pre {
+.rlc-message pre {
     margin: 0;
     padding: 0;
     max-width: 90%;
@@ -2644,7 +2715,7 @@ body.allowHistoryScroll {
     }
 }
 
-#filter_tabs,#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .liveupdate.in-channel,.rlc-showChannelsUI .rlc-filter .liveupdate,.save-button,.user-narration a.author {
+#filter_tabs,#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author {
     display: none
 }
 
@@ -2672,11 +2743,11 @@ body.allowHistoryScroll {
     border: 1px solid rgba(227,227,224,.85)
 }
 
-.liveupdate time.live-timestamp,.liveupdate ul.buttonrow {
+.rlc-message time.live-timestamp,.rlc-message ul.buttonrow {
     display: none!important
 }
 
-#filter_tabs,#liveupdate-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown {
+#filter_tabs,#rlc-message-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown {
     display: none
 }
 
@@ -2899,15 +2970,6 @@ body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md,.rlc-customBg 
     width: 20%;
     float: left;
 display:block;
-}
-
-.rlc-hasEmbed .md {
-display: none!important;
-}
-
-a.embedLinkClone {
-    width: calc(100% - 220px);
-    float: right;
 }
 
 `);
