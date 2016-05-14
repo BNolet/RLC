@@ -7,7 +7,7 @@
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
 // @include        https://www.reddit.com/live/*
-// @exclude        https://www.reddit.com/live/
+// @exclude        https://www.reddit.com/live/ 
 // @exclude        https://www.reddit.com/live
 // @exclude        https://www.reddit.com/live/*/edit*
 // @exclude        https://www.reddit.com/live/*/contributors*
@@ -1008,6 +1008,20 @@
         }
     }
 
+    function abbrSupport(line, $msg, firstLine) {
+     if ( firstLine.html() != null ){ // This is usually for excluding embedded, code or other content that doesn't use html representation
+         htmTok = firstLine.html().split(" ");
+         htmTok = htmTok.map(function(tokenStr){
+             var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").toUpperCase(); // Strip trailing space and newlines with conversion to newline
+             if ( replaceStrList_key in replaceStrList ){
+                 return `<abbr title="${replaceStrList[replaceStrList_key]}">${tokenStr}</abbr>`;
+             }
+             return tokenStr;
+         });
+         firstLine.html(htmTok.join(" "));
+     }
+    }
+
     // Time converter for active user list
     function convertTo24Hour(time) {
         var hours = parseInt(time.substr(0, 2));
@@ -1329,6 +1343,9 @@
 
         // Emote support
         emoteSupport(line, $msg, firstLine);
+
+        // Abbrev Support
+        abbrSupport(line, $msg, firstLine);
 
         // Easy (and hacky) multiline
         $msg.html($msg.html().split("\n").join("<br>"));
