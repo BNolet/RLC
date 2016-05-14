@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.16.3
+// @version        3.16.4
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1237,31 +1237,24 @@
 
         var websocket_url = data.data.websocket_url;
         
-        //console.log('websocket_url', websocket_url);
-
         var ws = new WebSocket(websocket_url);
 
         ws.onmessage = function (evt) { 
             var msg = JSON.parse(evt.data);
-
-           // console.log(msg);
-            
+           
             switch(msg.type) {
             case 'update':
 
                 var payload = msg.payload.data;
-                //console.log(payload);    
+   
                 var usr = payload.author;
                 var msgbody = payload.body_html;
                 var msgID = payload.name;
                 
                 var created = payload.created_utc;
                 var utcSeconds = created;
-                var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch (wat?)
                 readAbleDate.setUTCSeconds(utcSeconds);
-                    
-                    // super intuitive alternative i guess
-                    //console.log('posted at', new Date(payload.created_utc * 1000));
                     
                 var finaltimestamp = readAbleDate.toLocaleTimeString().replace(".", ":").split(".")[0];
 
@@ -1287,6 +1280,14 @@
             	var messageToDelete = "rlc-id-"+msg.payload;
             	$( "li[name='"+messageToDelete+"']" ).remove();
                 reAlternate();
+
+                break;
+
+
+			/*  embeds_ready - a previously posted update has b
+			een parsed and embedded media is available for it now. 
+			the payload contains a liveupdate_id and list of 
+			embeds to add to it.*/
             }
 
         };
@@ -1295,47 +1296,17 @@
 
 }();
 
-      // load the 25 most recent messages via getJSON calling the rooms .json info 
-      var ajaxLoadCurrentMessages =     $.getJSON( ".json", function( data ) {
-                var oldmessages = data.data.children;  //navigate the data to the object containing the messages
-                $.each( oldmessages, function( ) {
-                    var msg = $(this).toArray()[0].data; //navigate to the message data level we want
-                    //console.log(msg);
-                    var msgID = msg.name;
-                    var $msgbody = msg.body_html;
-                    var usr = msg.author;
-                    var utcSeconds = msg.created_utc;
-                    
-                    // translate created_utc to a human readable version
-                    var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                    readAbleDate.setUTCSeconds(utcSeconds);
-                    
-                    var finaltimestamp = readAbleDate.toLocaleTimeString().replace(".", ":").split(".")[0];
+function getMessages(gettingOld) {
+    loadHistoryMessageException = 1;
+     
+     var urlToGet = ".json";
 
-                    // Unescaped html escaped string by way of crazy voodo magic.
-                    $msgbody = $("<textarea/>").html($msgbody).val() 
-                   
-                    var fakeMessage = `
-                    <li class="rlc-message" name="rlc-id-${msgID}">
-                        <div class="body">${$msgbody}
-                            <div class="simpletime">${finaltimestamp}</div>
-                            <a href="/user/${usr}" class="author">${usr}</a>
-                        </div>
-                    </li>`
-                    $(".rlc-message-listing").append(fakeMessage);
-                });
-            });
-        ajaxLoadCurrentMessages.complete(function() {
-            loadHistoryMessageException = 0;
-            reAlternate();
-        });
-
-
-function getOldMessages() {
-      // load the 25 most recent messages via getJSON calling the rooms .json info 
-   loadHistoryMessageException = 1;
-     var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];  
-     var ajaxLoadOldMessages =     $.getJSON( ".json?after="+lastMessageName, function( data ) {
+     if (gettingOld) { 
+      	var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1]; 
+     	urlToGet = ".json?after="+lastMessageName; 
+     } 
+     
+     var ajaxLoadOldMessages =     $.getJSON( urlToGet, function( data ) {
                 var oldmessages = data.data.children;  //navigate the data to the object containing the messages
                 $.each( oldmessages, function( ) {
                     var msg = $(this).toArray()[0].data; //navigate to the message data level we want
@@ -1381,7 +1352,7 @@ function getOldMessages() {
 //  | $$ \  $| $$$$$$$| $$/   \  $$      | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$
 //  |__/  \__|________|__/     \__/      |__/     |__|________/\______/ \______/|__/  |__/\______/|________/
 //
-//  Code status: needs some love
+// 
 //
 
     // Notification sound in base64 encoding
@@ -1453,7 +1424,7 @@ function getOldMessages() {
         $usr.text($usr.text().replace("/u/", ""));
         }
 
-                // Timestamp modification & user activity tracking
+        // Timestamp modification & user activity tracking
         timeAndUserTracking($el, $usr);
         
         // long message collapsing
@@ -1498,8 +1469,6 @@ function getOldMessages() {
             // if we had a link and splitting it at space results in an undefined aza, the only thing in the message was the link.
             if (typeof aza === "undefined") { 
                 $el.addClass("rlc-hasEmbed");
-              /*  var $dede = $msg.find("a").clone().addClass("embedLinkClone");
-                $dede.insertBefore($msg);*/
             }
         }
 
@@ -1785,14 +1754,6 @@ function getOldMessages() {
             event.preventDefault();
             embedLinker($(this).parent().parent());
         });
-
-        $(document).click(function(){
-        	$("#myContextMenu").hide();
-        });
-
-        $("#myContextMenu").click(function(e){
-        	e.stopPropagation();
-        });
         
         $("body").on("contextmenu", ".rlc-message .author", function (event) {
             event.preventDefault();
@@ -1805,7 +1766,11 @@ function getOldMessages() {
                 left: thisPos.left,
                 top: thisPos.top
             };
-                if ($menu.css("display") === "none" && !isNaN(divPos["left"]) && !isNaN(divPos["top"]) ) {
+
+            // replacement for previous closing methods, only fires once.
+            $( "body" ).one( "click", function() {
+			  $("#myContextMenu").hide();
+			});
 
                     if (window.innerHeight-100 > divPos["top"]){
                         $menu.css({"left":divPos["left"], "top":divPos["top"], "display": "initial"}); //menu down
@@ -1841,16 +1806,12 @@ function getOldMessages() {
                         if ($id === "speakMessage"){
                             messageTextToSpeechHandler($msg, $usr);
                         }
-                        $menu.css({"left":0, "top":0, "display": "none"}); //close menu
                     });
-                } else {
-                    $menu.css({"left":0, "top":0, "display": "none"}); //close menu
-                }
         });       
 
         // Load old messages
         $("#togglebarLoadHist").click(function(){
-            getOldMessages();
+            getMessages(true);
         });
                 
         // Easy access options
@@ -2065,6 +2026,8 @@ function getOldMessages() {
  
         // not really sure, but related to message background alternation
         rowAlternator=!rowAlternator;
+
+        getMessages();
       
         // wait initial load to be , and then scroll the chat window to the bottom.
         setTimeout(function(){
