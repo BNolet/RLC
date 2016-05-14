@@ -1755,7 +1755,7 @@ function getOldMessages() {
             }
             else if (e.keyCode === 40){
                 e.preventDefault();
-                if (messageHistoryIndex < messageHistory.length){
+                if (messageHistoryIndex < messageHistory.length && messageHistory.length > 0){
                     messageHistoryIndex++;
                     $(this).val(messageHistory[messageHistoryIndex]);
                 }
