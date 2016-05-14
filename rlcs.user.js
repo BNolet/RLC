@@ -1072,15 +1072,14 @@
             }
     }
 
+    //reAlternates the background color alternation when deleting a comment or muting a user. 
     function reAlternate($objComment){
         if($objComment===undefined){
             var alt=false;
             for(i=$('.liveupdate-listing').children().length;i>=0;i--){
                 var obj=$('.liveupdate-listing').children()[i];
                 if(!$(obj).hasClass('muted')){
-                    $(obj).removeClass('alt-bgcolor');
-                    if(alt){
-                        $(obj).addClass('alt-bgcolor');
+                    $(obj).toggleClass('alt-bgcolor');
                     }
                     alt=!alt;
                 }
