@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.16.4
+// @version        3.16.5
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -2086,66 +2086,12 @@ function getMessages(gettingOld) {
 
     // RLC-CORE
     GM_addStyle(`
-div#rlc-leftPanel {
-    display: none;
-}
-#myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button {
-    color: #fff
-}
-
-.rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar {
-    background: 0 0
-}
-
 #rlc-header,#rlc-wrapper,body {
     overflow: hidden
 }
 
 img.rlc-image {
     max-height: 200px
-}
-
-.rlc-compact #rlc-chat {
-    height: calc(100vh - 252px);
-    max-height: 466px
-}
-
-.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar {
-    max-height: none
-}
-
-.rlc-fullwidth div#rlc-chat {
-    height: calc(100vh - 198px)
-}
-
-.rlc-fullwidth #rlc-wrapper {
-    max-height: none;
-    max-width: none;
-    height: calc(100vh - 0px)
-}
-
-.rlc-fullwidth div#rlc-wrapper {
-    height: 100%
-}
-
-.rlc-compact.rlc-fullwidth #rlc-chat {
-    height: calc(100vh - 134px)
-}
-
-.rlc-compact.rlc-fullwidth #rlc-sidebar {
-    height: calc(100vh - 50px)
-}
-
-.rlc-compact #rlc-wrapper {
-    margin-top: 75px
-}
-
-.rlc-compact #rlc-header {
-    border-top: 1px solid rgba(227,227,224,.44)
-}
-
-.rlc-compact.rlc-fullwidth #rlc-wrapper {
-    margin-top: 0
 }
 
 #rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header {
@@ -2383,6 +2329,45 @@ li.rlc-message.in-channel .body .md {
     padding-top: 5px
 }
 
+#liveupdate-description {
+    margin-left: 10px;
+    float: left
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none
+}
+
+body {
+    min-width: 0;
+    background-color: #fcfcfc;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center
+}
+
+#rlc-messagebox,#rlc-sidebar {
+    background-color: #EFEFED
+}
+
+#rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown {
+    background-color: #fcfcfc
+}
+
+#rlc-messagebox textarea,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown {
+    background-color: transparent
+}
+
+#rlc-wrapper .md pre {
+    background-color: transparent!important
+}
+
+/* message */
+
 .rlc-message.user-narration .body .md {
     font-style: italic
 }
@@ -2396,28 +2381,12 @@ li.rlc-message.in-channel .body .md {
     min-height: 32px
 }
 
-#liveupdate-description {
-    margin-left: 10px;
-    float: left
-}
-
 .md {
     max-width: none!important
 }
 
 .rlc-message-listing li.rlc-message p {
     font-size: 13px!important
-}
-
-div#rlc-settingsbar a {
-    display: inline-block
-}
-
-div#rlc-togglebar {
-    float: right;
-    display: block;
-    height: 100%;
-    padding-right: 10px
 }
 
 .rlc-message pre {
@@ -2427,6 +2396,30 @@ div#rlc-togglebar {
     border: #FCFCFC;
     box-sizing: border-box;
     border: 1px solid rgba(227,227,224,.44)
+}
+
+.channelname {
+    display: block;
+    float: left;
+    width: 100px;
+    line-height: 32px
+}
+
+.rlc-imageWithin span.rlc-imgvia {
+    float: right;
+    margin-left: 10px
+}
+
+/* settings */
+div#rlc-settingsbar a {
+    display: inline-block
+}
+
+div#rlc-togglebar {
+    float: right;
+    display: block;
+    height: 100%;
+    padding-right: 10px
 }
 
 #togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar {
@@ -2466,6 +2459,8 @@ div#rlc-settings input {
     margin-right: 5px
 }
 
+
+/*tabbed channels */
 .rlc-channel-add button {
     border: 0;
     margin: 0;
@@ -2473,13 +2468,6 @@ div#rlc-settings input {
     border-top: 0;
     border-bottom: 0;
     background-color: transparent
-}
-
-.channelname {
-    display: block;
-    float: left;
-    width: 100px;
-    line-height: 32px
 }
 
 .rlc-showChannelsUI #new-update-form {
@@ -2581,36 +2569,7 @@ div#filter_tabs {
     background-color: transparent
 }
 
-body.allowHistoryScroll {
-    height: 105%;
-    overflow: auto
-}
-
-#myContextMenu {
-    position: absolute;
-    box-shadow: 1px 1px 2px #888;
-    background-color: grey;
-    padding: 5px 0
-}
-
-#myContextMenu ul {
-    list-style-type: none
-}
-
-#myContextMenu ul li a {
-    padding: .5em 1em;
-    display: block
-}
-
-#myContextMenu ul li:not(.disabled) a:hover {
-    cursor: pointer
-}
-
-.rlc-imageWithin span.rlc-imgvia {
-    float: right;
-    margin-left: 10px
-}
-
+/* long message collapsing */
 .longMessageClosed {
     max-height: 30px;
     overflow-y: hidden;
@@ -2636,71 +2595,30 @@ body.allowHistoryScroll {
     left: 25px
 }
 
-.rlc-showoptions #rlc-settings {
+/* message menu */ 
+
+#myContextMenu {
+    position: absolute;
+    box-shadow: 1px 1px 2px #888;
+    background-color: grey;
+    padding: 5px 0
+}
+
+#myContextMenu ul {
+    list-style-type: none
+}
+
+#myContextMenu ul li a {
+    padding: .5em 1em;
     display: block
 }
 
-.rlc-showoptions #rlc-main-sidebar {
-    display: none
+#myContextMenu ul li:not(.disabled) a:hover {
+    cursor: pointer
 }
 
-.rlc-showreadmebar #rlc-readmebar {
-    display: block
-}
 
-.rlc-showreadmebar #rlc-main-sidebar {
-    display: none
-}
-
-#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration {
-    display: none!important
-}
-
-.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration {
-    display: block!important
-}
-
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-    #option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars {
-        display:block!important
-    }
-}
-
-#filter_tabs,#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author {
-    display: none
-}
-
-.noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none
-}
-
-.rlc-customscrollbars div#filter_tabs {
-    width: calc(100% - 12px)
-}
-
-.rlc-customscrollbars ::-webkit-scrollbar {
-    width: 12px
-}
-
-.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb {
-    border: 1px solid rgba(227,227,224,.26)
-}
-
-.rlc-customscrollbars ::-webkit-scrollbar-thumb {
-    border: 1px solid rgba(227,227,224,.85)
-}
-
-.rlc-message time.live-timestamp,.rlc-message ul.buttonrow {
-    display: none!important
-}
-
-#filter_tabs,#rlc-message-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown {
-    display: none
-}
+/* emotes */
 
 .mrPumpkin {
     height: 24px;
@@ -2795,11 +2713,6 @@ body.allowHistoryScroll {
 .mp_s3cur1ty {
     background-position: -48px 24px
 }
-
-#filter_tabs,#liveupdate-resources h2,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown {
-    display: none
-}
-
 .mrTwitchEmotes {
     height: 28px;
     width: 25px;
@@ -2850,28 +2763,101 @@ body.allowHistoryScroll {
     background-position: 0px -55px
 }
 
-#rlc-wrapper .md pre {
-    background-color: transparent!important
+/* display modes */
+
+div#rlc-leftPanel {
+    display: none;
+}
+#myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button {
+    color: #fff
 }
 
-body {
-    min-width: 0;
-    background-color: #fcfcfc;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center
+.rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar {
+    background: 0 0
 }
 
-#rlc-messagebox,#rlc-sidebar {
-    background-color: #EFEFED
+.rlc-compact #rlc-chat {
+    height: calc(100vh - 252px);
+    max-height: 466px
 }
 
-#rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown {
-    background-color: #fcfcfc
+.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar {
+    max-height: none
 }
 
-#rlc-messagebox textarea,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown {
-    background-color: transparent
+.rlc-fullwidth div#rlc-chat {
+    height: calc(100vh - 198px)
+}
+
+.rlc-fullwidth #rlc-wrapper {
+    max-height: none;
+    max-width: none;
+    height: calc(100vh - 0px)
+}
+
+.rlc-fullwidth div#rlc-wrapper {
+    height: 100%
+}
+
+.rlc-compact.rlc-fullwidth #rlc-chat {
+    height: calc(100vh - 134px)
+}
+
+.rlc-compact.rlc-fullwidth #rlc-sidebar {
+    height: calc(100vh - 50px)
+}
+
+.rlc-compact #rlc-wrapper {
+    margin-top: 75px
+}
+
+.rlc-compact #rlc-header {
+    border-top: 1px solid rgba(227,227,224,.44)
+}
+
+.rlc-compact.rlc-fullwidth #rlc-wrapper {
+    margin-top: 0
+}
+
+#filter_tabs,#hsts_pixel,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author {
+    display: none
+}
+#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,select#rlc-channel-dropdown {
+    display: none
+}
+
+#liveupdate-resources h2 { 
+	    display: none!important;
+}
+
+.rlc-showoptions #rlc-settings {
+    display: block
+}
+
+.rlc-showoptions #rlc-main-sidebar {
+    display: none
+}
+
+.rlc-showreadmebar #rlc-readmebar {
+    display: block
+}
+
+.rlc-showreadmebar #rlc-main-sidebar {
+    display: none
+}
+
+#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration {
+    display: none!important
+}
+
+.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration {
+    display: block!important
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    #option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars {
+        display:block!important
+    }
 }
 
 body.dark-background {
@@ -2919,6 +2905,22 @@ body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md,.rlc-customBg 
     width: 20%;
     float: left;
 display:block;
+}
+
+.rlc-customscrollbars div#filter_tabs {
+    width: calc(100% - 12px)
+}
+
+.rlc-customscrollbars ::-webkit-scrollbar {
+    width: 12px
+}
+
+.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb {
+    border: 1px solid rgba(227,227,224,.26)
+}
+
+.rlc-customscrollbars ::-webkit-scrollbar-thumb {
+    border: 1px solid rgba(227,227,224,.85)
 }
 
 `);
