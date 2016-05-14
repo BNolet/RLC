@@ -1785,6 +1785,14 @@ function getOldMessages() {
             event.preventDefault();
             embedLinker($(this).parent().parent());
         });
+
+        $(document).click(function(){
+        	$("#myContextMenu").hide();
+        });
+
+        $("#myContextMenu").click(function(e){
+        	e.stopPropagation();
+        });
         
         $("body").on("contextmenu", ".rlc-message .author", function (event) {
             event.preventDefault();
