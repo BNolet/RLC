@@ -237,7 +237,7 @@
 
         createOption("Max Messages 25", function(checked){
             if (checked){
-                if (loadingInitialMessages != 1) {
+                if (loadHistoryMessageException != 1) {
                     cropMessages(25);
                 }
             } else {
@@ -249,7 +249,7 @@
             if (checked === true){
                 $("body").addClass("rlc-customBg"); 
 
-                if (loadingInitialMessages != 1) {  // avoid triggering during init
+                if (loadHistoryMessageException != 1) {  // avoid triggering during init
                     
                     var bgurlsuggestion; //try to get a saved background url depending on dark mode setting
                     if (GM_getValue("rlc-DarkMode")) { bgurlsuggestion = GM_getValue("customBGdark")}
@@ -1119,7 +1119,7 @@
     }
 
     function alternateMsgBackground($el) {
-            if (loadingInitialMessages === 0) {
+            if (loadHistoryMessageException === 0) {
                 var $child = $('.liveupdate-listing:not(.muted)').children()[1];
                 rowAlternator=($($child).hasClass('alt-bgcolor'));
             }else{
@@ -1275,16 +1275,42 @@
         }
     };
 
-    // Manipulate native reddit live into loading old messages
-    function loadHistory() {
-        loadingInitialMessages = 1;     //prevent tts/notifications
-        
-        $("body").addClass("allowHistoryScroll");
-        $("body").scrollTop($("body")[0].scrollHeight);
-        $("body").removeClass("allowHistoryScroll");
-        scrollToBottom();
-        setTimeout(function(){ loadingInitialMessages = 0; }, 500);
-    }
+	    // Manipulate native reddit live into loading old messages
+	    function loadHistory() {
+	        loadHistoryMessageException = 1;     //this variable is checked in new message function to prevent 
+	        								     //tts/notifications from messages loaded this way. while operating, we set it to one to "enable" it.
+	        
+	        /* summary for the following 3 lines of code(all manipulating the $("body")):
+
+				This is a very hacky way of getting old messages to load.
+				In native reddit live rooms, you can scroll down to load older messages, as only the first 25 messages in a room are shown normaly.
+				This method is purely based on the observation that scrolling the body html element to the bottom causes the load.
+				
+				In RLC we dont let the user scroll the body element, since we put the messages inside an interface that is either in a box or full size.
+				Allowing users to scroll the body element would trigger constant unintended loading of old messages.
+
+				The loadHistory function uses this behavior in a controlled manner, applying a css class to the body html element which does two things:
+				Set the bodys vertical scroll to scroll rather than overflow, and expand the body to 105%, causing scrolling to become possible.
+				(note, this is probably why it does not work in firefox)
+
+				The second line involving scrollHeight scrolls the body to the bottom, triggering the now possible load event.
+
+				The third line simply removes the body class that was enabling the scrolling behavior. 
+
+	        */
+	        $("body").addClass("allowHistoryScroll");
+
+	        $("body").scrollTop($("body")[0].scrollHeight);
+	        
+	        $("body").removeClass("allowHistoryScroll");
+	        
+	        // scroll the chat window to the bottom. this is required in order to be able to trigger load history,
+	        // since both the body and the chat window must be at bottom scroll position to force native history loading.
+	        scrollToBottom();					
+			
+			//after waiting a second to be sure messages are loaded, "disable" the variable.
+	        setTimeout(function(){ loadHistoryMessageException = 0; }, 1000);  
+	    }
 
 //
 //   /$$   /$$/$$$$$$$$/$$      /$$       /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$
@@ -1310,14 +1336,14 @@
     var chromeNotificationImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAIAAABuYg/PAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAADgSURBVFhH7ZdRbsMwDENzgt7/Sj2VG0eEKxGUmgJOUKR5eMNgiRH3u6U5lgPA6Q08sHg+povL1mJNlJiu9Z1bdkKT2Zv+rAyL7/8OfFbcFKOID2QiGhEBMYr4QCaiERHgt2JkpAgpOMNvxchIEVJwht+KkZEipODMeL9HER/IRDQiAmIU8YFMRCMi4EcmFvtqvPisuEnTg7zLpniXTfGXyopVZn2tQ9Nhscqsr3VoOixWmfW1Dk299Zb8eKpDUxKhHdCH5K7QLK9ddt3/YtYf6zuoEpetxX4ZtpgLTq+09gIQTX1K/dS/IgAAAABJRU5ErkJggg==";
 
     // Used differentiate initial and subsequent messages
-    var loadingInitialMessages = 1;
+    var loadHistoryMessageException = 1;
     
     var maxmessages = 25;
         
     // note from stjern: no reason to set these for every message
     var hexArray    = GM_getValue("hexArrayStore", "") || []; //initialize hex and usr lookup list variables
     var usrArray    = GM_getValue("usrArrayStore", "") || [];
-    var colorSet    = "penis"; //if this value is ever used, options are fucked
+    var colorSet    = "error"; //this value should never end up getting used
         
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
@@ -1458,8 +1484,10 @@
             $el.addClass("user-mention");
         }
 
+        //firstLine.html(firstLine.html() + " ");
+
         // Stuff that should not be done to messages loaded on init, like TTS handling
-        if (loadingInitialMessages === 0) {
+        if (loadHistoryMessageException === 0) {
             //reAlternate(); -- no, just no.
             if (rescan) {
                 // This is rescan, do nothing.
@@ -1772,7 +1800,7 @@
         $("#togglebarTTS").click(function(){
             $( "#rlc-settings label:contains('Text To Speech (TTS)') input" ).click();
         });
-
+//toggle sidebar via css classes
         $("#togglesidebar").click(function(){ 
             $("body").toggleClass("rlc-hidesidebar"); 
             $(this).toggleClass("selected");  
@@ -1788,7 +1816,7 @@
             $("body").removeClass("rlc-showoptions");
             $("body").toggleClass("rlc-showreadmebar");
         });
-
+	// this makes the RLC send button click on the hidden native reddit live button	
         $("#rlc-sendmessage").click(function(){
             $(".save-button .btn").click();
         });
@@ -1823,7 +1851,6 @@
                     </div>
                     <div id="rlc-leftPanel"> &nbsp; </div>
                     <div id="rlc-main">
-                        <div id="rlc-preloader">Loading Messages</div>
                         <div id="rlc-chat"></div>
                         <div id="rlc-messagebox">
                             <select id="rlc-channel-dropdown">
@@ -1864,16 +1891,18 @@
 
     function rlcSetupContainers() {
 
+      // insert the custom RLC HTML
       $("body").append(htmlPayload);
 
+      // move various reddit live elements to RLCs custom HTML
       $(".liveupdate-listing").prependTo("#rlc-chat");
       $("#new-update-form").insertBefore("#rlc-sendmessage");
       $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
       $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
       $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
  
+      // start up filter tabs by inserting them
       tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
-
     }
 
     function rlcParseSidebar() {
@@ -1915,7 +1944,7 @@
         $("#rlc-readmebar a").attr("target", "_blank");
         $("#rlc-guidebar a").attr("target", "_blank");
 
-        $("#rlc-main .separator").remove();
+        $("#rlc-main .separator").remove();   
     }
 
     function rlcInitEventListeners() {
@@ -1938,16 +1967,6 @@
         mouseClicksEventHandling();
     }
 
-    function handleInitialMessages() {
-
-        // wait for iframes, then remove preloader
-        setTimeout(scrollToBottom, 500);
-        setTimeout($("#rlc-preloader").fadeOut(), 500);
-        // Remove initial iframes TODO: handle them better - removes any message containing an iframe on load
-        $("#rlc-main .rlc-hasEmbed").remove();
-
-    }
-
 //
 //   /$$      /$$/$$$$$$/$$   /$$/$$$$$$$  /$$$$$$ /$$      /$$                 /$$       /$$$$$$  /$$$$$$ /$$$$$$$
 //  | $$  /$ | $|_  $$_| $$$ | $| $$__  $$/$$__  $| $$  /$ | $$                | $$      /$$__  $$/$$__  $| $$__  $$
@@ -1964,19 +1983,19 @@
     // Boot
     $(document).ready(function() {
 
-        // Move default elements into custom containers defined in htmlPayload
+        // Modify the html of reddit live, mainly by putting it in the new custom containers defined in htmlPayload
         rlcSetupContainers();
 
-        // Setup sidebar based on content
+        // Setup sidebar based on content, dividing it into sections.
         rlcParseSidebar();
 
-        // Modify initial elements
+        // Tweak stuff
         rlcDocReadyModifications();
 
         // Attach event listeners
         rlcInitEventListeners();
 
-        // Persistant user muting
+        // attempt to load a list of muted users from stored values 
         updateMutedUsers();
 
         // run options setup
@@ -1985,17 +2004,19 @@
         // not really sure, but related to message background alternation
         rowAlternator=!rowAlternator;
 
-        // handle existing chat messages
+        // run the new message handling function on each message in the chat window. the value of "true" is sent to represent that this is a "rescan", meaning that certain code is not run. see handleNewMessage.
         $("#rlc-chat").find("li.liveupdate").each(function(idx,item){
             handleNewMessage($(item), true);
         });
         
-        // handle init
-        handleInitialMessages();
+        // wait for iframes, and then scroll the chat window to the bottom.
+        setTimeout(scrollToBottom, 500);
+        setTimeout(function(){loadHistoryMessageException = 0}, 500);
         
-        // mark initial load as ended
-        setTimeout(function(){loadingInitialMessages = 0;},500);
-
+        // this removes all the embedded stuff that we cant get rid of on load. 
+        // they reallly shoulld just be made into links but i seem to have lost the ability to do this some how.
+        // i suspect something going wrong in new message handling, perhaps the spoiler blank space after the message is getting trimmed somewhere.
+        $("#rlc-main .rlc-hasEmbed").remove(); 
     });
 
 //
@@ -2011,6 +2032,7 @@
 //  Open Sans Google font
 //
 
+	// copypasted google fonts magic embed code, avert your eyes mortal!
     WebFontConfig = {
         google: { families: [ 'Open+Sans:400,400italic,600,600italic:latin' ] }
     };
@@ -2112,19 +2134,6 @@ img.rlc-image {
     -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
     -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
     border-top: 1px solid rgba(128,128,128,.35)
-}
-
-#rlc-preloader {
-    left: 0;
-    right: 0;
-    bottom: 96px;
-    top: 0;
-    position: absolute;
-    z-index: 10000;
-    padding-top: 14%;
-    font-size: 3em;
-    TEXT-ALIGN: CENTER;
-    box-sizing: border-box
 }
 
 #rlc-messagebox,#rlc-sidebar {
