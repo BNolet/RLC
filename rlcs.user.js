@@ -235,6 +235,9 @@
         createOption("Hide Giphy Images", function(checked){
         },false, "disable giphy gifs (effective on reload or new messages)");
 
+        createOption("Disable Markdown", function(checked){
+        },false, "get messages without reddit formatting");
+
         createOption("Max Messages 25", function(checked){
             if (checked){
                 if (loadHistoryMessageException != 1) {
@@ -1246,6 +1249,9 @@
 
                 var usr = payload.author;
                 var msgbody = payload.body_html;
+
+                if (GM_getValue("rlc-DisableMarkdown")) { msgbody = '<div class="md"><p>'+ payload.body +'</p></div>' ;}
+
                 var msgID = payload.name;
 
                 var created = payload.created_utc;
@@ -1311,6 +1317,12 @@ function getMessages(gettingOld) {
 
                     var msgID = msg.name;
                     var $msgbody = msg.body_html;
+
+                    if (GM_getValue("rlc-DisableMarkdown")) {$msgbody + '<div class="md"><p>'+ msg.body +'</p></div>';}
+                    
+                        // Unescaped html escaped string by way of crazy voodo magic.
+                        $msgbody = $("<textarea/>").html($msgbody).val()                        
+
                     var usr = msg.author;
                     var utcSeconds = msg.created_utc;
 
@@ -1319,11 +1331,6 @@ function getMessages(gettingOld) {
                     readAbleDate.setUTCSeconds(utcSeconds);
 
                     var finaltimestamp = readAbleDate.toTimeString().split("GMT")[0];
-
-                    //console.log(finaltimestamp);
-
-                    // Unescaped html escaped string by way of crazy voodo magic.
-                    $msgbody = $("<textarea/>").html($msgbody).val()
 
                     var fakeMessage = `
                     <li class="rlc-message" name="rlc-id-${msgID}">
