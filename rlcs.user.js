@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.16.6
+// @version        3.16.7
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1733,11 +1733,13 @@ function getMessages(gettingOld) {
      // instead we show our own structure with our own messages. this deletes the comment by matching the rlc-message with the liveupdate and pressing the delete and yes button on the liveupdate.
     function deleteComment($objComment){
 
-        var selectorstring = "." + $objComment.attr("name").split("rlc-")[1];
-        var $liveupdateEl = $(selectorstring);
+        
+        var selectorstring = $objComment.attr("name").split("rlc-id-LiveUpdate_")[1];
+
+        var $liveupdateEl = $('a[href$="'+selectorstring+'"]').parent();
 
         if ($liveupdateEl.has(".buttonrow").length>0){
-
+            
             var $button = $liveupdateEl.find(".delete").find("button");
              $button.click();
 
