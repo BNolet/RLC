@@ -51,7 +51,7 @@
 //   \______/|__/        |__/  |______/\______/|__/  \__/\______/
 //
 //  Calls createOption to set up lables, GM values and body classes based on stored GM values if set.
-//  
+//
 
     // Create persistant option
     function createOption(name, clickAction, defaultState, description){
@@ -78,7 +78,7 @@
         // Render option
         var $option = $(`<label id='option-${key}'><input type='checkbox' ${checkedMarkup}>${name}<span>${description}</span></label>`).click(function(e){
             var checked = $(this).find("input").is(":checked");
-            
+
             // exit click handler if event is not being callled on the checkbox.
             // sidesteps the issue that the event fires multiple times when clicking anything other than the checkbox.
             var target = $( e.target );
@@ -140,7 +140,7 @@
             }
             scrollToBottom();
         },false, "hide header");
-        
+
         createOption("Left Panel", function(checked){
             if (checked){
                 $("body").addClass("rlc-leftPanel");
@@ -228,7 +228,7 @@
 
         createOption("No Emotes", function(checked){
         },false, "disable RLC smileys");
-        
+
         createOption("No Twitch Emotes", function(checked){
         },false, "disable Twitch Emotes");
 
@@ -247,7 +247,7 @@
 
         createOption("Custom Background", function(checked){
             if (checked === true){
-                $("body").addClass("rlc-customBg"); 
+                $("body").addClass("rlc-customBg");
 
                 if (loadHistoryMessageException != 1) {  // avoid triggering during init
 
@@ -256,7 +256,7 @@
                         else { bgurlsuggestion = GM_getValue("customBGlight");}
 
                     // if we cant, use the sample url
-                    if (typeof bgurlsuggestion === "undefined" ) { 
+                    if (typeof bgurlsuggestion === "undefined" ) {
                         bgurlsuggestion = "http://i.imgur.com/uy50nCx.jpg";
                     }
 
@@ -273,20 +273,20 @@
                         $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
                     }
                 }
-                else { 
+                else {
                     //same as above but without the prompt. this code runs on init if option is enabled
                     var bgurl;
 
                     if (GM_getValue("rlc-DarkMode")) { bgurl = GM_getValue("customBGdark")}
                         else { bgurl = GM_getValue("customBGlight");}
 
-                    if (typeof bgurl === "undefined" ) { 
+                    if (typeof bgurl === "undefined" ) {
                         bgurl = "http://i.imgur.com/uy50nCx.jpg";
                     }
                         var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
                         $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
                     }
-            } 
+            }
             else {
                 $("body").removeClass("rlc-customBg");
                 $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
@@ -309,7 +309,7 @@
 
     var tabbedChannels = new function(){
         /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
-           and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container); 
+           and hook up tabbedChannels.proccessLine(lower_case_text, jquery_of_line_container);
            to each line detected by the system */
         var _self = this;
 
@@ -684,7 +684,7 @@
             if (updateArray.indexOf(activeUserArray[i]) === -1 && activeUserArray[i] !== undefined) {
                 updateArray.push(activeUserArray[i]);
                 $("#rlc-activeusers ul").append(`<li>
-                                                    <span class='activeusersUser'>${activeUserArray[i]}</span> @ 
+                                                    <span class='activeusersUser'>${activeUserArray[i]}</span> @
                                                     <span class='activeusersTime'>${activeUserTimes[i]}</span>
                                                 </li>`);
             } /*else if (updateArray.indexOf(activeUserArray[i]) > -1) {
@@ -824,17 +824,17 @@
     }
 
     var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
-    var urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;    
+    var urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
     function messageTextToSpeechHandler($msg, $usr) {
 
         if (GM_getValue("rlc-TextToSpeechTTS")) {
 
-            // long messages break tts (<300 chars)  
+            // long messages break tts (<300 chars)
             if($msg.text().length<250){
 
                 // Load in message string
                 var linetoread = $msg.text();
-                
+
                 // Remove any URLs that match urlRegex
                 linetoread = linetoread.replace(urlRegex, "");
 
@@ -886,7 +886,7 @@
                         var lastEmote = finalemote.split(" ")[1].split("mp_")[1];
                         domEmoji = lastEmote;
                     }
-                    
+
                     if (msgtwitchemotes.length) {
                         var finalemote;
 
@@ -900,12 +900,12 @@
                         var lastEmote = finalemote.split(" ")[1].split("tw_")[1];
                         domEmoji = lastEmote;
                     }
-                    
+
                     var toneStr="";
                     if ( domEmoji in toneList ){
                         toneStr = " " + toneList[domEmoji];
                     }
-                    
+
                     if (!GM_getValue("rlc-TTSUsernameNarration")) {
                         msg = new SpeechSynthesisUtterance(linetoread);
                     } else {
@@ -1024,7 +1024,7 @@
         "Kreygasm": "kreygasm",
         "DansGame": "dansgame",
     };
-    
+
 
     function emoteSupport(line, $msg, firstLine) {
         if (!GM_getValue("rlc-NoEmotes")){
@@ -1069,7 +1069,7 @@
     // Timestamp modification & user activity tracking
     function timeAndUserTracking($el, $usr) {
         var shortTime = $el.find(".simpletime");
-   
+
         // Add info to activeuserarray
         activeUserArray.push($usr.text());
         //activeUserTimes.push(militarytime);
@@ -1079,7 +1079,7 @@
         processActiveUsersList();
     }
 
-    function collapseLongMessage($msg,firstLine) { 
+    function collapseLongMessage($msg,firstLine) {
         if($msg.text().length>250){
             $msg.addClass("longMessageClosed");
             $msg.prepend("<input type='button' value='+' class='extendButton' style='width:18px;height:18px;padding:0px;font-size:0.8em'>");
@@ -1159,7 +1159,7 @@
             if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
             var randR = (Math.seededRandom(r*100,120,175));
             var randG = (Math.seededRandom(g*100,120,175));
-            var randB = (Math.seededRandom(b*100,120,175));     
+            var randB = (Math.seededRandom(b*100,120,175));
             // This is the randomizer, not much to know about this. Buncha math
             var suppress = (Math.seededRandom(firstThree*r*10,0,6));
             var modAmt =2 ;
@@ -1187,10 +1187,10 @@
                     break;
                 default:
                     break;
-            }   
+            }
             var hexR = (parseInt(randR) + parseInt(amt)).toString(16);
             var hexG = (parseInt(randG) + parseInt(amt)).toString(16);
-            var hexB = (parseInt(randB) + parseInt(amt)).toString(16);  
+            var hexB = (parseInt(randB) + parseInt(amt)).toString(16);
             amt=-40;
             tempArray.push(hexR + hexG + hexB); //pushing the 6 character string to a temporary array, one for light, one for dark
         }
@@ -1200,7 +1200,7 @@
         var e = $usr.text().toLowerCase(),
             t = e.replace(/[^a-z0-9]/g, ""),
             n = parseInt(t, 36) % 6;
-        
+
         //Cascading array used to add color schemes to master hex array on a 1:1 user:colorset basis
         //AKA, arrays within an array (multidimensional array)
         tempArray.push(colors[n]);
@@ -1221,7 +1221,7 @@
     }
 
     // Scroll chat back to bottom
-    var scrollToBottom = function(){       
+    var scrollToBottom = function(){
         if (GM_getValue("rlc-AutoScroll")){
             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
@@ -1233,26 +1233,26 @@
     $.getJSON("/live/wpytzw1guzg2/about.json", function(data) {
 
         var websocket_url = data.data.websocket_url;
-        
+
         var ws = new WebSocket(websocket_url);
 
-        ws.onmessage = function (evt) { 
+        ws.onmessage = function (evt) {
             var msg = JSON.parse(evt.data);
-           
+
             switch(msg.type) {
             case 'update':
 
                 var payload = msg.payload.data;
-   
+
                 var usr = payload.author;
                 var msgbody = payload.body_html;
                 var msgID = payload.name;
-                
+
                 var created = payload.created_utc;
                 var utcSeconds = created;
                 var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch (wat?)
                 readAbleDate.setUTCSeconds(utcSeconds);
-                    
+
                 var finaltimestamp = readAbleDate.toTimeString().split("GMT")[0];
 
                 var fakeMessage = `
@@ -1264,13 +1264,13 @@
                 </li>`
                 $(".rlc-message-listing").prepend(fakeMessage);
                 break;
-             
-             /*  disabled, liveupdate header already tracks this 
+
+             /*  disabled, liveupdate header already tracks this
             case 'activity':
 
                 var payload = msg.payload;
-                console.log('user count from websocket:', payload.count);    
-                
+                console.log('user count from websocket:', payload.count);
+
                 break;
             */
 
@@ -1283,10 +1283,9 @@
                 break;
 
 
-            /*  embeds_ready - a previously posted update has b
-            een parsed and embedded media is available for it now. 
-            the payload contains a liveupdate_id and list of 
-            embeds to add to it.*/
+            /*  embeds_ready - a previously posted update has
+            been parsed and embedded media is available for it now.
+            the payload contains a liveupdate_id and list of embeds to add to it.*/
             }
 
         };
@@ -1297,14 +1296,14 @@
 
 function getMessages(gettingOld) {
     loadHistoryMessageException = 1;
-     
+
      var urlToGet = ".json";
 
-     if (gettingOld) { 
-        var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1]; 
-        urlToGet = ".json?after="+lastMessageName; 
-     } 
-     
+     if (gettingOld) {
+        var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
+         urlToGet = ".json?after="+lastMessageName;
+     }
+
      var ajaxLoadOldMessages =     $.getJSON( urlToGet, function( data ) {
                 var oldmessages = data.data.children;  //navigate the data to the object containing the messages
                 $.each( oldmessages, function( ) {
@@ -1324,7 +1323,7 @@ function getMessages(gettingOld) {
                     //console.log(finaltimestamp);
 
                     // Unescaped html escaped string by way of crazy voodo magic.
-                    $msgbody = $("<textarea/>").html($msgbody).val() 
+                    $msgbody = $("<textarea/>").html($msgbody).val()
 
                     var fakeMessage = `
                     <li class="rlc-message" name="rlc-id-${msgID}">
@@ -1353,7 +1352,7 @@ function getMessages(gettingOld) {
 //  | $$ \  $| $$$$$$$| $$/   \  $$      | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$
 //  |__/  \__|________|__/     \__/      |__/     |__|________/\______/ \______/|__/  |__/\______/|________/
 //
-// 
+//
 //
 
     // Notification sound in base64 encoding
@@ -1368,14 +1367,14 @@ function getMessages(gettingOld) {
 
     // Used differentiate initial and subsequent messages
     var loadHistoryMessageException = 1;
-    
+
     var maxmessages = 25;
-        
+
     // note from stjern: no reason to set these for every message
     var hexArray    = GM_getValue("hexArrayStore", "") || []; //initialize hex and usr lookup list variables
     var usrArray    = GM_getValue("usrArrayStore", "") || [];
     var colorSet    = "error"; //this value should never end up getting used
-        
+
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
@@ -1385,17 +1384,17 @@ function getMessages(gettingOld) {
         var $usr        = $el.find(".author");
         var line        = $msg.text().toLowerCase();
         var firstLine   = $msg.find("p").first();
-        
+
         // remove the oldest message if there are more than 25 if that option is on.
         if (GM_getValue("rlc-MaxMessages25")){
             var totalmessages = $(".rlc-message").length;
             if (totalmessages > maxmessages) {
                 $(".rlc-message").last().remove();
-            }        
+            }
         }
 
-        //handle giphy images 
-        if (!GM_getValue("rlc-HideGiphyImages")){        
+        //handle giphy images
+        if (!GM_getValue("rlc-HideGiphyImages")){
             if (line.trim().indexOf("rlc-image") === 0){
                 var linksObj = $msg.find("a");
                 var url = linksObj.attr("href");
@@ -1406,28 +1405,28 @@ function getMessages(gettingOld) {
                     var imgHeight = 0;
                     imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
 
-                    url = url.replace(/^http:\/\//i, 'https://'); //force usage of https 
-                    
+                    url = url.replace(/^http:\/\//i, 'https://'); //force usage of https
+
                     $el.addClass("rlc-imageWithin");
-                    
+
                     firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
                 }
             }
         }
-        
+
         // /me support (if in channel see proccessline)
         if (line.indexOf("/me") === 0){
             $el.addClass("user-narration");
             firstLine.html(firstLine.html().replace("/me", " " + $usr.text().replace("/u/", "")));
         }
-        else { 
+        else {
         // Remove the /u/ in author name
         $usr.text($usr.text().replace("/u/", ""));
         }
 
         // Timestamp modification & user activity tracking
         timeAndUserTracking($el, $usr);
-        
+
         // long message collapsing
         collapseLongMessage($msg,firstLine);
 
@@ -1442,7 +1441,7 @@ function getMessages(gettingOld) {
 
         // Emote support
         emoteSupport(line, $msg, firstLine);
-        
+
         twitchemoteSupport(line, $msg, firstLine);
 
         // Abbrev Support
@@ -1455,20 +1454,20 @@ function getMessages(gettingOld) {
 
         // Track channels
         tabbedChannels.proccessLine(line, $el, rescan);
-       
+
         //finds iframes
         var embedFinder = $msg.find("iframe").length;
         if (embedFinder === 1) { $el.addClass("rlc-hasEmbed"); }
 
         // if theres a link in the message
-        if ($msg.find("a").length === 1) { 
+        if ($msg.find("a").length === 1) {
 
             // aza is the result of splitting message text at space and picking the second piece.
             var aza = line.split(" ")[1];
            // console.log(aza);
 
             // if we had a link and splitting it at space results in an undefined aza, the only thing in the message was the link.
-            if (typeof aza === "undefined") { 
+            if (typeof aza === "undefined") {
                 $el.addClass("rlc-hasEmbed");
             }
         }
@@ -1476,13 +1475,13 @@ function getMessages(gettingOld) {
         // User color picker:
         if (GM_getValue("rlc-RobinColors")) {
             colorSet = 2;
-        } 
-        else { 
+        }
+        else {
             if (GM_getValue("rlc-DarkMode")) {
             colorSet = 0;
             }
             // default non dark colors
-            else { 
+            else {
             colorSet = 1;
             }
         }
@@ -1494,10 +1493,10 @@ function getMessages(gettingOld) {
             GM_setValue("usrArrayStore", usrArray); //Store usrArray into settings
             hexArray = GM_getValue("hexArrayStore", ""); //update hexArray to include new user's colors
         }
-        
+
         //Apply color through CSS to message author
         $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
-        
+
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
             $msg.parent().addClass('muted');
@@ -1525,7 +1524,7 @@ function getMessages(gettingOld) {
                 }
             }
             //if option is checked, check if message user is "robin" user and do not play if so
-            if (GM_getValue("rlc-DisableSelfnarration")){ 
+            if (GM_getValue("rlc-DisableSelfnarration")){
                 if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
                     return false;  //end function before TTS is called.
                 }
@@ -1547,7 +1546,7 @@ function getMessages(gettingOld) {
 //  | $$$$$$$$  \  $/  | $$$$$$$| $$ \  $$  | $$         | $$  | $| $$  | $| $$ \  $| $$$$$$$| $$$$$$$$/$$$$$| $$ \  $|  $$$$$$/
 //  |________/   \_/   |________|__/  \__/  |__/         |__/  |__|__/  |__|__/  \__|_______/|________|______|__/  \__/\______/
 //
-// 
+//
 //
 
     //browser info getter from http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
@@ -1736,13 +1735,13 @@ function getMessages(gettingOld) {
      // instead we show our own structure with our own messages. this deletes the comment by matching the rlc-message with the liveupdate and pressing the delete and yes button on the liveupdate.
     function deleteComment($objComment){
 
-        
+
         var selectorstring = $objComment.attr("name").split("rlc-id-LiveUpdate_")[1];
 
         var $liveupdateEl = $('a[href$="'+selectorstring+'"]').parent();
 
         if ($liveupdateEl.has(".buttonrow").length>0){
-            
+
             var $button = $liveupdateEl.find(".delete").find("button");
              $button.click();
 
@@ -1818,13 +1817,13 @@ function getMessages(gettingOld) {
                             messageTextToSpeechHandler($msg, $usr);
                         }
                     });
-        });       
+        });
 
         // Load old messages
         $("#togglebarLoadHist").click(function(){
             getMessages(true);
         });
-                
+
         // Easy access options
         $("#togglebarAutoscroll").click(function(){
             $( "#rlc-settings label:contains('Auto Scroll') input" ).click();
@@ -1834,14 +1833,14 @@ function getMessages(gettingOld) {
             $( "#rlc-settings label:contains('Text To Speech (TTS)') input" ).click();
         });
         //toggle sidebar via css classes
-        $("#togglesidebar").click(function(){ 
-            $("body").toggleClass("rlc-hidesidebar"); 
-            $(this).toggleClass("selected");  
-            scrollToBottom();  
+        $("#togglesidebar").click(function(){
+            $("body").toggleClass("rlc-hidesidebar");
+            $(this).toggleClass("selected");
+            scrollToBottom();
         });
-        
+
         $("#rlc-toggleoptions").click(function(){
-            $("body").removeClass("rlc-showreadmebar"); 
+            $("body").removeClass("rlc-showreadmebar");
             $("body").toggleClass("rlc-showoptions");
         });
 
@@ -1849,7 +1848,7 @@ function getMessages(gettingOld) {
             $("body").removeClass("rlc-showoptions");
             $("body").toggleClass("rlc-showreadmebar");
         });
-    // this makes the RLC send button click on the hidden native reddit live button 
+    // this makes the RLC send button click on the hidden native reddit live button
         $("#rlc-sendmessage").click(function(){
             $(".save-button .btn").click();
         });
@@ -1919,7 +1918,7 @@ function getMessages(gettingOld) {
                             <li><a>Close Menu</a></li>
                             <li id="mute"><a>Mute User</a></li>
                             <li id="PMUser"><a>PM User</a></li>
-                            <li id="deleteCom"><a>Delete Comment</a></li> 
+                            <li id="deleteCom"><a>Delete Comment</a></li>
                             <li id="copyMessage"><a>Copy Message</a></li>
                             <li id="speakMessage"><a>Speak Message</a></li>
                         </ul>
@@ -1936,7 +1935,7 @@ function getMessages(gettingOld) {
       $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
       $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
       $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
- 
+
       // start up filter tabs by inserting them
       tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
     }
@@ -2086,9 +2085,9 @@ function getMessages(gettingOld) {
 //
 
     // RLC-CORE
-    GM_addStyle(`.dark-background .md code{background:#000}#rlc-header,#rlc-wrapper,body{overflow:hidden}img.rlc-image{max-height:200px}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);border-top:1px solid rgba(128,128,128,.35)}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box;background-color:#EFEFED}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#new-update-form{margin:0;width:87%;float:left}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in "}h1#liveupdate-title{font-size:1.5em;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background-color:transparent}#rlc-wrapper .rlc-message .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid rgba(227,227,224,.44);border-top:0;box-sizing:border-box}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:1px solid rgba(227,227,224,.44);padding:5px 0}#rlc-chat{height:calc(100vh - 186px);overflow-y:scroll;max-height:465px;margin-top:30px}#rlc-main .rlc-message-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(227,227,224,.44);float:left;height:34px;margin:0;border-radius:2px;padding:6px;background:0 0}#rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown,body{background-color:#fcfcfc}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:calc(33.3% - 7px);float:left;text-align:center;box-sizing:border-box;cursor:pointer;-moz-border-radius:2px;-webkit-border-radius:2px;font-size:1.2em}#rlc-messagebox{padding:10px;width:100%}#rlc-sendmessage{height:32px;width:13%;float:right;padding:8px 0}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 6px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);margin-right:10px;letter-spacing:1px;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0;margin-right:0}.rlc-message .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;line-height:32px}.rlc-message a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.rlc-message-listing li.rlc-message .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.rlc-message.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:5px 0;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}#liveupdate-description{margin-left:10px;float:left}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}body{min-width:0;background-size:cover;background-repeat:no-repeat;background-position:center}#rlc-messagebox textarea,.rlc-channel-add button,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{background-color:transparent}#rlc-wrapper .md pre{background-color:transparent!important}.rlc-message.user-narration .body .md{font-style:italic}.rlc-message.user-mention .body .md p{font-weight:700}.rlc-message a.author,.rlc-message p{line-height:32px;min-height:32px}.md{max-width:none!important}.rlc-message-listing li.rlc-message p{font-size:13px!important}.rlc-message pre{margin:0;padding:0;max-width:90%;border:#FCFCFC;box-sizing:border-box;border:1px solid rgba(227,227,224,.44)}.channelname{display:block;float:left;width:100px;line-height:32px}.rlc-imageWithin span.rlc-imgvia{float:right;margin-left:10px}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:10px}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar{float:right;box-sizing:border-box;text-align:center;padding:5px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:auto;margin-left:8px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(227,227,224,.44)}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.rlc-showChannelsUI #new-update-form{width:77%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:10%;height:34px;float:left;background:0 0;border:1px solid rgba(227,227,224,.44)}.rlc-showChannelsUI #rlc-sendmessage{width:13%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid rgba(227,227,224,.44)}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid rgba(227,227,224,.44)}#filter_tabs>span.more{padding:0 30px;border-left:1px solid rgba(227,227,224,.44)}.rlc-channel-add input{border:1px solid rgba(227,227,224,.44);padding:0;height:24px;background-color:transparent}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;position:relative;min-height:32px}.longMessageClosed p{position:relative;left:25px;top:-5px}.longMessageClosed .extendButton{position:absolute;top:7px;margin-right:5px}.longMessageClosed pre{position:absolute;left:25px}#myContextMenu{position:absolute;box-shadow:1px 1px 2px #888;background-color:grey;padding:5px 0}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;display:block}.mrPumpkin,.mrTwitchEmotes{display:inline-block;position:relative}#myContextMenu ul li:not(.disabled) a:hover{cursor:pointer}.mrPumpkin{height:24px;width:24px;border-radius:3px;background-size:144px;top:6px}.dark-background .mrPumpkin{border-radius:5px}.dark-background .mrTwitchEmotes,.mrTwitchEmotes{border-radius:0}.mp_frown{background-position:-24px 0}.mp_confused{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_bored{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.mp_evilsmile{background-position:-72px 24px}.mp_disappointed{background-position:-96px 0}.mp_stjerneklar{background-position:-72px 48px}.mp_fatherderp{background-position:-24px 24px}.mp_s3cur1ty{background-position:-48px 24px}.mrTwitchEmotes{height:28px;width:25px;background-size:100px;top:0}.tw_kappa{background-position:-25px -28px}.tw_elegiggle{background-position:-50px 0}.tw_4head{background-position:0 0}.tw_notlikethis{background-position:-75px 0}.tw_dansgame{background-position:-25px 0}.tw_failfish{background-position:0 -28px}.tw_kreygasm{background-position:-50px -28px}.tw_pogchamp{background-position:-75px -28px}.tw_smorc{background-position:0 -55px}#filter_tabs,#hsts_pixel,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author,select#rlc-channel-dropdown{display:none}#liveupdate-resources h2{display:none!important}.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}.rlc-hidesidebar #rlc-sidebar,div#rlc-leftPanel{display:none}#myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button{color:#fff}.rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar{background:0 0}.rlc-compact #rlc-chat{height:calc(100vh - 252px);max-height:466px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 198px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 134px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body.dark-background{background-color:#404040}body.rlc-customBg #rlc-wrapper{background-color:rgba(255,255,255,.1)!important}body.dark-background.rlc-customBg #rlc-wrapper{background-color:rgba(0,0,0,.1)!important}body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg #rlc-wrapper .md,body.dark-background.rlc-customBg #rlc-wrapper .rlc-channel-add button{text-shadow:0 0 8px rgba(0,0,0,1)!important}.rlc-customBg #rlc-wrapper .rlc-channel-add button,body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md{text-shadow:0 0 8px rgba(255,255,255,1)!important}.dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a{color:#add8e6}.rlc-hidesidebar #rlc-main{width:100%}.rlc-leftPanel #rlc-main{width:60%;float:left}.rlc-leftPanel #rlc-sidebar{width:20%}.rlc-leftPanel #rlc-leftPanel{width:20%;float:left;display:block}.rlc-customscrollbars div#filter_tabs{width:calc(100% - 12px)}.rlc-customscrollbars ::-webkit-scrollbar{width:12px}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb{border:1px solid rgba(227,227,224,.26)}.rlc-customscrollbars ::-webkit-scrollbar-thumb{border:1px solid rgba(227,227,224,.85)}`);
+    GM_addStyle(`#rlc-header,#rlc-wrapper,body{overflow:hidden}img.rlc-image{max-height:200px}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);border-top:1px solid rgba(128,128,128,.35)}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box;background-color:#EFEFED}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#new-update-form{margin:0;width:87%;float:left}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in "}h1#liveupdate-title{font-size:1.5em;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background-color:transparent}#rlc-wrapper .rlc-message .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid rgba(227,227,224,.44);border-top:0;box-sizing:border-box}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:1px solid rgba(227,227,224,.44);padding:5px 0}#rlc-chat{height:calc(100vh - 186px);overflow-y:scroll;max-height:465px;margin-top:30px}#rlc-main .rlc-message-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(227,227,224,.44);float:left;height:34px;margin:0;border-radius:2px;padding:6px;background:0 0}#rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown,body{background-color:#fcfcfc}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:calc(33.3% - 7px);float:left;text-align:center;box-sizing:border-box;cursor:pointer;-moz-border-radius:2px;-webkit-border-radius:2px;font-size:1.2em}#rlc-messagebox{padding:10px;width:100%}#rlc-sendmessage{height:32px;width:13%;float:right;padding:8px 0}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 6px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);margin-right:10px;letter-spacing:1px;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0;margin-right:0}.rlc-message .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;line-height:32px}.rlc-message a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.rlc-message-listing li.rlc-message .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.rlc-message.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:5px 0;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}#liveupdate-description{margin-left:10px;float:left}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}body{min-width:0;background-size:cover;background-repeat:no-repeat;background-position:center}#rlc-messagebox textarea,.rlc-channel-add button,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{background-color:transparent}#rlc-wrapper .md pre{background-color:transparent!important}.rlc-message.user-narration .body .md{font-style:italic}.rlc-message.user-mention .body .md p{font-weight:700}.rlc-message a.author,.rlc-message p{line-height:32px;min-height:32px}.md{max-width:none!important}.rlc-message-listing li.rlc-message p{font-size:13px!important}.rlc-message pre{margin:0;padding:0;max-width:90%;border:#FCFCFC;box-sizing:border-box;border:1px solid rgba(227,227,224,.44)}.channelname{display:block;float:left;width:100px;line-height:32px}.rlc-imageWithin span.rlc-imgvia{float:right;margin-left:10px}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:10px}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar{float:right;box-sizing:border-box;text-align:center;padding:5px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:auto;margin-left:8px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(227,227,224,.44)}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.rlc-showChannelsUI #new-update-form{width:77%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:10%;height:34px;float:left;background:0 0;border:1px solid rgba(227,227,224,.44)}.rlc-showChannelsUI #rlc-sendmessage{width:13%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid rgba(227,227,224,.44)}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid rgba(227,227,224,.44)}#filter_tabs>span.more{padding:0 30px;border-left:1px solid rgba(227,227,224,.44)}.rlc-channel-add input{border:1px solid rgba(227,227,224,.44);padding:0;height:24px;background-color:transparent}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;position:relative;min-height:32px}.longMessageClosed p{position:relative;left:25px;top:-5px}.longMessageClosed .extendButton{position:absolute;top:7px;margin-right:5px}.longMessageClosed pre{position:absolute;left:25px}#myContextMenu{position:absolute;box-shadow:1px 1px 2px #888;background-color:grey;padding:5px 0}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;display:block}.mrPumpkin,.mrTwitchEmotes{display:inline-block;position:relative}#myContextMenu ul li:not(.disabled) a:hover{cursor:pointer}.mrPumpkin{height:24px;width:24px;border-radius:3px;background-size:144px;top:6px}.dark-background .mrPumpkin{border-radius:5px}.dark-background .mrTwitchEmotes,.mrTwitchEmotes{border-radius:0}.mp_frown{background-position:-24px 0}.mp_confused{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_bored{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.mp_evilsmile{background-position:-72px 24px}.mp_disappointed{background-position:-96px 0}.mp_stjerneklar{background-position:-72px 48px}.mp_fatherderp{background-position:-24px 24px}.mp_s3cur1ty{background-position:-48px 24px}.mrTwitchEmotes{height:28px;width:25px;background-size:100px;top:0}.tw_kappa{background-position:-25px -28px}.tw_elegiggle{background-position:-50px 0}.tw_4head{background-position:0 0}.tw_notlikethis{background-position:-75px 0}.tw_dansgame{background-position:-25px 0}.tw_failfish{background-position:0 -28px}.tw_kreygasm{background-position:-50px -28px}.tw_pogchamp{background-position:-75px -28px}.tw_smorc{background-position:0 -55px}#filter_tabs,#hsts_pixel,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author,select#rlc-channel-dropdown{display:none}#liveupdate-resources h2{display:none!important}.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}.rlc-hidesidebar #rlc-sidebar,div#rlc-leftPanel{display:none}#myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button{color:#fff}.rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar{background:0 0}.rlc-compact #rlc-chat{height:calc(100vh - 252px);max-height:466px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 198px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 134px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body.dark-background{background-color:#404040}body.rlc-customBg #rlc-wrapper{background-color:rgba(255,255,255,.1)!important}body.dark-background.rlc-customBg #rlc-wrapper{background-color:rgba(0,0,0,.1)!important}body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg #rlc-wrapper .md,body.dark-background.rlc-customBg #rlc-wrapper .rlc-channel-add button{text-shadow:0 0 8px rgba(0,0,0,1)!important}.rlc-customBg #rlc-wrapper .rlc-channel-add button,body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md{text-shadow:0 0 8px rgba(255,255,255,1)!important}.dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a{color:#add8e6}.rlc-hidesidebar #rlc-main{width:100%}.rlc-leftPanel #rlc-main{width:60%;float:left}.rlc-leftPanel #rlc-sidebar{width:20%}.rlc-leftPanel #rlc-leftPanel{width:20%;float:left;display:block}.rlc-customscrollbars div#filter_tabs{width:calc(100% - 12px)}.rlc-customscrollbars ::-webkit-scrollbar{width:12px}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb{border:1px solid rgba(227,227,224,.26)}.rlc-customscrollbars ::-webkit-scrollbar-thumb{border:1px solid rgba(227,227,224,.85)}`);
 
-    // BG alternation - breaks minifier 
+    // BG alternation - breaks minifier
     GM_addStyle('.dark-background .alt-bgcolor,.dark-background .selected {background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.alt-bgcolor,.selected{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}');
 
     // base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian, added to by kreten
