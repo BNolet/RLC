@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.16.7
+// @version        3.16.8
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -227,7 +227,10 @@
         },false, "scroll chat on new message");
 
         createOption("No Emotes", function(checked){
-        },false, "disable Twitch emotes and RLC smileys");
+        },false, "disable RLC smileys");
+        
+        createOption("No Twitch Emotes", function(checked){
+        },false, "disable Twitch Emotes");
 
         createOption("Hide Giphy Images", function(checked){
         },false, "disable giphy gifs (effective on reload or new messages)");
@@ -1037,7 +1040,7 @@
     }
 
     function twitchemoteSupport(line, $msg, firstLine) {
-        if (!GM_getValue("rlc-NoEmotes")){
+        if (!GM_getValue("rlc-NoTwitchEmotes")){
             $.each(twitchmojiList, function(emoji,replace){
                 if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
                     if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
