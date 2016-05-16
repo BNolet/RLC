@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.16.8
+// @version        3.18.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -24,15 +24,15 @@
 // @noframes
 // ==/UserScript==
 
-//   /$$$$$$$ /$$       /$$$$$$        /$$$$$$           /$$
-//  | $$__  $| $$      /$$__  $$      |_  $$_/          | $$
-//  | $$  \ $| $$     | $$  \__/        | $$  /$$$$$$$ /$$$$$$   /$$$$$$  /$$$$$$
-//  | $$$$$$$| $$     | $$              | $$ | $$__  $|_  $$_/  /$$__  $$/$$__  $$
-//  | $$__  $| $$     | $$              | $$ | $$  \ $$ | $$   | $$  \__| $$  \ $$
-//  | $$  \ $| $$     | $$    $$        | $$ | $$  | $$ | $$ /$| $$     | $$  | $$
-//  | $$  | $| $$$$$$$|  $$$$$$/       /$$$$$| $$  | $$ |  $$$$| $$     |  $$$$$$/
-//  |__/  |__|________/\______/       |______|__/  |__/  \___/ |__/      \______/
-//
+
+//  ██████╗ ██╗      ██████╗    ██╗███╗   ██╗████████╗██████╗  ██████╗ 
+//  ██╔══██╗██║     ██╔════╝    ██║████╗  ██║╚══██╔══╝██╔══██╗██╔═══██╗
+//  ██████╔╝██║     ██║         ██║██╔██╗ ██║   ██║   ██████╔╝██║   ██║
+//  ██╔══██╗██║     ██║         ██║██║╚██╗██║   ██║   ██╔══██╗██║   ██║
+//  ██║  ██║███████╗╚██████╗    ██║██║ ╚████║   ██║   ██║  ██║╚██████╔╝
+//  ╚═╝  ╚═╝╚══════╝ ╚═════╝    ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ 
+
+                                                                    
 //    Welcome to Reddit Live Chat source code, enjoy your visit.
 //    Please group your variables with the relevant functions and follow existing structure.
 //    (Unless you are willing to rewrite the structure into something more sane)
@@ -40,16 +40,14 @@
 //    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.
 //      - Stjerneklar
 
-//
-//    /$$$$$$ /$$$$$$$ /$$$$$$$$/$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$
-//   /$$__  $| $$__  $|__  $$__|_  $$_//$$__  $| $$$ | $$/$$__  $$
-//  | $$  \ $| $$  \ $$  | $$    | $$ | $$  \ $| $$$$| $| $$  \__/
-//  | $$  | $| $$$$$$$/  | $$    | $$ | $$  | $| $$ $$ $|  $$$$$$
-//  | $$  | $| $$____/   | $$    | $$ | $$  | $| $$  $$$$\____  $$
-//  | $$  | $| $$        | $$    | $$ | $$  | $| $$\  $$$/$$  \ $$
-//  |  $$$$$$| $$        | $$   /$$$$$|  $$$$$$| $$ \  $|  $$$$$$/
-//   \______/|__/        |__/  |______/\______/|__/  \__/\______/
-//
+
+//  ██████╗ ██╗      ██████╗     ██████╗ ██████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗
+//  ██╔══██╗██║     ██╔════╝    ██╔═══██╗██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+//  ██████╔╝██║     ██║         ██║   ██║██████╔╝   ██║   ██║██║   ██║██╔██╗ ██║███████╗
+//  ██╔══██╗██║     ██║         ██║   ██║██╔═══╝    ██║   ██║██║   ██║██║╚██╗██║╚════██║
+//  ██║  ██║███████╗╚██████╗    ╚██████╔╝██║        ██║   ██║╚██████╔╝██║ ╚████║███████║
+//  ╚═╝  ╚═╝╚══════╝ ╚═════╝     ╚═════╝ ╚═╝        ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+//                                                                                      
 //  Calls createOption to set up lables, GM values and body classes based on stored GM values if set.
 //
 
@@ -77,14 +75,15 @@
         }
         // Render option
         var $option = $(`<label id='option-${key}'><input type='checkbox' ${checkedMarkup}>${name}<span>${description}</span></label>`).click(function(e){
-            var checked = $(this).find("input").is(":checked");
-
-            // exit click handler if event is not being callled on the checkbox.
-            // sidesteps the issue that the event fires multiple times when clicking anything other than the checkbox.
+    
+        // capture only checkbox's event
             var target = $( e.target );
             if ( !target.is( "input" ) ) {
-                return false;
+                return;
             }
+
+            var checked = $(this).find("input").is(":checked");
+
             //console.log("option set to "+checked);
 
             // Persist state
@@ -122,6 +121,7 @@
         },false, "remove RLC max width/height");
 
         createOption("Dark Mode", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
             if (checked){
                 $("body").addClass("dark-background");
             } else {
@@ -130,6 +130,7 @@
         },false);
 
         createOption("Robin Colors", function(checked){
+            if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "color usernames via robin algorithm (existing messages are not modified)");
 
         createOption("Compact Mode", function(checked){
@@ -172,6 +173,7 @@
         },false,"show counters for messages in tabs");
 
         createOption("Hide Channels in Global", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
             if (checked){
                 $("body").addClass("rlc-hideChannelsInGlobal");
             } else {
@@ -227,13 +229,20 @@
         },false, "scroll chat on new message");
 
         createOption("No Emotes", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "disable RLC smileys");
 
         createOption("No Twitch Emotes", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "disable Twitch Emotes");
 
         createOption("Hide Giphy Images", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "disable giphy gifs (effective on reload or new messages)");
+
+        createOption("Disable Markdown", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
+        },false, "get messages without reddit formatting");
 
         createOption("Max Messages 25", function(checked){
             if (checked){
@@ -294,18 +303,14 @@
         },false, "sample image works best in dark mode");
     }
 
-//
-//   /$$$$$$$$/$$$$$$ /$$$$$$$ /$$$$$$$ /$$$$$$$$/$$$$$$$         /$$$$$$ /$$   /$$ /$$$$$$ /$$   /$$/$$   /$$/$$$$$$$$/$$       /$$$$$$
-//  |__  $$__/$$__  $| $$__  $| $$__  $| $$_____| $$__  $$       /$$__  $| $$  | $$/$$__  $| $$$ | $| $$$ | $| $$_____| $$      /$$__  $$
-//     | $$ | $$  \ $| $$  \ $| $$  \ $| $$     | $$  \ $$      | $$  \__| $$  | $| $$  \ $| $$$$| $| $$$$| $| $$     | $$     | $$  \__/
-//     | $$ | $$$$$$$| $$$$$$$| $$$$$$$| $$$$$  | $$  | $$      | $$     | $$$$$$$| $$$$$$$| $$ $$ $| $$ $$ $| $$$$$  | $$     |  $$$$$$
-//     | $$ | $$__  $| $$__  $| $$__  $| $$__/  | $$  | $$      | $$     | $$__  $| $$__  $| $$  $$$| $$  $$$| $$__/  | $$      \____  $$
-//     | $$ | $$  | $| $$  \ $| $$  \ $| $$     | $$  | $$      | $$    $| $$  | $| $$  | $| $$\  $$| $$\  $$| $$     | $$      /$$  \ $$
-//     | $$ | $$  | $| $$$$$$$| $$$$$$$| $$$$$$$| $$$$$$$/      |  $$$$$$| $$  | $| $$  | $| $$ \  $| $$ \  $| $$$$$$$| $$$$$$$|  $$$$$$/
-//     |__/ |__/  |__|_______/|_______/|________|_______/        \______/|__/  |__|__/  |__|__/  \__|__/  \__|________|________/\______/
-//
-//      Channel tabs megafunction (and css adder friends)
-//
+
+//  ████████╗ █████╗ ██████╗ ██████╗ ███████╗██████╗      ██████╗██╗  ██╗ █████╗ ███╗   ██╗███╗   ██╗███████╗██╗     ███████╗
+//  ╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗    ██╔════╝██║  ██║██╔══██╗████╗  ██║████╗  ██║██╔════╝██║     ██╔════╝
+//     ██║   ███████║██████╔╝██████╔╝█████╗  ██║  ██║    ██║     ███████║███████║██╔██╗ ██║██╔██╗ ██║█████╗  ██║     ███████╗
+//     ██║   ██╔══██║██╔══██╗██╔══██╗██╔══╝  ██║  ██║    ██║     ██╔══██║██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██║     ╚════██║
+//     ██║   ██║  ██║██████╔╝██████╔╝███████╗██████╔╝    ╚██████╗██║  ██║██║  ██║██║ ╚████║██║ ╚████║███████╗███████╗███████║
+//     ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚═════╝ ╚══════╝╚═════╝      ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚══════╝╚══════╝
+
 
     var tabbedChannels = new function(){
         /* Basic usage - tabbedChannels.init( dom_node_to_add_tabs_to );
@@ -618,18 +623,14 @@
     }
     GM_addStyle(colorcollection);
 
-//
-//   /$$    /$$ /$$$$$$ /$$$$$$$ /$$$$$$ /$$$$$$ /$$   /$$ /$$$$$$        /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$
-//  | $$   | $$/$$__  $| $$__  $|_  $$_//$$__  $| $$  | $$/$$__  $$      | $$_____| $$  | $| $$$ | $$/$$__  $|__  $$__/$$__  $$
-//  | $$   | $| $$  \ $| $$  \ $$ | $$ | $$  \ $| $$  | $| $$  \__/      | $$     | $$  | $| $$$$| $| $$  \__/  | $$ | $$  \__/
-//  |  $$ / $$| $$$$$$$| $$$$$$$/ | $$ | $$  | $| $$  | $|  $$$$$$       | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$
-//   \  $$ $$/| $$__  $| $$__  $$ | $$ | $$  | $| $$  | $$\____  $$      | $$__/  | $$  | $| $$  $$$| $$        | $$  \____  $$
-//    \  $$$/ | $$  | $| $$  \ $$ | $$ | $$  | $| $$  | $$/$$  \ $$      | $$     | $$  | $| $$\  $$| $$    $$  | $$  /$$  \ $$
-//     \  $/  | $$  | $| $$  | $$/$$$$$|  $$$$$$|  $$$$$$|  $$$$$$/      | $$     |  $$$$$$| $$ \  $|  $$$$$$/  | $$ |  $$$$$$/
-//      \_/   |__/  |__|__/  |__|______/\______/ \______/ \______/       |__/      \______/|__/  \__/\______/   |__/  \______/
-//
-//  Code status: needs some love
-//
+
+//  ██╗   ██╗███████╗███████╗██████╗     ██╗     ██╗███████╗████████╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ██║   ██║██╔════╝██╔════╝██╔══██╗    ██║     ██║██╔════╝╚══██╔══╝    ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██║   ██║███████╗█████╗  ██████╔╝    ██║     ██║███████╗   ██║       █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║   ██║╚════██║██╔══╝  ██╔══██╗    ██║     ██║╚════██║   ██║       ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ╚██████╔╝███████║███████╗██║  ██║    ███████╗██║███████║   ██║       ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝   ╚═╝       ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+
 
     var storedMuteList = GM_getValue("mutedUsers");
 
@@ -696,18 +697,14 @@
         }
     }
 
-//
-//   /$$$$$$$$/$$$$$$$$/$$   /$$/$$$$$$$$       /$$$$$$$$/$$$$$$         /$$$$$$ /$$$$$$$ /$$$$$$$$/$$$$$$$$ /$$$$$$ /$$   /$$
-//  |__  $$__| $$_____| $$  / $|__  $$__/      |__  $$__/$$__  $$       /$$__  $| $$__  $| $$_____| $$_____//$$__  $| $$  | $$
-//     | $$  | $$     |  $$/ $$/  | $$            | $$ | $$  \ $$      | $$  \__| $$  \ $| $$     | $$     | $$  \__| $$  | $$
-//     | $$  | $$$$$   \  $$$$/   | $$            | $$ | $$  | $$      |  $$$$$$| $$$$$$$| $$$$$  | $$$$$  | $$     | $$$$$$$$
-//     | $$  | $$__/    >$$  $$   | $$            | $$ | $$  | $$       \____  $| $$____/| $$__/  | $$__/  | $$     | $$__  $$
-//     | $$  | $$      /$$/\  $$  | $$            | $$ | $$  | $$       /$$  \ $| $$     | $$     | $$     | $$    $| $$  | $$
-//     | $$  | $$$$$$$| $$  \ $$  | $$            | $$ |  $$$$$$/      |  $$$$$$| $$     | $$$$$$$| $$$$$$$|  $$$$$$| $$  | $$
-//     |__/  |________|__/  |__/  |__/            |__/  \______/        \______/|__/     |________|________/\______/|__/  |__/
-//
-//     Code status: could be better organized but pretty good, the spoiled brat section of RLC.
-//
+
+//  ████████╗███████╗██╗  ██╗████████╗    ████████╗ ██████╗     ███████╗██████╗ ███████╗███████╗ ██████╗██╗  ██╗
+//  ╚══██╔══╝██╔════╝╚██╗██╔╝╚══██╔══╝    ╚══██╔══╝██╔═══██╗    ██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝██║  ██║
+//     ██║   █████╗   ╚███╔╝    ██║          ██║   ██║   ██║    ███████╗██████╔╝█████╗  █████╗  ██║     ███████║
+//     ██║   ██╔══╝   ██╔██╗    ██║          ██║   ██║   ██║    ╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║     ██╔══██║
+//     ██║   ███████╗██╔╝ ██╗   ██║          ██║   ╚██████╔╝    ███████║██║     ███████╗███████╗╚██████╗██║  ██║
+//     ╚═╝   ╚══════╝╚═╝  ╚═╝   ╚═╝          ╚═╝    ╚═════╝     ╚══════╝╚═╝     ╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝
+
 
     var digits = ["", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "],
         tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
@@ -970,19 +967,14 @@
         }
     }
 
-// new msg functs
-//
-//   /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$       /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$
-//  | $$$    /$$| $$_____//$$__  $$/$$__  $$/$$__  $$/$$__  $| $$_____/      | $$_____| $$  | $| $$$ | $$/$$__  $|__  $$__/$$__  $$
-//  | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$            | $$     | $$  | $| $$$$| $| $$  \__/  | $$ | $$  \__/
-//  | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$         | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$
-//  | $$  $$$| $| $$__/   \____  $$\____  $| $$__  $| $$|_  $| $$__/         | $$__/  | $$  | $| $$  $$$| $$        | $$  \____  $$
-//  | $$\  $ | $| $$      /$$  \ $$/$$  \ $| $$  | $| $$  \ $| $$            | $$     | $$  | $| $$\  $$| $$    $$  | $$  /$$  \ $$
-//  | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$      | $$     |  $$$$$$| $$ \  $|  $$$$$$/  | $$ |  $$$$$$/
-//  |__/     |__|________/\______/ \______/|__/  |__/\______/|________/      |__/      \______/|__/  \__/\______/   |__/  \______/
-//
-//  Code status: needs some love
-//
+
+//  ███╗   ███╗███████╗ ██████╗     ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ████╗ ████║██╔════╝██╔════╝     ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██╔████╔██║███████╗██║  ███╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║╚██╔╝██║╚════██║██║   ██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ██║ ╚═╝ ██║███████║╚██████╔╝    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//  ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+
 
     // Grab users username + play nice with RES
     var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
@@ -1108,10 +1100,47 @@
             }
     }
 
+
+//  ███╗   ███╗███████╗████████╗ █████╗     ███╗   ███╗███████╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ████╗ ████║██╔════╝╚══██╔══╝██╔══██╗    ████╗ ████║██╔════╝██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██╔████╔██║█████╗     ██║   ███████║    ██╔████╔██║███████╗██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║    ██║╚██╔╝██║╚════██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║    ██║ ╚═╝ ██║███████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//  ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝    ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+
+
     function reAlternate(){
        $('.rlc-message').removeClass('alt-bgcolor');
        $('.rlc-message:odd').addClass('alt-bgcolor');
     }
+
+    // called by the max messages option, removes any message with a number higher than the specified max.
+    // this is done by looping trough a list of all messages and for each message checking what number the message is in the list.
+    // if the message number in the list(referred to as its index) is heigher than the max number supplied, the message is removed.
+    function cropMessages(max) {
+        $( ".rlc-message" ).each(function( index ) {
+            if (index > max) {
+                $( this ).remove();
+            }
+        });
+    }
+
+    // Scroll chat back to bottom
+    var scrollToBottom = function(){
+        if (GM_getValue("rlc-AutoScroll")){
+            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
+        }
+    };
+
+
+//  ██╗   ██╗███████╗███████╗██████╗      ██████╗ ██████╗ ██╗      ██████╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ██║   ██║██╔════╝██╔════╝██╔══██╗    ██╔════╝██╔═══██╗██║     ██╔═══██╗██╔══██╗    ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██║   ██║███████╗█████╗  ██████╔╝    ██║     ██║   ██║██║     ██║   ██║██████╔╝    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║   ██║╚════██║██╔══╝  ██╔══██╗    ██║     ██║   ██║██║     ██║   ██║██╔══██╗    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ╚██████╔╝███████║███████╗██║  ██║    ╚██████╗╚██████╔╝███████╗╚██████╔╝██║  ██║    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝     ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═╝    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+//                                                                                                                                           
+
 
     // Generate random value based on seed, max and minimum (for user colors)
     Math.seededRandom = function(seed, max = 1, min = 0) {
@@ -1209,34 +1238,38 @@
         GM_setValue("hexArrayStore", hexArray); //Store array in scriptmonkey settings for later access
     }
 
-    // called by the max messages option, removes any message with a number higher than the specified max.
-    // this is done by looping trough a list of all messages and for each message checking what number the message is in the list.
-    // if the message number in the list(referred to as its index) is heigher than the max number supplied, the message is removed.
-    function cropMessages(max) {
-        $( ".rlc-message" ).each(function( index ) {
-            if (index > max) {
-                $( this ).remove();
-            }
-        });
+
+//  ██╗     ██╗██╗   ██╗███████╗     █████╗ ██████╗ ██╗    ██╗    ██╗███████╗██████╗ ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+//  ██║     ██║██║   ██║██╔════╝    ██╔══██╗██╔══██╗██║    ██║    ██║██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+//  ██║     ██║██║   ██║█████╗      ███████║██████╔╝██║    ██║ █╗ ██║█████╗  ██████╔╝███████╗██║   ██║██║     █████╔╝ █████╗     ██║   
+//  ██║     ██║╚██╗ ██╔╝██╔══╝      ██╔══██║██╔═══╝ ██║    ██║███╗██║██╔══╝  ██╔══██╗╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║   
+//  ███████╗██║ ╚████╔╝ ███████╗    ██║  ██║██║     ██║    ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║   
+//  ╚══════╝╚═╝  ╚═══╝  ╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
+
+function stripTrailingSlash(str) {
+    if(str.substr(-1) === '/') {
+        return str.substr(0, str.length - 1);
     }
+    return str;
+}
 
-    // Scroll chat back to bottom
-    var scrollToBottom = function(){
-        if (GM_getValue("rlc-AutoScroll")){
-            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
-        }
-    };
-
-/* new new message */
 +function(){
 
-    $.getJSON("/live/wpytzw1guzg2/about.json", function(data) {
+    $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
 
         var websocket_url = data.data.websocket_url;
 
         var ws = new WebSocket(websocket_url);
 
         ws.onmessage = function (evt) {
+          
+                // Ensure data has data
+                 if(!data.hasOwnProperty('data'))
+                 {
+                     console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                     return;
+                 }
+          
             var msg = JSON.parse(evt.data);
 
             switch(msg.type) {
@@ -1246,6 +1279,9 @@
 
                 var usr = payload.author;
                 var msgbody = payload.body_html;
+
+                if (GM_getValue("rlc-DisableMarkdown")) { msgbody = '<div class="md"><p>'+ payload.body +'</p></div>' ;}
+
                 var msgID = payload.name;
 
                 var created = payload.created_utc;
@@ -1294,10 +1330,19 @@
 
 }();
 
+
+//   ██████╗ ███████╗████████╗    ███╗   ███╗███████╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗███████╗
+//  ██╔════╝ ██╔════╝╚══██╔══╝    ████╗ ████║██╔════╝██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝██╔════╝
+//  ██║  ███╗█████╗     ██║       ██╔████╔██║█████╗  ███████╗███████╗███████╗███████║██║  ███╗█████╗  ███████╗
+//  ██║   ██║██╔══╝     ██║       ██║╚██╔╝██║██╔══╝  ╚════██║╚════██║╚════██║██╔══██║██║   ██║██╔══╝  ╚════██║
+//  ╚██████╔╝███████╗   ██║       ██║ ╚═╝ ██║███████╗███████║███████║███████║██║  ██║╚██████╔╝███████╗███████║
+//   ╚═════╝ ╚══════╝   ╚═╝       ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
+
+
 function getMessages(gettingOld) {
     loadHistoryMessageException = 1;
 
-     var urlToGet = window.location.href + ".json";
+     var urlToGet = stripTrailingSlash(window.location.href) + "/.json";
 
      if (gettingOld) {
         var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
@@ -1305,19 +1350,27 @@ function getMessages(gettingOld) {
      }
 
      var ajaxLoadOldMessages =     $.getJSON( urlToGet, function( data ) {
-                // Ensure data has data
-                if(!data.hasOwnProperty('data'))
-                {
-                    console.log("Help me Obi-Wan Kenobi. We got empty data!");
-                    return;
-                }
-
+       
+                 // Ensure data has data
+                 if(!data.hasOwnProperty('data'))
+                 {
+                     console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                     return;
+                 }
+ 
+       
                 var oldmessages = data.data.children;  //navigate the data to the object containing the messages
                 $.each( oldmessages, function( ) {
                     var msg = $(this).toArray()[0].data; //navigate to the message data level we want
 
                     var msgID = msg.name;
                     var $msgbody = msg.body_html;
+
+                    if (GM_getValue("rlc-DisableMarkdown")) {$msgbody + '<div class="md"><p>'+ msg.body +'</p></div>';}
+                    
+                        // Unescaped html escaped string by way of crazy voodo magic.
+                        $msgbody = $("<textarea/>").html($msgbody).val()                        
+
                     var usr = msg.author;
                     var utcSeconds = msg.created_utc;
 
@@ -1326,11 +1379,6 @@ function getMessages(gettingOld) {
                     readAbleDate.setUTCSeconds(utcSeconds);
 
                     var finaltimestamp = readAbleDate.toTimeString().split("GMT")[0];
-
-                    //console.log(finaltimestamp);
-
-                    // Unescaped html escaped string by way of crazy voodo magic.
-                    $msgbody = $("<textarea/>").html($msgbody).val()
 
                     var fakeMessage = `
                     <li class="rlc-message" name="rlc-id-${msgID}">
@@ -1349,18 +1397,13 @@ function getMessages(gettingOld) {
 }
 
 
-//
-//   /$$   /$$/$$$$$$$$/$$      /$$       /$$      /$$/$$$$$$$$ /$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$ /$$$$$$$$
-//  | $$$ | $| $$_____| $$  /$ | $$      | $$$    /$$| $$_____//$$__  $$/$$__  $$/$$__  $$/$$__  $| $$_____/
-//  | $$$$| $| $$     | $$ /$$$| $$      | $$$$  /$$$| $$     | $$  \__| $$  \__| $$  \ $| $$  \__| $$
-//  | $$ $$ $| $$$$$  | $$/$$ $$ $$      | $$ $$/$$ $| $$$$$  |  $$$$$$|  $$$$$$| $$$$$$$| $$ /$$$| $$$$$
-//  | $$  $$$| $$__/  | $$$$_  $$$$      | $$  $$$| $| $$__/   \____  $$\____  $| $$__  $| $$|_  $| $$__/
-//  | $$\  $$| $$     | $$$/ \  $$$      | $$\  $ | $| $$      /$$  \ $$/$$  \ $| $$  | $| $$  \ $| $$
-//  | $$ \  $| $$$$$$$| $$/   \  $$      | $$ \/  | $| $$$$$$$|  $$$$$$|  $$$$$$| $$  | $|  $$$$$$| $$$$$$$$
-//  |__/  \__|________|__/     \__/      |__/     |__|________/\______/ \______/|__/  |__/\______/|________/
-//
-//
-//
+//  ███╗   ███╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗ 
+//  ████╗ ████║██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝ 
+//  ██╔████╔██║█████╗  ███████╗███████╗███████║██║  ███╗█████╗      ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗
+//  ██║╚██╔╝██║██╔══╝  ╚════██║╚════██║██╔══██║██║   ██║██╔══╝      ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║
+//  ██║ ╚═╝ ██║███████╗███████║███████║██║  ██║╚██████╔╝███████╗    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝
+//  ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+
 
     // Notification sound in base64 encoding
     var base64sound ="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QECBtFxREzTNkMyfLLVlM9UgS6aQnkPEo3DJRYkUyVQacP6j+5rqMc4TaCiVCxzSEDIKUTvMec6D7tk0aS4CEYQqahfEu6jh/We1NrVrQzhbTKZBgYbi8YbecRuLTMpTvUoAIIlynCMCimNNtBMWwDOcZIMABFMmDZPSCQgzPrLBYvUyQFMUd6UR1kbzgIGfWKw/SrqKgg5coZaKgUBQzOtyEaucSrOTBlGOqpGMNYXtGwYFhwTdfZ/nmjb0QUrCKicsj8alcPp0y7KmpuOEVAQSvUg25SKDofWuZEBtKidNLZhQJ0oGpdfVeGhJgUUEjARAINH4cGP3olbJAcdDR4gdl/onWtSmuw1xa2WVPSOy6CJ4qHBgSoO8r9UmcZiT4P+YkAhcKf+BJTTY44/cYFV5vLKV2XeYQShgODRoQoL8Kv/7ksTXgBhp4TbVygAE2sIlAzuwAJ5JQRVudDXlr7DoQRA6LbSquF6tu7RZb5t9nGr1bOOvx+64QknJBvtR///////////////6R48LQFE////////////////2AwDFdBkACAVhVSstnYaa015ymstdiCPRbJK5R0zROkwvcAhgeoNiRyAwEGJhpENIsbJLJknUCBC5jw5QzRuQEc0uCEwauFwjqEFhBYXEVxjQyKGKSXFmigRmTxeLx0mUjEumrUkklJJLLpqogQ5x4mhziLGyJdRatHrRLrooskk6Jq6Jqj1o/qSSqS/60UZkXmUkk9FFGtFH/9aPRRZRkXmSLyT0W/0UaLKSSWYl1zFMQU1FMy45OC4yqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpMQU1FMy45OC4yqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr/+5LEoQPVgaL0XYiAAAAANIAAAASqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
@@ -1392,17 +1435,9 @@ function getMessages(gettingOld) {
         var line        = $msg.text().toLowerCase();
         var firstLine   = $msg.find("p").first();
 
-        // remove the oldest message if there are more than 25 if that option is on.
-        if (GM_getValue("rlc-MaxMessages25")){
-            var totalmessages = $(".rlc-message").length;
-            if (totalmessages > maxmessages) {
-                $(".rlc-message").last().remove();
-            }
-        }
-
-        //handle giphy images
-        if (!GM_getValue("rlc-HideGiphyImages")){
-            if (line.trim().indexOf("rlc-image") === 0){
+        //handle giphy images 
+        if (line.trim().indexOf("rlc-image") === 0){
+            if (!GM_getValue("rlc-HideGiphyImages")){        
                 var linksObj = $msg.find("a");
                 var url = linksObj.attr("href");
                 if (url) {
@@ -1412,23 +1447,31 @@ function getMessages(gettingOld) {
                     var imgHeight = 0;
                     imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
 
-                    url = url.replace(/^http:\/\//i, 'https://'); //force usage of https
-
+                    url = url.replace(/^http:\/\//i, 'https://'); //force usage of https 
+                    
                     $el.addClass("rlc-imageWithin");
-
+                    
                     firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
                 }
+            }
+            else { 
+                $el.remove();
+                return false; // if this is a Giphy and HideGiphyImages is on, remove this message and stop function
+            }
+        }
+
+        // remove the oldest message if there are more than 25 if that option is on.
+        if (GM_getValue("rlc-MaxMessages25")){
+            var totalmessages = $(".rlc-message").length;
+            if (totalmessages > maxmessages) {
+                $(".rlc-message").last().remove();
             }
         }
 
         // /me support (if in channel see proccessline)
         if (line.indexOf("/me") === 0){
             $el.addClass("user-narration");
-            firstLine.html(firstLine.html().replace("/me", " " + $usr.text().replace("/u/", "")));
-        }
-        else {
-        // Remove the /u/ in author name
-        $usr.text($usr.text().replace("/u/", ""));
+            firstLine.html(firstLine.html().replace("/me", " " + $usr.text()));
         }
 
         // Timestamp modification & user activity tracking
@@ -1439,9 +1482,6 @@ function getMessages(gettingOld) {
 
         // Target blank all message links
         $msg.find("a").attr("target", "_blank");
-
-        // Tag message with user identifier for muting
-        $el.addClass("u_"+$usr.text());
 
         // Alternating background color
         alternateMsgBackground($el);
@@ -1462,6 +1502,11 @@ function getMessages(gettingOld) {
         // Track channels
         tabbedChannels.proccessLine(line, $el, rescan);
 
+        if (line.indexOf(robinUser) !== -1){
+            // Add bold highlighting
+            $el.addClass("user-mention");
+        }
+
         //finds iframes
         var embedFinder = $msg.find("iframe").length;
         if (embedFinder === 1) { $el.addClass("rlc-hasEmbed"); }
@@ -1479,7 +1524,7 @@ function getMessages(gettingOld) {
             }
         }
 
-        // User color picker:
+        // User color assignment:
         if (GM_getValue("rlc-RobinColors")) {
             colorSet = 2;
         }
@@ -1492,6 +1537,9 @@ function getMessages(gettingOld) {
             colorSet = 1;
             }
         }
+
+        // Tag message with user identifier for muting
+        $el.addClass("u_"+$usr.text());
 
         //Check if user exists and add user to list if they don't.
         if (usrArray.indexOf($usr.text()) === -1) {
@@ -1507,11 +1555,6 @@ function getMessages(gettingOld) {
         //deal with muting
         if(mutedUsers.indexOf($usr.text())!=-1){
             $msg.parent().addClass('muted');
-        }
-
-        if (line.indexOf(robinUser) !== -1){
-            // Add bold highlighting
-            $el.addClass("user-mention");
         }
 
         // Stuff that should not be done to messages loaded on init, like TTS handling
@@ -1543,18 +1586,18 @@ function getMessages(gettingOld) {
         }
     };
 
-//
-//   /$$$$$$$$/$$    /$$/$$$$$$$$/$$   /$$/$$$$$$$$       /$$   /$$ /$$$$$$ /$$   /$$/$$$$$$$ /$$      /$$$$$$/$$   /$$ /$$$$$$
-//  | $$_____| $$   | $| $$_____| $$$ | $|__  $$__/      | $$  | $$/$$__  $| $$$ | $| $$__  $| $$     |_  $$_| $$$ | $$/$$__  $$
-//  | $$     | $$   | $| $$     | $$$$| $$  | $$         | $$  | $| $$  \ $| $$$$| $| $$  \ $| $$       | $$ | $$$$| $| $$  \__/
-//  | $$$$$  |  $$ / $$| $$$$$  | $$ $$ $$  | $$         | $$$$$$$| $$$$$$$| $$ $$ $| $$  | $| $$       | $$ | $$ $$ $| $$ /$$$$
-//  | $$__/   \  $$ $$/| $$__/  | $$  $$$$  | $$         | $$__  $| $$__  $| $$  $$$| $$  | $| $$       | $$ | $$  $$$| $$|_  $$
-//  | $$       \  $$$/ | $$     | $$\  $$$  | $$         | $$  | $| $$  | $| $$\  $$| $$  | $| $$       | $$ | $$\  $$| $$  \ $$
-//  | $$$$$$$$  \  $/  | $$$$$$$| $$ \  $$  | $$         | $$  | $| $$  | $| $$ \  $| $$$$$$$| $$$$$$$$/$$$$$| $$ \  $|  $$$$$$/
-//  |________/   \_/   |________|__/  \__/  |__/         |__/  |__|__/  |__|__/  \__|_______/|________|______|__/  \__/\______/
-//
-//
-//
+
+//  ██╗  ██╗███████╗██╗   ██╗██████╗ ██████╗ ███████╗███████╗███████╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗ 
+//  ██║ ██╔╝██╔════╝╚██╗ ██╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝ 
+//  █████╔╝ █████╗   ╚████╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗
+//  ██╔═██╗ ██╔══╝    ╚██╔╝  ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║
+//  ██║  ██╗███████╗   ██║   ██║     ██║  ██║███████╗███████║███████║    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝
+//  ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+           
+
+    String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
 
     //browser info getter from http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
     navigator.sayswho= (function(){
@@ -1585,6 +1628,8 @@ function getMessages(gettingOld) {
        return message;
     };
 
+function refreshChat() {  $(".rlc-message").remove(); getMessages();}
+
     // Settings Keys (used in /sharesettings)
     var optionsArray = [];
 
@@ -1593,8 +1638,7 @@ function getMessages(gettingOld) {
         messageHistoryIndex = -1,
         lastTyped = "";
 
-    // Messagebox event handling
-    function messageboxEventHandling() {
+    function keypressHandling() {
         var textArea = $(".usertext-edit.md-container textarea");
 
         // On post message, add it to history
@@ -1673,20 +1717,41 @@ function getMessages(gettingOld) {
                         $(this).val( "||| Resetting RLC options (via /reset)");
                         location.reload();
                     }
+                    if (textArea.val().indexOf("/clear") === 0){
+                        $(".rlc-message").remove();
+                        $("#new-update-form textarea").val("");
+                        return false;
+                    }
+                    if (textArea.val().indexOf("/opt") === 0){
+                        var afterOptSplit = textArea.val().split("/opt ")[1].capitalize();
+                        if (afterOptSplit) { 
+                            $("#rlc-settings label:contains('"+afterOptSplit+"') input" ).click();
+                        }
+                        else {
+                            alert("/opt must be followed by an option name");
+                        }
+
+                        $("#new-update-form textarea").val("");
+                        return false;
+                    }
+
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
-                        var giphyQueryList = $(this).val().split(" ");
-                        giphyQueryList.shift();
-                        var giphyQuery = giphyQueryList.join(" ");
-                        const GIPHY_API_KEY = "dc6zaTOxFJmzC";   // public test key, replace with production version.
+                        if (!GM_getValue("rlc-HideGiphyImages")){     
+                            var giphyQueryList = $(this).val().split(" ");
+                            giphyQueryList.shift();
+                            var giphyQuery = giphyQueryList.join(" ");
+                            const GIPHY_API_KEY = "dc6zaTOxFJmzC";   // public test key, replace with production version.
 
-                        jQuery.getJSON( `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${giphyQueryList.join("+")}` ,function( XHRObj ) {
-                            thumbnail_url = XHRObj.data.image_url;
-                            image_url = XHRObj.data.url;
-                            var textArea = $(".usertext-edit.md-container textarea");
-                            textArea.val("rlc-image "+thumbnail_url+" "+image_url+" | "+giphyQuery +"|"+ XHRObj.data.image_height);
+                            jQuery.getJSON( `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${giphyQueryList.join("+")}` ,function( XHRObj ) {
+                                thumbnail_url = XHRObj.data.image_url;
+                                image_url = XHRObj.data.url;
+                                var textArea = $(".usertext-edit.md-container textarea");
+                                textArea.val("rlc-image "+thumbnail_url+" "+image_url+" | "+giphyQuery +"|"+ XHRObj.data.image_height);
 
-                            $(".save-button .btn").click();
-                        });
+                                $(".save-button .btn").click();
+                            });
+                        }
+                        $("#new-update-form textarea").val("");
                         return false;
                     }
                     if (textArea.val().indexOf("/time") === 0){
@@ -1713,6 +1778,16 @@ function getMessages(gettingOld) {
             }
         });
     }
+
+
+//   ██████╗██╗     ██╗ ██████╗██╗  ██╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗ 
+//  ██╔════╝██║     ██║██╔════╝██║ ██╔╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝ 
+//  ██║     ██║     ██║██║     █████╔╝     ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗
+//  ██║     ██║     ██║██║     ██╔═██╗     ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║
+//  ╚██████╗███████╗██║╚██████╗██║  ██╗    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝
+//   ╚═════╝╚══════╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+//                                                                                                         
+
 
     // show the linked content in the left panel
     // rewritten to find the original liveupdate and take the iframe from there
@@ -1741,7 +1816,6 @@ function getMessages(gettingOld) {
      // uses the unique message id to delete the real message. need to do a writeup, basicaly the native reddit live messages are on the page but not shown.
      // instead we show our own structure with our own messages. this deletes the comment by matching the rlc-message with the liveupdate and pressing the delete and yes button on the liveupdate.
     function deleteComment($objComment){
-
 
         var selectorstring = $objComment.attr("name").split("rlc-id-LiveUpdate_")[1];
 
@@ -1804,6 +1878,7 @@ function getMessages(gettingOld) {
 
                     $menu.find("ul li").unbind("click");
                     $menu.find("ul li").bind("click", function(){
+
                         var $id = $(this).attr("id");
                         if ($id === "deleteCom" && $(this).has(".disabled").length === 0){
                             deleteComment($el);
@@ -1839,6 +1914,7 @@ function getMessages(gettingOld) {
         $("#togglebarTTS").click(function(){
             $( "#rlc-settings label:contains('Text To Speech (TTS)') input" ).click();
         });
+
         //toggle sidebar via css classes
         $("#togglesidebar").click(function(){
             $("body").toggleClass("rlc-hidesidebar");
@@ -1855,24 +1931,22 @@ function getMessages(gettingOld) {
             $("body").removeClass("rlc-showoptions");
             $("body").toggleClass("rlc-showreadmebar");
         });
-    // this makes the RLC send button click on the hidden native reddit live button
+
+        // this makes the RLC send button click on the hidden native reddit live button
         $("#rlc-sendmessage").click(function(){
             $(".save-button .btn").click();
         });
     }
 
-//
-//   /$$$$$$/$$   /$$/$$$$$$/$$$$$$$$       /$$$$$$$$/$$   /$$/$$   /$$ /$$$$$$ /$$$$$$$$/$$$$$$
-//  |_  $$_| $$$ | $|_  $$_|__  $$__/      | $$_____| $$  | $| $$$ | $$/$$__  $|__  $$__/$$__  $$
-//    | $$ | $$$$| $$ | $$    | $$         | $$     | $$  | $| $$$$| $| $$  \__/  | $$ | $$  \__/
-//    | $$ | $$ $$ $$ | $$    | $$         | $$$$$  | $$  | $| $$ $$ $| $$        | $$ |  $$$$$$
-//    | $$ | $$  $$$$ | $$    | $$         | $$__/  | $$  | $| $$  $$$| $$        | $$  \____  $$
-//    | $$ | $$\  $$$ | $$    | $$         | $$     | $$  | $| $$\  $$| $$    $$  | $$  /$$  \ $$
-//   /$$$$$| $$ \  $$/$$$$$$  | $$         | $$     |  $$$$$$| $$ \  $|  $$$$$$/  | $$ |  $$$$$$/$$
-//  |______|__/  \__|______/  |__/         |__/      \______/|__/  \__/\______/   |__/  \______|__/
-//
-//  Code status: Good.
-//
+
+//  ██████╗ ██╗      ██████╗    ██╗  ██╗████████╗███╗   ███╗██╗     
+//  ██╔══██╗██║     ██╔════╝    ██║  ██║╚══██╔══╝████╗ ████║██║     
+//  ██████╔╝██║     ██║         ███████║   ██║   ██╔████╔██║██║     
+//  ██╔══██╗██║     ██║         ██╔══██║   ██║   ██║╚██╔╝██║██║     
+//  ██║  ██║███████╗╚██████╗    ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
+//  ╚═╝  ╚═╝╚══════╝ ╚═════╝    ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
+//                                                                  
+
 
     // RLC Containers & UI HTML for injection
     var htmlPayload = `
@@ -1932,6 +2006,15 @@ function getMessages(gettingOld) {
                     </div>
                 </div>`;
 
+
+//  ██╗███╗   ██╗██╗████████╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+//  ██║████╗  ██║██║╚══██╔══╝    ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+//  ██║██╔██╗ ██║██║   ██║       █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+//  ██║██║╚██╗██║██║   ██║       ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+//  ██║██║ ╚████║██║   ██║       ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+//  ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝       ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+
+
     function rlcSetupContainers() {
 
       // insert the custom RLC HTML
@@ -1987,32 +2070,14 @@ function getMessages(gettingOld) {
         $("#rlc-guidebar a").attr("target", "_blank");
     }
 
-    function rlcInitEventListeners() {
 
-        // Detect new content being added
-        $(".rlc-message-listing").on("DOMNodeInserted", function(e) {
-            if ($(e.target).is("li.rlc-message")) {
+//  ██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗   ██╗      ██████╗  █████╗ ██████╗ 
+//  ██║    ██║██║████╗  ██║██╔══██╗██╔═══██╗██║    ██║   ██║     ██╔═══██╗██╔══██╗██╔══██╗
+//  ██║ █╗ ██║██║██╔██╗ ██║██║  ██║██║   ██║██║ █╗ ██║   ██║     ██║   ██║███████║██║  ██║
+//  ██║███╗██║██║██║╚██╗██║██║  ██║██║   ██║██║███╗██║   ██║     ██║   ██║██╔══██║██║  ██║
+//  ╚███╔███╔╝██║██║ ╚████║██████╔╝╚██████╔╝╚███╔███╔╝██╗███████╗╚██████╔╝██║  ██║██████╔╝
+//   ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ 
 
-                // Apply changes to line
-                handleNewMessage($(e.target), false);
-            }
-        });
-        messageboxEventHandling();
-        mouseClicksEventHandling();
-    }
-
-//
-//   /$$      /$$/$$$$$$/$$   /$$/$$$$$$$  /$$$$$$ /$$      /$$                 /$$       /$$$$$$  /$$$$$$ /$$$$$$$
-//  | $$  /$ | $|_  $$_| $$$ | $| $$__  $$/$$__  $| $$  /$ | $$                | $$      /$$__  $$/$$__  $| $$__  $$
-//  | $$ /$$$| $$ | $$ | $$$$| $| $$  \ $| $$  \ $| $$ /$$$| $$                | $$     | $$  \ $| $$  \ $| $$  \ $$
-//  | $$/$$ $$ $$ | $$ | $$ $$ $| $$  | $| $$  | $| $$/$$ $$ $$                | $$     | $$  | $| $$$$$$$| $$  | $$
-//  | $$$$_  $$$$ | $$ | $$  $$$| $$  | $| $$  | $| $$$$_  $$$$                | $$     | $$  | $| $$__  $| $$  | $$
-//  | $$$/ \  $$$ | $$ | $$\  $$| $$  | $| $$  | $| $$$/ \  $$$                | $$     | $$  | $| $$  | $| $$  | $$
-//  | $$/   \  $$/$$$$$| $$ \  $| $$$$$$$|  $$$$$$| $$/   \  $$       /$$      | $$$$$$$|  $$$$$$| $$  | $| $$$$$$$/
-//  |__/     \__|______|__/  \__|_______/ \______/|__/     \__/      |__/      |________/\______/|__/  |__|_______/
-//
-//  Code status: good.
-//
 
     // Boot
     $(document).ready(function() {
@@ -2026,40 +2091,49 @@ function getMessages(gettingOld) {
         // Tweak stuff
         rlcDocReadyModifications();
 
-        // Attach event listeners
-        rlcInitEventListeners();
-
         // attempt to load a list of muted users from stored values
         updateMutedUsers();
 
         // run options setup
         createOptions();
 
-        // not really sure, but related to message background alternation
-        rowAlternator=!rowAlternator;
+        // add messagebox related event listeners
+        keypressHandling();
 
-        //get the initial messages to display from reddit live api
+        // add mouse click related event listeners
+        mouseClicksEventHandling();
+
+        // add event listener for new content being added, monitoring our own custom rlc-message-listing
+        // rather than the native liveupdate-listing (since 3.16)
+        $(".rlc-message-listing").on("DOMNodeInserted", function(e) {
+            if ($(e.target).is("li.rlc-message")) {
+
+                // Apply changes to line
+                handleNewMessage($(e.target), false);
+            }
+        });
+
+        // get the initial messages to display from reddit live api
         getMessages();
 
-        // wait initial load to be , and then scroll the chat window to the bottom.
+        // wait for initial load to be completed, and then scroll the chat window to the bottom.
+        // TODO make a preloader, it looks better
         setTimeout(function(){
+        //   $("#rlc-chat").show();
             scrollToBottom();
             loadHistoryMessageException = 0
         }, 500);
+
     });
 
-//
-//   /$$$$$$$$/$$$$$$ /$$   /$$/$$$$$$$$
-//  | $$_____/$$__  $| $$$ | $|__  $$__/
-//  | $$    | $$  \ $| $$$$| $$  | $$
-//  | $$$$$ | $$  | $| $$ $$ $$  | $$
-//  | $$__/ | $$  | $| $$  $$$$  | $$
-//  | $$    | $$  | $| $$\  $$$  | $$
-//  | $$    |  $$$$$$| $$ \  $$  | $$
-//  |__/     \______/|__/  \__/  |__/
-//
-//  Open Sans Google font
-//
+
+//   ██████╗  ██████╗  ██████╗  ██████╗ ██╗     ███████╗    ███████╗ ██████╗ ███╗   ██╗████████╗
+//  ██╔════╝ ██╔═══██╗██╔═══██╗██╔════╝ ██║     ██╔════╝    ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝
+//  ██║  ███╗██║   ██║██║   ██║██║  ███╗██║     █████╗      █████╗  ██║   ██║██╔██╗ ██║   ██║   
+//  ██║   ██║██║   ██║██║   ██║██║   ██║██║     ██╔══╝      ██╔══╝  ██║   ██║██║╚██╗██║   ██║   
+//  ╚██████╔╝╚██████╔╝╚██████╔╝╚██████╔╝███████╗███████╗    ██║     ╚██████╔╝██║ ╚████║   ██║   
+//   ╚═════╝  ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   
+
 
     // copypasted google fonts magic embed code, avert your eyes mortal!
     WebFontConfig = {
@@ -2074,25 +2148,17 @@ function getMessages(gettingOld) {
         s.parentNode.insertBefore(wf, s);
     })();
 
-//
-//    /$$$$$$  /$$$$$$  /$$$$$$
-//   /$$__  $$/$$__  $$/$$__  $$
-//  | $$  \__| $$  \__| $$  \__/
-//  | $$     |  $$$$$$|  $$$$$$
-//  | $$      \____  $$\____  $$
-//  | $$    $$/$$  \ $$/$$  \ $$
-//  |  $$$$$$|  $$$$$$|  $$$$$$/
-//   \______/ \______/ \______/
-//
-//  Minified - tip: to edit, cut the contents of the RLC-CORE, leaving it empty as so: GM_addstyle('').
-//  Save the script in your userscript editor and reload RLC sans CSS, use dev tools and insert the copied CSS via inspector stylesheet.
-//  Use the buildt in {} formatting button to format the minified CSS into a readable structure.
-//
-//  To save your changes, use cssminifier.com to re-minify your resulting CSS and insert it in the GM_addstyle that you left empty.
-//
+
+//   ██████╗███████╗███████╗    ██████╗ ███████╗███████╗ ██████╗ ██╗   ██╗██████╗  ██████╗███████╗███████╗
+//  ██╔════╝██╔════╝██╔════╝    ██╔══██╗██╔════╝██╔════╝██╔═══██╗██║   ██║██╔══██╗██╔════╝██╔════╝██╔════╝
+//  ██║     ███████╗███████╗    ██████╔╝█████╗  ███████╗██║   ██║██║   ██║██████╔╝██║     █████╗  ███████╗
+//  ██║     ╚════██║╚════██║    ██╔══██╗██╔══╝  ╚════██║██║   ██║██║   ██║██╔══██╗██║     ██╔══╝  ╚════██║
+//  ╚██████╗███████║███████║    ██║  ██║███████╗███████║╚██████╔╝╚██████╔╝██║  ██║╚██████╗███████╗███████║
+//   ╚═════╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚══════╝╚══════╝
+
 
     // RLC-CORE
-    GM_addStyle(`#rlc-header,#rlc-wrapper,body{overflow:hidden}img.rlc-image{max-height:200px}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);border-top:1px solid rgba(128,128,128,.35)}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box;background-color:#EFEFED}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#new-update-form{margin:0;width:87%;float:left}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in "}h1#liveupdate-title{font-size:1.5em;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background-color:transparent}#rlc-wrapper .rlc-message .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid rgba(227,227,224,.44);border-top:0;box-sizing:border-box}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:1px solid rgba(227,227,224,.44);padding:5px 0}#rlc-chat{height:calc(100vh - 186px);overflow-y:scroll;max-height:465px;margin-top:30px}#rlc-main .rlc-message-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(227,227,224,.44);float:left;height:34px;margin:0;border-radius:2px;padding:6px;background:0 0}#rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown,body{background-color:#fcfcfc}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:calc(33.3% - 7px);float:left;text-align:center;box-sizing:border-box;cursor:pointer;-moz-border-radius:2px;-webkit-border-radius:2px;font-size:1.2em}#rlc-messagebox{padding:10px;width:100%}#rlc-sendmessage{height:32px;width:13%;float:right;padding:8px 0}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 6px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);margin-right:10px;letter-spacing:1px;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0;margin-right:0}.rlc-message .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;line-height:32px}.rlc-message a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.rlc-message-listing li.rlc-message .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.rlc-message.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:5px 0;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}#liveupdate-description{margin-left:10px;float:left}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}body{min-width:0;background-size:cover;background-repeat:no-repeat;background-position:center}#rlc-messagebox textarea,.rlc-channel-add button,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown{background-color:transparent}#rlc-wrapper .md pre{background-color:transparent!important}.rlc-message.user-narration .body .md{font-style:italic}.rlc-message.user-mention .body .md p{font-weight:700}.rlc-message a.author,.rlc-message p{line-height:32px;min-height:32px}.md{max-width:none!important}.rlc-message-listing li.rlc-message p{font-size:13px!important}.rlc-message pre{margin:0;padding:0;max-width:90%;border:#FCFCFC;box-sizing:border-box;border:1px solid rgba(227,227,224,.44)}.channelname{display:block;float:left;width:100px;line-height:32px}.rlc-imageWithin span.rlc-imgvia{float:right;margin-left:10px}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:10px}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar{float:right;box-sizing:border-box;text-align:center;padding:5px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:auto;margin-left:8px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(227,227,224,.44)}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.rlc-showChannelsUI #new-update-form{width:77%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:10%;height:34px;float:left;background:0 0;border:1px solid rgba(227,227,224,.44)}.rlc-showChannelsUI #rlc-sendmessage{width:13%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid rgba(227,227,224,.44)}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid rgba(227,227,224,.44)}#filter_tabs>span.more{padding:0 30px;border-left:1px solid rgba(227,227,224,.44)}.rlc-channel-add input{border:1px solid rgba(227,227,224,.44);padding:0;height:24px;background-color:transparent}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;position:relative;min-height:32px}.longMessageClosed p{position:relative;left:25px;top:-5px}.longMessageClosed .extendButton{position:absolute;top:7px;margin-right:5px}.longMessageClosed pre{position:absolute;left:25px}#myContextMenu{position:absolute;box-shadow:1px 1px 2px #888;background-color:grey;padding:5px 0}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;display:block}.mrPumpkin,.mrTwitchEmotes{display:inline-block;position:relative}#myContextMenu ul li:not(.disabled) a:hover{cursor:pointer}.mrPumpkin{height:24px;width:24px;border-radius:3px;background-size:144px;top:6px}.dark-background .mrPumpkin{border-radius:5px}.dark-background .mrTwitchEmotes,.mrTwitchEmotes{border-radius:0}.mp_frown{background-position:-24px 0}.mp_confused{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_bored{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.mp_evilsmile{background-position:-72px 24px}.mp_disappointed{background-position:-96px 0}.mp_stjerneklar{background-position:-72px 48px}.mp_fatherderp{background-position:-24px 24px}.mp_s3cur1ty{background-position:-48px 24px}.mrTwitchEmotes{height:28px;width:25px;background-size:100px;top:0}.tw_kappa{background-position:-25px -28px}.tw_elegiggle{background-position:-50px 0}.tw_4head{background-position:0 0}.tw_notlikethis{background-position:-75px 0}.tw_dansgame{background-position:-25px 0}.tw_failfish{background-position:0 -28px}.tw_kreygasm{background-position:-50px -28px}.tw_pogchamp{background-position:-75px -28px}.tw_smorc{background-position:0 -55px}#filter_tabs,#hsts_pixel,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author,select#rlc-channel-dropdown{display:none}#liveupdate-resources h2{display:none!important}.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}.rlc-hidesidebar #rlc-sidebar,div#rlc-leftPanel{display:none}#myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button{color:#fff}.rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar{background:0 0}.rlc-compact #rlc-chat{height:calc(100vh - 252px);max-height:466px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 198px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 134px)}.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body.dark-background{background-color:#404040}body.rlc-customBg #rlc-wrapper{background-color:rgba(255,255,255,.1)!important}body.dark-background.rlc-customBg #rlc-wrapper{background-color:rgba(0,0,0,.1)!important}body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg #rlc-wrapper .md,body.dark-background.rlc-customBg #rlc-wrapper .rlc-channel-add button{text-shadow:0 0 8px rgba(0,0,0,1)!important}.rlc-customBg #rlc-wrapper .rlc-channel-add button,body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md{text-shadow:0 0 8px rgba(255,255,255,1)!important}.dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a{color:#add8e6}.rlc-hidesidebar #rlc-main{width:100%}.rlc-leftPanel #rlc-main{width:60%;float:left}.rlc-leftPanel #rlc-sidebar{width:20%}.rlc-leftPanel #rlc-leftPanel{width:20%;float:left;display:block}.rlc-customscrollbars div#filter_tabs{width:calc(100% - 12px)}.rlc-customscrollbars ::-webkit-scrollbar{width:12px}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb{border:1px solid rgba(227,227,224,.26)}.rlc-customscrollbars ::-webkit-scrollbar-thumb{border:1px solid rgba(227,227,224,.85)}`);
+    GM_addStyle(`.dark-background .md code{background:#000}#rlc-header,#rlc-wrapper,body{overflow:hidden}img.rlc-image{max-height:200px}#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header{max-width:none}#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS{-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1);border-top:1px solid rgba(128,128,128,.35)}#rlc-messagebox,#rlc-sidebar{float:right;box-sizing:border-box;background-color:#EFEFED}div#rlc-settings label{display:block;font-size:1.4em;margin-left:10px}#new-update-form{margin:0;width:87%;float:left}#rlc-messagebox .usertext-edit.md-container{max-width:none;padding:0;margin:0}header#liveupdate-header{margin:0!important;padding:15px}h1#liveupdate-title:before{content:"chat in "}h1#liveupdate-title{font-size:1.5em;float:left;padding:0}#rlc-header #liveupdate-statusbar{margin:0;padding:0;border:none!important;background-color:transparent}#rlc-wrapper .rlc-message .body{max-width:none!important;margin:0;font-size:13px;font-family:"Open Sans",sans-serif}div#rlc-sidebar{max-height:550px}#rlc-wrapper{height:calc(100vh - 63px);max-width:1248px;max-height:600px;margin:0 auto;border-radius:0 0 2px 2px;-moz-border-radius:0 0 2px 2px;-webkit-border-radius:0 0 2px 2px}#rlc-header{height:50px;border-bottom:1px solid rgba(227,227,224,.44);border-top:0;box-sizing:border-box}#rlc-main,#rlc-titlebar{width:76%;float:left;position:relative}#rlc-sidebar{width:24%;overflow-y:auto;overflow-x:hidden;height:calc(100vh - 114px);border-left:1px solid rgba(227,227,224,.44);padding:5px 0}#rlc-chat{height:calc(100vh - 186px);overflow-y:scroll;max-height:465px;margin-top:30px}#rlc-main .rlc-message-listing{max-width:100%;padding:0 0 0 15px;box-sizing:border-box;display:flex;flex-direction:column-reverse;min-height:100%}#rlc-messagebox textarea{border:1px solid rgba(227,227,224,.44);float:left;height:34px;margin:0;border-radius:2px;padding:6px;background:0 0}#rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown,body{background-color:#fcfcfc}#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{border-radius:2px;width:calc(33.3% - 7px);float:left;text-align:center;box-sizing:border-box;cursor:pointer;-moz-border-radius:2px;-webkit-border-radius:2px;font-size:1.2em}#rlc-messagebox{padding:10px;width:100%}#rlc-sendmessage{height:32px;width:13%;float:right;padding:8px 0}#rlc-toggleguide,#rlc-toggleoptions,#rlc-update{padding:4px 0 6px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);margin-right:10px;letter-spacing:1px;margin-bottom:8px}#rlc-toggleguide{margin-bottom:0;margin-right:0}.rlc-message .simpletime{float:left;padding-left:10px;box-sizing:border-box;width:75px;text-transform:uppercase;line-height:32px}.rlc-message a.author{float:left;padding-right:10px;margin:0;padding-top:0;font-weight:600;width:130px}.rlc-message-listing li.rlc-message .body .md{float:right;width:calc(100% - 220px);max-width:none;box-sizing:border-box}li.rlc-message.in-channel .body .md{width:calc(100% - 320px)}#rlc-activeusers{padding:15px 20px 20px 40px;font-size:1.5em}#rlc-activeusers li{list-style:outside;padding:0 0 8px}#rlc-settingsbar{width:100%;height:auto;padding:0 10px;box-sizing:border-box;margin:5px 0;float:left}#rlc-main-sidebar{float:right;width:100%}#rlc-sidebar hr{height:2px;width:100%;margin-left:0}#rlc-sidebar h3{padding:0 10px}#rlc-statusbar{width:24%;float:right;text-align:center;padding-top:8px}#versionnumber{padding-top:5px}#liveupdate-description{margin-left:10px;float:left}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none}body{min-width:0;background-size:cover;background-repeat:no-repeat;background-position:center}#rlc-messagebox textarea,.rlc-channel-add button,body.dark-background #rlc-leftPanel,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown,body.rlc-customBg #rlc-leftPanel{background-color:transparent}#rlc-wrapper .md pre{background-color:transparent!important}.rlc-message.user-narration .body .md{font-style:italic}.rlc-message.user-mention .body .md p{font-weight:700}.rlc-message a.author,.rlc-message p{line-height:32px;min-height:32px}.md{max-width:none!important}.rlc-message-listing li.rlc-message p{font-size:13px!important}.rlc-message pre{margin:0;padding:0;max-width:90%;border:#FCFCFC;box-sizing:border-box;border:1px solid rgba(227,227,224,.44)}.channelname{display:block;float:left;width:100px;line-height:32px}.rlc-imageWithin span.rlc-imgvia{float:right;margin-left:10px}div#rlc-settingsbar a{display:inline-block}div#rlc-togglebar{float:right;display:block;height:100%;padding-right:10px}#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar{float:right;box-sizing:border-box;text-align:center;padding:5px;cursor:pointer;border-radius:2px;-moz-border-radius:2px;-webkit-border-radius:2px;box-shadow:0 1px 2px 0 rgba(166,166,166,1);width:auto;margin-left:8px;margin-top:15px}div#rlc-settings label{float:left;width:100%;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(227,227,224,.44)}div#rlc-settings label span{padding-top:3px;padding-bottom:5px;font-size:.7em;text-align:right;display:block;float:right;padding-right:20px}div#rlc-settings input{margin-right:5px}.rlc-channel-add button{border:0;margin:0;padding:4px 14px;border-top:0;border-bottom:0}.rlc-showChannelsUI #new-update-form{width:77%;float:left}.rlc-showChannelsUI select#rlc-channel-dropdown{display:block;width:10%;height:34px;float:left;background:0 0;border:1px solid rgba(227,227,224,.44)}.rlc-showChannelsUI #rlc-sendmessage{width:13%;float:left}.rlc-showChannelsUI div#filter_tabs{display:block;z-index:100}.rlc-showChannelsUI .rlc-channel-add{position:absolute;top:27px;right:17px;padding:5px;box-sizing:border-box;-webkit-box-shadow:0 1px 2px 0 rgba(166,166,166,1);-moz-box-shadow:0 1px 2px 0 rgba(166,166,166,1)}#filter_tabs .rlc-filters>span:last-of-type{border-right:0}div#filter_tabs{width:calc(100% - 17px)}#filter_tabs{table-layout:fixed;width:100%;height:26px;position:absolute}#filter_tabs>span{width:90%;display:table-cell}#filter_tabs>span.all,#filter_tabs>span.more{width:60px;text-align:center;vertical-align:middle;cursor:pointer}#filter_tabs .rlc-filters{display:table;width:100%;table-layout:fixed;height:24px}#filter_tabs .rlc-filters>span{padding:7px 2px!important;text-align:center;display:table-cell;cursor:pointer;vertical-align:middle;font-size:1.1em;border-right:1px solid rgba(227,227,224,.44)}#filter_tabs .rlc-filters>span>span{pointer-events:none}#filter_tabs>span.all{padding:0 30px;border-right:1px solid rgba(227,227,224,.44)}#filter_tabs>span.more{padding:0 30px;border-left:1px solid rgba(227,227,224,.44)}.rlc-channel-add input{border:1px solid rgba(227,227,224,.44);padding:0;height:24px;background-color:transparent}.longMessageClosed{max-height:30px;overflow-y:hidden;overflow-x:hidden;position:relative;min-height:32px}.longMessageClosed p{position:relative;left:25px;top:-5px}.longMessageClosed .extendButton{position:absolute;top:7px;margin-right:5px}.longMessageClosed pre{position:absolute;left:25px}#myContextMenu{position:absolute;box-shadow:1px 1px 2px #888;background-color:grey;padding:5px 0}#myContextMenu ul{list-style-type:none}#myContextMenu ul li a{padding:.5em 1em;display:block}.mrPumpkin,.mrTwitchEmotes{display:inline-block;position:relative}#myContextMenu ul li:not(.disabled) a:hover{cursor:pointer}.mrPumpkin{height:24px;width:24px;border-radius:3px;background-size:144px;top:6px}.dark-background .mrPumpkin{border-radius:5px}.dark-background .mrTwitchEmotes,.mrTwitchEmotes{border-radius:0}.mp_frown{background-position:-24px 0}.mp_confused{background-position:-48px 0}.mp_meh{background-position:0 -24px}.mp_angry{background-position:-48px -24px}.mp_shocked{background-position:-24px -24px}.mp_happy{background-position:-72px 120px}.mp_sad{background-position:-72px 96px}.mp_crying{background-position:0 72px}.mp_tongue{background-position:0 24px}.mp_xhappy{background-position:-48px 48px}.mp_xsad{background-position:-24px 48px}.mp_xsmile{background-position:0 48px}.mp_annoyed{background-position:-72px 72px}.mp_bored{background-position:-48px 72px}.mp_wink{background-position:-24px 72px}.mp_evilsmile{background-position:-72px 24px}.mp_disappointed{background-position:-96px 0}.mp_stjerneklar{background-position:-72px 48px}.mp_fatherderp{background-position:-24px 24px}.mp_s3cur1ty{background-position:-48px 24px}.mrTwitchEmotes{height:28px;width:25px;background-size:100px;top:0}.tw_kappa{background-position:-25px -28px}.tw_elegiggle{background-position:-50px 0}.tw_4head{background-position:0 0}.tw_notlikethis{background-position:-75px 0}.tw_dansgame{background-position:-25px 0}.tw_failfish{background-position:0 -28px}.tw_kreygasm{background-position:-50px -28px}.tw_pogchamp{background-position:-75px -28px}.tw_smorc{background-position:0 -55px}#filter_tabs,#hsts_pixel,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author,select#rlc-channel-dropdown{display:none}#liveupdate-resources h2{display:none!important}.rlc-showoptions #rlc-settings{display:block}.rlc-showoptions #rlc-main-sidebar{display:none}.rlc-showreadmebar #rlc-readmebar{display:block}.rlc-showreadmebar #rlc-main-sidebar{display:none}#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration{display:none!important}.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration{display:block!important}@media screen and (-webkit-min-device-pixel-ratio:0){#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars{display:block!important}}.rlc-hidesidebar #rlc-sidebar,div#rlc-leftPanel{display:none}#myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button{color:#fff}.rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar{background:0 0}.rlc-compact #rlc-chat{height:calc(100vh - 252px);max-height:466px}.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar{max-height:none}.rlc-fullwidth div#rlc-chat{height:calc(100vh - 198px)}.rlc-fullwidth #rlc-wrapper{max-height:none;max-width:none;height:calc(100vh - 0px)}.rlc-fullwidth div#rlc-wrapper{height:100%}.rlc-compact.rlc-fullwidth #rlc-chat{height:calc(100vh - 134px)}.rlc-compact.rlc-fullwidth #rlc-leftPanel,.rlc-compact.rlc-fullwidth #rlc-sidebar{height:calc(100vh - 50px)}.rlc-compact #rlc-wrapper{margin-top:75px}.rlc-compact #rlc-header{border-top:1px solid rgba(227,227,224,.44)}.rlc-compact.rlc-fullwidth #rlc-wrapper{margin-top:0}body.dark-background{background-color:#404040}body.rlc-customBg #rlc-wrapper{background-color:rgba(255,255,255,.1)!important}body.dark-background.rlc-customBg #rlc-wrapper{background-color:rgba(0,0,0,.1)!important}body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg #rlc-wrapper .md,body.dark-background.rlc-customBg #rlc-wrapper .rlc-channel-add button{text-shadow:0 0 8px rgba(0,0,0,1)!important}.rlc-customBg #rlc-wrapper .rlc-channel-add button,body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md{text-shadow:0 0 8px rgba(255,255,255,1)!important}.dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a{color:#add8e6}.rlc-hidesidebar #rlc-main{width:100%}.rlc-leftPanel #rlc-main{width:60%;float:left}.rlc-leftPanel #rlc-sidebar{width:20%}.rlc-leftPanel #rlc-leftPanel{width:20%;float:left;display:block;background-color:#EFEFED;height:calc(100vh - 114px)}.rlc-customscrollbars div#filter_tabs{width:calc(100% - 12px)}.rlc-customscrollbars ::-webkit-scrollbar{width:12px}.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb{border:1px solid rgba(227,227,224,.26)}.rlc-customscrollbars ::-webkit-scrollbar-thumb{border:1px solid rgba(227,227,224,.85)}`);
 
     // BG alternation - breaks minifier
     GM_addStyle('.dark-background .alt-bgcolor,.dark-background .selected {background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.alt-bgcolor,.selected{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}');
