@@ -1565,6 +1565,10 @@ function getMessages(gettingOld) {
 //  ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
            
 
+    String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
     //browser info getter from http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
     navigator.sayswho= (function(){
         var ua= navigator.userAgent, tem,
@@ -1681,6 +1685,24 @@ function getMessages(gettingOld) {
                         $(this).val( "||| Resetting RLC options (via /reset)");
                         location.reload();
                     }
+                    if (textArea.val().indexOf("/clear") === 0){
+                        $(".rlc-message").remove();
+                        $("#new-update-form textarea").val("");
+                        return false;
+                    }
+                    if (textArea.val().indexOf("/opt") === 0){
+                        var afterOptSplit = textArea.val().split("/opt ")[1].capitalize();
+                        if (afterOptSplit) { 
+                            $("#rlc-settings label:contains('"+afterOptSplit+"') input" ).click();
+                        }
+                        else {
+                            alert("/opt must be followed by an option name");
+                        }
+
+                        $("#new-update-form textarea").val("");
+                        return false;
+                    }
+
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
                         if (!GM_getValue("rlc-HideGiphyImages")){     
                             var giphyQueryList = $(this).val().split(" ");
