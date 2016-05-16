@@ -1249,7 +1249,7 @@
 
 +function(){
 
-    $.getJSON("/live/wpytzw1guzg2/about.json", function(data) {
+    $.getJSON(window.location.href + "about.json", function(data) {
 
         var websocket_url = data.data.websocket_url;
 
