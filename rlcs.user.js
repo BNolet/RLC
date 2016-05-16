@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.17
+// @version        3.18
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -121,6 +121,7 @@
         },false, "remove RLC max width/height");
 
         createOption("Dark Mode", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
             if (checked){
                 $("body").addClass("dark-background");
             } else {
@@ -129,6 +130,7 @@
         },false);
 
         createOption("Robin Colors", function(checked){
+            if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "color usernames via robin algorithm (existing messages are not modified)");
 
         createOption("Compact Mode", function(checked){
@@ -171,6 +173,7 @@
         },false,"show counters for messages in tabs");
 
         createOption("Hide Channels in Global", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
             if (checked){
                 $("body").addClass("rlc-hideChannelsInGlobal");
             } else {
@@ -226,15 +229,19 @@
         },false, "scroll chat on new message");
 
         createOption("No Emotes", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "disable RLC smileys");
 
         createOption("No Twitch Emotes", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "disable Twitch Emotes");
 
         createOption("Hide Giphy Images", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "disable giphy gifs (effective on reload or new messages)");
 
         createOption("Disable Markdown", function(checked){
+           if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false, "get messages without reddit formatting");
 
         createOption("Max Messages 25", function(checked){
@@ -1597,6 +1604,8 @@ function getMessages(gettingOld) {
        }
        return message;
     };
+
+function refreshChat() {  $(".rlc-message").remove(); getMessages();}
 
     // Settings Keys (used in /sharesettings)
     var optionsArray = [];
