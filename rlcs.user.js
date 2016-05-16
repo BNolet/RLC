@@ -1287,12 +1287,15 @@ function stripTrailingSlash(str) {
 
                 var msgID = payload.name;
 
+                var created = payload.created_utc;
+                var utcSeconds = created;
                 var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch (wat?)
+                readAbleDate.setUTCSeconds(utcSeconds);
+
                 var hours = readAbleDate.getHours();
 
-                //Getting minutes number from readAbleDate and prepends a 0 if the number is less than 10
+                //Getting minutes and seconds numbers from readAbleDate and prepends a 0 if the number is less than
                 var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
-
                 if (GM_getValue("rlc-12HourMode")) {
                 	    //it is pm if hours from 12 onwards
     					var suffix = (hours >= 12)? 'PM' : 'AM';
@@ -1390,15 +1393,14 @@ function getMessages(gettingOld) {
                         $msgbody = $("<textarea/>").html($msgbody).val()                        
 
                     var usr = msg.author;
-
+                    var utcSeconds = msg.created_utc;
 
                     // translate created_utc to a human readable version
                     var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
-
+                    readAbleDate.setUTCSeconds(utcSeconds);
 
                     var hours = readAbleDate.getHours();
                 	var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
-
 
                 	if (GM_getValue("rlc-12HourMode")) {
                 	    	//it is pm if hours from 12 onwards
