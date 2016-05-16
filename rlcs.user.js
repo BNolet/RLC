@@ -172,6 +172,9 @@
         createOption("Channel Message Counters", function(checked){
         },false,"show counters for messages in tabs");
 
+        createOption("12 Hour Mode", function(checked){
+       	},false,"12 Hour Time Stamps");
+
         createOption("Hide Channels in Global", function(checked){
            if (loadHistoryMessageException != 1) {  refreshChat(); }
             if (checked){
@@ -1289,7 +1292,27 @@ function stripTrailingSlash(str) {
                 var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch (wat?)
                 readAbleDate.setUTCSeconds(utcSeconds);
 
-                var finaltimestamp = readAbleDate.toTimeString().split("GMT")[0];
+                var hours = readAbleDate.getHours();
+
+                //Getting minutes and seconds numbers from readAbleDate and prepends a 0 if the number is less than 10
+                var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+               	var seconds = ((readAbleDate.getSeconds() < 10)? '0' : '') + readAbleDate.getSeconds() ;
+
+                if (GM_getValue("rlc-12HourMode")) {
+                	    //it is pm if hours from 12 onwards
+    					var suffix = (hours >= 12)? 'PM' : 'AM';
+
+    					//only -12 from hours if it is greater than 12 (if not back at mid night)
+    					hours = (hours > 12)? hours -12 : hours;
+
+    					//if 00 then it is 12 am
+    					hours = (hours === '00')? 12 : hours;
+                } else {
+                	suffix = "";
+                }
+
+
+                var finaltimestamp = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString() + " " + suffix;
 
                 var fakeMessage = `
                 <li class="rlc-message" name="rlc-id-${msgID}">
@@ -1378,7 +1401,25 @@ function getMessages(gettingOld) {
                     var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
                     readAbleDate.setUTCSeconds(utcSeconds);
 
-                    var finaltimestamp = readAbleDate.toTimeString().split("GMT")[0];
+                    var hours = readAbleDate.getHours();
+                	var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+                	var seconds = ((readAbleDate.getSeconds() < 10)? '0' : '') + readAbleDate.getSeconds() ;
+
+                	if (GM_getValue("rlc-12HourMode")) {
+                	    	//it is pm if hours from 12 onwards
+    						var suffix = (hours >= 12)? 'PM' : 'AM';
+
+    						//only -12 from hours if it is greater than 12 (if not back at mid night)
+    						hours = (hours > 12)? hours -12 : hours;
+
+    						//if 00 then it is 12 am
+    						hours = (hours === '00')? 12 : hours;
+                	} else {
+                		suffix = "";
+                	}
+
+
+                	var finaltimestamp = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString() + " " + suffix;
 
                     var fakeMessage = `
                     <li class="rlc-message" name="rlc-id-${msgID}">
