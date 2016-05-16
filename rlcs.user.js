@@ -1297,14 +1297,21 @@
 function getMessages(gettingOld) {
     loadHistoryMessageException = 1;
 
-     var urlToGet = ".json";
+     var urlToGet = window.location.href + ".json";
 
      if (gettingOld) {
         var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
-         urlToGet = ".json?after="+lastMessageName;
+         urlToGet += "?after="+lastMessageName;
      }
 
      var ajaxLoadOldMessages =     $.getJSON( urlToGet, function( data ) {
+                // Ensure data has data
+                if(!data.hasOwnProperty('data'))
+                {
+                    console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                    return;
+                }
+
                 var oldmessages = data.data.children;  //navigate the data to the object containing the messages
                 $.each( oldmessages, function( ) {
                     var msg = $(this).toArray()[0].data; //navigate to the message data level we want
