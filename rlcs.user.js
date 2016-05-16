@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18
+// @version        3.18.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1246,16 +1246,30 @@
 //  ███████╗██║ ╚████╔╝ ███████╗    ██║  ██║██║     ██║    ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║   
 //  ╚══════╝╚═╝  ╚═══╝  ╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 
+function stripTrailingSlash(str) {
+    if(str.substr(-1) === '/') {
+        return str.substr(0, str.length - 1);
+    }
+    return str;
+}
 
 +function(){
 
-    $.getJSON("/live/wpytzw1guzg2/about.json", function(data) {
+    $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
 
         var websocket_url = data.data.websocket_url;
 
         var ws = new WebSocket(websocket_url);
 
         ws.onmessage = function (evt) {
+          
+                // Ensure data has data
+                 if(!data.hasOwnProperty('data'))
+                 {
+                     console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                     return;
+                 }
+          
             var msg = JSON.parse(evt.data);
 
             switch(msg.type) {
@@ -1328,14 +1342,23 @@
 function getMessages(gettingOld) {
     loadHistoryMessageException = 1;
 
-     var urlToGet = ".json";
+     var urlToGet = stripTrailingSlash(window.location.href) + "/.json";
 
      if (gettingOld) {
         var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
-         urlToGet = ".json?after="+lastMessageName;
+         urlToGet += "?after="+lastMessageName;
      }
 
      var ajaxLoadOldMessages =     $.getJSON( urlToGet, function( data ) {
+       
+                 // Ensure data has data
+                 if(!data.hasOwnProperty('data'))
+                 {
+                     console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                     return;
+                 }
+ 
+       
                 var oldmessages = data.data.children;  //navigate the data to the object containing the messages
                 $.each( oldmessages, function( ) {
                     var msg = $(this).toArray()[0].data; //navigate to the message data level we want
