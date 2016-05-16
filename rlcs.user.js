@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18
+// @version        3.18.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1246,10 +1246,16 @@
 //  ███████╗██║ ╚████╔╝ ███████╗    ██║  ██║██║     ██║    ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║   
 //  ╚══════╝╚═╝  ╚═══╝  ╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 
+function stripTrailingSlash(str) {
+    if(str.substr(-1) === '/') {
+        return str.substr(0, str.length - 1);
+    }
+    return str;
+}
 
 +function(){
 
-    $.getJSON(window.location.href + "about.json", function(data) {
+    $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
 
         var websocket_url = data.data.websocket_url;
 
@@ -1336,7 +1342,7 @@
 function getMessages(gettingOld) {
     loadHistoryMessageException = 1;
 
-     var urlToGet = window.location.href + ".json";
+     var urlToGet = stripTrailingSlash(window.location.href) + "/.json";
 
      if (gettingOld) {
         var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
