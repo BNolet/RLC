@@ -26,7 +26,7 @@ Note: development of RLC almost always outpaces this readme file. Check out the 
 * Reddit live styled to mimic chat/robin (Webchat) look
   * Bottom-to-top messages
   * Press enter to send messages
-  * Right click user name to copy into text area
+  * Left click user name to copy into text area
   * Tab username autocomplete  
 * Custom commands
   * In-line gifs from giphy (/giphy)
@@ -36,12 +36,15 @@ Note: development of RLC almost always outpaces this readme file. Check out the 
   * Broadcast your settings (/settings)
   * Reset current settings (/reset)
 * Channels (with graphical interface, tabs and multi-channel-view)
-* Custom RLC Emotes
+* Custom RLC Emojis
 * Options
-  * Robin colors
-  * Optional text-to-speech support (fun!)
+  * Robin username colors
+  * Optional text-to-speech support (fun! & hilariously buggy)
   * Dark mode
-  * Chrome notifications for nickname mentions
+  * Chrome notifications for username mentions
   * Automatic scrolling
-* Activity list
-(and an amazing gitbot)
+  * 12/24 Hour Timestamps
+  * Max displayed message limit
+  * Compact mode (hide reddit UI)
+  * Hide sidebar
+* Recent user list
