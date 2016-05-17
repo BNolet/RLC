@@ -1682,6 +1682,8 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
         
         // body keypress focuses textarea
         $(document).keydown(function(e) {
+            var ctrlDown = e.ctrlKey||e.metaKey
+            if (ctrlDown) {  return;  }            
             if ($(e.target).is("textarea")) {   }
             else { 
                 textArea.focus();
@@ -1835,6 +1837,10 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
 //   ╚═════╝╚══════╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
 //                                                                                                         
 
+
+$( window ).resize(function() {
+  scrollToBottom();
+});
 
     // show the linked content in the left panel
     // rewritten to find the original liveupdate and take the iframe from there
