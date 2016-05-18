@@ -173,7 +173,7 @@
         },false,"show counters for messages in tabs");
 
         createOption("12 Hour Mode", function(checked){
-       	},false,"12 Hour Time Stamps");
+        },false,"12 Hour Time Stamps");
 
         createOption("Hide Channels in Global", function(checked){
            if (loadHistoryMessageException != 1) {  refreshChat(); }
@@ -1296,16 +1296,16 @@ function stripTrailingSlash(str) {
                 //Getting minutes and seconds numbers from readAbleDate and prepends a 0 if the number is less than
                 var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
                 if (GM_getValue("rlc-12HourMode")) {
-                	    //it is pm if hours from 12 onwards
-    					var suffix = (hours >= 12)? 'PM' : 'AM';
+                        //it is pm if hours from 12 onwards
+                        var suffix = (hours >= 12)? 'PM' : 'AM';
 
-    					//only -12 from hours if it is greater than 12 (if not back at mid night)
-    					hours = (hours > 12)? hours -12 : hours;
+                        //only -12 from hours if it is greater than 12 (if not back at mid night)
+                        hours = (hours > 12)? hours -12 : hours;
 
-    					//if 00 then it is 12 am
-    					hours = (hours === '00')? 12 : hours;
+                        //if 00 then it is 12 am
+                        hours = (hours === '00')? 12 : hours;
                 } else {
-                	suffix = "";
+                    suffix = "";
                 }
 
 
@@ -1399,23 +1399,23 @@ function getMessages(gettingOld) {
                     readAbleDate.setUTCSeconds(utcSeconds);
 
                     var hours = readAbleDate.getHours();
-                	var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+                    var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
 
-                	if (GM_getValue("rlc-12HourMode")) {
-                	    	//it is pm if hours from 12 onwards
-    						var suffix = (hours >= 12)? 'PM' : 'AM';
+                    if (GM_getValue("rlc-12HourMode")) {
+                            //it is pm if hours from 12 onwards
+                            var suffix = (hours >= 12)? 'PM' : 'AM';
 
-    						//only -12 from hours if it is greater than 12 (if not back at mid night)
-    						hours = (hours > 12)? hours -12 : hours;
+                            //only -12 from hours if it is greater than 12 (if not back at mid night)
+                            hours = (hours > 12)? hours -12 : hours;
 
-    						//if 00 then it is 12 am
-    						hours = (hours === '00')? 12 : hours;
-                	} else {
-                		suffix = "";
-                	}
+                            //if 00 then it is 12 am
+                            hours = (hours === '00')? 12 : hours;
+                    } else {
+                        suffix = "";
+                    }
 
 
-                	var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+                    var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
 
                     var fakeMessage = `
                     <li class="rlc-message" name="rlc-id-${msgID}">
@@ -1815,14 +1815,27 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
                 if (messageHistoryIndex > 0) messageHistoryIndex--;
                 if (messageHistoryIndex === messageHistory.length-1) lastTyped = $(this).val();
                 if (messageHistoryIndex > -1) $(this).val(messageHistory[messageHistoryIndex]);
-            }
-            else if (e.keyCode === 40){
+            } else if (e.keyCode === 40){
                 e.preventDefault();
-                if (messageHistoryIndex < messageHistory.length && messageHistory.length > 0){
-                    messageHistoryIndex++;
-                    $(this).val(messageHistory[messageHistoryIndex]);
+
+                if (!(messageHistory.length > 0 && messageHistoryIndex < messageHistory.length)) {
+                    return;
+                } 
+
+                messageHistoryIndex++;
+
+                $(this).val(messageHistoryIndex === messageHistory.length ? 
+                    lastTyped :
+                    messageHistory[messageHistoryIndex]
+                );
+
+            } else {
+
+                // reset history index when user types
+                if (messageHistory.length > 0) {
+                    messageHistoryIndex = messageHistory.length;
                 }
-                if (messageHistoryIndex === messageHistory.length) $(this).val(lastTyped);
+
             }
         });
     }
