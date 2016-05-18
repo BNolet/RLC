@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.6
+// @version        3.18.7
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -2267,7 +2267,7 @@ div#rlc-settings label {
 
 header#liveupdate-header {
     margin: 0!important;
-    padding: 15px
+    padding: 7px 15px;
 }
 
 h1#liveupdate-title:before {
@@ -2277,7 +2277,8 @@ h1#liveupdate-title:before {
 h1#liveupdate-title {
     font-size: 1.5em;
     float: left;
-    padding: 0
+    padding: 0;
+    width:100%;
 }
 
 #rlc-header #liveupdate-statusbar {
@@ -2473,8 +2474,9 @@ li.rlc-message.in-channel .body .md {
 }
 
 #liveupdate-description {
-    margin-left: 10px;
-    float: left
+    float: left;
+width:100%;
+  
 }
 
 .noselect {
@@ -2985,7 +2987,7 @@ body.dark-background {
 body.rlc-customBg #rlc-wrapper {
     background-color: rgba(255,255,255,.1)!important
 }
-
+.rlc-customBg #rlc-main textarea{background:0 0}
 body.dark-background.rlc-customBg #rlc-wrapper {
     background-color: rgba(0,0,0,.1)!important
 }
@@ -3045,6 +3047,9 @@ body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg
 
 .dark-background #rlc-channel-dropdown option {
     color: #000
+}
+div#rlc-update a {
+    color: inherit!important;
 }
     `);
 
