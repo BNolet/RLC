@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.4
+// @version        3.18.5
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -954,8 +954,7 @@
                         // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
                         if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
                         {
-                            msg.pitch = 1;
-                            msg.rate = 1;
+                            msg.pitch = msg.pitch.toFixed(1);
                         }
 
                     }
