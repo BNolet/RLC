@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.5
+// @version        3.18.6
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -846,7 +846,7 @@
                     var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
 
                     linetoread = linetoread.split(" ").map(function(token){
-                        if ( token.toUpperCase() in replaceStrList ){return replaceStrList[token.toUpperCase()];} else {return token;}
+                        if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
                     }).join(" ");
 
                     // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
@@ -1050,7 +1050,7 @@
         if ( firstLine.html() != null ){ // This is usually for excluding embedded, code or other content that doesn't use html representation
             htmTok = firstLine.html().split(" ");
             htmTok = htmTok.map(function(tokenStr){
-                var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").toUpperCase(); // Strip trailing space and newlines with conversion to newline
+                var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase(); // Strip trailing space and newlines and punctuations with conversion to newline
                 if ( replaceStrList_key in replaceStrList ){
                     return `<abbr title="${replaceStrList[replaceStrList_key]}">${tokenStr}</abbr>`;
                 }
