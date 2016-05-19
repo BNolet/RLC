@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.7
+// @version        3.18.8
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1254,7 +1254,14 @@ function stripTrailingSlash(str) {
     }
     return str;
 }
-
+var connectionTimer = 0;
+function incConTimer() {
+   connectionTimer = connectionTimer + 1;
+    if (connectionTimer > 2) { 
+    alert("its been "+connectionTimer+" minutes since last websocket activity. /n disconnect assumed, please refresh to reconnect.");
+   }
+}
+setInterval(incConTimer, 60000);
 +function(){
 
     $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
@@ -1273,7 +1280,7 @@ function stripTrailingSlash(str) {
                  }
           
             var msg = JSON.parse(evt.data);
-
+            connectionTimer = 0;
             switch(msg.type) {
             case 'update':
 
@@ -2121,7 +2128,11 @@ $( window ).resize(function() {
 
         // Show hint about invites if there is no messagebox
         if ($(".usertext-edit textarea").length <= 0) {
-            $("#rlc-main").append("<p style='width:100%;text-align:center;'>If you can see this you need an invite to send messages, check the sidebar.</p>");
+             $("#rlc-main").append("<p style='width:100%;text-align:center;'>You do not have update permissions.</p>");    
+        }
+        else 
+        {
+            $("body").addClass("rlc-canUpdate");
         }
 
         // Add placeholder text and focus messagebox
@@ -3063,6 +3074,13 @@ body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg
 }
 div#rlc-update a {
     color: inherit!important;
+}
+div#rlc-messagebox {
+    display: none;
+}
+
+.rlc-canUpdate div#rlc-messagebox {
+    display: block;
 }
     `);
 
