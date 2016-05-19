@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.9
+// @version        3.18.10
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -836,6 +836,9 @@
 
                 // Load in message string
                 var linetoread = $msg.text();
+                
+                //replaces [enter]'s with [space]'s to make urlRegex thing more effective
+                linetoread = linetoread.replace(/\n/g, " ");
 
                 // Remove any URLs that match urlRegex
                 linetoread = linetoread.replace(urlRegex, "");
