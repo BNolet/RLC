@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.8
+// @version        3.18.9
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -210,7 +210,10 @@
                 $("#togglebarTTS").removeClass("selected");
                 window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel();
             }
-        },false, "read messsges aloud");
+        },false, "read messages aloud");
+        
+        createOption("Long Messages", function(checked){
+        },false, "read long messages(TTS starts behaving weirdly sometimes)");
 
         createOption("TTS Username Narration", function(checked){
         },false, "example: [message] said [name]");
@@ -829,8 +832,7 @@
 
         if (GM_getValue("rlc-TextToSpeechTTS")) {
 
-            // long messages break tts (<300 chars)
-            if($msg.text().length<250){
+            if(GM_getValue("rlc-LongMessages")){
 
                 // Load in message string
                 var linetoread = $msg.text();
@@ -966,6 +968,148 @@
                     //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
                 }
             }
+        
+        else{
+            
+                // long messages break tts (<300 chars)
+                if($msg.text().length<250){
+
+                    // Load in message string
+                    var linetoread = $msg.text();
+
+                    // Remove any URLs that match urlRegex
+                    linetoread = linetoread.replace(urlRegex, "");
+
+                    var hasTripple = /([^. ])\1\1/.test(linetoread);
+                    // Check for single character spamming
+                    if (!hasTripple) {
+
+                        // Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
+                        var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
+
+                        linetoread = linetoread.split(" ").map(function(token){
+                            if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
+                        }).join(" ");
+
+                        // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
+                        var numbermatches = getNumbers(linetoread);
+
+                        $.each(numbermatches, function(i) {
+                            linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
+                        });
+
+                        //meMentioned replacement
+                        var meMentioned = $msg.parent().parent().hasClass("user-narration");
+
+                        // Narration Style
+                        var msg;
+                        var usr = $usr.text();
+                        //idea: if username is a lot of numbers, call them by the first 3 numbers seperated
+                        if (usr == "741456963789852123") { usr = "74"; }
+                        if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
+                        if (usr == "s3cur1ty") { usr = "Security"; }
+                        //if (usr == "Stjerneklar") { usr = "Steeairneklaahr";}
+
+                        // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
+                        var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
+                        var msgtwitchemotes = $msg.find(".mrTwitchEmotes");
+                        var domEmoji = "";
+
+                        if (msgemotes.length) {
+                            var finalemote;
+
+                            $.each(msgemotes, function() {
+                                finalemote = $(this).attr("class");
+
+                            });
+
+                            // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
+                            // (Note: This can be fragile if "mp_" is changed to something else)
+                            var lastEmote = finalemote.split(" ")[1].split("mp_")[1];
+                            domEmoji = lastEmote;
+                        }
+
+                        if (msgtwitchemotes.length) {
+                            var finalemote;
+
+                            $.each(msgtwitchemotes, function() {
+                                finalemote = $(this).attr("class");
+
+                            });
+
+                            // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
+                            // (Note: This can be fragile if "mp_" is changed to something else)
+                            var lastEmote = finalemote.split(" ")[1].split("tw_")[1];
+                            domEmoji = lastEmote;
+                        }
+
+                        var toneStr="";
+                        if ( domEmoji in toneList ){
+                            toneStr = " " + toneList[domEmoji];
+                        }
+
+                        if (!GM_getValue("rlc-TTSUsernameNarration")) {
+                            msg = new SpeechSynthesisUtterance(linetoread);
+                        } else {
+                            switch (true) {   //These are causing AutoScroll not to work..? (FF)
+                                case meMentioned === true: //Check for /me
+                                    msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
+                                    break;
+                                case /.+\?$/.test(checkingStr): // Questioned
+                                    msg = new SpeechSynthesisUtterance(linetoread + " questioned " + usr + toneStr );
+                                    break;
+                                case /.+\!$/.test(checkingStr):   // Exclaimed
+                                    msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + usr + toneStr );
+                                    break;
+                                case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
+                                    linetoread = linetoread.trim().slice(0, -2);
+                                    msg = new SpeechSynthesisUtterance(linetoread + " stated " + usr + "sarcastically");
+                                    break;
+                                case checkingStr === checkingStr.toUpperCase(): //Check for screaming
+                                    msg = new SpeechSynthesisUtterance(linetoread + " shouted " + usr + toneStr );
+                                    break;
+                                default: // said
+                                    msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
+                                    break;
+                            }
+                        }
+
+                        // console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
+
+                        msg.voiceURI = 'native';
+
+                        // Set variable voice type
+                        if (!GM_getValue("rlc-DisableUserbasedVoices")) {
+                            // Select voices that english users can use, even if its not for english exactly...
+                            var voiceList = speechSynthesis.getVoices().filter(function(voice) {
+                                for (var key in langSupport) {
+                                    if ( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
+                                }
+                            });
+
+                            // TODO do voice calculations once per user, store voices, perhaps in gmvalues?
+                            // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
+                            msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
+                            msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
+                            msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
+                            //console.log(msg.voice);
+                            // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
+                            if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
+                            {
+                                msg.pitch = msg.pitch.toFixed(1);
+                            }
+
+                        }
+                        msg.volume = 1; // 0 to 1
+                        //msg.rate = 1; // 0.1 to 10
+                        //msg.pitch = 1; //0 to 2
+                        window.speechSynthesis.speak(msg);
+                        // get supported voices
+                        //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
+                    }
+                }
+            }
+
         }
     }
 
