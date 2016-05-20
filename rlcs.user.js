@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.10
+// @version        3.18.10.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -3158,7 +3158,9 @@ body.dark-background {
 body.rlc-customBg #rlc-wrapper {
     background-color: rgba(255,255,255,.1)!important
 }
-.rlc-customBg #rlc-main textarea{background:0 0}
+
+.rlc-customBg #rlc-main textarea{ background:transparent!important; }
+
 body.dark-background.rlc-customBg #rlc-wrapper {
     background-color: rgba(0,0,0,.1)!important
 }
