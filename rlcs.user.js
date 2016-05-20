@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.10.1
+// @version        3.18.11
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -834,11 +834,12 @@
 
             if(GM_getValue("rlc-LongMessages")){
 
-                // Load in message string
-                var linetoread = $msg.text();
-                
-                //replaces [enter]'s with [space]'s to make urlRegex thing more effective
-                linetoread = linetoread.replace(/\n/g, " ");
+               // Load in message string
+               //var linetoread = $msg.text();
+               var linetoread = $msg.html(); // Extract html encoded text
+               linetoread = linetoread.replace(/<br>/g, " ... ").replace(/<[^>]+>/g, " "); // Replace tag as pause then strip other tags
+               // Unescaped html escaped string by way of crazy voodo magic. (Use textarea to avoid XSS exploits) 
+               linetoread = $("<textarea/>").html(linetoread).val(); 
 
                 // Remove any URLs that match urlRegex
                 linetoread = linetoread.replace(urlRegex, "");
