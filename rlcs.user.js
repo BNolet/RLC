@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.11
+// @version        3.18.11.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -204,7 +204,7 @@
         createOption("Text To Speech (TTS)", function(checked){
            if (checked){
                 $("body").addClass("rlc-TextToSpeech");
-               $("#togglebarTTS").addClass("selected");
+                $("#togglebarTTS").addClass("selected");
             } else {
                 $("body").removeClass("rlc-TextToSpeech");
                 $("#togglebarTTS").removeClass("selected");
@@ -212,16 +212,16 @@
             }
         },false, "read messages aloud");
         
-        createOption("Long Messages", function(checked){
-        },false, "read long messages(TTS starts behaving weirdly sometimes)");
+        createOption("TTS Long Messages", function(checked){
+        },false, "read long messages( TTS starts behaving weirdly sometimes)");
 
         createOption("TTS Username Narration", function(checked){
         },false, "example: [message] said [name]");
 
-        createOption("Disable User-based Voices", function(checked){
+        createOption("TTS Disable User-based Voices", function(checked){
         },false, "do not modify TTS voices based on usernames");
 
-        createOption("Disable Self-narration", function(checked){
+        createOption("TTS Disable Self-narration", function(checked){
         },false, "don't read messages sent by me aloud");
 
         createOption("Auto Scroll", function(checked){
@@ -832,7 +832,7 @@
 
         if (GM_getValue("rlc-TextToSpeechTTS")) {
 
-            if(GM_getValue("rlc-LongMessages")){
+            if(GM_getValue("rlc-TTSLongMessages")){
 
                // Load in message string
                //var linetoread = $msg.text();
@@ -943,7 +943,7 @@
                     msg.voiceURI = 'native';
 
                     // Set variable voice type
-                    if (!GM_getValue("rlc-DisableUserbasedVoices")) {
+                    if (!GM_getValue("rlc-TTSDisableUserbasedVoices")) {
                         // Select voices that english users can use, even if its not for english exactly...
                         var voiceList = speechSynthesis.getVoices().filter(function(voice) {
                             for (var key in langSupport) {
@@ -1083,7 +1083,7 @@
                         msg.voiceURI = 'native';
 
                         // Set variable voice type
-                        if (!GM_getValue("rlc-DisableUserbasedVoices")) {
+                        if (!GM_getValue("rlc-TTSDisableUserbasedVoices")) {
                             // Select voices that english users can use, even if its not for english exactly...
                             var voiceList = speechSynthesis.getVoices().filter(function(voice) {
                                 for (var key in langSupport) {
@@ -1766,7 +1766,7 @@ function getMessages(gettingOld) {
                 }
             }
             //if option is checked, check if message user is "robin" user and do not play if so
-            if (GM_getValue("rlc-DisableSelfnarration")){
+            if (GM_getValue("rlc-TTSDisableSelfnarration")){
                 if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
                     return false;  //end function before TTS is called.
                 }
@@ -3083,11 +3083,11 @@ div#filter_tabs {
     display: none
 }
 
-#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-DisableUserbasedVoices,#option-rlc-TTSUsernameNarration {
+#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-TTSDisableUserbasedVoices,#option-rlc-TTSUsernameNarration,#option-rlc-TTSLongMessages,#option-rlc-TTSDisableSelfnarration {
     display: none!important
 }
 
-.rlc-TextToSpeech #option-rlc-DisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration {
+.rlc-TextToSpeech #option-rlc-TTSDisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration,.rlc-TextToSpeech #option-rlc-TTSDisableSelfnarration,.rlc-TextToSpeech #option-rlc-TTSLongMessages {
     display: block!important
 }
 
