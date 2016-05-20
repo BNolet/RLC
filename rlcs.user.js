@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.11.1
+// @version        3.18.11.2
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -852,7 +852,7 @@
                     var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
 
                     linetoread = linetoread.split(" ").map(function(token){
-                        if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
+                        if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
                     }).join(" ");
 
                     // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
@@ -992,7 +992,7 @@
                         var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
 
                         linetoread = linetoread.split(" ").map(function(token){
-                            if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
+                            if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
                         }).join(" ");
 
                         // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
