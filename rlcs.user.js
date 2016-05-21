@@ -173,9 +173,16 @@
         },false,"show counters for messages in tabs");
 
         createOption("12 Hour Mode", function(checked){
+            if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false,"12 Hour Time Stamps");
         
         createOption("Seconds Mode", function(checked){
+        if (loadHistoryMessageException != 1) {  refreshChat(); }
+            if (checked){
+                $("body").addClass("rlc-secondsMode");
+            } else {
+                $("body").removeClass("rlc-secondsMode");
+            }
         },false,"Time Stamps with Seconds");
 
         createOption("Hide Channels in Global", function(checked){
@@ -247,7 +254,7 @@
 
         createOption("Hide Giphy Images", function(checked){
            if (loadHistoryMessageException != 1) {  refreshChat(); }
-        },false, "disable giphy gifs (effective on reload or new messages)");
+        },false, "disable giphy gifs");
 
         createOption("Disable Markdown", function(checked){
            if (loadHistoryMessageException != 1) {  refreshChat(); }
@@ -1558,7 +1565,10 @@ function messageFaker(msg) {
 
                     var hours = readAbleDate.getHours();
                     var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
-                    var seconds = readAbleDate.getSeconds() ;
+                    var seconds = readAbleDate.getSeconds().toString();
+                    
+                    // if seconds is a single diget value, prefix it with a 0 (12:00:1 becomes 12:00:01)
+                    if (seconds.length === 1) { seconds = "0" + seconds};
 
                     if (GM_getValue("rlc-12HourMode")) {
                             //it is pm if hours from 12 onwards
@@ -3246,6 +3256,17 @@ div#rlc-messagebox {
 
 .rlc-canUpdate div#rlc-messagebox {
     display: block;
+}
+
+.rlc-secondsMode .simpletime {
+    width: 90px;
+}
+
+.rlc-secondsMode .rlc-message-listing li.rlc-message .body .md {
+    float: right;
+    width: calc(100% - 230px);
+    max-width: none;
+    box-sizing: border-box;
 }
     `);
 
