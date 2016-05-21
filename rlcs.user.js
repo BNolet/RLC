@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.15
+// @version        3.18.16
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -1523,6 +1523,23 @@ setInterval(incConTimer, 60000);
 //   ╚═════╝ ╚══════╝   ╚═╝       ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
 
 
+function getContributors() {
+
+     var urlToGet = stripTrailingSlash(window.location.href) + "/contributors.json";
+
+     var ajaxLoadUsers =     $.getJSON( urlToGet, function( data ) {
+         var userdata = data[0].data.children;
+         $.each( userdata, function( ) {
+             console.log($(this));
+             console.log($(this)[0].name);
+             console.log($(this)[0].permissions);
+         });
+            });
+        ajaxLoadUsers.complete(function() {
+
+        });
+}
+
 function getMessages(gettingOld) {
     loadHistoryMessageException = 1;
 
@@ -2352,6 +2369,9 @@ $( window ).resize(function() {
         // get the initial messages to display from reddit live api
         getMessages();
 
+        // testing zone: disable to get contributors from live api reported into console
+        //getContributors();
+        
         // wait for initial load to be completed, and then scroll the chat window to the bottom.
         // TODO make a preloader, it looks better
         setTimeout(function(){
