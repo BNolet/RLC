@@ -1400,13 +1400,17 @@
 //  ███████╗██║ ╚████╔╝ ███████╗    ██║  ██║██║     ██║    ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║   
 //  ╚══════╝╚═╝  ╚═══╝  ╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 
+// used to make sure that the url we use to connect the websocket does not end in a slash.
 function stripTrailingSlash(str) {
     if(str.substr(-1) === '/') {
         return str.substr(0, str.length - 1);
     }
     return str;
 }
-var connectionTimer = 0;
+
+/* connectionTimer & incConTimer track how long time has passed since last websocket activity and notifies the user
+   if more than 2 minutes have passed without activity, as this is taken as a disconnect.  */
+var connectionTimer = 0; 
 function incConTimer() {
    connectionTimer = connectionTimer + 1;
     if (connectionTimer > 2) { 
@@ -1414,6 +1418,7 @@ function incConTimer() {
    }
 }
 setInterval(incConTimer, 60000);
+
 +function(){
 
     $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
@@ -1432,57 +1437,16 @@ setInterval(incConTimer, 60000);
                  }
           
             var msg = JSON.parse(evt.data);
-            connectionTimer = 0;
+            connectionTimer = 0;  // connection timer is reset on any activity that has data
             switch(msg.type) {
             case 'update':
 
+                    
                 var payload = msg.payload.data;
 
-                var usr = payload.author;
-                var msgbody = payload.body_html;
-
-                if (GM_getValue("rlc-DisableMarkdown")) { msgbody = '<div class="md"><p>'+ payload.body +'</p></div>' ;}
-
-                var msgID = payload.name;
-
-                var created = payload.created_utc;
-                var utcSeconds = created;
-                var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch (wat?)
-                readAbleDate.setUTCSeconds(utcSeconds);
-
-                var hours = readAbleDate.getHours();
-
-                //Getting minutes and seconds numbers from readAbleDate and prepends a 0 if the number is less than
-                var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
-                    
-                var seconds = readAbleDate.getSeconds() ;
-                    
-                if (GM_getValue("rlc-12HourMode")) {
-                        //it is pm if hours from 12 onwards
-                        var suffix = (hours >= 12)? 'PM' : 'AM';
-
-                        //only -12 from hours if it is greater than 12 (if not back at mid night)
-                        hours = (hours > 12)? hours -12 : hours;
-
-                        //if 00 then it is 12 am
-                        hours = (hours === '00')? 12 : hours;
-                } else {
-                    suffix = "";
-                }
-
-                if(GM_getValue("rlc-SecondsMode"))
-                    {
-                var finaltimestamp = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString() + " " + suffix;
-                    }else finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
-
-                var fakeMessage = `
-                <li class="rlc-message" name="rlc-id-${msgID}">
-                    <div class="body">${msgbody}
-                        <div class="simpletime">${finaltimestamp}</div>
-                        <a href="/user/${usr}" class="author">${usr}</a>
-                    </div>
-                </li>`
-                $(".rlc-message-listing").prepend(fakeMessage);
+                // See messageFaker function for how messages from json are turned into rlc-messages
+                $(".rlc-message-listing").prepend(messageFaker(payload));
+                
                 break;
 
              /*  disabled, liveupdate header already tracks this
@@ -1545,25 +1509,38 @@ function getMessages(gettingOld) {
 
      var urlToGet = stripTrailingSlash(window.location.href) + "/.json";
 
-     if (gettingOld) {
-        var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
-         urlToGet += "?after="+lastMessageName;
-     }
+    if (gettingOld) {
+        var lastMessage = $(".rlc-message:last-child");
+        if(lastMessage.length !== 1) { console.log("nolastmessage");}
+        else {
+            urlToGet += "?after="+$(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
+        }
+    }
 
-     var ajaxLoadOldMessages =     $.getJSON( urlToGet, function( data ) {
-       
+     var ajaxLoadOldMessages = $.getJSON( urlToGet, function( data ) {
+
                  // Ensure data has data
                  if(!data.hasOwnProperty('data'))
                  {
                      console.log("Help me Obi-Wan Kenobi. We got empty data!");
                      return;
                  }
- 
-       
+         
                 var oldmessages = data.data.children;  //navigate the data to the object containing the messages
                 $.each( oldmessages, function( ) {
                     var msg = $(this).toArray()[0].data; //navigate to the message data level we want
+                   
+                    // See messageFaker function for how messages from json are turned into rlc-messages
+                    $(".rlc-message-listing").append(messageFaker(msg));
+                });
+            });
+        ajaxLoadOldMessages.complete(function() {
+            loadHistoryMessageException = 0;
+               reAlternate();
+        });
+}
 
+function messageFaker(msg) { 
                     var msgID = msg.name;
                     var $msgbody = msg.body_html;
 
@@ -1608,13 +1585,7 @@ function getMessages(gettingOld) {
                             <a href="/user/${usr}" class="author">${usr}</a>
                         </div>
                     </li>`
-                    $(".rlc-message-listing").append(fakeMessage);
-                });
-            });
-        ajaxLoadOldMessages.complete(function() {
-            loadHistoryMessageException = 0;
-               reAlternate();
-        });
+                    return fakeMessage;
 }
 
 
