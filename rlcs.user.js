@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.13
+// @version        3.18.14
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -174,6 +174,9 @@
 
         createOption("12 Hour Mode", function(checked){
         },false,"12 Hour Time Stamps");
+        
+        createOption("Seconds Mode", function(checked){
+        },false,"Time Stamps with Seconds");
 
         createOption("Hide Channels in Global", function(checked){
            if (loadHistoryMessageException != 1) {  refreshChat(); }
@@ -1467,6 +1470,9 @@ setInterval(incConTimer, 60000);
 
                 //Getting minutes and seconds numbers from readAbleDate and prepends a 0 if the number is less than
                 var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+                    
+                var seconds = readAbleDate.getSeconds() ;
+                    
                 if (GM_getValue("rlc-12HourMode")) {
                         //it is pm if hours from 12 onwards
                         var suffix = (hours >= 12)? 'PM' : 'AM';
@@ -1480,8 +1486,10 @@ setInterval(incConTimer, 60000);
                     suffix = "";
                 }
 
-
-                var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+                if(GM_getValue("rlc-SecondsMode"))
+                    {
+                var finaltimestamp = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString() + " " + suffix;
+                    }else finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
 
                 var fakeMessage = `
                 <li class="rlc-message" name="rlc-id-${msgID}">
@@ -1572,6 +1580,7 @@ function getMessages(gettingOld) {
 
                     var hours = readAbleDate.getHours();
                     var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+                    var seconds = readAbleDate.getSeconds() ;
 
                     if (GM_getValue("rlc-12HourMode")) {
                             //it is pm if hours from 12 onwards
@@ -1586,8 +1595,10 @@ function getMessages(gettingOld) {
                         suffix = "";
                     }
 
-
-                    var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+                    if(GM_getValue("rlc-SecondsMode"))
+                        {
+                            finaltimestamp = hours.toString() + ":" + minutes.toString()+ ":" + seconds.toString() + " " + suffix;
+                        }else var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
 
                     var fakeMessage = `
                     <li class="rlc-message" name="rlc-id-${msgID}">
