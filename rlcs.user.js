@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.13
+// @version        3.18.16
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -174,6 +174,9 @@
 
         createOption("12 Hour Mode", function(checked){
         },false,"12 Hour Time Stamps");
+        
+        createOption("Seconds Mode", function(checked){
+        },false,"Time Stamps with Seconds");
 
         createOption("Hide Channels in Global", function(checked){
            if (loadHistoryMessageException != 1) {  refreshChat(); }
@@ -680,11 +683,10 @@
 
     var activeUserArray = [],
         activeUserTimes = [],
-        updateArray = [],
-        activeUserMsgs = []; // message count array...
+        updateArray = [];
 
     // Update active user list
-    function processActiveUsersList($usr) {
+    function processActiveUsersList() {
         $("#rlc-activeusers ul").empty();
         updateArray = [];
 
@@ -693,15 +695,11 @@
                 updateArray.push(activeUserArray[i]);
                 $("#rlc-activeusers ul").append(`<li>
                                                     <span class='activeusersUser'>${activeUserArray[i]}</span> @
-                                                    <span class='activeusersTime'>${activeUserTimes[i]}</span> with 
-                                                    <span class='activeusersMsgs'>${activeUserMsgs[i]}</span> messages
+                                                    <span class='activeusersTime'>${activeUserTimes[i]}</span>
                                                 </li>`);
-            } else if (updateArray.indexOf(activeUserArray[i]) > -1) { //I have no idea what this else if does :(
-                if($usr.text() == activeUserArray[i])
-                    {
-                        activeUserMsgs[i] = activeUserMsgs[i] + 1; //should increment msg number on the same i place as username is...
-                    }
-            }
+            } /*else if (updateArray.indexOf(activeUserArray[i]) > -1) {
+            
+            }*/
         }
     }
 
@@ -798,6 +796,7 @@
         "RTFM":    "Read The Fucking Manual",
         "HAATIVCALBE": "Hobbit's Awesome Abbreviation That Is Very Cool And Loved By Everyone",
         "RLC":     "Reddit Live Chat",
+        "SEC":     "Second",
         "STFU":    "Shut The Fuck Up",
         "SRSLY":   "Seriously",
         "SRY":     "Sorry",
@@ -1221,21 +1220,9 @@
         activeUserArray.push($usr.text());
         //activeUserTimes.push(militarytime);
         activeUserTimes.push(shortTime.text());
-        
-        var theNumber = 0;
-        
-        //this shit should add 1 to message numerator when message is posted...
-        for(let i = 0; i < activeUserArray.length; i++)
-            {
-                if(activeUserArray[i] == $usr.text()) //checks if user is on the given i place
-                    {
-                        theNumber = activeUserMsgs[i] + 1; //old value plus 1...
-                    }
-            }
-        activeUserMsgs.push(theNumber); //adds new number an' shit... to the array...
 
         // Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
-        processActiveUsersList($usr);
+        processActiveUsersList();
     }
 
     function collapseLongMessage($msg,firstLine) {
@@ -1467,6 +1454,9 @@ setInterval(incConTimer, 60000);
 
                 //Getting minutes and seconds numbers from readAbleDate and prepends a 0 if the number is less than
                 var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+                    
+                var seconds = readAbleDate.getSeconds() ;
+                    
                 if (GM_getValue("rlc-12HourMode")) {
                         //it is pm if hours from 12 onwards
                         var suffix = (hours >= 12)? 'PM' : 'AM';
@@ -1480,8 +1470,10 @@ setInterval(incConTimer, 60000);
                     suffix = "";
                 }
 
-
-                var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+                if(GM_getValue("rlc-SecondsMode"))
+                    {
+                var finaltimestamp = hours.toString() + ":" + minutes.toString() + ":" + seconds.toString() + " " + suffix;
+                    }else finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
 
                 var fakeMessage = `
                 <li class="rlc-message" name="rlc-id-${msgID}">
@@ -1531,6 +1523,23 @@ setInterval(incConTimer, 60000);
 //   ╚═════╝ ╚══════╝   ╚═╝       ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
 
 
+function getContributors() {
+
+     var urlToGet = stripTrailingSlash(window.location.href) + "/contributors.json";
+
+     var ajaxLoadUsers =     $.getJSON( urlToGet, function( data ) {
+         var userdata = data[0].data.children;
+         $.each( userdata, function( ) {
+             console.log($(this));
+             console.log($(this)[0].name);
+             console.log($(this)[0].permissions);
+         });
+            });
+        ajaxLoadUsers.complete(function() {
+
+        });
+}
+
 function getMessages(gettingOld) {
     loadHistoryMessageException = 1;
 
@@ -1572,6 +1581,7 @@ function getMessages(gettingOld) {
 
                     var hours = readAbleDate.getHours();
                     var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+                    var seconds = readAbleDate.getSeconds() ;
 
                     if (GM_getValue("rlc-12HourMode")) {
                             //it is pm if hours from 12 onwards
@@ -1586,8 +1596,10 @@ function getMessages(gettingOld) {
                         suffix = "";
                     }
 
-
-                    var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+                    if(GM_getValue("rlc-SecondsMode"))
+                        {
+                            finaltimestamp = hours.toString() + ":" + minutes.toString()+ ":" + seconds.toString() + " " + suffix;
+                        }else var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
 
                     var fakeMessage = `
                     <li class="rlc-message" name="rlc-id-${msgID}">
@@ -1877,7 +1889,7 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
         textArea.on("keydown", function(e) {
             // Tab autocomplete
             if (e.keyCode === 9) { // Stole my old code from Parrot
-                processActiveUsersList($usr);
+                processActiveUsersList();
                 e.preventDefault();
                 var sourceAlt= $(".usertext-edit textarea").val();
                 var namePart = "";
@@ -2357,6 +2369,9 @@ $( window ).resize(function() {
         // get the initial messages to display from reddit live api
         getMessages();
 
+        // testing zone: disable to get contributors from live api reported into console
+        //getContributors();
+        
         // wait for initial load to be completed, and then scroll the chat window to the bottom.
         // TODO make a preloader, it looks better
         setTimeout(function(){
