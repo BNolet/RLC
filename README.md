@@ -17,7 +17,7 @@ Once you have TamperMonkey or GreaseMonkey installed, click the link below!
 Then, come hang out in the [RLC Dev Chat](https://www.reddit.com/live/wpytzw1guzg2)!
 We'll assist you with any problems and listen to any feedback you might have.
 
-Easy access urls: www.reddit.today reddirects to github and install info while www.reddit.today/chat reddirects to chat
+Easy access urls: www.reddit.today redirects to github and install info while www.reddit.today/chat redirects to chat
 
 ### Major Features
 Note: development of RLC almost always outpaces this readme file. Check out the chat itself and the issues section of this repository to get a better idea of the current state of the project.
