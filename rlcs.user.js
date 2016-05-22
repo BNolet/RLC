@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.18
+// @version        3.18.19
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
@@ -2936,17 +2936,8 @@ div#filter_tabs {
 .mrPumpkin {
     height: 24px;
     width: 24px;
-    border-radius: 3px;
     background-size: 144px;
     top: 6px
-}
-
-.dark-background .mrPumpkin {
-    border-radius: 5px
-}
-
-.dark-background .mrTwitchEmotes,.mrTwitchEmotes {
-    border-radius: 0
 }
 
 .mp_frown {
