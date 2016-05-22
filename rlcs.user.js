@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.20
+// @version        3.19
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
@@ -202,6 +202,9 @@
                 Notification.requestPermission();
             }
         },false, "show notice when you are mentioned");
+        
+        createOption("All Notifications when unfocused", function(checked){
+        },false, "show notice on any message if window is not focused");
 
         createOption("Chrome Scroll Bars", function(checked){
             if (checked){
@@ -1769,17 +1772,33 @@ function messageFaker(msg) {
 
             scrollToBottom();
 
-            if (line.indexOf(robinUser) !== -1){
-                if (GM_getValue("rlc-NotificationSound")){
-                    snd.play();
-                }
+            if (GM_getValue("rlc-AllNotificationswhenunfocused")){
                 if (GM_getValue("rlc-ChromeNotifications")){
+                    if ( !document.hasFocus() ) {
                     new Notification("Robin Live Chat",{
                         icon: chromeNotificationImage,
                         body: $usr.text() + ": " + line
                     });
+                    }
                 }
             }
+            else { 
+                if (line.indexOf(robinUser) !== -1){
+                    if (GM_getValue("rlc-ChromeNotifications")){
+                        new Notification("Robin Live Chat",{
+                            icon: chromeNotificationImage,
+                            body: $usr.text() + ": " + line
+                        });
+                    }
+                }
+            }
+
+            if (line.indexOf(robinUser) !== -1){
+                if (GM_getValue("rlc-NotificationSound")){
+                    snd.play();
+                }
+            }
+
             //if option is checked, check if message user is "robin" user and do not play if so
             if (GM_getValue("rlc-TTSDisableSelfnarration")){
                 if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
