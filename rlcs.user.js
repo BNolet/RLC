@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.19
+// @version        3.19.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
@@ -157,7 +157,6 @@
             } else {
                 $("#rlc-main").removeClass("show-colors");
             }
-            // Correct scroll after spam filter change
         },false, "give channels background colors");
 
         createOption("Show Channels UI", function(checked){
@@ -168,7 +167,6 @@
             }
         },false,"show channel tabs and message channel selector");
 
-        // TODO: conditioned on this, dont init tabbedchannels.tick
         createOption("Channel Message Counters", function(checked){
         },false,"show counters for messages in tabs");
 
@@ -186,10 +184,10 @@
         },false,"Time Stamps with Seconds");
 
         createOption("Hide Channels in Global", function(checked){
-           if (loadHistoryMessageException != 1) {  refreshChat(); }
-            if (checked){
+           if (checked){
                 $("body").addClass("rlc-hideChannelsInGlobal");
             } else {
+                if (loadHistoryMessageException != 1) {  refreshChat(); }
                 $("body").removeClass("rlc-hideChannelsInGlobal");
             }
         },false, "hide in-channel messages in global tab (the channel must added for this to work)");
@@ -626,7 +624,7 @@
             // Redraw tabs
             this.drawTabs();
 
-            // Start ticker
+            // Start tab message number ticker if enabled
             if (GM_getValue("rlc-ChannelMessageCounters")){
             setInterval(this.tick, 2000);
             }
@@ -1670,6 +1668,9 @@ function messageFaker(msg) {
             }
         }
 
+        // Track channels
+        tabbedChannels.proccessLine(line, $el, rescan);
+
         // remove the oldest message if there are more than 25 if that option is on.
         if (GM_getValue("rlc-MaxMessages25")){
             var totalmessages = $(".rlc-message").length;
@@ -1696,12 +1697,13 @@ function messageFaker(msg) {
         // Alternating background color
         alternateMsgBackground($el);
 
-        // Emote support
+        // Smiley Emotes 
         emoteSupport(line, $msg, firstLine);
 
+        // Twitch emotes 
         twitchemoteSupport(line, $msg, firstLine);
 
-        // Abbrev Support
+        // Abbreviations
         abbrSupport(line, $msg, firstLine);
 
         // Easy (and hacky) multiline
@@ -1709,10 +1711,7 @@ function messageFaker(msg) {
         $msg.html($msg.html().replace("<br><br>","<br>"));
         $msg.html($msg.html().replace("</p><br>", ""));
 
-        // Track channels
-        tabbedChannels.proccessLine(line, $el, rescan);
-
-        if (line.indexOf(robinUser) !== -1){
+         if (line.indexOf(robinUser) !== -1){
             // Add bold highlighting
             $el.addClass("user-mention");
         }
@@ -1928,7 +1927,11 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
             // Enter message send
             if (e.keyCode === 13) {
                 if (e.shiftKey) { /* Exit enter handling to allow shift+enter newline */  }
-                else if (textArea.val() === "" ) { e.preventDefault();  }
+                else if (textArea.val() === "" ) { 
+                    // prevent sending empty messages
+                    e.preventDefault();  
+                }
+                // slash commands: 
                 else {
                     if (textArea.val().indexOf("/pusheen") === 0){
                         $(this).val(`/gif pusheen`);
@@ -1946,10 +1949,6 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
                       }
                       $(this).val(afkstring);
 
-                    }
-
-                    if (textArea.val().indexOf("/afk") === 0){
-                        $(this).val(`${$usr} `);
                     }
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val(`||| Browser Details (via /browser ) : ${navigator.sayswho}`);
@@ -2123,7 +2122,7 @@ $( window ).resize(function() {
 
         $("body").on("contextmenu", ".rlc-message .author", function (event) {
             event.preventDefault();
-            $el = $(this).parent().parent();
+            $el = $(this).parent().parent();  //find the message that the author element is in
             var $menu = $("#myContextMenu");
             var $msg = $el.find(".body .md");
             var $usr = $el.find(".author");
@@ -2137,76 +2136,80 @@ $( window ).resize(function() {
             $( "body" ).one( "click", function() {
               $("#myContextMenu").hide();
             });
+                // positioning, semi broken
+                if (window.innerHeight-100 > divPos["top"]){
+                    $menu.css({"left":divPos["left"], "top":divPos["top"], "display": "initial"}); //menu down
+                } else {
+                    $menu.css({"left":divPos["left"], "top":divPos["top"]-70, "display": "initial"}); //menu up
+                }
 
-                    if (window.innerHeight-100 > divPos["top"]){
-                        $menu.css({"left":divPos["left"], "top":divPos["top"], "display": "initial"}); //menu down
-                    } else {
-                        $menu.css({"left":divPos["left"], "top":divPos["top"]-70, "display": "initial"}); //menu up
+                // code for detecting if the message has delete buttons.
+                // obsolete since change to ajax messages, needs to check 
+                // the corrosponding liveupdate
+                /*
+                var $button = $(this).parent().siblings().find(".delete").find("button");
+                if ($button.length>0){
+                    $menu.find("#deleteCom").removeClass("disabled");
+                } else {
+                    $menu.find("#deleteCom").addClass("disabled");
+                }
+                */
+
+                // click event handling, not sure why we unbind it,
+                // maybe to avoid double binds?
+                $menu.find("ul li").unbind("click");
+                $menu.find("ul li").bind("click", function(){
+
+                    var $id = $(this).attr("id");
+                    // (try to) delete this message (requires perms or ownership of message)
+                    if ($id === "deleteCom" && $(this).has(".disabled").length === 0){
+                        deleteComment($el);
                     }
-
-                    var $button = $(this).parent().siblings().find(".delete").find("button");
-                    if ($button.length>0){
-                        $menu.find("#deleteCom").removeClass("disabled");
-                    } else {
-                        $menu.find("#deleteCom").addClass("disabled");
+                    if ($id === "PMUser"){ // send a reddit PM to the author of this message
+                        OpenUserPM($usr.text());
                     }
-
-                    $menu.find("ul li").unbind("click");
-                    $menu.find("ul li").bind("click", function(){
-
-                        var $id = $(this).attr("id");
-                        if ($id === "deleteCom" && $(this).has(".disabled").length === 0){
-                            deleteComment($el);
-                        }
-                        if ($id === "PMUser"){
-                            OpenUserPM($usr.text());
-                        }
-                        if ($id === "mute"){
-                            var banusername = String($usr.text()).trim();
-                            mutedUsers.push(banusername);
-                            updateMutedUsers();
-                        }
-                        if ($id === "copyMessage"){
-                            var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
-                            $(".usertext-edit.md-container textarea").focus().val(copystring);
-                        }
-                        if ($id === "speakMessage"){
-                            messageTextToSpeechHandler($msg, $usr);
-                        }
-                    });
+                    if ($id === "mute"){ // add the author to mute list
+                        var banusername = String($usr.text()).trim();
+                        mutedUsers.push(banusername);
+                        updateMutedUsers();
+                    }
+                    if ($id === "copyMessage"){ // copy author name and message to messagebox
+                        var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
+                        $(".usertext-edit.md-container textarea").focus().val(copystring);
+                    }
+                    if ($id === "speakMessage"){ // read message aloud
+                        messageTextToSpeechHandler($msg, $usr);
+                    }
+                });
         });
-
         // Load old messages
         $("#togglebarLoadHist").click(function(){
             getMessages(true);
         });
-
-        // Easy access options
+        // autoscroll option shortcut
         $("#togglebarAutoscroll").click(function(){
             $( "#rlc-settings label:contains('Auto Scroll') input" ).click();
         });
-
+        // text to speech option shortcut
         $("#togglebarTTS").click(function(){
             $( "#rlc-settings label:contains('Text To Speech (TTS)') input" ).click();
         });
-
         //toggle sidebar via css classes
         $("#togglesidebar").click(function(){
             $("body").toggleClass("rlc-hidesidebar");
             $(this).toggleClass("selected");
             scrollToBottom();
         });
-
+        // toggle options menu
         $("#rlc-toggleoptions").click(function(){
             $("body").removeClass("rlc-showreadmebar");
             $("body").toggleClass("rlc-showoptions");
         });
-
+        // toggle readme 
         $("#rlc-toggleguide").click(function(){
             $("body").removeClass("rlc-showoptions");
             $("body").toggleClass("rlc-showreadmebar");
         });
-
         // this makes the RLC send button click on the hidden native reddit live button
         $("#rlc-sendmessage").click(function(){
             $(".save-button .btn").click();
@@ -2320,9 +2323,12 @@ $( window ).resize(function() {
             $("#liveupdate-resources .md").html(res[1]);
             $("#rlc-guidebar .md").append(res[0]);
         }
+
+        // append userlist and muted user list
         $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><ul></ul></div>");
         $("#rlc-main-sidebar").append("<div id='banlistcontainer'><div id='bannedlist'></div></div>");
 
+        // append version info to header
         $("#rlc-statusbar").append("<div id='versionnumber'>Reddit Live Chat (RLC) v." + GM_info.script.version + "</div>");
 
     }
@@ -2409,12 +2415,12 @@ $( window ).resize(function() {
     });
 
 
-//   ██████╗  ██████╗  ██████╗  ██████╗ ██╗     ███████╗    ███████╗ ██████╗ ███╗   ██╗████████╗
-//  ██╔════╝ ██╔═══██╗██╔═══██╗██╔════╝ ██║     ██╔════╝    ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝
-//  ██║  ███╗██║   ██║██║   ██║██║  ███╗██║     █████╗      █████╗  ██║   ██║██╔██╗ ██║   ██║   
-//  ██║   ██║██║   ██║██║   ██║██║   ██║██║     ██╔══╝      ██╔══╝  ██║   ██║██║╚██╗██║   ██║   
-//  ╚██████╔╝╚██████╔╝╚██████╔╝╚██████╔╝███████╗███████╗    ██║     ╚██████╔╝██║ ╚████║   ██║   
-//   ╚═════╝  ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   
+//  ███████╗ ██████╗ ███╗   ██╗████████╗
+//  ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝
+//  █████╗  ██║   ██║██╔██╗ ██║   ██║   
+//  ██╔══╝  ██║   ██║██║╚██╗██║   ██║   
+//  ██║     ╚██████╔╝██║ ╚████║   ██║   
+//  ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   
 
 
     // copypasted google fonts magic embed code, avert your eyes mortal!
@@ -2431,12 +2437,12 @@ $( window ).resize(function() {
     })();
 
 
-//   ██████╗███████╗███████╗    ██████╗ ███████╗███████╗ ██████╗ ██╗   ██╗██████╗  ██████╗███████╗███████╗
-//  ██╔════╝██╔════╝██╔════╝    ██╔══██╗██╔════╝██╔════╝██╔═══██╗██║   ██║██╔══██╗██╔════╝██╔════╝██╔════╝
-//  ██║     ███████╗███████╗    ██████╔╝█████╗  ███████╗██║   ██║██║   ██║██████╔╝██║     █████╗  ███████╗
-//  ██║     ╚════██║╚════██║    ██╔══██╗██╔══╝  ╚════██║██║   ██║██║   ██║██╔══██╗██║     ██╔══╝  ╚════██║
-//  ╚██████╗███████║███████║    ██║  ██║███████╗███████║╚██████╔╝╚██████╔╝██║  ██║╚██████╗███████╗███████║
-//   ╚═════╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚══════╝╚══════╝
+//   ██████╗███████╗███████╗  
+//  ██╔════╝██╔════╝██╔════╝  
+//  ██║     ███████╗███████╗  
+//  ██║     ╚════██║╚════██║  
+//  ╚██████╗███████║███████║  
+//   ╚═════╝╚══════╝╚══════╝  
 
 
     // RLC-CORE
@@ -2743,10 +2749,6 @@ body {
 .rlc-message a.author,.rlc-message p {
     line-height: 32px;
     min-height: 32px
-}
-
-.md {
-    max-width: none!important
 }
 
 .rlc-message-listing li.rlc-message p {
@@ -3306,7 +3308,9 @@ div#rlc-messagebox {
 }
 .md {
     overflow: hidden;
+    max-width: none!important
 }
+
     `);
 
     // BG alternation - breaks minifier
