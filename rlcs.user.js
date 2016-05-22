@@ -1469,10 +1469,12 @@ setInterval(incConTimer, 60000);
             */
 
             case 'delete':
-                console.log("message deleted:"+msg.payload);
-                var messageToDelete = "rlc-id-"+msg.payload;
-                $( "li[name='"+messageToDelete+"']" ).remove();
-                reAlternate();
+                if(!GM_getValue("rlc-NoMessageRemoval")) {
+                  console.log("message deleted:"+msg.payload);
+                  var messageToDelete = "rlc-id-"+msg.payload;
+                  $( "li[name='"+messageToDelete+"']" ).remove();
+                  reAlternate();
+                }
 
                 break;
 
@@ -2064,7 +2066,6 @@ $( window ).resize(function() {
      // uses the unique message id to delete the real message. need to do a writeup, basicaly the native reddit live messages are on the page but not shown.
      // instead we show our own structure with our own messages. this deletes the comment by matching the rlc-message with the liveupdate and pressing the delete and yes button on the liveupdate.
     function deleteComment($objComment){
-        if(!GM_getValue("rlc-NoMessageRemoval")) {
 
             var selectorstring = $objComment.attr("name").split("rlc-id-LiveUpdate_")[1];
 
@@ -2078,7 +2079,6 @@ $( window ).resize(function() {
                 var $button2 = $liveupdateEl.find(".delete").find(".yes");
                 $button2.click();
             }
-        }
     }
 
     function mouseClicksEventHandling() {
