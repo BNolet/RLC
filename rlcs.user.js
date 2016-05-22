@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.19.1
+// @version        3.20
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
@@ -1950,6 +1950,19 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
                       $(this).val(afkstring);
 
                     }
+                    
+                    if(textArea.val().indexOf("/ggl") === 0)
+                        {
+                            var searchString = textArea.val().split("/ggl ")[1].replace(/ /g, "+");
+                            var gglString = `https://www.google.com/#q=`;
+                            
+                            if (typeof searchString !== "undefined")
+                                {
+                                    searchString = gglString + searchString;
+                                }
+                            $(this).val(searchString);
+                        }
+                    
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val(`||| Browser Details (via /browser ) : ${navigator.sayswho}`);
                     }
