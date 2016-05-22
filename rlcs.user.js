@@ -1772,16 +1772,25 @@ function messageFaker(msg) {
 
             scrollToBottom();
 
+            // if all AllNotificationswhenunfocused option is enabled
+            // check if document is focused. if so:
+            // do both types of notifications if they are enabled
             if (GM_getValue("rlc-AllNotificationswhenunfocused")){
-                if (GM_getValue("rlc-ChromeNotifications")){
-                    if ( !document.hasFocus() ) {
-                    new Notification("Robin Live Chat",{
-                        icon: chromeNotificationImage,
-                        body: $usr.text() + ": " + line
-                    });
+                if ( !document.hasFocus() ) {
+                    if (GM_getValue("rlc-ChromeNotifications")){
+                        new Notification("Robin Live Chat",{
+                            icon: chromeNotificationImage,
+                            body: $usr.text() + ": " + line
+                        });
+                    }
+                    if (GM_getValue("rlc-NotificationSound")){
+                        snd.play();
                     }
                 }
             }
+            // AllNotificationswhenunfocused is not enabled
+            // Check if user was mentioned and if so:
+            // do both types of notifications if they are enabled
             else { 
                 if (line.indexOf(robinUser) !== -1){
                     if (GM_getValue("rlc-ChromeNotifications")){
@@ -1790,12 +1799,9 @@ function messageFaker(msg) {
                             body: $usr.text() + ": " + line
                         });
                     }
-                }
-            }
-
-            if (line.indexOf(robinUser) !== -1){
-                if (GM_getValue("rlc-NotificationSound")){
-                    snd.play();
+                    if (GM_getValue("rlc-NotificationSound")){
+                        snd.play();
+                    }
                 }
             }
 
