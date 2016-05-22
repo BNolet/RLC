@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.19
+// @version        3.18.20
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
-// @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
+// @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
 // @include        https://www.reddit.com/live/*
@@ -317,6 +317,9 @@
                 $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
             }
         },false, "sample image works best in dark mode");
+        
+        createOption("No Message Removal", function(checked){
+        },false, "don't remove messages ever");
     }
 
 
@@ -1466,10 +1469,12 @@ setInterval(incConTimer, 60000);
             */
 
             case 'delete':
-                console.log("message deleted:"+msg.payload);
-                var messageToDelete = "rlc-id-"+msg.payload;
-                $( "li[name='"+messageToDelete+"']" ).remove();
-                reAlternate();
+                if(!GM_getValue("rlc-NoMessageRemoval")) {
+                  console.log("message deleted:"+msg.payload);
+                  var messageToDelete = "rlc-id-"+msg.payload;
+                  $( "li[name='"+messageToDelete+"']" ).remove();
+                  reAlternate();
+                }
 
                 break;
 
@@ -1906,6 +1911,21 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
                     if (textArea.val().indexOf("/version") === 0){
                         $(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
                     }
+                    
+                    if (textArea.val().indexOf("/afk") === 0){
+                      var afktime = textArea.val().split("/afk ")[1];
+                      var afkstring = `/me is going AFK`;
+  
+                      if (typeof afktime !== "undefined") {  
+                        afkstring = afkstring + " for the next " + afktime;
+                      }
+                      $(this).val(afkstring);
+
+                    }
+
+                    if (textArea.val().indexOf("/afk") === 0){
+                        $(this).val(`${$usr} `);
+                    }
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val(`||| Browser Details (via /browser ) : ${navigator.sayswho}`);
                     }
@@ -2047,18 +2067,18 @@ $( window ).resize(function() {
      // instead we show our own structure with our own messages. this deletes the comment by matching the rlc-message with the liveupdate and pressing the delete and yes button on the liveupdate.
     function deleteComment($objComment){
 
-        var selectorstring = $objComment.attr("name").split("rlc-id-LiveUpdate_")[1];
+            var selectorstring = $objComment.attr("name").split("rlc-id-LiveUpdate_")[1];
 
-        var $liveupdateEl = $('a[href$="'+selectorstring+'"]').parent();
+            var $liveupdateEl = $('a[href$="'+selectorstring+'"]').parent();
 
-        if ($liveupdateEl.has(".buttonrow").length>0){
+            if ($liveupdateEl.has(".buttonrow").length>0){
 
-            var $button = $liveupdateEl.find(".delete").find("button");
-             $button.click();
+                var $button = $liveupdateEl.find(".delete").find("button");
+                 $button.click();
 
-            var $button2 = $liveupdateEl.find(".delete").find(".yes");
-            $button2.click();
-        }
+                var $button2 = $liveupdateEl.find(".delete").find(".yes");
+                $button2.click();
+            }
     }
 
     function mouseClicksEventHandling() {
