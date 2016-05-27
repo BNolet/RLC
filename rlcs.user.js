@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.20
+// @version        3.21
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
@@ -25,20 +25,20 @@
 // ==/UserScript==
 
 
-//  ██████╗ ██╗      ██████╗    ██╗███╗   ██╗████████╗██████╗  ██████╗
+//  ██████╗ ██╗      ██████╗    ██╗███╗   ██╗████████╗██████╗  ██████╗ 
 //  ██╔══██╗██║     ██╔════╝    ██║████╗  ██║╚══██╔══╝██╔══██╗██╔═══██╗
 //  ██████╔╝██║     ██║         ██║██╔██╗ ██║   ██║   ██████╔╝██║   ██║
 //  ██╔══██╗██║     ██║         ██║██║╚██╗██║   ██║   ██╔══██╗██║   ██║
 //  ██║  ██║███████╗╚██████╗    ██║██║ ╚████║   ██║   ██║  ██║╚██████╔╝
-//  ╚═╝  ╚═╝╚══════╝ ╚═════╝    ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝
+//  ╚═╝  ╚═╝╚══════╝ ╚═════╝    ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ 
 
-
-//    Welcome to Reddit Live Chat source code, enjoy your visit.
-//    Please group your variables with the relevant functions and follow existing structure.
-//    (Unless you are willing to rewrite the structure into something more sane)
-//    To get a good idea of whats going on, start from window.load near the bottom.
-//    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.
-//      - Stjerneklar
+                                                                    
+    //    Welcome to Reddit Live Chat source code, enjoy your visit.
+    //    Please group your variables with the relevant functions and follow existing structure.
+    //    (Unless you are willing to rewrite the structure into something more sane)
+    //    To get a good idea of whats going on, start from window.load near the bottom.
+    //    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.
+    //      - Stjerneklar
 
 
 //  ██████╗ ██╗      ██████╗     ██████╗ ██████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗
@@ -47,7 +47,7 @@
 //  ██╔══██╗██║     ██║         ██║   ██║██╔═══╝    ██║   ██║██║   ██║██║╚██╗██║╚════██║
 //  ██║  ██║███████╗╚██████╗    ╚██████╔╝██║        ██║   ██║╚██████╔╝██║ ╚████║███████║
 //  ╚═╝  ╚═╝╚══════╝ ╚═════╝     ╚═════╝ ╚═╝        ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-//
+//                                                                                      
 //  Calls createOption to set up lables, GM values and body classes based on stored GM values if set.
 //
 
@@ -75,7 +75,7 @@
         }
         // Render option
         var $option = $(`<label id='option-${key}'><input type='checkbox' ${checkedMarkup}>${name}<span>${description}</span></label>`).click(function(e){
-
+    
         // capture only checkbox's event
             var target = $( e.target );
             if ( !target.is( "input" ) ) {
@@ -105,10 +105,10 @@
 
         // set default states(on first load of RLC, otherwise presists via GM/TM local variables)
         // ONLY NEEEDED FOR DEFAULT TRUE
-        if (!GM_getValue("rlc-ChannelColors")) {        GM_setValue("rlc-ChannelColors",            true);}
-        if (!GM_getValue("rlc-AutoScroll")) {           GM_setValue("rlc-AutoScroll",               true);}
-        if (!GM_getValue("rlc-FullSize")) {             GM_setValue("rlc-FullSize",                 true);}
-        if (!GM_getValue("rlc-ShowChannelsUI")) {       GM_setValue("rlc-ShowChannelsUI",           true);}
+        if (GM_getValue("rlc-ChannelColors")===undefined) {        GM_setValue("rlc-ChannelColors",            true);}
+        if (GM_getValue("rlc-AutoScroll")===undefined) {           GM_setValue("rlc-AutoScroll",               true);}
+        if (GM_getValue("rlc-FullSize")===undefined) {             GM_setValue("rlc-FullSize",                 true);}
+        if (GM_getValue("rlc-ShowChannelsUI")===undefined) {       GM_setValue("rlc-ShowChannelsUI",           true);}
 
         // Format: name, function, state, description(optional)
         createOption("Full Size", function(checked){
@@ -173,7 +173,7 @@
         createOption("12 Hour Mode", function(checked){
             if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false,"12 Hour Time Stamps");
-
+        
         createOption("Seconds Mode", function(checked){
         if (loadHistoryMessageException != 1) {  refreshChat(); }
             if (checked){
@@ -200,7 +200,7 @@
                 Notification.requestPermission();
             }
         },false, "show notice when you are mentioned");
-
+        
         createOption("All Notifications when unfocused", function(checked){
         },false, "show notice on any message if window is not focused");
 
@@ -222,7 +222,7 @@
                 window.speechSynthesis && window.speechSynthesis.cancel && window.speechSynthesis.cancel();
             }
         },false, "read messages aloud");
-
+        
         createOption("TTS Long Messages", function(checked){
         },false, "read long messages( TTS starts behaving weirdly sometimes)");
 
@@ -318,7 +318,7 @@
                 $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
             }
         },false, "sample image works best in dark mode");
-
+        
         createOption("No Message Removal", function(checked){
         },false, "don't remove messages ever");
     }
@@ -339,7 +339,7 @@
         var _self = this;
 
         // Default options
-        this.channels = ["%general", "%offtopic"];
+        this.channels = ["%general", "%offtopic","%dev"];
         this.mode = "single";
 
         // internals
@@ -643,78 +643,6 @@
     }
     GM_addStyle(colorcollection);
 
-
-//  ██╗   ██╗███████╗███████╗██████╗     ██╗     ██╗███████╗████████╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
-//  ██║   ██║██╔════╝██╔════╝██╔══██╗    ██║     ██║██╔════╝╚══██╔══╝    ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
-//  ██║   ██║███████╗█████╗  ██████╔╝    ██║     ██║███████╗   ██║       █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
-//  ██║   ██║╚════██║██╔══╝  ██╔══██╗    ██║     ██║╚════██║   ██║       ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
-//  ╚██████╔╝███████║███████╗██║  ██║    ███████╗██║███████║   ██║       ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
-//   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝   ╚═╝       ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
-
-
-    var storedMuteList = GM_getValue("mutedUsers");
-
-    if(storedMuteList!=undefined){
-        var mutedUsers = storedMuteList;
-    }else{
-        var mutedUsers = [];
-    }
-
-    function updateMutedUsers() {
-
-        // Reset by removing CSS and userlist
-        $("#mystyle").remove();
-        $("#bannedlist").empty();
-
-        // Iterate over the muted users
-        var selectors = [];
-        for(let i = 0; i <= mutedUsers.length; i++){
-            if (mutedUsers[i] !== undefined) {    // Avoid the undefined one I cant figure out why I'm puttin in
-                selectors.push(`.u_${mutedUsers[i]}{display:none;}`);      // Generate CSS display none rule for user in list
-                $('.u_'+mutedUsers[i]).addClass('muted');
-                $("#bannedlist").append(`<p>${mutedUsers[i]}</p>`);        // Generate interface element for disabling muting
-                //reAlternate(); - seems to do nothing?
-            }
-        }
-        $("body").append(`<style id='mystyle'>${selectors.join(" ")}</style>`); // Inject style tag with user rules
-
-        // Handle clicking in muted user list (needs to be here for scope reasons)
-        $("#bannedlist p").click(function(){
-            let target = $(this).text();
-            let targetPosition = mutedUsers.indexOf(target);
-            $('.u_'+mutedUsers[targetPosition]).removeClass('muted');
-            reAlternate();
-            $(this).remove();  // Remove this element from the muted list
-            mutedUsers.splice(targetPosition, 1);  // Remove target from the muted array
-            updateMutedUsers(); // Update
-            scrollToBottom();
-        });
-        GM_setValue("mutedUsers", mutedUsers);
-    }
-
-    var activeUserArray = [],
-        activeUserTimes = [],
-        updateArray = [];
-
-    // Update active user list
-    function processActiveUsersList() {
-        $("#rlc-activeusers ul").empty();
-        updateArray = [];
-
-        for(let i = 0; i <= activeUserArray.length; i++){
-            if (updateArray.indexOf(activeUserArray[i]) === -1 && activeUserArray[i] !== undefined) {
-                updateArray.push(activeUserArray[i]);
-                $("#rlc-activeusers ul").append(`<li>
-                                                    <span class='activeusersUser'>${activeUserArray[i]}</span> @
-                                                    <span class='activeusersTime'>${activeUserTimes[i]}</span>
-                                                </li>`);
-            } /*else if (updateArray.indexOf(activeUserArray[i]) > -1) {
-
-            }*/
-        }
-    }
-
-
 //  ████████╗███████╗██╗  ██╗████████╗    ████████╗ ██████╗     ███████╗██████╗ ███████╗███████╗ ██████╗██╗  ██╗
 //  ╚══██╔══╝██╔════╝╚██╗██╔╝╚══██╔══╝    ╚══██╔══╝██╔═══██╗    ██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝██║  ██║
 //     ██║   █████╗   ╚███╔╝    ██║          ██║   ██║   ██║    ███████╗██████╔╝█████╗  █████╗  ██║     ███████║
@@ -850,8 +778,8 @@
                //var linetoread = $msg.text();
                var linetoread = $msg.html(); // Extract html encoded text
                linetoread = linetoread.replace(/<br>/g, " ... ").replace(/<[^>]+>/g, " "); // Replace tag as pause then strip other tags
-               // Unescaped html escaped string by way of crazy voodo magic. (Use textarea to avoid XSS exploits)
-               linetoread = $("<textarea/>").html(linetoread).val();
+               // Unescaped html escaped string by way of crazy voodo magic. (Use textarea to avoid XSS exploits) 
+               linetoread = $("<textarea/>").html(linetoread).val(); 
 
                 // Remove any URLs that match urlRegex
                 linetoread = linetoread.replace(urlRegex, "");
@@ -984,9 +912,9 @@
                     //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
                 }
             }
-
+        
         else{
-
+            
                 // long messages break tts (<300 chars)
                 if($msg.text().length<250){
 
@@ -1130,139 +1058,204 @@
     }
 
 
-//  ███╗   ███╗███████╗ ██████╗     ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
-//  ████╗ ████║██╔════╝██╔════╝     ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
-//  ██╔████╔██║███████╗██║  ███╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
-//  ██║╚██╔╝██║╚════██║██║   ██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
-//  ██║ ╚═╝ ██║███████║╚██████╔╝    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
-//  ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+//  ██╗     ██╗██╗   ██╗███████╗     █████╗ ██████╗ ██╗    ██╗    ██╗███████╗██████╗ ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+//  ██║     ██║██║   ██║██╔════╝    ██╔══██╗██╔══██╗██║    ██║    ██║██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+//  ██║     ██║██║   ██║█████╗      ███████║██████╔╝██║    ██║ █╗ ██║█████╗  ██████╔╝███████╗██║   ██║██║     █████╔╝ █████╗     ██║   
+//  ██║     ██║╚██╗ ██╔╝██╔══╝      ██╔══██║██╔═══╝ ██║    ██║███╗██║██╔══╝  ██╔══██╗╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║   
+//  ███████╗██║ ╚████╔╝ ███████╗    ██║  ██║██║     ██║    ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║   
+//  ╚══════╝╚═╝  ╚═══╝  ╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 
+    // used to make sure that the url we use to connect the websocket does not end in a slash.
+    function stripTrailingSlash(str) {
+        if(str.substr(-1) === '/') {
+            return str.substr(0, str.length - 1);
+        }
+        return str;
+    }
 
-    // Grab users username + play nice with RES
-    var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
+    /* connectionTimer & incConTimer track how long time has passed since last websocket activity and notifies the user
+       if more than 2 minutes have passed without activity, as this is taken as a disconnect.  */
+    var connectionTimer = 0; 
+    function incConTimer() {
+       connectionTimer = connectionTimer + 1;
+        if (connectionTimer > 2) { 
+        location.reload();
+       }
+    }
+    setInterval(incConTimer, 60000);
 
-    // Message background alternation via js
-    var rowAlternator = false;
+    +function(){
 
-    // trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
-    var emojiList={":)": "smile",
-                   "3:D": "evilsmile",
-                   ":((": "angry",
-                   ":(": "frown",
-                   ":s": "confused",
-                   ":I": "meh",
-                   ":|": "meh",
-                   ":/": "disappointed",
-                   ":o": "shocked",
-                   ":D": "happy",
-                   "D:": "sad",
-                   ";_;": "crying",
-                   "T_T": "crying",
-                   ";)": "wink",
-                   "-_-": "bored",
-                   "X|": "annoyed",
-                   "X)": "xsmile",
-                   "X(": "xsad",
-                   "XD": "xhappy",
-                   ":P": "tongue",
-                  };
+        $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
 
-    var twitchmojiList={
-        "KappaRoss": "ross",
-        "KappaClaus": "claus",
-        "Kappa": "kappa",
-        "PogChamp": "pogchamp",
-        "SMOrc": "smorc",
-        "NotLikeThis": "notlikethis",
-        "FailFish": "failfish",
-        "4Head": "4head",
-        "EleGiggle": "elegiggle",
-        "Kreygasm": "kreygasm",
-        "DansGame": "dansgame",
-        "WutFace": "wutface",
-    };
+            var websocket_url = data.data.websocket_url;
 
+            var ws = new WebSocket(websocket_url);
 
-    function emoteSupport(line, $msg, firstLine) {
-        if (!GM_getValue("rlc-NoEmotes")){
-            $.each(emojiList, function(emoji,replace){
-                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
-                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
-                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
-                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrPumpkin mp_${replace}'></span>`));
+            ws.onmessage = function (evt) {
+              
+                    // Ensure data has data
+                     if(!data.hasOwnProperty('data'))
+                     {
+                         console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                         return;
+                     }
+              
+                var msg = JSON.parse(evt.data);
+                connectionTimer = 0;  // connection timer is reset on any activity that has data
+                switch(msg.type) {
+                case 'update':
+
+                        
+                    var payload = msg.payload.data;
+
+                    // See messageFaker function for how messages from json are turned into rlc-messages
+                    $(".rlc-message-listing").prepend(messageFaker(payload));
+                    
+                    break;
+
+                 /*  disabled, liveupdate header already tracks this
+                case 'activity':
+
+                    var payload = msg.payload;
+                    console.log('user count from websocket:', payload.count);
+
+                    break;
+                */
+
+                case 'delete':
+                    if(!GM_getValue("rlc-NoMessageRemoval")) {
+                      console.log("message deleted:"+msg.payload);
+                      var messageToDelete = "rlc-id-"+msg.payload;
+                      $( "li[name='"+messageToDelete+"']" ).remove();
+                      reAlternate();
                     }
+
+                    break;
+
+
+                /*  embeds_ready - a previously posted update has
+                been parsed and embedded media is available for it now.
+                the payload contains a liveupdate_id and list of embeds to add to it.*/
                 }
+
+            };
+
+        });
+
+    }();
+
+
+//   ██████╗ ███████╗████████╗    ███╗   ███╗███████╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗███████╗
+//  ██╔════╝ ██╔════╝╚══██╔══╝    ████╗ ████║██╔════╝██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝██╔════╝
+//  ██║  ███╗█████╗     ██║       ██╔████╔██║█████╗  ███████╗███████╗███████╗███████║██║  ███╗█████╗  ███████╗
+//  ██║   ██║██╔══╝     ██║       ██║╚██╔╝██║██╔══╝  ╚════██║╚════██║╚════██║██╔══██║██║   ██║██╔══╝  ╚════██║
+//  ╚██████╔╝███████╗   ██║       ██║ ╚═╝ ██║███████╗███████║███████║███████║██║  ██║╚██████╔╝███████╗███████║
+//   ╚═════╝ ╚══════╝   ╚═╝       ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
+
+
+    function getContributors() {
+
+         var urlToGet = stripTrailingSlash(window.location.href) + "/contributors.json";
+
+         var ajaxLoadUsers =     $.getJSON( urlToGet, function( data ) {
+             var userdata = data[0].data.children;
+             $.each( userdata, function( ) {
+                 console.log($(this));
+                 console.log($(this)[0].name);
+                 console.log($(this)[0].permissions);
+             });
+                });
+            ajaxLoadUsers.complete(function() {
+
             });
-        }
     }
 
-    function twitchemoteSupport(line, $msg, firstLine) {
-        if (!GM_getValue("rlc-NoTwitchEmotes")){
-            $.each(twitchmojiList, function(emoji,replace){
-                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
-                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
-                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
-                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrTwitchEmotes tw_${replace}'></span>`));
-                    }
-                }
-            });
-        }
-    }
+    function getMessages(gettingOld) {
+        loadHistoryMessageException = 1;
 
-    function abbrSupport(line, $msg, firstLine) {
-        if ( firstLine.html() != null ){ // This is usually for excluding embedded, code or other content that doesn't use html representation
-            htmTok = firstLine.html().split(" ");
-            htmTok = htmTok.map(function(tokenStr){
-                var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase(); // Strip trailing space and newlines and punctuations with conversion to newline
-                if ( replaceStrList_key in replaceStrList ){
-                    return `<abbr title="${replaceStrList[replaceStrList_key]}">${tokenStr}</abbr>`;
-                }
-                return tokenStr;
-            });
-            firstLine.html(htmTok.join(" "));
-        }
-    }
+         var urlToGet = stripTrailingSlash(window.location.href) + "/.json";
 
-    // Timestamp modification & user activity tracking
-    function timeAndUserTracking($el, $usr) {
-        var shortTime = $el.find(".simpletime");
-
-        // Add info to activeuserarray
-        activeUserArray.push($usr.text());
-        //activeUserTimes.push(militarytime);
-        activeUserTimes.push(shortTime.text());
-
-        // Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
-        processActiveUsersList();
-    }
-
-    function collapseLongMessage($msg,firstLine) {
-        if($msg.text().length>250){
-            $msg.addClass("longMessageClosed");
-            $msg.prepend("<input type='button' value='+' class='extendButton' style='width:18px;height:18px;padding:0px;font-size:0.8em'>");
-            $msg.on('click', '.extendButton', function () {
-                if($msg.hasClass("longMessageClosed")){
-                    $msg.removeClass("longMessageClosed");
-                    $msg.find('.extendButton').val('-');
-                }else{
-                    $msg.addClass("longMessageClosed");
-                    $msg.find('.extendButton').val('+');
-                }
-                scrollToBottom();
-            });
-        }
-    }
-
-    function alternateMsgBackground($el) {
-            if (loadHistoryMessageException === 0) {
-                var $child = $('.rlc-message-listing:not(.muted)').children()[1];
-                rowAlternator=($($child).hasClass('alt-bgcolor'));
-            }else{
-                rowAlternator=!rowAlternator;
+        if (gettingOld) {
+            var lastMessage = $(".rlc-message:last-child");
+            if(lastMessage.length !== 1) { console.log("nolastmessage");}
+            else {
+                urlToGet += "?after="+$(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
             }
-            if(rowAlternator === false){
-                $el.addClass("alt-bgcolor");
-            }
+        }
+
+         var ajaxLoadOldMessages = $.getJSON( urlToGet, function( data ) {
+
+                     // Ensure data has data
+                     if(!data.hasOwnProperty('data'))
+                     {
+                         console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                         return;
+                     }
+             
+                    var oldmessages = data.data.children;  //navigate the data to the object containing the messages
+                    $.each( oldmessages, function( ) {
+                        var msg = $(this).toArray()[0].data; //navigate to the message data level we want
+                       
+                        // See messageFaker function for how messages from json are turned into rlc-messages
+                        $(".rlc-message-listing").append(messageFaker(msg));
+                    });
+                });
+            ajaxLoadOldMessages.complete(function() {
+                loadHistoryMessageException = 0;
+                   reAlternate();
+            });
+    }
+
+    function messageFaker(msg) { 
+                        var msgID = msg.name;
+                        var $msgbody = msg.body_html;
+
+                        if (GM_getValue("rlc-DisableMarkdown")) {$msgbody + '<div class="md"><p>'+ msg.body +'</p></div>';}
+                        
+                            // Unescaped html escaped string by way of crazy voodo magic.
+                            $msgbody = $("<textarea/>").html($msgbody).val()                        
+
+                        var usr = msg.author;
+                        var utcSeconds = msg.created_utc;
+
+                        // translate created_utc to a human readable version
+                        var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                        readAbleDate.setUTCSeconds(utcSeconds);
+
+                        var hours = readAbleDate.getHours();
+                        var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+                        var seconds = readAbleDate.getSeconds().toString();
+                        
+                        // if seconds is a single diget value, prefix it with a 0 (12:00:1 becomes 12:00:01)
+                        if (seconds.length === 1) { seconds = "0" + seconds};
+
+                        if (GM_getValue("rlc-12HourMode")) {
+                                //it is pm if hours from 12 onwards
+                                var suffix = (hours >= 12)? 'PM' : 'AM';
+
+                                //only -12 from hours if it is greater than 12 (if not back at mid night)
+                                hours = (hours > 12)? hours -12 : hours;
+
+                                //if 00 then it is 12 am
+                                hours = (hours === '00')? 12 : hours;
+                        } else {
+                            suffix = "";
+                        }
+
+                        if(GM_getValue("rlc-SecondsMode"))
+                            {
+                                finaltimestamp = hours.toString() + ":" + minutes.toString()+ ":" + seconds.toString() + " " + suffix;
+                            }else var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+
+                        var fakeMessage = `
+                        <li class="rlc-message" name="rlc-id-${msgID}">
+                            <div class="body">${$msgbody}
+                                <div class="simpletime">${finaltimestamp}</div>
+                                <a href="/user/${usr}" class="author">${usr}</a>
+                            </div>
+                        </li>`
+                        return fakeMessage;
     }
 
 
@@ -1276,6 +1269,7 @@
 
     function reAlternate(){
        $('.rlc-message').removeClass('alt-bgcolor');
+       $('.rlc-message.muted').remove();
        $('.rlc-message:odd').addClass('alt-bgcolor');
     }
 
@@ -1304,8 +1298,7 @@
 //  ██║   ██║╚════██║██╔══╝  ██╔══██╗    ██║     ██║   ██║██║     ██║   ██║██╔══██╗    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
 //  ╚██████╔╝███████║███████╗██║  ██║    ╚██████╗╚██████╔╝███████╗╚██████╔╝██║  ██║    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
 //   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝     ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═╝    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
-//
-
+//                                                                                                                                           
 
     // Generate random value based on seed, max and minimum (for user colors)
     Math.seededRandom = function(seed, max = 1, min = 0) {
@@ -1318,13 +1311,13 @@
         return parseInt(min + rnd * (max - min));
     };
 
-    //Generates the matching light, dark and Robin colors for username CSS and stores them in a persistent array
-    function colorGen($usr) {
-        var hexArray = GM_getValue("hexArrayStore", "") || [];
+    //Generates the matching light, dark and Robin colors for username CSS
+    function colorGen(name) {
+ 
         var tempArray = [];
 
         // Convert string to hex
-        var hexStr = $usr.text();
+        var hexStr = name;
         var result = "";
         for (var i=0; i<hexStr.length; i++) {
             result += hexStr.charCodeAt(i).toString(16);
@@ -1339,6 +1332,7 @@
                 adder = adder * num;
             }
         });
+
         adder = adder.toString().replace(".", "").split("0").join("");
         let start = adder.length-10;
         let end = adder.length-4;
@@ -1391,226 +1385,298 @@
 
         //Robin Colors
         var colors = ["e50000", "db8e00", "ccc100", "02be01", "0083c7", "820080"];
-        var e = $usr.text().toLowerCase(),
+        var e = name.toLowerCase(),
             t = e.replace(/[^a-z0-9]/g, ""),
             n = parseInt(t, 36) % 6;
 
         //Cascading array used to add color schemes to master hex array on a 1:1 user:colorset basis
         //AKA, arrays within an array (multidimensional array)
         tempArray.push(colors[n]);
-        hexArray.push(tempArray);
-        //console.log(hexArray);
-        GM_setValue("hexArrayStore", hexArray); //Store array in scriptmonkey settings for later access
+        return tempArray;
     }
 
-
-//  ██╗     ██╗██╗   ██╗███████╗     █████╗ ██████╗ ██╗    ██╗    ██╗███████╗██████╗ ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
-//  ██║     ██║██║   ██║██╔════╝    ██╔══██╗██╔══██╗██║    ██║    ██║██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
-//  ██║     ██║██║   ██║█████╗      ███████║██████╔╝██║    ██║ █╗ ██║█████╗  ██████╔╝███████╗██║   ██║██║     █████╔╝ █████╗     ██║
-//  ██║     ██║╚██╗ ██╔╝██╔══╝      ██╔══██║██╔═══╝ ██║    ██║███╗██║██╔══╝  ██╔══██╗╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║
-//  ███████╗██║ ╚████╔╝ ███████╗    ██║  ██║██║     ██║    ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║
-//  ╚══════╝╚═╝  ╚═══╝  ╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
-
-// used to make sure that the url we use to connect the websocket does not end in a slash.
-function stripTrailingSlash(str) {
-    if(str.substr(-1) === '/') {
-        return str.substr(0, str.length - 1);
-    }
-    return str;
-}
-
-/* connectionTimer & incConTimer track how long time has passed since last websocket activity and notifies the user
-   if more than 2 minutes have passed without activity, as this is taken as a disconnect.  */
-var connectionTimer = 0;
-function incConTimer() {
-   connectionTimer = connectionTimer + 1;
-    if (connectionTimer > 2) {
-    location.reload();
-   }
-}
-setInterval(incConTimer, 60000);
-
-+function(){
-
-    $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
-
-        var websocket_url = data.data.websocket_url;
-
-        var ws = new WebSocket(websocket_url);
-
-        ws.onmessage = function (evt) {
-
-                // Ensure data has data
-                 if(!data.hasOwnProperty('data'))
-                 {
-                     console.log("Help me Obi-Wan Kenobi. We got empty data!");
-                     return;
-                 }
-
-            var msg = JSON.parse(evt.data);
-            connectionTimer = 0;  // connection timer is reset on any activity that has data
-            switch(msg.type) {
-            case 'update':
+//  ███╗   ███╗███████╗ ██████╗     ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ████╗ ████║██╔════╝██╔════╝     ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██╔████╔██║███████╗██║  ███╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║╚██╔╝██║╚════██║██║   ██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ██║ ╚═╝ ██║███████║╚██████╔╝    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//  ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
 
 
-                var payload = msg.payload.data;
+    // Grab users username + play nice with RES
+    var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
 
-                // See messageFaker function for how messages from json are turned into rlc-messages
-                $(".rlc-message-listing").prepend(messageFaker(payload));
+    // Message background alternation via js
+    var rowAlternator = false;
 
-                break;
+    // convert an url prefixed by rlc-image into an image link
+    function rlcImageHandler($el,$msg,firstLine) { 
+        var linksObj = $msg.find("a");
+        var url = linksObj.attr("href");
+        if (url) {
+            var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
+            var splitByPipe = $msg.text().split("|");
+            var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
+            var imgHeight = 0;
+            imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
 
-             /*  disabled, liveupdate header already tracks this
-            case 'activity':
+            url = url.replace(/^http:\/\//i, 'https://'); //force usage of https 
+            
+            $el.addClass("rlc-imageWithin");
 
-                var payload = msg.payload;
-                console.log('user count from websocket:', payload.count);
-
-                break;
-            */
-
-            case 'delete':
-                if(!GM_getValue("rlc-NoMessageRemoval")) {
-                  console.log("message deleted:"+msg.payload);
-                  var messageToDelete = "rlc-id-"+msg.payload;
-                  $( "li[name='"+messageToDelete+"']" ).remove();
-                  reAlternate();
-                }
-
-                break;
-
-
-            /*  embeds_ready - a previously posted update has
-            been parsed and embedded media is available for it now.
-            the payload contains a liveupdate_id and list of embeds to add to it.*/
-            }
-
-        };
-
-    });
-
-}();
-
-
-//   ██████╗ ███████╗████████╗    ███╗   ███╗███████╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗███████╗
-//  ██╔════╝ ██╔════╝╚══██╔══╝    ████╗ ████║██╔════╝██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝██╔════╝
-//  ██║  ███╗█████╗     ██║       ██╔████╔██║█████╗  ███████╗███████╗███████╗███████║██║  ███╗█████╗  ███████╗
-//  ██║   ██║██╔══╝     ██║       ██║╚██╔╝██║██╔══╝  ╚════██║╚════██║╚════██║██╔══██║██║   ██║██╔══╝  ╚════██║
-//  ╚██████╔╝███████╗   ██║       ██║ ╚═╝ ██║███████╗███████║███████║███████║██║  ██║╚██████╔╝███████╗███████║
-//   ╚═════╝ ╚══════╝   ╚═╝       ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
-
-
-function getContributors() {
-
-     var urlToGet = stripTrailingSlash(window.location.href) + "/contributors.json";
-
-     var ajaxLoadUsers =     $.getJSON( urlToGet, function( data ) {
-         var userdata = data[0].data.children;
-         $.each( userdata, function( ) {
-             console.log($(this));
-             console.log($(this)[0].name);
-             console.log($(this)[0].permissions);
-         });
-            });
-        ajaxLoadUsers.complete(function() {
-
-        });
-}
-
-function getMessages(gettingOld) {
-    loadHistoryMessageException = 1;
-
-     var urlToGet = stripTrailingSlash(window.location.href) + "/.json";
-
-    if (gettingOld) {
-        var lastMessage = $(".rlc-message:last-child");
-        if(lastMessage.length !== 1) { console.log("nolastmessage");}
-        else {
-            urlToGet += "?after="+$(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
+            firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
         }
     }
 
-     var ajaxLoadOldMessages = $.getJSON( urlToGet, function( data ) {
+    // trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
+    var emojiList={":)": "smile",
+                   "3:D": "evilsmile",
+                   ":((": "angry",
+                   ":(": "frown",
+                   ":s": "confused",
+                   ":I": "meh",
+                   ":|": "meh",
+                   ":/": "disappointed",
+                   ":o": "shocked",
+                   ":D": "happy",
+                   "D:": "sad",
+                   ";_;": "crying",
+                   "T_T": "crying",
+                   ";)": "wink",
+                   "-_-": "bored",
+                   "X|": "annoyed",
+                   "X)": "xsmile",
+                   "X(": "xsad",
+                   "XD": "xhappy",
+                   ":P": "tongue",
+                  };
 
-                 // Ensure data has data
-                 if(!data.hasOwnProperty('data'))
-                 {
-                     console.log("Help me Obi-Wan Kenobi. We got empty data!");
-                     return;
-                 }
-
-                var oldmessages = data.data.children;  //navigate the data to the object containing the messages
-                $.each( oldmessages, function( ) {
-                    var msg = $(this).toArray()[0].data; //navigate to the message data level we want
-
-                    // See messageFaker function for how messages from json are turned into rlc-messages
-                    $(".rlc-message-listing").append(messageFaker(msg));
-                });
-            });
-        ajaxLoadOldMessages.complete(function() {
-            loadHistoryMessageException = 0;
-               reAlternate();
-        });
-}
-
-function messageFaker(msg) {
-                    var msgID = msg.name;
-                    var $msgbody = msg.body_html;
-
-                    if (GM_getValue("rlc-DisableMarkdown")) {$msgbody + '<div class="md"><p>'+ msg.body +'</p></div>';}
-
-                        // Unescaped html escaped string by way of crazy voodo magic.
-                        $msgbody = $("<textarea/>").html($msgbody).val()
-
-                    var usr = msg.author;
-                    var utcSeconds = msg.created_utc;
-
-                    // translate created_utc to a human readable version
-                    var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                    readAbleDate.setUTCSeconds(utcSeconds);
-
-                    var hours = readAbleDate.getHours();
-                    var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
-                    var seconds = readAbleDate.getSeconds().toString();
-
-                    // if seconds is a single diget value, prefix it with a 0 (12:00:1 becomes 12:00:01)
-                    if (seconds.length === 1) { seconds = "0" + seconds};
-
-                    if (GM_getValue("rlc-12HourMode")) {
-                            //it is pm if hours from 12 onwards
-                            var suffix = (hours >= 12)? 'PM' : 'AM';
-
-                            //only -12 from hours if it is greater than 12 (if not back at mid night)
-                            hours = (hours > 12)? hours -12 : hours;
-
-                            //if 00 then it is 12 am
-                            hours = (hours === '00')? 12 : hours;
-                    } else {
-                        suffix = "";
+    function emoteSupport(line, $msg, firstLine) {
+        if (!GM_getValue("rlc-NoEmotes")){
+            $.each(emojiList, function(emoji,replace){
+                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
+                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
+                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
+                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrPumpkin mp_${replace}'></span>`));
                     }
+                }
+            });
+        }
+    }
 
-                    if(GM_getValue("rlc-SecondsMode"))
-                        {
-                            finaltimestamp = hours.toString() + ":" + minutes.toString()+ ":" + seconds.toString() + " " + suffix;
-                        }else var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+    var twitchmojiList={
+        "KappaRoss": "ross",
+        "KappaClaus": "claus",
+        "Kappa": "kappa",
+        "PogChamp": "pogchamp",
+        "SMOrc": "smorc",
+        "NotLikeThis": "notlikethis",
+        "FailFish": "failfish",
+        "4Head": "4head",
+        "EleGiggle": "elegiggle",
+        "Kreygasm": "kreygasm",
+        "DansGame": "dansgame",
+        "WutFace": "wutface",
+    };
 
-                    var fakeMessage = `
-                    <li class="rlc-message" name="rlc-id-${msgID}">
-                        <div class="body">${$msgbody}
-                            <div class="simpletime">${finaltimestamp}</div>
-                            <a href="/user/${usr}" class="author">${usr}</a>
-                        </div>
-                    </li>`
-                    return fakeMessage;
-}
+    function twitchemoteSupport(line, $msg, firstLine) {
+        if (!GM_getValue("rlc-NoTwitchEmotes")){
+            $.each(twitchmojiList, function(emoji,replace){
+                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
+                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
+                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
+                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrTwitchEmotes tw_${replace}'></span>`));
+                    }
+                }
+            });
+        }
+    }
+
+    function abbrSupport(line, $msg, firstLine) {
+        if ( firstLine.html() != null ){ // This is usually for excluding embedded, code or other content that doesn't use html representation
+            htmTok = firstLine.html().split(" ");
+            htmTok = htmTok.map(function(tokenStr){
+                var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase(); // Strip trailing space and newlines and punctuations with conversion to newline
+                if ( replaceStrList_key in replaceStrList ){
+                    return `<abbr title="${replaceStrList[replaceStrList_key]}">${tokenStr}</abbr>`;
+                }
+                return tokenStr;
+            });
+            firstLine.html(htmTok.join(" "));
+        }
+    }
+
+    function collapseLongMessage($msg,firstLine) {
+        if($msg.text().length>250){
+            $msg.addClass("longMessageClosed");
+            $msg.prepend("<input type='button' value='+' class='extendButton' style='width:18px;height:18px;padding:0px;font-size:0.8em'>");
+            $msg.on('click', '.extendButton', function () {
+                if($msg.hasClass("longMessageClosed")){
+                    $msg.removeClass("longMessageClosed");
+                    $msg.find('.extendButton').val('-');
+                }else{
+                    $msg.addClass("longMessageClosed");
+                    $msg.find('.extendButton').val('+');
+                }
+                scrollToBottom();
+            });
+        }
+    }
+
+    function alternateMsgBackground($el) {
+        var muted = $el.hasClass("muted");
+        if (muted === false) { 
+          if(rowAlternator === false){
+                $el.addClass("alt-bgcolor");
+                rowAlternator = true;
+            }
+            else {
+                rowAlternator = false;                
+            }
+        }
+    }
+
+//  ██╗   ██╗███████╗███████╗██████╗     ██╗     ██╗███████╗████████╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ██║   ██║██╔════╝██╔════╝██╔══██╗    ██║     ██║██╔════╝╚══██╔══╝    ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██║   ██║███████╗█████╗  ██████╔╝    ██║     ██║███████╗   ██║       █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║   ██║╚════██║██╔══╝  ██╔══██╗    ██║     ██║╚════██║   ██║       ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ╚██████╔╝███████║███████╗██║  ██║    ███████╗██║███████║   ██║       ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝   ╚═╝       ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+
+    // try to get persistant user list 
+    var storedUserList = GM_getValue("storedUserList");
+
+    if(storedUserList!=undefined){
+        var userList = storedUserList;
+    }else{
+        var userList = [];
+    }
+
+    // run only on the first message recived from a user.
+    function addUserToArray(name,time,muted) {
+        // create user object for tracking
+        var user = {
+            name:name,           // set name of user being tracked
+            lastMsgTime:time,         // set time of latest activity to timestamp passed 
+            countMsg:"1",          // set initial message tracking count [remeber not to make this persist XD]
+            isMuted:muted,         // could add a check of the associated GM array of muted users to see if it should be true.
+            colorArray: colorGen(name) 
+        };
+        userList.push(user); //insert user object into user tracking array
+        GM_setValue("storedUserList", userList);
+        if (loadHistoryMessageException === 0) {
+             updateUserListInterface();
+        }
+    }
+
+    function updateUserListInterface() {
+
+        // Reset by removing CSS and userlist
+        $("#userstyles").remove();
+        $("#rlc-userListUI").empty();
+
+        var selectors = [];
+
+        // Iterate over users
+        $.each(userList, function(idx,item){
+
+            // User color assignment: (robin superseedes light/dark)
+            if (GM_getValue("rlc-RobinColors")) { var usercolor = item.colorArray[2]; }
+            else {
+                if (GM_getValue("rlc-DarkMode")) { var usercolor = item.colorArray[0];}
+                // default non dark colors
+                else { var usercolor = item.colorArray[1]; }
+            }
+            selectors.push(`.user-${item.name} .author {color:#${usercolor}}`);   
+
+            if (item.isMuted) { 
+            $("#rlc-userListUI").append(`<p class="mutedUser .user-${item.name}">${item.name}</p>`);     
+            }
+            else { 
+            $("#rlc-userListUI").append(`<p>${item.name}</p>`);  
+            }
+        });
+
+        $("body").append(`<style id='userstyles'>${selectors.join(" ")}</style>`); // Inject style tag with user rules
+
+        // Handle clicking in muted user list (needs to be here for scope reasons)
+        $("#rlc-userListUI .mutedUser").click(function(){
+            let target = $(this).text();
+            unMuteUser(target);
+        });
+    }
 
 
-//  ███╗   ███╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗
-//  ████╗ ████║██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝
+
+    // mute user via interface
+    function muteUser(name) { 
+        var result = $.grep(userList, function(e){ return e.name == name; });
+
+        if (result.length == 1) { 
+              result[0].isMuted = true;
+        }
+
+        // save change
+        GM_setValue("storedUserList", userList);
+        refreshChat();
+    }
+
+    // unmute user via interface
+    function unMuteUser(name) { 
+        var result = $.grep(userList, function(e){ return e.name == name; });
+
+        if (result.length == 1) { 
+              result[0].isMuted = false;
+        }
+        // save change
+        GM_setValue("storedUserList", userList);
+        refreshChat();
+    }
+
+    function doUserTracking($el) { 
+        var name = $el.find(".author").text();
+        var time = $el.find(".simpletime").text();
+        var muted = $el.hasClass("muted");
+        // try to find the user object in the userList array by matching its name property with that passed to the function 
+        var result = $.grep(userList, function(e){ return e.name == name; });
+
+        if (result.length == 0) {  // username not found, add
+              addUserToArray(name,time,muted);
+        } 
+        if (result.length == 1) { // username found, track
+
+              // do things that require info from user object
+              
+              // increment the users message count since we are handling a message and already have him listed
+              result[0].countMsg++;
+              //console.log(result[0].countMsg)
+            
+            // handling of muted users messages    
+            if (result[0].isMuted) { 
+               $el.addClass("muted");
+            }
+        } else {
+              console.log("ERROR: multiple users found.");
+              console.log(userList);
+        }
+
+    }
+
+    // transform userlist into format readable by tab autocomplete
+    function getActiveUserNamesAsArray() {
+        var auArr = [];
+        $.each(userList, function(idx,item){
+            auArr.push(item.name);
+        });
+        return auArr;
+    }
+
+//  ███╗   ███╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗ 
+//  ████╗ ████║██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝ 
 //  ██╔████╔██║█████╗  ███████╗███████╗███████║██║  ███╗█████╗      ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗
 //  ██║╚██╔╝██║██╔══╝  ╚════██║╚════██║██╔══██║██║   ██║██╔══╝      ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║
 //  ██║ ╚═╝ ██║███████╗███████║███████║██║  ██║╚██████╔╝███████╗    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝
-//  ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝
+//  ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
 
 
     // Notification sound in base64 encoding
@@ -1643,26 +1709,12 @@ function messageFaker(msg) {
         var line        = $msg.text().toLowerCase();
         var firstLine   = $msg.find("p").first();
 
-        //handle giphy images
+        //handle giphy images 
         if (line.trim().indexOf("rlc-image") === 0){
-            if (!GM_getValue("rlc-HideGiphyImages")){
-                var linksObj = $msg.find("a");
-                var url = linksObj.attr("href");
-                if (url) {
-                    var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
-                    var splitByPipe = $msg.text().split("|");
-                    var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
-                    var imgHeight = 0;
-                    imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
-
-                    url = url.replace(/^http:\/\//i, 'https://'); //force usage of https
-
-                    $el.addClass("rlc-imageWithin");
-
-                    firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
-                }
+            if (!GM_getValue("rlc-HideGiphyImages")){  
+            rlcImageHandler($el,$msg,firstLine);                
             }
-            else {
+            else { 
                 $el.remove();
                 return false; // if this is a Giphy and HideGiphyImages is on, remove this message and stop function
             }
@@ -1670,6 +1722,12 @@ function messageFaker(msg) {
 
         // Track channels
         tabbedChannels.proccessLine(line, $el, rescan);
+
+        // User tracking - to include colors, muting(standard/tts), counts
+        doUserTracking($el)
+
+        $el.addClass(`user-${$usr.text()}`);
+        
 
         // remove the oldest message if there are more than 25 if that option is on.
         if (GM_getValue("rlc-MaxMessages25")){
@@ -1685,9 +1743,6 @@ function messageFaker(msg) {
             firstLine.html(firstLine.html().replace("/me", " " + $usr.text()));
         }
 
-        // Timestamp modification & user activity tracking
-        timeAndUserTracking($el, $usr);
-
         // long message collapsing
         collapseLongMessage($msg,firstLine);
 
@@ -1697,10 +1752,10 @@ function messageFaker(msg) {
         // Alternating background color
         alternateMsgBackground($el);
 
-        // Smiley Emotes
+        // Smiley Emotes 
         emoteSupport(line, $msg, firstLine);
 
-        // Twitch emotes
+        // Twitch emotes 
         twitchemoteSupport(line, $msg, firstLine);
 
         // Abbreviations
@@ -1733,39 +1788,6 @@ function messageFaker(msg) {
             }
         }
 
-        // User color assignment:
-        if (GM_getValue("rlc-RobinColors")) {
-            colorSet = 2;
-        }
-        else {
-            if (GM_getValue("rlc-DarkMode")) {
-            colorSet = 0;
-            }
-            // default non dark colors
-            else {
-            colorSet = 1;
-            }
-        }
-
-        // Tag message with user identifier for muting
-        $el.addClass("u_"+$usr.text());
-
-        //Check if user exists and add user to list if they don't.
-        if (usrArray.indexOf($usr.text()) === -1) {
-            usrArray.push($usr.text());
-            colorGen($usr); //generate dark, light and Robin colorschemes for the user
-            GM_setValue("usrArrayStore", usrArray); //Store usrArray into settings
-            hexArray = GM_getValue("hexArrayStore", ""); //update hexArray to include new user's colors
-        }
-
-        //Apply color through CSS to message author
-        $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
-
-        //deal with muting
-        if(mutedUsers.indexOf($usr.text())!=-1){
-            $msg.parent().addClass('muted');
-        }
-
         // Stuff that should not be done to messages loaded on init, like TTS handling
         if (loadHistoryMessageException === 0 && rescan != true) {
 
@@ -1790,7 +1812,7 @@ function messageFaker(msg) {
             // AllNotificationswhenunfocused is not enabled
             // Check if user was mentioned and if so:
             // do both types of notifications if they are enabled
-            else {
+            else { 
                 if (line.indexOf(robinUser) !== -1){
                     if (GM_getValue("rlc-ChromeNotifications")){
                         new Notification("Robin Live Chat",{
@@ -1811,24 +1833,24 @@ function messageFaker(msg) {
                 }
             }
             // todo: check if we are in another channel and dont play tts if so.
-            if(!$msg.parent().hasClass('muted')){
+            if(!$msg.parent().parent().hasClass('muted')){
                 messageTextToSpeechHandler($msg, $usr);
             }
         }
     };
 
 
-//  ██╗  ██╗███████╗██╗   ██╗██████╗ ██████╗ ███████╗███████╗███████╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗
-//  ██║ ██╔╝██╔════╝╚██╗ ██╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝
+//  ██╗  ██╗███████╗██╗   ██╗██████╗ ██████╗ ███████╗███████╗███████╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗ 
+//  ██║ ██╔╝██╔════╝╚██╗ ██╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝ 
 //  █████╔╝ █████╗   ╚████╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗
 //  ██╔═██╗ ██╔══╝    ╚██╔╝  ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║
 //  ██║  ██╗███████╗   ██║   ██║     ██║  ██║███████╗███████║███████║    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝
-//  ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝
-
+//  ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+           
 
     String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
-}
+    }
 
     //browser info getter from http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
     navigator.sayswho= (function(){
@@ -1859,7 +1881,7 @@ function messageFaker(msg) {
        return message;
     };
 
-function refreshChat() {  $(".rlc-message").remove(); getMessages();}
+    function refreshChat() {  $(".rlc-message").remove(); getMessages();updateUserListInterface();}
 
     // Settings Keys (used in /sharesettings)
     var optionsArray = [];
@@ -1872,17 +1894,20 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
     function keypressHandling() {
 
         var textArea = $(".usertext-edit.md-container textarea");
-
+        
         // body keypress focuses textarea
         $(document).keydown(function(e) {
             var ctrlDown = e.ctrlKey||e.metaKey
-            if (ctrlDown) {  return;  }
-            if ($(e.target).is("textarea")) {   }
-            else {
+            var shiftDown = e.shiftKey
+            var altDown = e.altKey
+
+            if (ctrlDown || shiftDown || altDown ) {  return;  }            
+            if ($(e.target).is("textarea") || $(e.target).is("input") ) {   }
+            else { 
                 textArea.focus();
             }
         });
-
+        
         // On post message, add it to history
         $(".save-button .btn").click(function(){
             var userLastMessage = textArea.val();
@@ -1898,8 +1923,8 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
         // Handling of keypresses in messagebox textarea
         textArea.on("keydown", function(e) {
             // Tab autocomplete
-            if (e.keyCode === 9) { // Stole my old code from Parrot
-                processActiveUsersList();
+          if (e.keyCode === 9) { // Stole my old code from Parrot
+                var updateArray = getActiveUserNamesAsArray();
                 e.preventDefault();
                 var sourceAlt= $(".usertext-edit textarea").val();
                 var namePart = "";
@@ -1927,11 +1952,11 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
             // Enter message send
             if (e.keyCode === 13) {
                 if (e.shiftKey) { /* Exit enter handling to allow shift+enter newline */  }
-                else if (textArea.val() === "" ) {
+                else if (textArea.val() === "" ) { 
                     // prevent sending empty messages
-                    e.preventDefault();
+                    e.preventDefault();  
                 }
-                // slash commands:
+                // slash commands: 
                 else {
                     if (textArea.val().indexOf("/pusheen") === 0){
                         $(this).val(`/gif pusheen`);
@@ -1939,30 +1964,30 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
                     if (textArea.val().indexOf("/version") === 0){
                         $(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
                     }
-
+                    
                     if (textArea.val().indexOf("/afk") === 0){
                       var afktime = textArea.val().split("/afk ")[1];
                       var afkstring = `/me is going AFK`;
-
-                      if (typeof afktime !== "undefined") {
+  
+                      if (typeof afktime !== "undefined") {  
                         afkstring = afkstring + " for the next " + afktime;
                       }
                       $(this).val(afkstring);
 
                     }
-
+                    
                     if(textArea.val().indexOf("/ggl") === 0)
                         {
                             var searchString = textArea.val().split("/ggl ")[1].replace(/ /g, "+");
                             var gglString = `https://www.google.com/#q=`;
-
+                            
                             if (typeof searchString !== "undefined")
                                 {
                                     searchString = gglString + searchString;
                                 }
                             $(this).val(searchString);
                         }
-
+                    
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val(`||| Browser Details (via /browser ) : ${navigator.sayswho}`);
                     }
@@ -1994,7 +2019,7 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
                     }
                     if (textArea.val().indexOf("/opt") === 0){
                         var afterOptSplit = textArea.val().split("/opt ")[1].capitalize();
-                        if (afterOptSplit) {
+                        if (afterOptSplit) { 
                             $("#rlc-settings label:contains('"+afterOptSplit+"') input" ).click();
                         }
                         else {
@@ -2006,7 +2031,7 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
                     }
 
                     if (textArea.val().indexOf("/giphy") === 0 || textArea.val().indexOf("/gif") === 0  ){
-                        if (!GM_getValue("rlc-HideGiphyImages")){
+                        if (!GM_getValue("rlc-HideGiphyImages")){     
                             var giphyQueryList = $(this).val().split(" ");
                             giphyQueryList.shift();
                             var giphyQuery = giphyQueryList.join(" ");
@@ -2042,11 +2067,11 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
 
                 if (!(messageHistory.length > 0 && messageHistoryIndex < messageHistory.length)) {
                     return;
-                }
+                } 
 
                 messageHistoryIndex++;
 
-                $(this).val(messageHistoryIndex === messageHistory.length ?
+                $(this).val(messageHistoryIndex === messageHistory.length ? 
                     lastTyped :
                     messageHistory[messageHistoryIndex]
                 );
@@ -2063,18 +2088,18 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
     }
 
 
-//   ██████╗██╗     ██╗ ██████╗██╗  ██╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗
-//  ██╔════╝██║     ██║██╔════╝██║ ██╔╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝
+//   ██████╗██╗     ██╗ ██████╗██╗  ██╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗ 
+//  ██╔════╝██║     ██║██╔════╝██║ ██╔╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝ 
 //  ██║     ██║     ██║██║     █████╔╝     ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗
 //  ██║     ██║     ██║██║     ██╔═██╗     ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║
 //  ╚██████╗███████╗██║╚██████╗██║  ██╗    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝
-//   ╚═════╝╚══════╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝
-//
+//   ╚═════╝╚══════╝╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+//                                                                                                         
 
 
-$( window ).resize(function() {
-  scrollToBottom();
-});
+    $( window ).resize(function() {
+      scrollToBottom();
+    });
 
     // show the linked content in the left panel
     // rewritten to find the original liveupdate and take the iframe from there
@@ -2157,7 +2182,7 @@ $( window ).resize(function() {
                 }
 
                 // code for detecting if the message has delete buttons.
-                // obsolete since change to ajax messages, needs to check
+                // obsolete since change to ajax messages, needs to check 
                 // the corrosponding liveupdate
                 /*
                 var $button = $(this).parent().siblings().find(".delete").find("button");
@@ -2183,8 +2208,7 @@ $( window ).resize(function() {
                     }
                     if ($id === "mute"){ // add the author to mute list
                         var banusername = String($usr.text()).trim();
-                        mutedUsers.push(banusername);
-                        updateMutedUsers();
+                        muteUser(banusername);
                     }
                     if ($id === "copyMessage"){ // copy author name and message to messagebox
                         var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
@@ -2198,6 +2222,7 @@ $( window ).resize(function() {
         // Load old messages
         $("#togglebarLoadHist").click(function(){
             getMessages(true);
+            updateUserListInterface();
         });
         // autoscroll option shortcut
         $("#togglebarAutoscroll").click(function(){
@@ -2218,7 +2243,7 @@ $( window ).resize(function() {
             $("body").removeClass("rlc-showreadmebar");
             $("body").toggleClass("rlc-showoptions");
         });
-        // toggle readme
+        // toggle readme 
         $("#rlc-toggleguide").click(function(){
             $("body").removeClass("rlc-showoptions");
             $("body").toggleClass("rlc-showreadmebar");
@@ -2230,15 +2255,13 @@ $( window ).resize(function() {
     }
 
 
-//  ██████╗ ██╗      ██████╗    ██╗  ██╗████████╗███╗   ███╗██╗
-//  ██╔══██╗██║     ██╔════╝    ██║  ██║╚══██╔══╝████╗ ████║██║
-//  ██████╔╝██║     ██║         ███████║   ██║   ██╔████╔██║██║
-//  ██╔══██╗██║     ██║         ██╔══██║   ██║   ██║╚██╔╝██║██║
+//  ██████╗ ██╗      ██████╗    ██╗  ██╗████████╗███╗   ███╗██╗     
+//  ██╔══██╗██║     ██╔════╝    ██║  ██║╚══██╔══╝████╗ ████║██║     
+//  ██████╔╝██║     ██║         ███████║   ██║   ██╔████╔██║██║     
+//  ██╔══██╗██║     ██║         ██╔══██║   ██║   ██║╚██╔╝██║██║     
 //  ██║  ██║███████╗╚██████╗    ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
 //  ╚═╝  ╚═╝╚══════╝ ╚═════╝    ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
-//
-
-
+    
     // RLC Containers & UI HTML for injection
     var htmlPayload = `
                 <div id="rlc-wrapper">
@@ -2276,7 +2299,10 @@ $( window ).resize(function() {
                             <div id="rlc-update" class="noselect"><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update</a></div>
                             <div id="rlc-toggleguide" title="Show Guide" class="noselect">Readme</div>
                         </div>
-                        <div id="rlc-main-sidebar"></div>
+                        <div id="rlc-main-sidebar">
+                            <div id="rlc-userListUI">
+                            </div>
+                        </div>
                         <div id="rlc-readmebar">
                             <div class="md"></div>
                         </div>
@@ -2315,7 +2341,7 @@ $( window ).resize(function() {
       $("#new-update-form").insertBefore("#rlc-sendmessage");
       $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
       $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
-      $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
+      $("#liveupdate-resources").prependTo("#rlc-sidebar #rlc-main-sidebar");
 
       // start up filter tabs by inserting them
       tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
@@ -2350,9 +2376,9 @@ $( window ).resize(function() {
 
         // Show hint about invites if there is no messagebox
         if ($(".usertext-edit textarea").length <= 0) {
-             $("#rlc-main").append("<p style='width:100%;text-align:center;'>You do not have update permissions.</p>");
+             $("#rlc-main").append("<p style='width:100%;text-align:center;'>You do not have update permissions.</p>");    
         }
-        else
+        else 
         {
             $("body").addClass("rlc-canUpdate");
         }
@@ -2369,12 +2395,12 @@ $( window ).resize(function() {
     }
 
 
-//  ██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗   ██╗      ██████╗  █████╗ ██████╗
+//  ██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗   ██╗      ██████╗  █████╗ ██████╗ 
 //  ██║    ██║██║████╗  ██║██╔══██╗██╔═══██╗██║    ██║   ██║     ██╔═══██╗██╔══██╗██╔══██╗
 //  ██║ █╗ ██║██║██╔██╗ ██║██║  ██║██║   ██║██║ █╗ ██║   ██║     ██║   ██║███████║██║  ██║
 //  ██║███╗██║██║██║╚██╗██║██║  ██║██║   ██║██║███╗██║   ██║     ██║   ██║██╔══██║██║  ██║
 //  ╚███╔███╔╝██║██║ ╚████║██████╔╝╚██████╔╝╚███╔███╔╝██╗███████╗╚██████╔╝██║  ██║██████╔╝
-//   ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝
+//   ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ 
 
 
     // Boot
@@ -2388,9 +2414,6 @@ $( window ).resize(function() {
 
         // Tweak stuff
         rlcDocReadyModifications();
-
-        // attempt to load a list of muted users from stored values
-        updateMutedUsers();
 
         // run options setup
         createOptions();
@@ -2416,13 +2439,14 @@ $( window ).resize(function() {
 
         // testing zone: disable to get contributors from live api reported into console
         //getContributors();
-
+        
         // wait for initial load to be completed, and then scroll the chat window to the bottom.
         // TODO make a preloader, it looks better
         setTimeout(function(){
         //   $("#rlc-chat").show();
             scrollToBottom();
             loadHistoryMessageException = 0
+            updateUserListInterface();
         }, 500);
 
     });
@@ -2430,10 +2454,10 @@ $( window ).resize(function() {
 
 //  ███████╗ ██████╗ ███╗   ██╗████████╗
 //  ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝
-//  █████╗  ██║   ██║██╔██╗ ██║   ██║
-//  ██╔══╝  ██║   ██║██║╚██╗██║   ██║
-//  ██║     ╚██████╔╝██║ ╚████║   ██║
-//  ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝
+//  █████╗  ██║   ██║██╔██╗ ██║   ██║   
+//  ██╔══╝  ██║   ██║██║╚██╗██║   ██║   
+//  ██║     ╚██████╔╝██║ ╚████║   ██║   
+//  ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   
 
 
     // copypasted google fonts magic embed code, avert your eyes mortal!
@@ -2450,879 +2474,880 @@ $( window ).resize(function() {
     })();
 
 
-//   ██████╗███████╗███████╗
-//  ██╔════╝██╔════╝██╔════╝
-//  ██║     ███████╗███████╗
-//  ██║     ╚════██║╚════██║
-//  ╚██████╗███████║███████║
-//   ╚═════╝╚══════╝╚══════╝
+//   ██████╗███████╗███████╗  
+//  ██╔════╝██╔════╝██╔════╝  
+//  ██║     ███████╗███████╗  
+//  ██║     ╚════██║╚════██║  
+//  ╚██████╗███████║███████║  
+//   ╚═════╝╚══════╝╚══════╝  
 
 
     // RLC-CORE
     GM_addStyle(`
-          .dark-background #rlc-messagebox textarea {
-    background: #404040
-}
-
-#rlc-messagebox option {
-    background-color: #FCFCFC
-}
-
-.dark-background .md code {
-    background: #000
-}
-
-#rlc-header,#rlc-wrapper,body {
-    overflow: hidden
-}
-
-img.rlc-image {
-    max-height: 200px
-}
-
-#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header {
-    max-width: none
-}
-
-#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS {
-    -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    border-top: 1px solid rgba(128,128,128,.35)
-}
-
-#rlc-messagebox,#rlc-sidebar {
-    float: right;
-    box-sizing: border-box;
-    background-color: #EFEFED
-}
-
-div#rlc-settings label {
-    display: block;
-    font-size: 1.4em;
-    margin-left: 10px
-}
-
-#new-update-form {
-    margin: 0;
-    width: 87%;
-    float: left
-}
-
-#rlc-messagebox .usertext-edit.md-container {
-    max-width: none;
-    padding: 0;
-    margin: 0
-}
-
-header#liveupdate-header {
-    margin: 0!important;
-    padding: 7px 15px;
-}
-
-h1#liveupdate-title:before {
-    content: "chat in "
-}
-
-h1#liveupdate-title {
-    font-size: 1.5em;
-    float: left;
-    padding: 0;
-    width:100%;
-}
-
-#rlc-header #liveupdate-statusbar {
-    margin: 0;
-    padding: 0;
-    border: none!important;
-    background-color: transparent
-}
-
-#rlc-wrapper .rlc-message .body {
-    max-width: none!important;
-    margin: 0;
-    font-size: 13px;
-    font-family: "Open Sans",sans-serif
-}
-
-div#rlc-sidebar {
-    max-height: 550px
-}
-
-#rlc-wrapper {
-    height: calc(100vh - 63px);
-    max-width: 1248px;
-    max-height: 600px;
-    margin: 0 auto;
-    border-radius: 0 0 2px 2px;
-    -moz-border-radius: 0 0 2px 2px;
-    -webkit-border-radius: 0 0 2px 2px
-}
-
-#rlc-header {
-    height: 50px;
-    border-bottom: 1px solid rgba(227,227,224,.44);
-    border-top: 0;
-    box-sizing: border-box
-}
-
-#rlc-main,#rlc-titlebar {
-    width: 76%;
-    float: left;
-    position: relative
-}
-
-#rlc-sidebar {
-    width: 24%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100vh - 114px);
-    border-left: 1px solid rgba(227,227,224,.44);
-    padding: 5px 0
-}
-
-#rlc-chat {
-    height: calc(100vh - 186px);
-    overflow-y: scroll;
-    max-height: 465px;
-    margin-top: 30px
-}
-
-#rlc-main .rlc-message-listing {
-    max-width: 100%;
-    padding: 0 0 0 15px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column-reverse;
-    min-height: 100%
-}
-
-#rlc-messagebox textarea {
-    border: 1px solid rgba(227,227,224,.44);
-    float: left;
-    height: 34px;
-    margin: 0;
-    border-radius: 2px;
-    padding: 6px;
-    background: 0 0;
-    resize: none
-}
-
-#rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown,body {
-    background-color: #fcfcfc
-}
-
-#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update {
-    border-radius: 2px;
-    width: calc(33.3% - 7px);
-    float: left;
-    text-align: center;
-    box-sizing: border-box;
-    cursor: pointer;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    font-size: 1.2em
-}
-
-#rlc-messagebox {
-    padding: 10px;
-    width: 100%
-}
-
-#rlc-sendmessage {
-    height: 32px;
-    width: 13%;
-    float: right;
-    padding: 8px 0
-}
-
-#rlc-toggleguide,#rlc-toggleoptions,#rlc-update {
-    padding: 4px 0 6px;
-    box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    margin-right: 10px;
-    letter-spacing: 1px;
-    margin-bottom: 8px
-}
-
-#rlc-toggleguide {
-    margin-bottom: 0;
-    margin-right: 0
-}
-
-.rlc-message .simpletime {
-    float: left;
-    padding-left: 10px;
-    box-sizing: border-box;
-    width: 75px;
-    text-transform: uppercase;
-    line-height: 32px
-}
-
-.rlc-message a.author {
-    float: left;
-    padding-right: 10px;
-    margin: 0;
-    padding-top: 0;
-    font-weight: 600;
-    width: 130px
-}
-
-.rlc-message-listing li.rlc-message .body .md {
-    float: right;
-    width: calc(100% - 220px);
-    max-width: none;
-    box-sizing: border-box
-}
-
-li.rlc-message.in-channel .body .md {
-    width: calc(100% - 320px)
-}
-
-#rlc-activeusers {
-    padding: 15px 20px 20px 40px;
-    font-size: 1.5em
-}
-
-#rlc-activeusers li {
-    list-style: outside;
-    padding: 0 0 8px
-}
-
-#rlc-settingsbar {
-    width: 100%;
-    height: auto;
-    padding: 0 10px;
-    box-sizing: border-box;
-    margin: 5px 0;
-    float: left
-}
-
-#rlc-main-sidebar {
-    float: right;
-    width: 100%
-}
-
-#rlc-sidebar hr {
-    height: 2px;
-    width: 100%;
-    margin-left: 0
-}
-
-#rlc-sidebar h3 {
-    padding: 0 10px
-}
-
-#rlc-statusbar {
-    width: 24%;
-    float: right;
-    text-align: center;
-    padding-top: 8px
-}
-
-#versionnumber {
-    padding-top: 5px
-}
-
-#liveupdate-description {
-    float: left;
-width:100%;
-
-}
-
-.noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none
-}
-
-body {
-    min-width: 0;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center
-}
-
-.rlc-channel-add button,body.dark-background #rlc-leftPanel,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown,body.rlc-customBg #rlc-leftPanel {
-    background-color: transparent
-}
-
-#rlc-wrapper .md pre {
-    background-color: transparent!important
-}
-
-.rlc-message.user-narration .body .md {
-    font-style: italic
-}
-
-.rlc-message.user-mention .body .md p {
-    font-weight: 700
-}
-
-.rlc-message a.author,.rlc-message p {
-    line-height: 32px;
-    min-height: 32px
-}
-
-.rlc-message-listing li.rlc-message p {
-    font-size: 13px!important
-}
-
-.rlc-message pre {
-    margin: 0;
-    padding: 0;
-    max-width: 90%;
-    border: #FCFCFC;
-    box-sizing: border-box;
-    border: 1px solid rgba(227,227,224,.44)
-}
-
-.channelname {
-    display: block;
-    float: left;
-    width: 100px;
-    line-height: 32px
-}
-
-.rlc-imageWithin span.rlc-imgvia {
-    float: right;
-    margin-left: 10px
-}
-
-div#rlc-settingsbar a {
-    display: inline-block
-}
-
-div#rlc-togglebar {
-    float: right;
-    display: block;
-    height: 100%;
-    padding-right: 10px
-}
-
-#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar {
-    float: right;
-    box-sizing: border-box;
-    text-align: center;
-    padding: 5px;
-    cursor: pointer;
-    border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    width: auto;
-    margin-left: 8px;
-    margin-top: 15px
-}
-
-div#rlc-settings label {
-    float: left;
-    width: 100%;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(227,227,224,.44)
-}
-
-div#rlc-settings label span {
-    padding-top: 3px;
-    padding-bottom: 5px;
-    font-size: .7em;
-    text-align: right;
-    display: block;
-    float: right;
-    padding-right: 20px
-}
-
-div#rlc-settings input {
-    margin-right: 5px
-}
-
-.rlc-channel-add button {
-    border: 0;
-    margin: 0;
-    padding: 4px 14px;
-    border-top: 0;
-    border-bottom: 0
-}
-
-.rlc-showChannelsUI #new-update-form {
-    width: 77%;
-    float: left
-}
-
-.rlc-showChannelsUI select#rlc-channel-dropdown {
-    display: block;
-    width: 10%;
-    height: 34px;
-    float: left;
-    border: 1px solid rgba(227,227,224,.44)
-}
-
-.rlc-showChannelsUI #rlc-sendmessage {
-    width: 13%;
-    float: left
-}
-
-.rlc-showChannelsUI div#filter_tabs {
-    display: block;
-    z-index: 100
-}
-
-.rlc-showChannelsUI .rlc-channel-add {
-    position: absolute;
-    top: 27px;
-    right: 17px;
-    padding: 5px;
-    box-sizing: border-box;
-    -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1)
-}
-
-#filter_tabs .rlc-filters>span:last-of-type {
-    border-right: 0
-}
-
-div#filter_tabs {
-    width: calc(100% - 17px)
-}
-
-#filter_tabs {
-    table-layout: fixed;
-    width: 100%;
-    height: 26px;
-    position: absolute
-}
-
-#filter_tabs>span {
-    width: 90%;
-    display: table-cell
-}
-
-#filter_tabs>span.all,#filter_tabs>span.more {
-    width: 60px;
-    text-align: center;
-    vertical-align: middle;
-    cursor: pointer
-}
-
-#filter_tabs .rlc-filters {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-    height: 24px
-}
-
-#filter_tabs .rlc-filters>span {
-    padding: 7px 2px!important;
-    text-align: center;
-    display: table-cell;
-    cursor: pointer;
-    vertical-align: middle;
-    font-size: 1.1em;
-    border-right: 1px solid rgba(227,227,224,.44)
-}
-
-#filter_tabs .rlc-filters>span>span {
-    pointer-events: none
-}
-
-#filter_tabs>span.all {
-    padding: 0 30px;
-    border-right: 1px solid rgba(227,227,224,.44)
-}
-
-#filter_tabs>span.more {
-    padding: 0 30px;
-    border-left: 1px solid rgba(227,227,224,.44)
-}
-
-.rlc-channel-add input {
-    border: 1px solid rgba(227,227,224,.44);
-    padding: 0;
-    height: 24px;
-    background-color: transparent
-}
-
-.longMessageClosed {
-    max-height: 30px;
-    overflow-y: hidden;
-    overflow-x: hidden;
-    position: relative;
-    min-height: 32px
-}
-
-.longMessageClosed p {
-    position: relative;
-    left: 25px;
-    top: -5px
-}
-
-.longMessageClosed .extendButton {
-    position: absolute;
-    top: 7px;
-    margin-right: 5px
-}
-
-.longMessageClosed pre {
-    position: absolute;
-    left: 25px
-}
-
-#myContextMenu {
-    position: absolute;
-    box-shadow: 1px 1px 2px #888;
-    background-color: grey;
-    padding: 5px 0
-}
-
-#myContextMenu ul {
-    list-style-type: none
-}
-
-#myContextMenu ul li a {
-    padding: .5em 1em;
-    display: block
-}
-
-.mrPumpkin,.mrTwitchEmotes {
-    display: inline-block;
-    position: relative
-}
-
-#myContextMenu ul li:not(.disabled) a:hover {
-    cursor: pointer
-}
-
-.mrPumpkin {
-    height: 24px;
-    width: 24px;
-    background-size: 144px;
-    top: 6px
-}
-
-.mp_frown {
-    background-position: -24px 0
-}
-
-.mp_confused {
-    background-position: -48px 0
-}
-
-.mp_meh {
-    background-position: 0 -24px
-}
-
-.mp_angry {
-    background-position: -48px -24px
-}
-
-.mp_shocked {
-    background-position: -24px -24px
-}
-
-.mp_happy {
-    background-position: -72px 120px
-}
-
-.mp_sad {
-    background-position: -72px 96px
-}
-
-.mp_crying {
-    background-position: 0 72px
-}
-
-.mp_tongue {
-    background-position: 0 24px
-}
-
-.mp_xhappy {
-    background-position: -48px 48px
-}
-
-.mp_xsad {
-    background-position: -24px 48px
-}
-
-.mp_xsmile {
-    background-position: 0 48px
-}
-
-.mp_annoyed {
-    background-position: -72px 72px
-}
-
-.mp_bored {
-    background-position: -48px 72px
-}
-
-.mp_wink {
-    background-position: -24px 72px
-}
-
-.mp_evilsmile {
-    background-position: -72px 24px
-}
-
-.mp_disappointed {
-    background-position: -96px 0
-}
-
-.mp_stjerneklar {
-    background-position: -72px 48px
-}
-
-.mp_fatherderp {
-    background-position: -24px 24px
-}
-
-.mp_s3cur1ty {
-    background-position: -48px 24px
-}
-
-.mrTwitchEmotes {
-    height: 28px;
-    width: 25px;
-    background-size: 100px;
-    top: 0
-}
-
-.tw_ross {
-    background-position: -50px -55px
-}
-
-.tw_claus {
-    background-position: -75px -55px
-}
-
-.tw_kappa {
-    background-position: -25px -28px
-}
-
-.tw_wutface {
-    background-position: -25px -55px
-}
-
-.tw_elegiggle {
-    background-position: -50px 0
-}
-
-.tw_4head {
-    background-position: 0 0
-}
-
-.tw_notlikethis {
-    background-position: -75px 0
-}
-
-.tw_dansgame {
-    background-position: -25px 0
-}
-
-.tw_failfish {
-    background-position: 0 -28px
-}
-
-.tw_kreygasm {
-    background-position: -50px -28px
-}
-
-.tw_pogchamp {
-    background-position: -75px -28px
-}
-
-.tw_smorc {
-    background-position: 0 -55px
-}
-
-#filter_tabs,#hsts_pixel,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author,select#rlc-channel-dropdown {
-    display: none
-}
-
-#liveupdate-resources h2 {
-    display: none!important
-}
-
-.rlc-showoptions #rlc-settings {
-    display: block
-}
-
-.rlc-showoptions #rlc-main-sidebar {
-    display: none
-}
-
-.rlc-showreadmebar #rlc-readmebar {
-    display: block
-}
-
-.rlc-showreadmebar #rlc-main-sidebar {
-    display: none
-}
-
-#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-TTSDisableUserbasedVoices,#option-rlc-TTSUsernameNarration,#option-rlc-TTSLongMessages,#option-rlc-TTSDisableSelfnarration {
-    display: none!important
-}
-
-.rlc-TextToSpeech #option-rlc-TTSDisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration,.rlc-TextToSpeech #option-rlc-TTSDisableSelfnarration,.rlc-TextToSpeech #option-rlc-TTSLongMessages {
-    display: block!important
-}
-
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-    #option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars {
-        display:block!important
+              .dark-background #rlc-messagebox textarea {
+        background: #404040
     }
-}
 
-.rlc-hidesidebar #rlc-sidebar,div#rlc-leftPanel {
-    display: none
-}
+    #rlc-messagebox option {
+        background-color: #FCFCFC
+    }
 
-#myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button {
-    color: #fff
-}
+    .dark-background .md code {
+        background: #000
+    }
 
-.rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar {
-    background: 0 0
-}
+    #rlc-header,#rlc-wrapper,body {
+        overflow: hidden
+    }
 
-.rlc-compact #rlc-chat {
-    height: calc(100vh - 252px);
-    max-height: 466px
-}
+    img.rlc-image {
+        max-height: 200px
+    }
 
-.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar {
-    max-height: none
-}
+    #rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header {
+        max-width: none
+    }
 
-.rlc-fullwidth div#rlc-chat {
-    height: calc(100vh - 198px)
-}
+    #filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS {
+        -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        border-top: 1px solid rgba(128,128,128,.35)
+    }
 
-.rlc-fullwidth #rlc-wrapper {
-    max-height: none;
-    max-width: none;
-    height: calc(100vh - 0px)
-}
+    #rlc-messagebox,#rlc-sidebar {
+        float: right;
+        box-sizing: border-box;
+        background-color: #EFEFED
+    }
 
-.rlc-fullwidth div#rlc-wrapper {
-    height: 100%
-}
+    div#rlc-settings label {
+        display: block;
+        font-size: 1.4em;
+        margin-left: 10px
+    }
 
-.rlc-compact.rlc-fullwidth #rlc-chat {
-    height: calc(100vh - 134px)
-}
+    #new-update-form {
+        margin: 0;
+        width: 87%;
+        float: left
+    }
 
-.rlc-compact.rlc-fullwidth #rlc-leftPanel,.rlc-compact.rlc-fullwidth #rlc-sidebar {
-    height: calc(100vh - 50px)
-}
+    #rlc-messagebox .usertext-edit.md-container {
+        max-width: none;
+        padding: 0;
+        margin: 0
+    }
 
-.rlc-compact #rlc-wrapper {
-    margin-top: 75px
-}
+    header#liveupdate-header {
+        margin: 0!important;
+        padding: 7px 15px;
+    }
 
-.rlc-compact #rlc-header {
-    border-top: 1px solid rgba(227,227,224,.44)
-}
+    h1#liveupdate-title:before {
+        content: "chat in "
+    }
 
-.rlc-compact.rlc-fullwidth #rlc-wrapper {
-    margin-top: 0
-}
+    h1#liveupdate-title {
+        font-size: 1.5em;
+        float: left;
+        padding: 0;
+        width:100%;
+    }
 
-body.dark-background {
-    background-color: #404040
-}
+    #rlc-header #liveupdate-statusbar {
+        margin: 0;
+        padding: 0;
+        border: none!important;
+        background-color: transparent
+    }
 
-body.rlc-customBg #rlc-wrapper {
-    background-color: rgba(255,255,255,.1)!important
-}
+    #rlc-wrapper .rlc-message .body {
+        max-width: none!important;
+        margin: 0;
+        font-size: 13px;
+        font-family: "Open Sans",sans-serif
+    }
 
-.rlc-customBg #rlc-main textarea{ background:transparent!important; }
+    div#rlc-sidebar {
+        max-height: 550px
+    }
 
-body.dark-background.rlc-customBg #rlc-wrapper {
-    background-color: rgba(0,0,0,.1)!important
-}
+    #rlc-wrapper {
+        height: calc(100vh - 63px);
+        max-width: 1248px;
+        max-height: 600px;
+        margin: 0 auto;
+        border-radius: 0 0 2px 2px;
+        -moz-border-radius: 0 0 2px 2px;
+        -webkit-border-radius: 0 0 2px 2px
+    }
 
-body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg #rlc-wrapper .md,body.dark-background.rlc-customBg #rlc-wrapper .rlc-channel-add button {
-    text-shadow: 0 0 8px rgba(0,0,0,1)!important
-}
+    #rlc-header {
+        height: 50px;
+        border-bottom: 1px solid rgba(227,227,224,.44);
+        border-top: 0;
+        box-sizing: border-box
+    }
 
-.rlc-customBg #rlc-wrapper .rlc-channel-add button,body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md {
-    text-shadow: 0 0 8px rgba(255,255,255,1)!important
-}
+    #rlc-main,#rlc-titlebar {
+        width: 76%;
+        float: left;
+        position: relative
+    }
 
-.dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a {
-    color: #add8e6
-}
+    #rlc-sidebar {
+        width: 24%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: calc(100vh - 114px);
+        border-left: 1px solid rgba(227,227,224,.44);
+        padding: 5px 0
+    }
 
-.rlc-hidesidebar #rlc-main {
-    width: 100%
-}
+    #rlc-chat {
+        height: calc(100vh - 186px);
+        overflow-y: scroll;
+        max-height: 465px;
+        margin-top: 30px
+    }
 
-.rlc-leftPanel #rlc-main {
-    width: 60%;
-    float: left
-}
+    #rlc-main .rlc-message-listing {
+        max-width: 100%;
+        padding: 0 0 0 15px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column-reverse;
+        min-height: 100%
+    }
 
-.rlc-leftPanel #rlc-sidebar {
-    width: 20%
-}
+    #rlc-messagebox textarea {
+        border: 1px solid rgba(227,227,224,.44);
+        float: left;
+        height: 34px;
+        margin: 0;
+        border-radius: 2px;
+        padding: 6px;
+        background: 0 0;
+        resize: none
+    }
 
-.rlc-leftPanel #rlc-leftPanel {
-    width: 20%;
-    float: left;
-    display: block;
-    background-color: #EFEFED;
-    height: calc(100vh - 114px)
-}
+    #rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown,body {
+        background-color: #fcfcfc
+    }
 
-.rlc-customscrollbars div#filter_tabs {
-    width: calc(100% - 12px)
-}
+    #rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update {
+        border-radius: 2px;
+        width: calc(33.3% - 7px);
+        float: left;
+        text-align: center;
+        box-sizing: border-box;
+        cursor: pointer;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        font-size: 1.2em
+    }
 
-.rlc-customscrollbars ::-webkit-scrollbar {
-    width: 12px
-}
+    #rlc-messagebox {
+        padding: 10px;
+        width: 100%
+    }
 
-.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb {
-    border: 1px solid rgba(227,227,224,.26)
-}
+    #rlc-sendmessage {
+        height: 32px;
+        width: 13%;
+        float: right;
+        padding: 8px 0
+    }
 
-.rlc-customscrollbars ::-webkit-scrollbar-thumb {
-    border: 1px solid rgba(227,227,224,.85)
-}
+    #rlc-toggleguide,#rlc-toggleoptions,#rlc-update {
+        padding: 4px 0 6px;
+        box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        margin-right: 10px;
+        letter-spacing: 1px;
+        margin-bottom: 8px
+    }
 
-.dark-background #rlc-channel-dropdown {
-    color: #fff
-}
+    #rlc-toggleguide {
+        margin-bottom: 0;
+        margin-right: 0
+    }
 
-.dark-background #rlc-channel-dropdown option {
-    color: #000
-}
-div#rlc-update a {
-    color: inherit!important;
-}
-div#rlc-messagebox {
-    display: none;
-}
+    .rlc-message .simpletime {
+        float: left;
+        padding-left: 10px;
+        box-sizing: border-box;
+        width: 75px;
+        text-transform: uppercase;
+        line-height: 32px
+    }
 
-.rlc-canUpdate div#rlc-messagebox {
-    display: block;
-}
+    .rlc-message a.author {
+        float: left;
+        padding-right: 10px;
+        margin: 0;
+        padding-top: 0;
+        font-weight: 600;
+        width: 130px
+    }
 
-.rlc-secondsMode .simpletime {
-    width: 90px;
-}
+    .rlc-message-listing li.rlc-message .body .md {
+        float: right;
+        width: calc(100% - 220px);
+        max-width: none;
+        box-sizing: border-box
+    }
 
-.rlc-secondsMode .rlc-message-listing li.rlc-message .body .md {
-    float: right;
-    width: calc(100% - 230px);
-    max-width: none;
-    box-sizing: border-box;
-}
-.md {
-    overflow: hidden;
-    max-width: none!important
-}
+    li.rlc-message.in-channel .body .md {
+        width: calc(100% - 320px)
+    }
+
+    #rlc-activeusers {
+        padding: 15px 20px 20px 40px;
+        font-size: 1.5em
+    }
+
+    #rlc-activeusers li {
+        list-style: outside;
+        padding: 0 0 8px
+    }
+
+    #rlc-settingsbar {
+        width: 100%;
+        height: auto;
+        padding: 0 10px;
+        box-sizing: border-box;
+        margin: 5px 0;
+        float: left
+    }
+
+    #rlc-main-sidebar {
+        float: right;
+        width: 100%
+    }
+
+    #rlc-sidebar hr {
+        height: 2px;
+        width: 100%;
+        margin-left: 0
+    }
+
+    #rlc-sidebar h3 {
+        padding: 0 10px
+    }
+
+    #rlc-statusbar {
+        width: 24%;
+        float: right;
+        text-align: center;
+        padding-top: 8px
+    }
+
+    #versionnumber {
+        padding-top: 5px
+    }
+
+    #liveupdate-description {
+        float: left;
+        width:100%;      
+    }
+
+    .noselect {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none
+    }
+
+    body {
+        min-width: 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center
+    }
+
+    .rlc-channel-add button,body.dark-background #rlc-leftPanel,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown,body.rlc-customBg #rlc-leftPanel {
+        background-color: transparent
+    }
+
+    #rlc-wrapper .md pre {
+        background-color: transparent!important
+    }
+
+    .rlc-message.user-narration .body .md {
+        font-style: italic
+    }
+
+    .rlc-message.user-mention .body .md p {
+        font-weight: 700
+    }
+
+    .rlc-message a.author,.rlc-message p {
+        line-height: 32px;
+        min-height: 32px
+    }
+
+    .rlc-message-listing li.rlc-message p {
+        font-size: 13px!important
+    }
+
+    .rlc-message pre {
+        margin: 0;
+        padding: 0;
+        max-width: 90%;
+        border: #FCFCFC;
+        box-sizing: border-box;
+        border: 1px solid rgba(227,227,224,.44)
+    }
+
+    .channelname {
+        display: block;
+        float: left;
+        width: 100px;
+        line-height: 32px
+    }
+
+    .rlc-imageWithin span.rlc-imgvia {
+        float: right;
+        margin-left: 10px
+    }
+
+    div#rlc-settingsbar a {
+        display: inline-block
+    }
+
+    div#rlc-togglebar {
+        float: right;
+        display: block;
+        height: 100%;
+        padding-right: 10px
+    }
+
+    #togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar {
+        float: right;
+        box-sizing: border-box;
+        text-align: center;
+        padding: 5px;
+        cursor: pointer;
+        border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        width: auto;
+        margin-left: 8px;
+        margin-top: 15px
+    }
+
+    div#rlc-settings label {
+        float: left;
+        width: 100%;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(227,227,224,.44)
+    }
+
+    div#rlc-settings label span {
+        padding-top: 3px;
+        padding-bottom: 5px;
+        font-size: .7em;
+        text-align: right;
+        display: block;
+        float: right;
+        padding-right: 20px
+    }
+
+    div#rlc-settings input {
+        margin-right: 5px
+    }
+
+    .rlc-channel-add button {
+        border: 0;
+        margin: 0;
+        padding: 4px 14px;
+        border-top: 0;
+        border-bottom: 0
+    }
+
+    .rlc-showChannelsUI #new-update-form {
+        width: 77%;
+        float: left
+    }
+
+    .rlc-showChannelsUI select#rlc-channel-dropdown {
+        display: block;
+        width: 10%;
+        height: 34px;
+        float: left;
+        border: 1px solid rgba(227,227,224,.44)
+    }
+
+    .rlc-showChannelsUI #rlc-sendmessage {
+        width: 13%;
+        float: left
+    }
+
+    .rlc-showChannelsUI div#filter_tabs {
+        display: block;
+        z-index: 100
+    }
+
+    .rlc-showChannelsUI .rlc-channel-add {
+        position: absolute;
+        top: 27px;
+        right: 17px;
+        padding: 5px;
+        box-sizing: border-box;
+        -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1)
+    }
+
+    #filter_tabs .rlc-filters>span:last-of-type {
+        border-right: 0
+    }
+
+    div#filter_tabs {
+        width: calc(100% - 17px)
+    }
+
+    #filter_tabs {
+        table-layout: fixed;
+        width: 100%;
+        height: 26px;
+        position: absolute
+    }
+
+    #filter_tabs>span {
+        width: 90%;
+        display: table-cell
+    }
+
+    #filter_tabs>span.all,#filter_tabs>span.more {
+        width: 60px;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer
+    }
+
+    #filter_tabs .rlc-filters {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        height: 24px
+    }
+
+    #filter_tabs .rlc-filters>span {
+        padding: 7px 2px!important;
+        text-align: center;
+        display: table-cell;
+        cursor: pointer;
+        vertical-align: middle;
+        font-size: 1.1em;
+        border-right: 1px solid rgba(227,227,224,.44)
+    }
+
+    #filter_tabs .rlc-filters>span>span {
+        pointer-events: none
+    }
+
+    #filter_tabs>span.all {
+        padding: 0 30px;
+        border-right: 1px solid rgba(227,227,224,.44)
+    }
+
+    #filter_tabs>span.more {
+        padding: 0 30px;
+        border-left: 1px solid rgba(227,227,224,.44)
+    }
+
+    .rlc-channel-add input {
+        border: 1px solid rgba(227,227,224,.44);
+        padding: 0;
+        height: 24px;
+        background-color: transparent
+    }
+
+    .longMessageClosed {
+        max-height: 30px;
+        overflow-y: hidden;
+        overflow-x: hidden;
+        position: relative;
+        min-height: 32px
+    }
+
+    .longMessageClosed p {
+        position: relative;
+        left: 25px;
+        top: -5px
+    }
+
+    .longMessageClosed .extendButton {
+        position: absolute;
+        top: 7px;
+        margin-right: 5px
+    }
+
+    .longMessageClosed pre {
+        position: absolute;
+        left: 25px
+    }
+
+    #myContextMenu {
+        position: absolute;
+        box-shadow: 1px 1px 2px #888;
+        background-color: grey;
+        padding: 5px 0
+    }
+
+    #myContextMenu ul {
+        list-style-type: none
+    }
+
+    #myContextMenu ul li a {
+        padding: .5em 1em;
+        display: block
+    }
+
+    .mrPumpkin,.mrTwitchEmotes {
+        display: inline-block;
+        position: relative
+    }
+
+    #myContextMenu ul li:not(.disabled) a:hover {
+        cursor: pointer
+    }
+
+    .mrPumpkin {
+        height: 24px;
+        width: 24px;
+        background-size: 144px;
+        top: 6px
+    }
+
+    .mp_frown {
+        background-position: -24px 0
+    }
+
+    .mp_confused {
+        background-position: -48px 0
+    }
+
+    .mp_meh {
+        background-position: 0 -24px
+    }
+
+    .mp_angry {
+        background-position: -48px -24px
+    }
+
+    .mp_shocked {
+        background-position: -24px -24px
+    }
+
+    .mp_happy {
+        background-position: -72px 120px
+    }
+
+    .mp_sad {
+        background-position: -72px 96px
+    }
+
+    .mp_crying {
+        background-position: 0 72px
+    }
+
+    .mp_tongue {
+        background-position: 0 24px
+    }
+
+    .mp_xhappy {
+        background-position: -48px 48px
+    }
+
+    .mp_xsad {
+        background-position: -24px 48px
+    }
+
+    .mp_xsmile {
+        background-position: 0 48px
+    }
+
+    .mp_annoyed {
+        background-position: -72px 72px
+    }
+
+    .mp_bored {
+        background-position: -48px 72px
+    }
+
+    .mp_wink {
+        background-position: -24px 72px
+    }
+
+    .mp_evilsmile {
+        background-position: -72px 24px
+    }
+
+    .mp_disappointed {
+        background-position: -96px 0
+    }
+
+    .mp_stjerneklar {
+        background-position: -72px 48px
+    }
+
+    .mp_fatherderp {
+        background-position: -24px 24px
+    }
+
+    .mp_s3cur1ty {
+        background-position: -48px 24px
+    }
+
+    .mrTwitchEmotes {
+        height: 28px;
+        width: 25px;
+        background-size: 100px;
+        top: 0
+    }
+
+    .tw_ross {
+        background-position: -50px -55px
+    }
+
+    .tw_claus {
+        background-position: -75px -55px
+    }
+
+    .tw_kappa {
+        background-position: -25px -28px
+    }
+
+    .tw_wutface {
+        background-position: -25px -55px
+    }
+
+    .tw_elegiggle {
+        background-position: -50px 0
+    }
+
+    .tw_4head {
+        background-position: 0 0
+    }
+
+    .tw_notlikethis {
+        background-position: -75px 0
+    }
+
+    .tw_dansgame {
+        background-position: -25px 0
+    }
+
+    .tw_failfish {
+        background-position: 0 -28px
+    }
+
+    .tw_kreygasm {
+        background-position: -50px -28px
+    }
+
+    .tw_pogchamp {
+        background-position: -75px -28px
+    }
+
+    .tw_smorc {
+        background-position: 0 -55px
+    }
+
+    #filter_tabs,#hsts_pixel,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author,select#rlc-channel-dropdown {
+        display: none
+    }
+
+    #liveupdate-resources h2 {
+        display: none!important
+    }
+
+    .rlc-showoptions #rlc-settings {
+        display: block
+    }
+
+    .rlc-showoptions #rlc-main-sidebar {
+        display: none
+    }
+
+    .rlc-showreadmebar #rlc-readmebar {
+        display: block
+    }
+
+    .rlc-showreadmebar #rlc-main-sidebar {
+        display: none
+    }
+
+    #option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-TTSDisableUserbasedVoices,#option-rlc-TTSUsernameNarration,#option-rlc-TTSLongMessages,#option-rlc-TTSDisableSelfnarration {
+        display: none!important
+    }
+
+    .rlc-TextToSpeech #option-rlc-TTSDisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration,.rlc-TextToSpeech #option-rlc-TTSDisableSelfnarration,.rlc-TextToSpeech #option-rlc-TTSLongMessages {
+        display: block!important
+    }
+
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        #option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars {
+            display:block!important
+        }
+    }
+
+    .rlc-hidesidebar #rlc-sidebar,div#rlc-leftPanel {
+        display: none
+    }
+
+    #myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button {
+        color: #fff
+    }
+
+    .rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar {
+        background: 0 0
+    }
+
+    .rlc-compact #rlc-chat {
+        height: calc(100vh - 252px);
+        max-height: 466px
+    }
+
+    .rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar {
+        max-height: none
+    }
+
+    .rlc-fullwidth div#rlc-chat {
+        height: calc(100vh - 198px)
+    }
+
+    .rlc-fullwidth #rlc-wrapper {
+        max-height: none;
+        max-width: none;
+        height: calc(100vh - 0px)
+    }
+
+    .rlc-fullwidth div#rlc-wrapper {
+        height: 100%
+    }
+
+    .rlc-compact.rlc-fullwidth #rlc-chat {
+        height: calc(100vh - 134px)
+    }
+
+    .rlc-compact.rlc-fullwidth #rlc-leftPanel,.rlc-compact.rlc-fullwidth #rlc-sidebar {
+        height: calc(100vh - 50px)
+    }
+
+    .rlc-compact #rlc-wrapper {
+        margin-top: 75px
+    }
+
+    .rlc-compact #rlc-header {
+        border-top: 1px solid rgba(227,227,224,.44)
+    }
+
+    .rlc-compact.rlc-fullwidth #rlc-wrapper {
+        margin-top: 0
+    }
+
+    body.dark-background {
+        background-color: #404040
+    }
+
+    body.rlc-customBg #rlc-wrapper {
+        background-color: rgba(255,255,255,.1)!important
+    }
+
+    .rlc-customBg #rlc-main textarea{ background:transparent!important; }
+
+    body.dark-background.rlc-customBg #rlc-wrapper {
+        background-color: rgba(0,0,0,.1)!important
+    }
+
+    body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg #rlc-wrapper .md,body.dark-background.rlc-customBg #rlc-wrapper .rlc-channel-add button {
+        text-shadow: 0 0 8px rgba(0,0,0,1)!important
+    }
+
+    .rlc-customBg #rlc-wrapper .rlc-channel-add button,body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md {
+        text-shadow: 0 0 8px rgba(255,255,255,1)!important
+    }
+
+    .dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a {
+        color: #add8e6
+    }
+
+    .rlc-hidesidebar #rlc-main {
+        width: 100%
+    }
+
+    .rlc-leftPanel #rlc-main {
+        width: 60%;
+        float: left
+    }
+
+    .rlc-leftPanel #rlc-sidebar {
+        width: 20%
+    }
+
+    .rlc-leftPanel #rlc-leftPanel {
+        width: 20%;
+        float: left;
+        display: block;
+        background-color: #EFEFED;
+        height: calc(100vh - 114px)
+    }
+
+    .rlc-customscrollbars div#filter_tabs {
+        width: calc(100% - 12px)
+    }
+
+    .rlc-customscrollbars ::-webkit-scrollbar {
+        width: 12px
+    }
+
+    .dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb {
+        border: 1px solid rgba(227,227,224,.26)
+    }
+
+    .rlc-customscrollbars ::-webkit-scrollbar-thumb {
+        border: 1px solid rgba(227,227,224,.85)
+    }
+
+    .dark-background #rlc-channel-dropdown {
+        color: #fff
+    }
+
+    .dark-background #rlc-channel-dropdown option {
+        color: #000
+    }
+    div#rlc-update a {
+        color: inherit!important;
+    }
+    div#rlc-messagebox {
+        display: none;
+    }
+
+    .rlc-canUpdate div#rlc-messagebox {
+        display: block;
+    }
+
+    .rlc-secondsMode .simpletime {
+        width: 90px;
+    }
+
+    .rlc-secondsMode .rlc-message-listing li.rlc-message .body .md {
+        float: right;
+        width: calc(100% - 230px);
+        max-width: none;
+        box-sizing: border-box;
+    }
+    .md {
+        overflow: hidden;
+        max-width: none!important
+    }
+
+    .muted { display:none; }
 
     `);
 
