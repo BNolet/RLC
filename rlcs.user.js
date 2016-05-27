@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.21
+// @version        3.21.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
@@ -17,7 +17,6 @@
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_getResourceText
-// @grant          GM_setClipboard
 // @grant          GM_deleteValue
 // @grant          GM_listValues
 // @run-at         document-idle
@@ -99,6 +98,47 @@
         clickAction(state, $option);
         //uncomment below to output option key/value
         //console.log(key+" = "+state);
+    }
+
+    function setCustomBg() {
+        // avoid triggering during init
+        if (loadHistoryMessageException != 1) {  
+
+        var bgurlsuggestion; //try to get a saved background url depending on dark mode setting
+        if (GM_getValue("rlc-DarkMode")) { bgurlsuggestion = GM_getValue("customBGdark")}
+            else { bgurlsuggestion = GM_getValue("customBGlight");}
+
+        // if we cant, use the sample url
+        if (typeof bgurlsuggestion === "undefined" ) {
+            bgurlsuggestion = "http://i.imgur.com/uy50nCx.jpg";
+        }
+
+        var bgurl = prompt("enter background url", bgurlsuggestion);  //prompt user for url with default or saved url suggested
+
+        if (bgurl != null) { //if the user filled out the prompt
+            $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
+
+            //save bgurl to seperate variables depending on light/dark mode
+            if (GM_getValue("rlc-DarkMode")) {  GM_setValue("customBGdark",bgurl)}
+            else { GM_setValue("customBGlight",bgurl) }
+
+            var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
+            $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
+        }
+        }
+        else {
+        //same as above but without the prompt. this code runs on init if option is enabled
+        var bgurl;
+
+        if (GM_getValue("rlc-DarkMode")) { bgurl = GM_getValue("customBGdark")}
+            else { bgurl = GM_getValue("customBGlight");}
+
+        if (typeof bgurl === "undefined" ) {
+            bgurl = "http://i.imgur.com/uy50nCx.jpg";
+        }
+        var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
+        $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
+        }    
     }
 
     function createOptions() {
@@ -223,9 +263,6 @@
             }
         },false, "read messages aloud");
         
-        createOption("TTS Long Messages", function(checked){
-        },false, "read long messages( TTS starts behaving weirdly sometimes)");
-
         createOption("TTS Username Narration", function(checked){
         },false, "example: [message] said [name]");
 
@@ -266,52 +303,13 @@
                 if (loadHistoryMessageException != 1) {
                     cropMessages(25);
                 }
-            } else {
-
-            }
+            } 
         },false, "do not show more than 25 messages");
 
         createOption("Custom Background", function(checked){
             if (checked === true){
                 $("body").addClass("rlc-customBg");
-
-                if (loadHistoryMessageException != 1) {  // avoid triggering during init
-
-                    var bgurlsuggestion; //try to get a saved background url depending on dark mode setting
-                    if (GM_getValue("rlc-DarkMode")) { bgurlsuggestion = GM_getValue("customBGdark")}
-                        else { bgurlsuggestion = GM_getValue("customBGlight");}
-
-                    // if we cant, use the sample url
-                    if (typeof bgurlsuggestion === "undefined" ) {
-                        bgurlsuggestion = "http://i.imgur.com/uy50nCx.jpg";
-                    }
-
-                    var bgurl = prompt("enter background url", bgurlsuggestion);  //prompt user for url with default or saved url suggested
-
-                    if (bgurl != null) { //if the user filled out the prompt
-                        $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
-
-                        //save bgurl to seperate variables depending on light/dark mode
-                        if (GM_getValue("rlc-DarkMode")) {  GM_setValue("customBGdark",bgurl)}
-                        else { GM_setValue("customBGlight",bgurl) }
-
-                        var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
-                        $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
-                    }
-                }
-                else {
-                    //same as above but without the prompt. this code runs on init if option is enabled
-                    var bgurl;
-
-                    if (GM_getValue("rlc-DarkMode")) { bgurl = GM_getValue("customBGdark")}
-                        else { bgurl = GM_getValue("customBGlight");}
-
-                    if (typeof bgurl === "undefined" ) {
-                        bgurl = "http://i.imgur.com/uy50nCx.jpg";
-                    }
-                        var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
-                        $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
-                    }
+                setCustomBg();
             }
             else {
                 $("body").removeClass("rlc-customBg");
@@ -643,421 +641,6 @@
     }
     GM_addStyle(colorcollection);
 
-//  ████████╗███████╗██╗  ██╗████████╗    ████████╗ ██████╗     ███████╗██████╗ ███████╗███████╗ ██████╗██╗  ██╗
-//  ╚══██╔══╝██╔════╝╚██╗██╔╝╚══██╔══╝    ╚══██╔══╝██╔═══██╗    ██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝██║  ██║
-//     ██║   █████╗   ╚███╔╝    ██║          ██║   ██║   ██║    ███████╗██████╔╝█████╗  █████╗  ██║     ███████║
-//     ██║   ██╔══╝   ██╔██╗    ██║          ██║   ██║   ██║    ╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║     ██╔══██║
-//     ██║   ███████╗██╔╝ ██╗   ██║          ██║   ╚██████╔╝    ███████║██║     ███████╗███████╗╚██████╗██║  ██║
-//     ╚═╝   ╚══════╝╚═╝  ╚═╝   ╚═╝          ╚═╝    ╚═════╝     ╚══════╝╚═╝     ╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝
-
-
-    var digits = ["", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "],
-        tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
-
-    // Numbers to english words for TTS
-    function numberToEnglish (num) {
-        if ((num = num.toString()).length > 8) return "Overflow in numberToEnglish function.";
-        let n = ("000000000" + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-
-        // NOTE: IF YOU REPLACE != with !== below, the numbers are read wrong
-        if (!n) return; var str = "";
-        str += (n[1] != 0) ? (digits[Number(n[1])] || tens[n[1][0]] + " " + digits[n[1][1]]) + "crore " : "";
-        str += (n[2] != 0) ? (digits[Number(n[2])] || tens[n[2][0]] + " " + digits[n[2][1]]) + "lakh " : "";
-        str += (n[3] != 0) ? (digits[Number(n[3])] || tens[n[3][0]] + " " + digits[n[3][1]]) + "thousand " : "";
-        str += (n[4] != 0) ? (digits[Number(n[4])] || tens[n[4][0]] + " " + digits[n[4][1]]) + "hundred " : "";
-        str += (n[5] != 0) ? ((str != "") ? "and " : "") + (digits[Number(n[5])] || tens[n[5][0]] + " " + digits[n[5][1]]) + " " : "";
-        return str.trim();
-    }
-
-    // Select Emoji to narration tone
-    var toneList = {
-        "smile":   "smiling",
-        "evilsmile": "with an evil smile",
-        "angry":   "angrily",
-        "frown":   "while frowning",
-        "confused":"confusedly",
-        "disappointed": "in a disappointed tone",
-        "meh":     "in a disinterested manner",
-        "shocked": "in shock",
-        "happy":   "happily",
-        "sad":     "looking sad",
-        "crying":  "with tears in his eyes",
-        "wink":    "while winking",
-        "bored":   "boredly",
-        "annoyed": "expressing annoyance",
-        "xsmile":  "with a grinning broadly",
-        "xsad":    "very sadly",
-        "xhappy":  "very happily",
-        "tongue":  "while sticking out a tongue"
-       };
-
-    // Abbreviation Expansion (All keys must be in uppercase)
-    var replaceStrList = {
-        "AFAIK":   "As Far As I Know",
-        "AFK":     "Away From Keyboard",
-        "AKA":     "Also Known As",
-        "ASAP":    "As Soon As Possible",
-        "ATM":     "At the moment",
-        "BRB":     "Be right back",
-        "B8":      "Bait",
-        "BTW":     "By The Way",
-        "CYA":     "See Ya",
-        "CBA":     "Can't Be Arsed",
-        "DAFUQ":   "The Fuck",
-        "DEF":     "Definitely",
-        "DIY":     "Do It Yourself",
-        "FTW":     "For The Win",
-        "FK":      "Fuck",
-        "FTFY":    "Fixed That For You",
-        "FTFY2":   "Fuck That, Fuck You",
-        "FFS":     "For Fucks Sake",
-        "G2G":     "Got To Go",
-        "GR8":     "Great",
-        "GL":      "Good Luck",
-        "GTFO":    "Get The Fuck Out",
-        "HF":      "Have Fun",
-        "IRL":     "In Real Life",
-        "IIRC":    "If I Recall Correctly",
-        "IKR":     "I Know Right",
-        "IMO":     "In My Opinion",
-        "IDK":     "I don't know",
-        "JK":      "Just Kidding",
-        "NVM":     "Nevermind",
-        "N1":      "Nice One",
-        "NP":      "No problem",
-        "OFC":     "Of Course",
-        "OMG":     "Oh My God",
-        "PPL":     "People",
-        "PLZ":     "Please",
-        "PLS":     "Please",
-        "RLY":     "Really",
-        "RN":      "Right Now",
-        "RTFM":    "Read The Fucking Manual",
-        "HAATIVCALBE": "Hobbit's Awesome Abbreviation That Is Very Cool And Loved By Everyone",
-        "RLC":     "Reddit Live Chat",
-        "SEC":     "Second",
-        "STFU":    "Shut The Fuck Up",
-        "SRSLY":   "Seriously",
-        "SRY":     "Sorry",
-        "TLDR":    "Too Long, Didn't Read",
-        "TTS":     "Text to speech",
-        "TIL":     "Today I learned",
-        "TY":      "Thanks",
-        "TBH":     "To be honest",
-        "WTF":     "What The Fuck",
-        "YW":      "You're welcome",
-        "KRETENKOBR2": "KretenkobrTwo",
-        "<":       "Kleinerdong",
-        "PSA":     "Public Service Announcement",
-        "PR":      "Pull request",
-        "EASTEREGG": "Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo",
-        "STJERN":  "stjerneklar"
-    };
-
-    // used for TTS voice username-based randomization
-    function strSeededRandInt (str, min = 0, max = 256, code = 0){
-        for(let i = 0; i < str.length; i++){
-            code += str.charCodeAt(i);
-        }
-        return code % (1 + max - min) + min;
-    }
-
-    function getNumbers(input) {
-        return input.match(/[0-9]+/g);
-    }
-
-    var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
-    var urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
-    function messageTextToSpeechHandler($msg, $usr) {
-
-        if (GM_getValue("rlc-TextToSpeechTTS")) {
-
-            if(GM_getValue("rlc-TTSLongMessages")){
-
-               // Load in message string
-               //var linetoread = $msg.text();
-               var linetoread = $msg.html(); // Extract html encoded text
-               linetoread = linetoread.replace(/<br>/g, " ... ").replace(/<[^>]+>/g, " "); // Replace tag as pause then strip other tags
-               // Unescaped html escaped string by way of crazy voodo magic. (Use textarea to avoid XSS exploits) 
-               linetoread = $("<textarea/>").html(linetoread).val(); 
-
-                // Remove any URLs that match urlRegex
-                linetoread = linetoread.replace(urlRegex, "");
-
-                var hasTripple = /([^. ])\1\1/.test(linetoread);
-                // Check for single character spamming
-                if (!hasTripple) {
-
-                    // Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
-                    var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
-
-                    linetoread = linetoread.split(" ").map(function(token){
-                        if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
-                    }).join(" ");
-
-                    // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
-                    var numbermatches = getNumbers(linetoread);
-
-                    $.each(numbermatches, function(i) {
-                        linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
-                    });
-
-                    //meMentioned replacement
-                    var meMentioned = $msg.parent().parent().hasClass("user-narration");
-
-                    // Narration Style
-                    var msg;
-                    var usr = $usr.text();
-                    //idea: if username is a lot of numbers, call them by the first 3 numbers seperated
-                    if (usr == "741456963789852123") { usr = "74"; }
-                    if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
-                    if (usr == "s3cur1ty") { usr = "Security"; }
-                    //if (usr == "Stjerneklar") { usr = "Steeairneklaahr";}
-
-                    // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
-                    var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
-                    var msgtwitchemotes = $msg.find(".mrTwitchEmotes");
-                    var domEmoji = "";
-
-                    if (msgemotes.length) {
-                        var finalemote;
-
-                        $.each(msgemotes, function() {
-                            finalemote = $(this).attr("class");
-
-                        });
-
-                        // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
-                        // (Note: This can be fragile if "mp_" is changed to something else)
-                        var lastEmote = finalemote.split(" ")[1].split("mp_")[1];
-                        domEmoji = lastEmote;
-                    }
-
-                    if (msgtwitchemotes.length) {
-                        var finalemote;
-
-                        $.each(msgtwitchemotes, function() {
-                            finalemote = $(this).attr("class");
-
-                        });
-
-                        // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
-                        // (Note: This can be fragile if "mp_" is changed to something else)
-                        var lastEmote = finalemote.split(" ")[1].split("tw_")[1];
-                        domEmoji = lastEmote;
-                    }
-
-                    var toneStr="";
-                    if ( domEmoji in toneList ){
-                        toneStr = " " + toneList[domEmoji];
-                    }
-
-                    if (!GM_getValue("rlc-TTSUsernameNarration")) {
-                        msg = new SpeechSynthesisUtterance(linetoread);
-                    } else {
-                        switch (true) {   //These are causing AutoScroll not to work..? (FF)
-                            case meMentioned === true: //Check for /me
-                                msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
-                                break;
-                            case /.+\?$/.test(checkingStr): // Questioned
-                                msg = new SpeechSynthesisUtterance(linetoread + " questioned " + usr + toneStr );
-                                break;
-                            case /.+\!$/.test(checkingStr):   // Exclaimed
-                                msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + usr + toneStr );
-                                break;
-                            case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
-                                linetoread = linetoread.trim().slice(0, -2);
-                                msg = new SpeechSynthesisUtterance(linetoread + " stated " + usr + "sarcastically");
-                                break;
-                            case checkingStr === checkingStr.toUpperCase(): //Check for screaming
-                                msg = new SpeechSynthesisUtterance(linetoread + " shouted " + usr + toneStr );
-                                break;
-                            default: // said
-                                msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
-                                break;
-                        }
-                    }
-
-                    // console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
-
-                    msg.voiceURI = 'native';
-
-                    // Set variable voice type
-                    if (!GM_getValue("rlc-TTSDisableUserbasedVoices")) {
-                        // Select voices that english users can use, even if its not for english exactly...
-                        var voiceList = speechSynthesis.getVoices().filter(function(voice) {
-                            for (var key in langSupport) {
-                                if ( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
-                            }
-                        });
-
-                        // TODO do voice calculations once per user, store voices, perhaps in gmvalues?
-                        // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
-                        msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
-                        msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
-                        msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
-                        //console.log(msg.voice);
-                        // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
-                        if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
-                        {
-                            msg.pitch = msg.pitch.toFixed(1);
-                        }
-
-                    }
-                    msg.volume = 1; // 0 to 1
-                    //msg.rate = 1; // 0.1 to 10
-                    //msg.pitch = 1; //0 to 2
-                    window.speechSynthesis.speak(msg);
-                    // get supported voices
-                    //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
-                }
-            }
-        
-        else{
-            
-                // long messages break tts (<300 chars)
-                if($msg.text().length<250){
-
-                    // Load in message string
-                    var linetoread = $msg.text();
-
-                    // Remove any URLs that match urlRegex
-                    linetoread = linetoread.replace(urlRegex, "");
-
-                    var hasTripple = /([^. ])\1\1/.test(linetoread);
-                    // Check for single character spamming
-                    if (!hasTripple) {
-
-                        // Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
-                        var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
-
-                        linetoread = linetoread.split(" ").map(function(token){
-                            if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
-                        }).join(" ");
-
-                        // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
-                        var numbermatches = getNumbers(linetoread);
-
-                        $.each(numbermatches, function(i) {
-                            linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
-                        });
-
-                        //meMentioned replacement
-                        var meMentioned = $msg.parent().parent().hasClass("user-narration");
-
-                        // Narration Style
-                        var msg;
-                        var usr = $usr.text();
-                        //idea: if username is a lot of numbers, call them by the first 3 numbers seperated
-                        if (usr == "741456963789852123") { usr = "74"; }
-                        if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
-                        if (usr == "s3cur1ty") { usr = "Security"; }
-                        //if (usr == "Stjerneklar") { usr = "Steeairneklaahr";}
-
-                        // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
-                        var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
-                        var msgtwitchemotes = $msg.find(".mrTwitchEmotes");
-                        var domEmoji = "";
-
-                        if (msgemotes.length) {
-                            var finalemote;
-
-                            $.each(msgemotes, function() {
-                                finalemote = $(this).attr("class");
-
-                            });
-
-                            // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
-                            // (Note: This can be fragile if "mp_" is changed to something else)
-                            var lastEmote = finalemote.split(" ")[1].split("mp_")[1];
-                            domEmoji = lastEmote;
-                        }
-
-                        if (msgtwitchemotes.length) {
-                            var finalemote;
-
-                            $.each(msgtwitchemotes, function() {
-                                finalemote = $(this).attr("class");
-
-                            });
-
-                            // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
-                            // (Note: This can be fragile if "mp_" is changed to something else)
-                            var lastEmote = finalemote.split(" ")[1].split("tw_")[1];
-                            domEmoji = lastEmote;
-                        }
-
-                        var toneStr="";
-                        if ( domEmoji in toneList ){
-                            toneStr = " " + toneList[domEmoji];
-                        }
-
-                        if (!GM_getValue("rlc-TTSUsernameNarration")) {
-                            msg = new SpeechSynthesisUtterance(linetoread);
-                        } else {
-                            switch (true) {   //These are causing AutoScroll not to work..? (FF)
-                                case meMentioned === true: //Check for /me
-                                    msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
-                                    break;
-                                case /.+\?$/.test(checkingStr): // Questioned
-                                    msg = new SpeechSynthesisUtterance(linetoread + " questioned " + usr + toneStr );
-                                    break;
-                                case /.+\!$/.test(checkingStr):   // Exclaimed
-                                    msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + usr + toneStr );
-                                    break;
-                                case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
-                                    linetoread = linetoread.trim().slice(0, -2);
-                                    msg = new SpeechSynthesisUtterance(linetoread + " stated " + usr + "sarcastically");
-                                    break;
-                                case checkingStr === checkingStr.toUpperCase(): //Check for screaming
-                                    msg = new SpeechSynthesisUtterance(linetoread + " shouted " + usr + toneStr );
-                                    break;
-                                default: // said
-                                    msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
-                                    break;
-                            }
-                        }
-
-                        // console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
-
-                        msg.voiceURI = 'native';
-
-                        // Set variable voice type
-                        if (!GM_getValue("rlc-TTSDisableUserbasedVoices")) {
-                            // Select voices that english users can use, even if its not for english exactly...
-                            var voiceList = speechSynthesis.getVoices().filter(function(voice) {
-                                for (var key in langSupport) {
-                                    if ( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
-                                }
-                            });
-
-                            // TODO do voice calculations once per user, store voices, perhaps in gmvalues?
-                            // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
-                            msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
-                            msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
-                            msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
-                            //console.log(msg.voice);
-                            // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
-                            if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
-                            {
-                                msg.pitch = msg.pitch.toFixed(1);
-                            }
-
-                        }
-                        msg.volume = 1; // 0 to 1
-                        //msg.rate = 1; // 0.1 to 10
-                        //msg.pitch = 1; //0 to 2
-                        window.speechSynthesis.speak(msg);
-                        // get supported voices
-                        //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
-                    }
-                }
-            }
-
-        }
-    }
-
-
 //  ██╗     ██╗██╗   ██╗███████╗     █████╗ ██████╗ ██╗    ██╗    ██╗███████╗██████╗ ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
 //  ██║     ██║██║   ██║██╔════╝    ██╔══██╗██╔══██╗██║    ██║    ██║██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
 //  ██║     ██║██║   ██║█████╗      ███████║██████╔╝██║    ██║ █╗ ██║█████╗  ██████╔╝███████╗██║   ██║██║     █████╔╝ █████╗     ██║   
@@ -1208,54 +791,54 @@
     }
 
     function messageFaker(msg) { 
-                        var msgID = msg.name;
-                        var $msgbody = msg.body_html;
+        var msgID = msg.name;
+        var $msgbody = msg.body_html;
 
-                        if (GM_getValue("rlc-DisableMarkdown")) {$msgbody + '<div class="md"><p>'+ msg.body +'</p></div>';}
-                        
-                            // Unescaped html escaped string by way of crazy voodo magic.
-                            $msgbody = $("<textarea/>").html($msgbody).val()                        
+        if (GM_getValue("rlc-DisableMarkdown")) {$msgbody + '<div class="md"><p>'+ msg.body +'</p></div>';}
+        
+            // Unescaped html escaped string by way of crazy voodo magic.
+            $msgbody = $("<textarea/>").html($msgbody).val()                        
 
-                        var usr = msg.author;
-                        var utcSeconds = msg.created_utc;
+        var usr = msg.author;
+        var utcSeconds = msg.created_utc;
 
-                        // translate created_utc to a human readable version
-                        var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                        readAbleDate.setUTCSeconds(utcSeconds);
+        // translate created_utc to a human readable version
+        var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
+        readAbleDate.setUTCSeconds(utcSeconds);
 
-                        var hours = readAbleDate.getHours();
-                        var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
-                        var seconds = readAbleDate.getSeconds().toString();
-                        
-                        // if seconds is a single diget value, prefix it with a 0 (12:00:1 becomes 12:00:01)
-                        if (seconds.length === 1) { seconds = "0" + seconds};
+        var hours = readAbleDate.getHours();
+        var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+        var seconds = readAbleDate.getSeconds().toString();
+        
+        // if seconds is a single diget value, prefix it with a 0 (12:00:1 becomes 12:00:01)
+        if (seconds.length === 1) { seconds = "0" + seconds};
 
-                        if (GM_getValue("rlc-12HourMode")) {
-                                //it is pm if hours from 12 onwards
-                                var suffix = (hours >= 12)? 'PM' : 'AM';
+        if (GM_getValue("rlc-12HourMode")) {
+                //it is pm if hours from 12 onwards
+                var suffix = (hours >= 12)? 'PM' : 'AM';
 
-                                //only -12 from hours if it is greater than 12 (if not back at mid night)
-                                hours = (hours > 12)? hours -12 : hours;
+                //only -12 from hours if it is greater than 12 (if not back at mid night)
+                hours = (hours > 12)? hours -12 : hours;
 
-                                //if 00 then it is 12 am
-                                hours = (hours === '00')? 12 : hours;
-                        } else {
-                            suffix = "";
-                        }
+                //if 00 then it is 12 am
+                hours = (hours === '00')? 12 : hours;
+        } else {
+            suffix = "";
+        }
 
-                        if(GM_getValue("rlc-SecondsMode"))
-                            {
-                                finaltimestamp = hours.toString() + ":" + minutes.toString()+ ":" + seconds.toString() + " " + suffix;
-                            }else var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+        if(GM_getValue("rlc-SecondsMode"))
+            {
+                finaltimestamp = hours.toString() + ":" + minutes.toString()+ ":" + seconds.toString() + " " + suffix;
+            }else var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
 
-                        var fakeMessage = `
-                        <li class="rlc-message" name="rlc-id-${msgID}">
-                            <div class="body">${$msgbody}
-                                <div class="simpletime">${finaltimestamp}</div>
-                                <a href="/user/${usr}" class="author">${usr}</a>
-                            </div>
-                        </li>`
-                        return fakeMessage;
+        var fakeMessage = `
+        <li class="rlc-message" name="rlc-id-${msgID}">
+            <div class="body">${$msgbody}
+                <div class="simpletime">${finaltimestamp}</div>
+                <a href="/user/${usr}" class="author">${usr}</a>
+            </div>
+        </li>`
+        return fakeMessage;
     }
 
 
@@ -1266,7 +849,7 @@
 //  ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║    ██║ ╚═╝ ██║███████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
 //  ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝    ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
 
-
+    // fix problems with message background alternation without reloading messages
     function reAlternate(){
        $('.rlc-message').removeClass('alt-bgcolor');
        $('.rlc-message.muted').remove();
@@ -1284,12 +867,285 @@
         });
     }
 
-    // Scroll chat back to bottom
+    // Scroll chat to bottom in order to show the latest message
     var scrollToBottom = function(){
         if (GM_getValue("rlc-AutoScroll")){
             $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
         }
     };
+
+
+//  ████████╗███████╗██╗  ██╗████████╗    ████████╗ ██████╗     ███████╗██████╗ ███████╗███████╗ ██████╗██╗  ██╗
+//  ╚══██╔══╝██╔════╝╚██╗██╔╝╚══██╔══╝    ╚══██╔══╝██╔═══██╗    ██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝██║  ██║
+//     ██║   █████╗   ╚███╔╝    ██║          ██║   ██║   ██║    ███████╗██████╔╝█████╗  █████╗  ██║     ███████║
+//     ██║   ██╔══╝   ██╔██╗    ██║          ██║   ██║   ██║    ╚════██║██╔═══╝ ██╔══╝  ██╔══╝  ██║     ██╔══██║
+//     ██║   ███████╗██╔╝ ██╗   ██║          ██║   ╚██████╔╝    ███████║██║     ███████╗███████╗╚██████╗██║  ██║
+//     ╚═╝   ╚══════╝╚═╝  ╚═╝   ╚═╝          ╚═╝    ╚═════╝     ╚══════╝╚═╝     ╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝
+
+
+    var digits = ["", "one ", "two ", "three ", "four ", "five ", "six ", "seven ", "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", "fifteen ", "sixteen ", "seventeen ", "eighteen ", "nineteen "],
+        tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+    // Numbers to english words for TTS
+    function numberToEnglish (num) {
+        if ((num = num.toString()).length > 8) return "Overflow in numberToEnglish function.";
+        let n = ("000000000" + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+
+        // NOTE: IF YOU REPLACE != with !== below, the numbers are read wrong
+        if (!n) return; var str = "";
+        str += (n[1] != 0) ? (digits[Number(n[1])] || tens[n[1][0]] + " " + digits[n[1][1]]) + "crore " : "";
+        str += (n[2] != 0) ? (digits[Number(n[2])] || tens[n[2][0]] + " " + digits[n[2][1]]) + "lakh " : "";
+        str += (n[3] != 0) ? (digits[Number(n[3])] || tens[n[3][0]] + " " + digits[n[3][1]]) + "thousand " : "";
+        str += (n[4] != 0) ? (digits[Number(n[4])] || tens[n[4][0]] + " " + digits[n[4][1]]) + "hundred " : "";
+        str += (n[5] != 0) ? ((str != "") ? "and " : "") + (digits[Number(n[5])] || tens[n[5][0]] + " " + digits[n[5][1]]) + " " : "";
+        return str.trim();
+    }
+
+    // Select Emoji to narration tone
+    var toneList = {
+        "smile":   "smiling",
+        "evilsmile": "with an evil smile",
+        "angry":   "angrily",
+        "frown":   "while frowning",
+        "confused":"confusedly",
+        "disappointed": "in a disappointed tone",
+        "meh":     "in a disinterested manner",
+        "shocked": "in shock",
+        "happy":   "happily",
+        "sad":     "looking sad",
+        "crying":  "with tears in his eyes",
+        "wink":    "while winking",
+        "bored":   "boredly",
+        "annoyed": "expressing annoyance",
+        "xsmile":  "with a grinning broadly",
+        "xsad":    "very sadly",
+        "xhappy":  "very happily",
+        "tongue":  "while sticking out a tongue"
+       };
+
+    // Abbreviation Expansion (All keys must be in uppercase)
+    var replaceStrList = {
+        "AFAIK":   "As Far As I Know",
+        "AFK":     "Away From Keyboard",
+        "AKA":     "Also Known As",
+        "ASAP":    "As Soon As Possible",
+        "ATM":     "At the moment",
+        "BRB":     "Be right back",
+        "B8":      "Bait",
+        "BTW":     "By The Way",
+        "CYA":     "See Ya",
+        "CBA":     "Can't Be Arsed",
+        "DAFUQ":   "The Fuck",
+        "DEF":     "Definitely",
+        "DIY":     "Do It Yourself",
+        "FTW":     "For The Win",
+        "FK":      "Fuck",
+        "FTFY":    "Fixed That For You",
+        "FTFY2":   "Fuck That, Fuck You",
+        "FFS":     "For Fucks Sake",
+        "G2G":     "Got To Go",
+        "GR8":     "Great",
+        "GL":      "Good Luck",
+        "GTFO":    "Get The Fuck Out",
+        "HF":      "Have Fun",
+        "IRL":     "In Real Life",
+        "IIRC":    "If I Recall Correctly",
+        "IKR":     "I Know Right",
+        "IMO":     "In My Opinion",
+        "IDK":     "I don't know",
+        "JK":      "Just Kidding",
+        "NVM":     "Nevermind",
+        "N1":      "Nice One",
+        "NP":      "No problem",
+        "OFC":     "Of Course",
+        "OMG":     "Oh My God",
+        "PPL":     "People",
+        "PLZ":     "Please",
+        "PLS":     "Please",
+        "RLY":     "Really",
+        "RN":      "Right Now",
+        "RTFM":    "Read The Fucking Manual",
+        "HAATIVCALBE": "Hobbit's Awesome Abbreviation That Is Very Cool And Loved By Everyone",
+        "RLC":     "Reddit Live Chat",
+        "SEC":     "Second",
+        "STFU":    "Shut The Fuck Up",
+        "SRSLY":   "Seriously",
+        "SRY":     "Sorry",
+        "TLDR":    "Too Long, Didn't Read",
+        "TTS":     "Text to speech",
+        "TIL":     "Today I learned",
+        "TY":      "Thanks",
+        "TBH":     "To be honest",
+        "WTF":     "What The Fuck",
+        "YW":      "You're welcome",
+        "KRETENKOBR2": "KretenkobrTwo",
+        "<":       "Kleinerdong",
+        "PSA":     "Public Service Announcement",
+        "PR":      "Pull request",
+        "EASTEREGG": "Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo",
+        "STJERN":  "stjerneklar"
+    };
+
+    // used for TTS voice username-based randomization
+    function strSeededRandInt (str, min = 0, max = 256, code = 0){
+        for(let i = 0; i < str.length; i++){
+            code += str.charCodeAt(i);
+        }
+        return code % (1 + max - min) + min;
+    }
+
+    //used by number to words
+    function getNumbers(input) {
+        return input.match(/[0-9]+/g);
+    }
+
+    var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
+    var urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+
+    function messageTextToSpeechHandler($msg, $usr) {
+
+        if (GM_getValue("rlc-TextToSpeechTTS")) {
+
+                // long messages break tts (<300 chars)
+                if($msg.text().length<250){
+
+                    // Load in message string
+                    var linetoread = $msg.text();
+
+                    // Remove any URLs that match urlRegex
+                    linetoread = linetoread.replace(urlRegex, "");
+
+                    var hasTripple = /([^. ])\1\1/.test(linetoread);
+                    // Check for single character spamming
+                    if (!hasTripple) {
+
+                        // Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
+                        var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
+
+                        linetoread = linetoread.split(" ").map(function(token){
+                            if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
+                        }).join(" ");
+
+                        // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
+                        var numbermatches = getNumbers(linetoread);
+
+                        $.each(numbermatches, function(i) {
+                            linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
+                        });
+
+                        //meMentioned replacement
+                        var meMentioned = $msg.parent().parent().hasClass("user-narration");
+
+                        // Narration Style
+                        var msg;
+                        var usr = $usr.text();
+                        //idea: if username is a lot of numbers, call them by the first 3 numbers seperated
+                        if (usr == "741456963789852123") { usr = "74"; }
+                        if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
+                        if (usr == "s3cur1ty") { usr = "Security"; }
+                        //if (usr == "Stjerneklar") { usr = "Steeairneklaahr";}
+
+                        // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
+                        var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
+                        var msgtwitchemotes = $msg.find(".mrTwitchEmotes");
+                        var domEmoji = "";
+
+                        if (msgemotes.length) {
+                            var finalemote;
+
+                            $.each(msgemotes, function() {
+                                finalemote = $(this).attr("class");
+
+                            });
+
+                            // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
+                            // (Note: This can be fragile if "mp_" is changed to something else)
+                            var lastEmote = finalemote.split(" ")[1].split("mp_")[1];
+                            domEmoji = lastEmote;
+                        }
+
+                        if (msgtwitchemotes.length) {
+                            var finalemote;
+
+                            $.each(msgtwitchemotes, function() {
+                                finalemote = $(this).attr("class");
+
+                            });
+
+                            // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
+                            // (Note: This can be fragile if "mp_" is changed to something else)
+                            var lastEmote = finalemote.split(" ")[1].split("tw_")[1];
+                            domEmoji = lastEmote;
+                        }
+
+                        var toneStr="";
+                        if ( domEmoji in toneList ){
+                            toneStr = " " + toneList[domEmoji];
+                        }
+
+                        if (!GM_getValue("rlc-TTSUsernameNarration")) {
+                            msg = new SpeechSynthesisUtterance(linetoread);
+                        } else {
+                            switch (true) {   //These are causing AutoScroll not to work..? (FF)
+                                case meMentioned === true: //Check for /me
+                                    msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
+                                    break;
+                                case /.+\?$/.test(checkingStr): // Questioned
+                                    msg = new SpeechSynthesisUtterance(linetoread + " questioned " + usr + toneStr );
+                                    break;
+                                case /.+\!$/.test(checkingStr):   // Exclaimed
+                                    msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + usr + toneStr );
+                                    break;
+                                case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
+                                    linetoread = linetoread.trim().slice(0, -2);
+                                    msg = new SpeechSynthesisUtterance(linetoread + " stated " + usr + "sarcastically");
+                                    break;
+                                case checkingStr === checkingStr.toUpperCase(): //Check for screaming
+                                    msg = new SpeechSynthesisUtterance(linetoread + " shouted " + usr + toneStr );
+                                    break;
+                                default: // said
+                                    msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
+                                    break;
+                            }
+                        }
+
+                        // console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
+
+                        msg.voiceURI = 'native';
+
+                        // Set variable voice type
+                        if (!GM_getValue("rlc-TTSDisableUserbasedVoices")) {
+                            // Select voices that english users can use, even if its not for english exactly...
+                            var voiceList = speechSynthesis.getVoices().filter(function(voice) {
+                                for (var key in langSupport) {
+                                    if ( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
+                                }
+                            });
+
+                            // TODO do voice calculations once per user, store voices, perhaps in gmvalues?
+                            // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
+                            msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
+                            msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
+                            msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
+                            //console.log(msg.voice);
+                            // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
+                            if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
+                            {
+                                msg.pitch = msg.pitch.toFixed(1);
+                            }
+
+                        }
+                        msg.volume = 1; // 0 to 1
+                        //msg.rate = 1; // 0.1 to 10
+                        //msg.pitch = 1; //0 to 2
+                        window.speechSynthesis.speak(msg);
+                        // get supported voices
+                        //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
+                    
+                }
+            }
+        }
+    }
 
 
 //  ██╗   ██╗███████╗███████╗██████╗      ██████╗ ██████╗ ██╗      ██████╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
@@ -1344,7 +1200,7 @@
             var r = firstThree.slice(0,2);
             var g = firstThree.slice(2,4);
             var b = firstThree.slice(4,6);
-            if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
+            //if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
             var randR = (Math.seededRandom(r*100,120,175));
             var randG = (Math.seededRandom(g*100,120,175));
             var randB = (Math.seededRandom(b*100,120,175));
@@ -1393,147 +1249,6 @@
         //AKA, arrays within an array (multidimensional array)
         tempArray.push(colors[n]);
         return tempArray;
-    }
-
-//  ███╗   ███╗███████╗ ██████╗     ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
-//  ████╗ ████║██╔════╝██╔════╝     ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
-//  ██╔████╔██║███████╗██║  ███╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
-//  ██║╚██╔╝██║╚════██║██║   ██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
-//  ██║ ╚═╝ ██║███████║╚██████╔╝    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
-//  ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
-
-
-    // Grab users username + play nice with RES
-    var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
-
-    // Message background alternation via js
-    var rowAlternator = false;
-
-    // convert an url prefixed by rlc-image into an image link
-    function rlcImageHandler($el,$msg,firstLine) { 
-        var linksObj = $msg.find("a");
-        var url = linksObj.attr("href");
-        if (url) {
-            var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
-            var splitByPipe = $msg.text().split("|");
-            var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
-            var imgHeight = 0;
-            imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
-
-            url = url.replace(/^http:\/\//i, 'https://'); //force usage of https 
-            
-            $el.addClass("rlc-imageWithin");
-
-            firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
-        }
-    }
-
-    // trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
-    var emojiList={":)": "smile",
-                   "3:D": "evilsmile",
-                   ":((": "angry",
-                   ":(": "frown",
-                   ":s": "confused",
-                   ":I": "meh",
-                   ":|": "meh",
-                   ":/": "disappointed",
-                   ":o": "shocked",
-                   ":D": "happy",
-                   "D:": "sad",
-                   ";_;": "crying",
-                   "T_T": "crying",
-                   ";)": "wink",
-                   "-_-": "bored",
-                   "X|": "annoyed",
-                   "X)": "xsmile",
-                   "X(": "xsad",
-                   "XD": "xhappy",
-                   ":P": "tongue",
-                  };
-
-    function emoteSupport(line, $msg, firstLine) {
-        if (!GM_getValue("rlc-NoEmotes")){
-            $.each(emojiList, function(emoji,replace){
-                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
-                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
-                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
-                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrPumpkin mp_${replace}'></span>`));
-                    }
-                }
-            });
-        }
-    }
-
-    var twitchmojiList={
-        "KappaRoss": "ross",
-        "KappaClaus": "claus",
-        "Kappa": "kappa",
-        "PogChamp": "pogchamp",
-        "SMOrc": "smorc",
-        "NotLikeThis": "notlikethis",
-        "FailFish": "failfish",
-        "4Head": "4head",
-        "EleGiggle": "elegiggle",
-        "Kreygasm": "kreygasm",
-        "DansGame": "dansgame",
-        "WutFace": "wutface",
-    };
-
-    function twitchemoteSupport(line, $msg, firstLine) {
-        if (!GM_getValue("rlc-NoTwitchEmotes")){
-            $.each(twitchmojiList, function(emoji,replace){
-                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
-                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
-                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
-                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrTwitchEmotes tw_${replace}'></span>`));
-                    }
-                }
-            });
-        }
-    }
-
-    function abbrSupport(line, $msg, firstLine) {
-        if ( firstLine.html() != null ){ // This is usually for excluding embedded, code or other content that doesn't use html representation
-            htmTok = firstLine.html().split(" ");
-            htmTok = htmTok.map(function(tokenStr){
-                var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase(); // Strip trailing space and newlines and punctuations with conversion to newline
-                if ( replaceStrList_key in replaceStrList ){
-                    return `<abbr title="${replaceStrList[replaceStrList_key]}">${tokenStr}</abbr>`;
-                }
-                return tokenStr;
-            });
-            firstLine.html(htmTok.join(" "));
-        }
-    }
-
-    function collapseLongMessage($msg,firstLine) {
-        if($msg.text().length>250){
-            $msg.addClass("longMessageClosed");
-            $msg.prepend("<input type='button' value='+' class='extendButton' style='width:18px;height:18px;padding:0px;font-size:0.8em'>");
-            $msg.on('click', '.extendButton', function () {
-                if($msg.hasClass("longMessageClosed")){
-                    $msg.removeClass("longMessageClosed");
-                    $msg.find('.extendButton').val('-');
-                }else{
-                    $msg.addClass("longMessageClosed");
-                    $msg.find('.extendButton').val('+');
-                }
-                scrollToBottom();
-            });
-        }
-    }
-
-    function alternateMsgBackground($el) {
-        var muted = $el.hasClass("muted");
-        if (muted === false) { 
-          if(rowAlternator === false){
-                $el.addClass("alt-bgcolor");
-                rowAlternator = true;
-            }
-            else {
-                rowAlternator = false;                
-            }
-        }
     }
 
 //  ██╗   ██╗███████╗███████╗██████╗     ██╗     ██╗███████╗████████╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
@@ -1670,6 +1385,148 @@
         });
         return auArr;
     }
+
+//  ███╗   ███╗███████╗ ██████╗     ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ████╗ ████║██╔════╝██╔════╝     ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██╔████╔██║███████╗██║  ███╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║╚██╔╝██║╚════██║██║   ██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ██║ ╚═╝ ██║███████║╚██████╔╝    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//  ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+
+
+    // Grab users username + play nice with RES
+    var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
+
+    // Message background alternation via js
+    var rowAlternator = true;
+
+    // convert an url prefixed by rlc-image into an image link
+    function rlcImageHandler($el,$msg,firstLine) { 
+        var linksObj = $msg.find("a");
+        var url = linksObj.attr("href");
+        if (url) {
+            var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
+            var splitByPipe = $msg.text().split("|");
+            var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
+            var imgHeight = 0;
+            imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
+
+            url = url.replace(/^http:\/\//i, 'https://'); //force usage of https 
+            
+            $el.addClass("rlc-imageWithin");
+
+            firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
+        }
+    }
+
+    // trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
+    var emojiList={":)": "smile",
+                   "3:D": "evilsmile",
+                   ":((": "angry",
+                   ":(": "frown",
+                   ":s": "confused",
+                   ":I": "meh",
+                   ":|": "meh",
+                   ":/": "disappointed",
+                   ":o": "shocked",
+                   ":D": "happy",
+                   "D:": "sad",
+                   ";_;": "crying",
+                   "T_T": "crying",
+                   ";)": "wink",
+                   "-_-": "bored",
+                   "X|": "annoyed",
+                   "X)": "xsmile",
+                   "X(": "xsad",
+                   "XD": "xhappy",
+                   ":P": "tongue",
+                  };
+
+    function emoteSupport(line, $msg, firstLine) {
+        if (!GM_getValue("rlc-NoEmotes")){
+            $.each(emojiList, function(emoji,replace){
+                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
+                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
+                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
+                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrPumpkin mp_${replace}'></span>`));
+                    }
+                }
+            });
+        }
+    }
+
+    var twitchmojiList={
+        "KappaRoss": "ross",
+        "KappaClaus": "claus",
+        "Kappa": "kappa",
+        "PogChamp": "pogchamp",
+        "SMOrc": "smorc",
+        "NotLikeThis": "notlikethis",
+        "FailFish": "failfish",
+        "4Head": "4head",
+        "EleGiggle": "elegiggle",
+        "Kreygasm": "kreygasm",
+        "DansGame": "dansgame",
+        "WutFace": "wutface",
+    };
+
+    function twitchemoteSupport(line, $msg, firstLine) {
+        if (!GM_getValue("rlc-NoTwitchEmotes")){
+            $.each(twitchmojiList, function(emoji,replace){
+                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
+                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
+                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
+                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrTwitchEmotes tw_${replace}'></span>`));
+                    }
+                }
+            });
+        }
+    }
+
+    function abbrSupport(line, $msg, firstLine) {
+        if ( firstLine.html() != null ){ // This is usually for excluding embedded, code or other content that doesn't use html representation
+            htmTok = firstLine.html().split(" ");
+            htmTok = htmTok.map(function(tokenStr){
+                var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase(); // Strip trailing space and newlines and punctuations with conversion to newline
+                if ( replaceStrList_key in replaceStrList ){
+                    return `<abbr title="${replaceStrList[replaceStrList_key]}">${tokenStr}</abbr>`;
+                }
+                return tokenStr;
+            });
+            firstLine.html(htmTok.join(" "));
+        }
+    }
+
+    function collapseLongMessage($msg,firstLine) {
+        if($msg.text().length>250){
+            $msg.addClass("longMessageClosed");
+            $msg.prepend("<input type='button' value='+' class='extendButton' style='width:18px;height:18px;padding:0px;font-size:0.8em'>");
+            $msg.on('click', '.extendButton', function () {
+                if($msg.hasClass("longMessageClosed")){
+                    $msg.removeClass("longMessageClosed");
+                    $msg.find('.extendButton').val('-');
+                }else{
+                    $msg.addClass("longMessageClosed");
+                    $msg.find('.extendButton').val('+');
+                }
+                scrollToBottom();
+            });
+        }
+    }
+
+    function alternateMsgBackground($el) {
+        var muted = $el.hasClass("muted");
+        if (muted === false) { 
+          if(rowAlternator === false){
+                $el.addClass("alt-bgcolor");
+                rowAlternator = true;
+            }
+            else {
+                rowAlternator = false;                
+            }
+        }
+    }
+
 
 //  ███╗   ███╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗ 
 //  ████╗ ████║██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝    ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝ 
