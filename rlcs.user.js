@@ -3218,16 +3218,17 @@
 
     .mutedUser {
         text-decoration: line-through;
+        cursor:pointer;
     }
 
-    #rlc-userListUI {
-        padding: 15px 20px 20px 40px;
-        font-size: 1.5em
-    }
+#rlc-userListUI {
+    padding: 15px 10px 10px 15px;
+    font-size: 1.3em;
+}
 
     #rlc-userListUI p {
         list-style: outside;
-        padding: 0 0 8px
+        padding: 0 0 4px
     }
 
     `);
