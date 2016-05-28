@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.18.12
+// @version        3.22.1
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
-// @contributor    thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, Kretenkobr2, dashed
+// @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
 // @website        https://github.com/BNolet/RLC/
 // @namespace      http://tampermonkey.net/
 // @include        https://www.reddit.com/live/*
@@ -17,7 +17,6 @@
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_getResourceText
-// @grant          GM_setClipboard
 // @grant          GM_deleteValue
 // @grant          GM_listValues
 // @run-at         document-idle
@@ -33,12 +32,12 @@
 //  ╚═╝  ╚═╝╚══════╝ ╚═════╝    ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ 
 
                                                                     
-//    Welcome to Reddit Live Chat source code, enjoy your visit.
-//    Please group your variables with the relevant functions and follow existing structure.
-//    (Unless you are willing to rewrite the structure into something more sane)
-//    To get a good idea of whats going on, start from window.load near the bottom.
-//    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.
-//      - Stjerneklar
+    //    Welcome to Reddit Live Chat source code, enjoy your visit.
+    //    Please group your variables with the relevant functions and follow existing structure.
+    //    (Unless you are willing to rewrite the structure into something more sane)
+    //    To get a good idea of whats going on, start from window.load near the bottom.
+    //    I recommend using Sublime Text when browsing this file as these comment blocks are readable from the minimap.
+    //      - Stjerneklar
 
 
 //  ██████╗ ██╗      ██████╗     ██████╗ ██████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗
@@ -50,6 +49,7 @@
 //                                                                                      
 //  Calls createOption to set up lables, GM values and body classes based on stored GM values if set.
 //
+
 
     // Create persistant option
     function createOption(name, clickAction, defaultState, description){
@@ -101,14 +101,55 @@
         //console.log(key+" = "+state);
     }
 
+    function setCustomBg() {
+        // avoid triggering during init
+        if (loadHistoryMessageException != 1) {  
+
+        var bgurlsuggestion; //try to get a saved background url depending on dark mode setting
+        if (GM_getValue("rlc-DarkMode")) { bgurlsuggestion = GM_getValue("customBGdark")}
+            else { bgurlsuggestion = GM_getValue("customBGlight");}
+
+        // if we cant, use the sample url
+        if (typeof bgurlsuggestion === "undefined" ) {
+            bgurlsuggestion = "http://i.imgur.com/uy50nCx.jpg";
+        }
+
+        var bgurl = prompt("enter background url", bgurlsuggestion);  //prompt user for url with default or saved url suggested
+
+        if (bgurl != null) { //if the user filled out the prompt
+            $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
+
+            //save bgurl to seperate variables depending on light/dark mode
+            if (GM_getValue("rlc-DarkMode")) {  GM_setValue("customBGdark",bgurl)}
+            else { GM_setValue("customBGlight",bgurl) }
+
+            var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
+            $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
+        }
+        }
+        else {
+        //same as above but without the prompt. this code runs on init if option is enabled
+        var bgurl;
+
+        if (GM_getValue("rlc-DarkMode")) { bgurl = GM_getValue("customBGdark")}
+            else { bgurl = GM_getValue("customBGlight");}
+
+        if (typeof bgurl === "undefined" ) {
+            bgurl = "http://i.imgur.com/uy50nCx.jpg";
+        }
+        var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
+        $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
+        }    
+    }
+
     function createOptions() {
 
         // set default states(on first load of RLC, otherwise presists via GM/TM local variables)
         // ONLY NEEEDED FOR DEFAULT TRUE
-        if (!GM_getValue("rlc-ChannelColors")) {        GM_setValue("rlc-ChannelColors",            true);}
-        if (!GM_getValue("rlc-AutoScroll")) {           GM_setValue("rlc-AutoScroll",               true);}
-        if (!GM_getValue("rlc-FullSize")) {             GM_setValue("rlc-FullSize",                 true);}
-        if (!GM_getValue("rlc-ShowChannelsUI")) {       GM_setValue("rlc-ShowChannelsUI",           true);}
+        if (GM_getValue("rlc-ChannelColors")===undefined) {        GM_setValue("rlc-ChannelColors",            true);}
+        if (GM_getValue("rlc-AutoScroll")===undefined) {           GM_setValue("rlc-AutoScroll",               true);}
+        if (GM_getValue("rlc-FullSize")===undefined) {             GM_setValue("rlc-FullSize",                 true);}
+        if (GM_getValue("rlc-ShowChannelsUI")===undefined) {       GM_setValue("rlc-ShowChannelsUI",           true);}
 
         // Format: name, function, state, description(optional)
         createOption("Full Size", function(checked){
@@ -157,7 +198,6 @@
             } else {
                 $("#rlc-main").removeClass("show-colors");
             }
-            // Correct scroll after spam filter change
         },false, "give channels background colors");
 
         createOption("Show Channels UI", function(checked){
@@ -168,18 +208,27 @@
             }
         },false,"show channel tabs and message channel selector");
 
-        // TODO: conditioned on this, dont init tabbedchannels.tick
         createOption("Channel Message Counters", function(checked){
         },false,"show counters for messages in tabs");
 
         createOption("12 Hour Mode", function(checked){
+            if (loadHistoryMessageException != 1) {  refreshChat(); }
         },false,"12 Hour Time Stamps");
+        
+        createOption("Seconds Mode", function(checked){
+        if (loadHistoryMessageException != 1) {  refreshChat(); }
+            if (checked){
+                $("body").addClass("rlc-secondsMode");
+            } else {
+                $("body").removeClass("rlc-secondsMode");
+            }
+        },false,"Time Stamps with Seconds");
 
         createOption("Hide Channels in Global", function(checked){
-           if (loadHistoryMessageException != 1) {  refreshChat(); }
-            if (checked){
+           if (checked){
                 $("body").addClass("rlc-hideChannelsInGlobal");
             } else {
+                if (loadHistoryMessageException != 1) {  refreshChat(); }
                 $("body").removeClass("rlc-hideChannelsInGlobal");
             }
         },false, "hide in-channel messages in global tab (the channel must added for this to work)");
@@ -192,6 +241,9 @@
                 Notification.requestPermission();
             }
         },false, "show notice when you are mentioned");
+        
+        createOption("All Notifications when unfocused", function(checked){
+        },false, "show notice on any message if window is not focused");
 
         createOption("Chrome Scroll Bars", function(checked){
             if (checked){
@@ -212,9 +264,6 @@
             }
         },false, "read messages aloud");
         
-        createOption("TTS Long Messages", function(checked){
-        },false, "read long messages( TTS starts behaving weirdly sometimes)");
-
         createOption("TTS Username Narration", function(checked){
         },false, "example: [message] said [name]");
 
@@ -244,7 +293,7 @@
 
         createOption("Hide Giphy Images", function(checked){
            if (loadHistoryMessageException != 1) {  refreshChat(); }
-        },false, "disable giphy gifs (effective on reload or new messages)");
+        },false, "disable giphy gifs");
 
         createOption("Disable Markdown", function(checked){
            if (loadHistoryMessageException != 1) {  refreshChat(); }
@@ -255,58 +304,22 @@
                 if (loadHistoryMessageException != 1) {
                     cropMessages(25);
                 }
-            } else {
-
-            }
+            } 
         },false, "do not show more than 25 messages");
 
         createOption("Custom Background", function(checked){
             if (checked === true){
                 $("body").addClass("rlc-customBg");
-
-                if (loadHistoryMessageException != 1) {  // avoid triggering during init
-
-                    var bgurlsuggestion; //try to get a saved background url depending on dark mode setting
-                    if (GM_getValue("rlc-DarkMode")) { bgurlsuggestion = GM_getValue("customBGdark")}
-                        else { bgurlsuggestion = GM_getValue("customBGlight");}
-
-                    // if we cant, use the sample url
-                    if (typeof bgurlsuggestion === "undefined" ) {
-                        bgurlsuggestion = "http://i.imgur.com/uy50nCx.jpg";
-                    }
-
-                    var bgurl = prompt("enter background url", bgurlsuggestion);  //prompt user for url with default or saved url suggested
-
-                    if (bgurl != null) { //if the user filled out the prompt
-                        $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
-
-                        //save bgurl to seperate variables depending on light/dark mode
-                        if (GM_getValue("rlc-DarkMode")) {  GM_setValue("customBGdark",bgurl)}
-                        else { GM_setValue("customBGlight",bgurl) }
-
-                        var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
-                        $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
-                    }
-                }
-                else {
-                    //same as above but without the prompt. this code runs on init if option is enabled
-                    var bgurl;
-
-                    if (GM_getValue("rlc-DarkMode")) { bgurl = GM_getValue("customBGdark")}
-                        else { bgurl = GM_getValue("customBGlight");}
-
-                    if (typeof bgurl === "undefined" ) {
-                        bgurl = "http://i.imgur.com/uy50nCx.jpg";
-                    }
-                        var bgimagecss = `body {background-image: url(${bgurl})!important;` //build css rule
-                        $("body").append(`<style id='customBGstyle'>${bgimagecss}</style>`); //append style tag with css rule
-                    }
+                setCustomBg();
             }
             else {
                 $("body").removeClass("rlc-customBg");
                 $("#customBGstyle").remove(); //clear existing background style tag set in 248 or 251
             }
         },false, "sample image works best in dark mode");
+        
+        createOption("No Message Removal", function(checked){
+        },false, "don't remove messages ever");
     }
 
 
@@ -325,7 +338,7 @@
         var _self = this;
 
         // Default options
-        this.channels = ["%general", "%offtopic"];
+        this.channels = ["%general", "%offtopic","%dev"];
         this.mode = "single";
 
         // internals
@@ -610,7 +623,7 @@
             // Redraw tabs
             this.drawTabs();
 
-            // Start ticker
+            // Start tab message number ticker if enabled
             if (GM_getValue("rlc-ChannelMessageCounters")){
             setInterval(this.tick, 2000);
             }
@@ -630,77 +643,259 @@
     GM_addStyle(colorcollection);
 
 
-//  ██╗   ██╗███████╗███████╗██████╗     ██╗     ██╗███████╗████████╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
-//  ██║   ██║██╔════╝██╔════╝██╔══██╗    ██║     ██║██╔════╝╚══██╔══╝    ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
-//  ██║   ██║███████╗█████╗  ██████╔╝    ██║     ██║███████╗   ██║       █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
-//  ██║   ██║╚════██║██╔══╝  ██╔══██╗    ██║     ██║╚════██║   ██║       ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
-//  ╚██████╔╝███████║███████╗██║  ██║    ███████╗██║███████║   ██║       ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
-//   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝   ╚═╝       ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+//  ██╗     ██╗██╗   ██╗███████╗     █████╗ ██████╗ ██╗    ██╗    ██╗███████╗██████╗ ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+//  ██║     ██║██║   ██║██╔════╝    ██╔══██╗██╔══██╗██║    ██║    ██║██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+//  ██║     ██║██║   ██║█████╗      ███████║██████╔╝██║    ██║ █╗ ██║█████╗  ██████╔╝███████╗██║   ██║██║     █████╔╝ █████╗     ██║   
+//  ██║     ██║╚██╗ ██╔╝██╔══╝      ██╔══██║██╔═══╝ ██║    ██║███╗██║██╔══╝  ██╔══██╗╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║   
+//  ███████╗██║ ╚████╔╝ ███████╗    ██║  ██║██║     ██║    ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║   
+//  ╚══════╝╚═╝  ╚═══╝  ╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 
 
-    var storedMuteList = GM_getValue("mutedUsers");
-
-    if(storedMuteList!=undefined){
-        var mutedUsers = storedMuteList;
-    }else{
-        var mutedUsers = [];
+    // used to make sure that the url we use to connect the websocket does not end in a slash.
+    function stripTrailingSlash(str) {
+        if(str.substr(-1) === '/') {
+            return str.substr(0, str.length - 1);
+        }
+        return str;
     }
 
-    function updateMutedUsers() {
+    /* connectionTimer & incConTimer track how long time has passed since last websocket activity and notifies the user
+       if more than 2 minutes have passed without activity, as this is taken as a disconnect.  */
+    var connectionTimer = 0; 
+    function incConTimer() {
+       connectionTimer = connectionTimer + 1;
+        if (connectionTimer > 2) { 
+        location.reload();
+       }
+    }
+    setInterval(incConTimer, 60000);
 
-        // Reset by removing CSS and userlist
-        $("#mystyle").remove();
-        $("#bannedlist").empty();
+    +function(){
 
-        // Iterate over the muted users
-        var selectors = [];
-        for(let i = 0; i <= mutedUsers.length; i++){
-            if (mutedUsers[i] !== undefined) {    // Avoid the undefined one I cant figure out why I'm puttin in
-                selectors.push(`.u_${mutedUsers[i]}{display:none;}`);      // Generate CSS display none rule for user in list
-                $('.u_'+mutedUsers[i]).addClass('muted');
-                $("#bannedlist").append(`<p>${mutedUsers[i]}</p>`);        // Generate interface element for disabling muting
-                //reAlternate(); - seems to do nothing?
+        $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
+
+            var websocket_url = data.data.websocket_url;
+
+            var ws = new WebSocket(websocket_url);
+
+            ws.onmessage = function (evt) {
+              
+                    // Ensure data has data
+                     if(!data.hasOwnProperty('data'))
+                     {
+                         console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                         return;
+                     }
+              
+                var msg = JSON.parse(evt.data);
+                connectionTimer = 0;  // connection timer is reset on any activity that has data
+                switch(msg.type) {
+                case 'update':
+
+                    var payload = msg.payload.data;
+
+                    // See messageFaker function for how messages from json are turned into rlc-messages
+                    $(".rlc-message-listing").prepend(messageFaker(payload));
+                    
+                    break;
+
+                 /*  disabled, liveupdate header already tracks this
+                case 'activity':
+
+                    var payload = msg.payload;
+                    console.log('user count from websocket:', payload.count);
+
+                    break;
+                */
+
+                case 'delete':
+                    if(!GM_getValue("rlc-NoMessageRemoval")) {
+                      console.log("message deleted:"+msg.payload);
+                      var messageToDelete = "rlc-id-"+msg.payload;
+                      $( "li[name='"+messageToDelete+"']" ).remove();
+                      reAlternate();
+                    }
+
+                    break;
+
+                /*  embeds_ready - a previously posted update has
+                been parsed and embedded media is available for it now.
+                the payload contains a liveupdate_id and list of embeds to add to it.*/
+                case 'embeds_ready':
+                    
+                      console.log(msg.payload.liveupdate_id);
+                        
+                      var messageToMark = "rlc-id-"+msg.payload.liveupdate_id;
+
+                      $( "li[name='"+messageToMark+"']" ).addClass("rlc-hasEmbed");                   
+
+                    break;
+                }
+
+            };
+
+        });
+
+    }();
+
+
+//   ██████╗ ███████╗████████╗    ███╗   ███╗███████╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗███████╗
+//  ██╔════╝ ██╔════╝╚══██╔══╝    ████╗ ████║██╔════╝██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝██╔════╝
+//  ██║  ███╗█████╗     ██║       ██╔████╔██║█████╗  ███████╗███████╗███████╗███████║██║  ███╗█████╗  ███████╗
+//  ██║   ██║██╔══╝     ██║       ██║╚██╔╝██║██╔══╝  ╚════██║╚════██║╚════██║██╔══██║██║   ██║██╔══╝  ╚════██║
+//  ╚██████╔╝███████╗   ██║       ██║ ╚═╝ ██║███████╗███████║███████║███████║██║  ██║╚██████╔╝███████╗███████║
+//   ╚═════╝ ╚══════╝   ╚═╝       ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
+
+
+    function getContributors() {
+
+         var urlToGet = stripTrailingSlash(window.location.href) + "/contributors.json";
+
+         var ajaxLoadUsers =     $.getJSON( urlToGet, function( data ) {
+             var userdata = data[0].data.children;
+             $.each( userdata, function( ) {
+                 console.log($(this));
+                 console.log($(this)[0].name);
+                 console.log($(this)[0].permissions);
+             });
+                });
+            ajaxLoadUsers.complete(function() {
+
+            });
+    }
+
+    function getMessages(gettingOld) {
+        loadHistoryMessageException = 1;
+
+         var urlToGet = stripTrailingSlash(window.location.href) + "/.json";
+
+        if (gettingOld) {
+            var lastMessage = $(".rlc-message:last-child");
+            if(lastMessage.length !== 1) { console.log("nolastmessage");}
+            else {
+                urlToGet += "?after="+$(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
             }
         }
-        $("body").append(`<style id='mystyle'>${selectors.join(" ")}</style>`); // Inject style tag with user rules
 
-        // Handle clicking in muted user list (needs to be here for scope reasons)
-        $("#bannedlist p").click(function(){
-            let target = $(this).text();
-            let targetPosition = mutedUsers.indexOf(target);
-            $('.u_'+mutedUsers[targetPosition]).removeClass('muted');
-            reAlternate();
-            $(this).remove();  // Remove this element from the muted list
-            mutedUsers.splice(targetPosition, 1);  // Remove target from the muted array
-            updateMutedUsers(); // Update
-            scrollToBottom();
-        });
-        GM_setValue("mutedUsers", mutedUsers);
+         var ajaxLoadOldMessages = $.getJSON( urlToGet, function( data ) {
+
+                     // Ensure data has data
+                     if(!data.hasOwnProperty('data'))
+                     {
+                         console.log("Help me Obi-Wan Kenobi. We got empty data!");
+                         return;
+                     }
+             
+                    var oldmessages = data.data.children;  //navigate the data to the object containing the messages
+                    $.each( oldmessages, function( ) {
+                        var msg = $(this).toArray()[0].data; //navigate to the message data level we want
+                       
+                        // See messageFaker function for how messages from json are turned into rlc-messages
+                        $(".rlc-message-listing").append(messageFaker(msg));
+                    });
+                });
+            ajaxLoadOldMessages.complete(function() {
+                loadHistoryMessageException = 0;
+                   reAlternate();
+            });
     }
 
-    var activeUserArray = [],
-        activeUserTimes = [],
-        updateArray = [];
+    function messageFaker(msg) { 
+        var msgID = msg.name;
+        var $msgbody = msg.body_html;
 
-    // Update active user list
-    function processActiveUsersList() {
-        $("#rlc-activeusers ul").empty();
-        updateArray = [];
+        if (GM_getValue("rlc-DisableMarkdown")) {$msgbody + '<div class="md"><p>'+ msg.body +'</p></div>';}
+        
+            // Unescaped html escaped string by way of crazy voodo magic.
+            $msgbody = $("<textarea/>").html($msgbody).val()                        
 
-        for(let i = 0; i <= activeUserArray.length; i++){
-            if (updateArray.indexOf(activeUserArray[i]) === -1 && activeUserArray[i] !== undefined) {
-                updateArray.push(activeUserArray[i]);
-                $("#rlc-activeusers ul").append(`<li>
-                                                    <span class='activeusersUser'>${activeUserArray[i]}</span> @
-                                                    <span class='activeusersTime'>${activeUserTimes[i]}</span>
-                                                </li>`);
-            } /*else if (updateArray.indexOf(activeUserArray[i]) > -1) {
-                 TODO: Add things.
+        var usr = msg.author;
+        var utcSeconds = msg.created_utc;
 
-                       Add message counter value
-                       Check if timestamp is recent enough?
-            }*/
+        // translate created_utc to a human readable version
+        var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
+        readAbleDate.setUTCSeconds(utcSeconds);
+
+        var hours = readAbleDate.getHours();
+        var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
+        var seconds = readAbleDate.getSeconds().toString();
+        
+        // if seconds is a single diget value, prefix it with a 0 (12:00:1 becomes 12:00:01)
+        if (seconds.length === 1) { seconds = "0" + seconds};
+
+        if (GM_getValue("rlc-12HourMode")) {
+                //it is pm if hours from 12 onwards
+                var suffix = (hours >= 12)? 'PM' : 'AM';
+
+                //only -12 from hours if it is greater than 12 (if not back at mid night)
+                hours = (hours > 12)? hours -12 : hours;
+
+                //if 00 then it is 12 am
+                hours = (hours === '00')? 12 : hours;
+        } else {
+            suffix = "";
         }
+
+        if(GM_getValue("rlc-SecondsMode"))
+            {
+                finaltimestamp = hours.toString() + ":" + minutes.toString()+ ":" + seconds.toString() + " " + suffix;
+            }else var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+
+        var fakeMessage = `
+        <li class="rlc-message" name="rlc-id-${msgID}">
+            <div class="body">${$msgbody}
+                <div class="simpletime">${finaltimestamp}</div>
+                <a href="/user/${usr}" class="author">${usr}</a>
+            </div>
+        </li>`
+        return fakeMessage;
+    }
+
+
+//  ███╗   ███╗███████╗████████╗ █████╗     ███╗   ███╗███████╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ████╗ ████║██╔════╝╚══██╔══╝██╔══██╗    ████╗ ████║██╔════╝██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██╔████╔██║█████╗     ██║   ███████║    ██╔████╔██║███████╗██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║    ██║╚██╔╝██║╚════██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║    ██║ ╚═╝ ██║███████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//  ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝    ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+
+
+    // fix problems with message background alternation without reloading messages
+    function reAlternate(){
+       $('.rlc-message').removeClass('alt-bgcolor');
+       $('.rlc-message.muted').remove();
+       $('.rlc-message:odd').addClass('alt-bgcolor');
+    }
+
+    // called by the max messages option, removes any message with a number higher than the specified max.
+    // this is done by looping trough a list of all messages and for each message checking what number the message is in the list.
+    // if the message number in the list(referred to as its index) is heigher than the max number supplied, the message is removed.
+    function cropMessages(max) {
+        $( ".rlc-message" ).each(function( index ) {
+            if (index > max) {
+                $( this ).remove();
+            }
+        });
+    }
+
+    // Scroll chat to bottom in order to show the latest message
+    var scrollToBottom = function(){
+        if (GM_getValue("rlc-AutoScroll")){
+            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
+        }
+    };
+
+    // scroll to bottom on window resize
+    $( window ).resize(function() {
+      scrollToBottom();
+    });
+
+    // remove all messages and get the latest 25 messages via ajax
+    // used to redraw the chat after certain option changes or mute/unmute
+    function refreshChat() {  
+        $(".rlc-message").remove(); 
+        getMessages();
+        updateUserListInterface();
     }
 
 
@@ -796,6 +991,7 @@
         "RTFM":    "Read The Fucking Manual",
         "HAATIVCALBE": "Hobbit's Awesome Abbreviation That Is Very Cool And Loved By Everyone",
         "RLC":     "Reddit Live Chat",
+        "SEC":     "Second",
         "STFU":    "Shut The Fuck Up",
         "SRSLY":   "Seriously",
         "SRY":     "Sorry",
@@ -822,159 +1018,18 @@
         return code % (1 + max - min) + min;
     }
 
+    //used by number to words
     function getNumbers(input) {
         return input.match(/[0-9]+/g);
     }
 
     var langSupport = ["el","fr","da","en","en-GB", "en-US", "sv", "es-US", "hi-IN", "it-IT", "nl-NL", "pl-PL", "ru-RU"];
     var urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+
     function messageTextToSpeechHandler($msg, $usr) {
 
         if (GM_getValue("rlc-TextToSpeechTTS")) {
 
-            if(GM_getValue("rlc-TTSLongMessages")){
-
-               // Load in message string
-               //var linetoread = $msg.text();
-               var linetoread = $msg.html(); // Extract html encoded text
-               linetoread = linetoread.replace(/<br>/g, " ... ").replace(/<[^>]+>/g, " "); // Replace tag as pause then strip other tags
-               // Unescaped html escaped string by way of crazy voodo magic. (Use textarea to avoid XSS exploits) 
-               linetoread = $("<textarea/>").html(linetoread).val(); 
-
-                // Remove any URLs that match urlRegex
-                linetoread = linetoread.replace(urlRegex, "");
-
-                var hasTripple = /([^. ])\1\1/.test(linetoread);
-                // Check for single character spamming
-                if (!hasTripple) {
-
-                    // Abbrev Conversion (Btw: http://www.regexpal.com/ is useful for regex testing)
-                    var checkingStr = linetoread.trim(); // Trim spaces to make recognition easier
-
-                    linetoread = linetoread.split(" ").map(function(token){
-                        if ( token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase() in replaceStrList ){return replaceStrList[token.replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!(?)$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase()];} else {return token;}
-                    }).join(" ");
-
-                    // Number To Words Conversion (Moved under abbrev conversion to avoid interfering with Abbrev detection )
-                    var numbermatches = getNumbers(linetoread);
-
-                    $.each(numbermatches, function(i) {
-                        linetoread = linetoread.split(numbermatches[i]).join(numberToEnglish(numbermatches[i]));
-                    });
-
-                    //meMentioned replacement
-                    var meMentioned = $msg.parent().parent().hasClass("user-narration");
-
-                    // Narration Style
-                    var msg;
-                    var usr = $usr.text();
-                    //idea: if username is a lot of numbers, call them by the first 3 numbers seperated
-                    if (usr == "741456963789852123") { usr = "74"; }
-                    if (usr == "Kretenkobr2") { usr = "KretenkobrTwo"; }
-                    if (usr == "s3cur1ty") { usr = "Security"; }
-                    //if (usr == "Stjerneklar") { usr = "Steeairneklaahr";}
-
-                    // Emoji Detection (Btw: I am a little unconfortable with this function, since its relying on the second class of that span to always be the same )
-                    var msgemotes = $msg.find(".mrPumpkin"); // find all emotes in message
-                    var msgtwitchemotes = $msg.find(".mrTwitchEmotes");
-                    var domEmoji = "";
-
-                    if (msgemotes.length) {
-                        var finalemote;
-
-                        $.each(msgemotes, function() {
-                            finalemote = $(this).attr("class");
-
-                        });
-
-                        // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
-                        // (Note: This can be fragile if "mp_" is changed to something else)
-                        var lastEmote = finalemote.split(" ")[1].split("mp_")[1];
-                        domEmoji = lastEmote;
-                    }
-
-                    if (msgtwitchemotes.length) {
-                        var finalemote;
-
-                        $.each(msgtwitchemotes, function() {
-                            finalemote = $(this).attr("class");
-
-                        });
-
-                        // Btw `.split("mp_")[1]` means to get rid of the `mp_` bit in example `mp_happy` to get just `happy`
-                        // (Note: This can be fragile if "mp_" is changed to something else)
-                        var lastEmote = finalemote.split(" ")[1].split("tw_")[1];
-                        domEmoji = lastEmote;
-                    }
-
-                    var toneStr="";
-                    if ( domEmoji in toneList ){
-                        toneStr = " " + toneList[domEmoji];
-                    }
-
-                    if (!GM_getValue("rlc-TTSUsernameNarration")) {
-                        msg = new SpeechSynthesisUtterance(linetoread);
-                    } else {
-                        switch (true) {   //These are causing AutoScroll not to work..? (FF)
-                            case meMentioned === true: //Check for /me
-                                msg = new SpeechSynthesisUtterance( linetoread  + toneStr  );
-                                break;
-                            case /.+\?$/.test(checkingStr): // Questioned
-                                msg = new SpeechSynthesisUtterance(linetoread + " questioned " + usr + toneStr );
-                                break;
-                            case /.+\!$/.test(checkingStr):   // Exclaimed
-                                msg = new SpeechSynthesisUtterance(linetoread + " exclaimed " + usr + toneStr );
-                                break;
-                            case /.+[\\\/]s$/.test(checkingStr): // Sarcasm switch checks for /s or \s at the end of a sentence
-                                linetoread = linetoread.trim().slice(0, -2);
-                                msg = new SpeechSynthesisUtterance(linetoread + " stated " + usr + "sarcastically");
-                                break;
-                            case checkingStr === checkingStr.toUpperCase(): //Check for screaming
-                                msg = new SpeechSynthesisUtterance(linetoread + " shouted " + usr + toneStr );
-                                break;
-                            default: // said
-                                msg = new SpeechSynthesisUtterance(linetoread + " said " + usr + toneStr );
-                                break;
-                        }
-                    }
-
-                    // console.log("TTS | " + linetoread + " by " + usr + " with tone "+ toneStr );
-
-                    msg.voiceURI = 'native';
-
-                    // Set variable voice type
-                    if (!GM_getValue("rlc-TTSDisableUserbasedVoices")) {
-                        // Select voices that english users can use, even if its not for english exactly...
-                        var voiceList = speechSynthesis.getVoices().filter(function(voice) {
-                            for (var key in langSupport) {
-                                if ( voice.lang.indexOf(langSupport[key]) > -1 ){ return true; }
-                            }
-                        });
-
-                        // TODO do voice calculations once per user, store voices, perhaps in gmvalues?
-                        // Cheap String Seeded Psudo Random Int Hash (Author: mofosyne)
-                        msg.voice = voiceList[strSeededRandInt($usr.text(),0,voiceList.length-1)];
-                        msg.pitch = 0.0 + (1.6-0.0)*strSeededRandInt($usr.text()+" pitch salt ",0,10)/10; // random range: 0.5 to 1.5
-                        msg.rate  = 0.8 + (1.2-0.8)*strSeededRandInt($usr.text()+" rate salt ",0,10)/10; // random range: 0.5 to 1.5
-                        //console.log(msg.voice);
-                        // pitch alteration is known to break firefox TTS, rate is reset for suspicion of the same behavior
-                        if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1)
-                        {
-                            msg.pitch = msg.pitch.toFixed(1);
-                        }
-
-                    }
-                    msg.volume = 1; // 0 to 1
-                    //msg.rate = 1; // 0.1 to 10
-                    //msg.pitch = 1; //0 to 2
-                    window.speechSynthesis.speak(msg);
-                    // get supported voices
-                    //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
-                }
-            }
-        
-        else{
-            
                 // long messages break tts (<300 chars)
                 if($msg.text().length<250){
 
@@ -1110,177 +1165,11 @@
                         window.speechSynthesis.speak(msg);
                         // get supported voices
                         //speechSynthesis.getVoices().forEach(function(voice) {  console.log(voice.lang, voice.name);   });
-                    }
+                    
                 }
             }
-
         }
     }
-
-
-//  ███╗   ███╗███████╗ ██████╗     ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
-//  ████╗ ████║██╔════╝██╔════╝     ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
-//  ██╔████╔██║███████╗██║  ███╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
-//  ██║╚██╔╝██║╚════██║██║   ██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
-//  ██║ ╚═╝ ██║███████║╚██████╔╝    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
-//  ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
-
-
-    // Grab users username + play nice with RES
-    var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
-
-    // Message background alternation via js
-    var rowAlternator = false;
-
-    // trigger list. supports multiple triggers for one emote(eg meh) and automaticly matches both upper and lower case letters(eg :o/:O)
-    var emojiList={":)": "smile",
-                   "3:D": "evilsmile",
-                   ":((": "angry",
-                   ":(": "frown",
-                   ":s": "confused",
-                   ":I": "meh",
-                   ":|": "meh",
-                   ":/": "disappointed",
-                   ":o": "shocked",
-                   ":D": "happy",
-                   "D:": "sad",
-                   ";_;": "crying",
-                   "T_T": "crying",
-                   ";)": "wink",
-                   "-_-": "bored",
-                   "X|": "annoyed",
-                   "X)": "xsmile",
-                   "X(": "xsad",
-                   "XD": "xhappy",
-                   ":P": "tongue",
-                  };
-
-    var twitchmojiList={
-        "Kappa": "kappa",
-        "PogChamp": "pogchamp",
-        "SMOrc": "smorc",
-        "NotLikeThis": "notlikethis",
-        "FailFish": "failfish",
-        "4Head": "4head",
-        "EleGiggle": "elegiggle",
-        "Kreygasm": "kreygasm",
-        "DansGame": "dansgame",
-    };
-
-
-    function emoteSupport(line, $msg, firstLine) {
-        if (!GM_getValue("rlc-NoEmotes")){
-            $.each(emojiList, function(emoji,replace){
-                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
-                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
-                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
-                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrPumpkin mp_${replace}'></span>`));
-                    }
-                }
-            });
-        }
-    }
-
-    function twitchemoteSupport(line, $msg, firstLine) {
-        if (!GM_getValue("rlc-NoTwitchEmotes")){
-            $.each(twitchmojiList, function(emoji,replace){
-                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
-                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
-                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
-                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrTwitchEmotes tw_${replace}'></span>`));
-                    }
-                }
-            });
-        }
-    }
-
-    function abbrSupport(line, $msg, firstLine) {
-        if ( firstLine.html() != null ){ // This is usually for excluding embedded, code or other content that doesn't use html representation
-            htmTok = firstLine.html().split(" ");
-            htmTok = htmTok.map(function(tokenStr){
-                var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase(); // Strip trailing space and newlines and punctuations with conversion to newline
-                if ( replaceStrList_key in replaceStrList ){
-                    return `<abbr title="${replaceStrList[replaceStrList_key]}">${tokenStr}</abbr>`;
-                }
-                return tokenStr;
-            });
-            firstLine.html(htmTok.join(" "));
-        }
-    }
-
-    // Timestamp modification & user activity tracking
-    function timeAndUserTracking($el, $usr) {
-        var shortTime = $el.find(".simpletime");
-
-        // Add info to activeuserarray
-        activeUserArray.push($usr.text());
-        //activeUserTimes.push(militarytime);
-        activeUserTimes.push(shortTime.text());
-
-        // Moved here to add user activity from any time rather than only once each 10 secs. (Was in tab tick function, place it back there if performance suffers)
-        processActiveUsersList();
-    }
-
-    function collapseLongMessage($msg,firstLine) {
-        if($msg.text().length>250){
-            $msg.addClass("longMessageClosed");
-            $msg.prepend("<input type='button' value='+' class='extendButton' style='width:18px;height:18px;padding:0px;font-size:0.8em'>");
-            $msg.on('click', '.extendButton', function () {
-                if($msg.hasClass("longMessageClosed")){
-                    $msg.removeClass("longMessageClosed");
-                    $msg.find('.extendButton').val('-');
-                }else{
-                    $msg.addClass("longMessageClosed");
-                    $msg.find('.extendButton').val('+');
-                }
-                scrollToBottom();
-            });
-        }
-    }
-
-    function alternateMsgBackground($el) {
-            if (loadHistoryMessageException === 0) {
-                var $child = $('.rlc-message-listing:not(.muted)').children()[1];
-                rowAlternator=($($child).hasClass('alt-bgcolor'));
-            }else{
-                rowAlternator=!rowAlternator;
-            }
-            if(rowAlternator === false){
-                $el.addClass("alt-bgcolor");
-            }
-    }
-
-
-//  ███╗   ███╗███████╗████████╗ █████╗     ███╗   ███╗███████╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
-//  ████╗ ████║██╔════╝╚══██╔══╝██╔══██╗    ████╗ ████║██╔════╝██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
-//  ██╔████╔██║█████╗     ██║   ███████║    ██╔████╔██║███████╗██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
-//  ██║╚██╔╝██║██╔══╝     ██║   ██╔══██║    ██║╚██╔╝██║╚════██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
-//  ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║    ██║ ╚═╝ ██║███████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
-//  ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝    ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
-
-
-    function reAlternate(){
-       $('.rlc-message').removeClass('alt-bgcolor');
-       $('.rlc-message:odd').addClass('alt-bgcolor');
-    }
-
-    // called by the max messages option, removes any message with a number higher than the specified max.
-    // this is done by looping trough a list of all messages and for each message checking what number the message is in the list.
-    // if the message number in the list(referred to as its index) is heigher than the max number supplied, the message is removed.
-    function cropMessages(max) {
-        $( ".rlc-message" ).each(function( index ) {
-            if (index > max) {
-                $( this ).remove();
-            }
-        });
-    }
-
-    // Scroll chat back to bottom
-    var scrollToBottom = function(){
-        if (GM_getValue("rlc-AutoScroll")){
-            $("#rlc-chat").scrollTop($("#rlc-chat")[0].scrollHeight);
-        }
-    };
 
 
 //  ██╗   ██╗███████╗███████╗██████╗      ██████╗ ██████╗ ██╗      ██████╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
@@ -1303,13 +1192,13 @@
         return parseInt(min + rnd * (max - min));
     };
 
-    //Generates the matching light, dark and Robin colors for username CSS and stores them in a persistent array
-    function colorGen($usr) {
-        var hexArray = GM_getValue("hexArrayStore", "") || [];
+    //Generates the matching light, dark and Robin colors for username CSS
+    function colorGen(name) {
+ 
         var tempArray = [];
 
         // Convert string to hex
-        var hexStr = $usr.text();
+        var hexStr = name;
         var result = "";
         for (var i=0; i<hexStr.length; i++) {
             result += hexStr.charCodeAt(i).toString(16);
@@ -1324,6 +1213,7 @@
                 adder = adder * num;
             }
         });
+
         adder = adder.toString().replace(".", "").split("0").join("");
         let start = adder.length-10;
         let end = adder.length-4;
@@ -1335,7 +1225,7 @@
             var r = firstThree.slice(0,2);
             var g = firstThree.slice(2,4);
             var b = firstThree.slice(4,6);
-            if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
+            //if (rowAlternator) amt+=10;   // TODO: Might want to rethink this
             var randR = (Math.seededRandom(r*100,120,175));
             var randG = (Math.seededRandom(g*100,120,175));
             var randB = (Math.seededRandom(b*100,120,175));
@@ -1376,217 +1266,319 @@
 
         //Robin Colors
         var colors = ["e50000", "db8e00", "ccc100", "02be01", "0083c7", "820080"];
-        var e = $usr.text().toLowerCase(),
+        var e = name.toLowerCase(),
             t = e.replace(/[^a-z0-9]/g, ""),
             n = parseInt(t, 36) % 6;
 
         //Cascading array used to add color schemes to master hex array on a 1:1 user:colorset basis
         //AKA, arrays within an array (multidimensional array)
         tempArray.push(colors[n]);
-        hexArray.push(tempArray);
-        //console.log(hexArray);
-        GM_setValue("hexArrayStore", hexArray); //Store array in scriptmonkey settings for later access
+        return tempArray;
     }
 
 
-//  ██╗     ██╗██╗   ██╗███████╗     █████╗ ██████╗ ██╗    ██╗    ██╗███████╗██████╗ ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
-//  ██║     ██║██║   ██║██╔════╝    ██╔══██╗██╔══██╗██║    ██║    ██║██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
-//  ██║     ██║██║   ██║█████╗      ███████║██████╔╝██║    ██║ █╗ ██║█████╗  ██████╔╝███████╗██║   ██║██║     █████╔╝ █████╗     ██║   
-//  ██║     ██║╚██╗ ██╔╝██╔══╝      ██╔══██║██╔═══╝ ██║    ██║███╗██║██╔══╝  ██╔══██╗╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║   
-//  ███████╗██║ ╚████╔╝ ███████╗    ██║  ██║██║     ██║    ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║   
-//  ╚══════╝╚═╝  ╚═══╝  ╚══════╝    ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
+//  ██╗   ██╗███████╗███████╗██████╗     ██╗     ██╗███████╗████████╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ██║   ██║██╔════╝██╔════╝██╔══██╗    ██║     ██║██╔════╝╚══██╔══╝    ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██║   ██║███████╗█████╗  ██████╔╝    ██║     ██║███████╗   ██║       █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║   ██║╚════██║██╔══╝  ██╔══██╗    ██║     ██║╚════██║   ██║       ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ╚██████╔╝███████║███████╗██║  ██║    ███████╗██║███████║   ██║       ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝   ╚═╝       ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
 
-function stripTrailingSlash(str) {
-    if(str.substr(-1) === '/') {
-        return str.substr(0, str.length - 1);
+
+    // try to get persistant user list 
+    var storedUserList = GM_getValue("storedUserList");
+
+    // check if we have a persistant user list
+    if(storedUserList!=undefined){
+        // if so, handle loading the storedUserList into userList
+        var userList = [];
+
+            // push each user in the storedUserList to the userList
+            $.each(storedUserList, function(idx,item){
+                var user = {
+                    name: item.name,                // set name of user being tracked
+                    lastMsgTime: item.lastMsgTime,  // set time of latest activity to timestamp passed 
+                    countMsg: 0,                  // reset message count (value equaling 0 means user is inactive)
+                    isMuted: item.isMuted,          // load mute state
+                    colorArray: item.colorArray     // load user colors
+                };
+                userList.push(user); //insert user object into user tracking array
+            });
+
+    }else{
+        // if not, create userList as an empty array ready for users 
+        var userList = [];
     }
-    return str;
-}
-var connectionTimer = 0;
-function incConTimer() {
-   connectionTimer = connectionTimer + 1;
-    if (connectionTimer > 2) { 
-    alert("its been "+connectionTimer+" minutes since last websocket activity. /n disconnect assumed, please refresh to reconnect.");
-   }
-}
-setInterval(incConTimer, 60000);
-+function(){
 
-    $.getJSON(stripTrailingSlash(window.location.href) + "/about.json", function(data) {
+    // run only on the first message recived from a user.
+    function addUserToArray(name,time) {
+        // create user object for tracking
+        var user = {
+            name:name,             // set name of user being tracked
+            lastMsgTime:time,      // set time of latest activity to timestamp passed 
+            countMsg:1,          // set message tracking count (value above 0 means user is active)
+            isMuted:false,         // set mute state
+            colorArray: colorGen(name) // generate array of user colors for robin/dark/non-dark modes 
+        };
+        userList.push(user); //insert user object into user tracking array
+    }
 
-        var websocket_url = data.data.websocket_url;
+    function updateUserListInterface() {
 
-        var ws = new WebSocket(websocket_url);
+        // Reset by removing CSS and userlist
+        $("#userstyles").remove();
+        $("#rlc-userListUI").empty();
 
-        ws.onmessage = function (evt) {
-          
-                // Ensure data has data
-                 if(!data.hasOwnProperty('data'))
-                 {
-                     console.log("Help me Obi-Wan Kenobi. We got empty data!");
-                     return;
-                 }
-          
-            var msg = JSON.parse(evt.data);
-            connectionTimer = 0;
-            switch(msg.type) {
-            case 'update':
+        var selectors = [];
 
-                var payload = msg.payload.data;
+        // Iterate over users
+        $.each(userList, function(idx,item){
 
-                var usr = payload.author;
-                var msgbody = payload.body_html;
+            // User color assignment: (robin superseedes light/dark)
+            if (GM_getValue("rlc-RobinColors")) { var usercolor = item.colorArray[2]; }
+            else {
+                if (GM_getValue("rlc-DarkMode")) { var usercolor = item.colorArray[0];}
+                // default non dark colors
+                else { var usercolor = item.colorArray[1]; }
+            }
+            selectors.push(`.user-${item.name} .author, p.user-${item.name} {color:#${usercolor}}`);   
 
-                if (GM_getValue("rlc-DisableMarkdown")) { msgbody = '<div class="md"><p>'+ payload.body +'</p></div>' ;}
-
-                var msgID = payload.name;
-
-                var created = payload.created_utc;
-                var utcSeconds = created;
-                var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch (wat?)
-                readAbleDate.setUTCSeconds(utcSeconds);
-
-                var hours = readAbleDate.getHours();
-
-                //Getting minutes and seconds numbers from readAbleDate and prepends a 0 if the number is less than
-                var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
-                if (GM_getValue("rlc-12HourMode")) {
-                        //it is pm if hours from 12 onwards
-                        var suffix = (hours >= 12)? 'PM' : 'AM';
-
-                        //only -12 from hours if it is greater than 12 (if not back at mid night)
-                        hours = (hours > 12)? hours -12 : hours;
-
-                        //if 00 then it is 12 am
-                        hours = (hours === '00')? 12 : hours;
-                } else {
-                    suffix = "";
+            if (item.isMuted) { 
+            $("#rlc-userListUI").append(`<p class="mutedUser user-${item.name}">${item.name}</p>`);     
+            }
+            else { 
+                if (item.countMsg === 0) { 
+                    $("#rlc-userListUI").append(`<p class="inactiveUser user-${item.name}">${item.name} - ${item.lastMsgTime}</p>`);     
                 }
+                else { 
+                    $("#rlc-userListUI").append(`<p class="user-${item.name}">${item.name} - ${item.lastMsgTime} ( ${item.countMsg} )</p>`);  
+                }
+            }
+        });
 
+        $("body").append(`<style id='userstyles'>${selectors.join(" ")}</style>`); // Inject style tag with user rules
 
-                var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
+        $("#rlc-userListUI .inactiveUser").appendTo("#rlc-userListUI");
 
-                var fakeMessage = `
-                <li class="rlc-message" name="rlc-id-${msgID}">
-                    <div class="body">${msgbody}
-                        <div class="simpletime">${finaltimestamp}</div>
-                        <a href="/user/${usr}" class="author">${usr}</a>
-                    </div>
-                </li>`
-                $(".rlc-message-listing").prepend(fakeMessage);
-                break;
+        // Handle clicking in muted user list (needs to be here for scope reasons)
+        $("#rlc-userListUI .mutedUser").click(function(){
+            let target = $(this).text();
+            unMuteUser(target);
+        });
+    }
 
-             /*  disabled, liveupdate header already tracks this
-            case 'activity':
+    // mute user via interface
+    function muteUser(name) { 
+        var result = $.grep(userList, function(e){ return e.name == name; });
 
-                var payload = msg.payload;
-                console.log('user count from websocket:', payload.count);
+        if (result.length == 1) { 
+              result[0].isMuted = true;
+        }
 
-                break;
-            */
+        // save change
+        GM_setValue("storedUserList", userList);
+        refreshChat();
+    }
 
-            case 'delete':
-                console.log("message deleted:"+msg.payload);
-                var messageToDelete = "rlc-id-"+msg.payload;
-                $( "li[name='"+messageToDelete+"']" ).remove();
-                reAlternate();
+    // unmute user via interface
+    function unMuteUser(name) { 
+        var result = $.grep(userList, function(e){ return e.name == name; });
 
-                break;
+        if (result.length == 1) { 
+              result[0].isMuted = false;
+        }
+        // save change
+        GM_setValue("storedUserList", userList);
+        refreshChat();
+    }
 
+    function doUserTracking($el) { 
+        var name = $el.find(".author").text();
+        var time = $el.find(".simpletime").text();
+        // try to find the user object in the userList array by matching its name property with that passed to the function 
+        var result = $.grep(userList, function(e){ return e.name == name; });
 
-            /*  embeds_ready - a previously posted update has
-            been parsed and embedded media is available for it now.
-            the payload contains a liveupdate_id and list of embeds to add to it.*/
+        if (result.length == 0) {  // username not found, add
+              addUserToArray(name,time);
+              console.log("doUserTracking added "+name+" to userList");
+        } 
+        if (result.length == 1) { // username found, track
+            //console.log("doUserTracking tracking "+name);
+              // do things that require info from user object
+              
+              // increment the users message count since we are handling a message and already have him listed
+              result[0].countMsg++;
+
+              result[0].lastMsgTime = time;
+              //console.log(time);
+
+            // handling of muted users messages    
+            if (result[0].isMuted) { 
+               $el.addClass("muted");
             }
 
-        };
+        } else {
+              console.log("ERROR: multiple users found when grepping userList for"+name);
+              console.log(userList);
+        }
 
-    });
+        if (loadHistoryMessageException === 0) {
+             updateUserListInterface();
+        }
 
-}();
+    }
 
-
-//   ██████╗ ███████╗████████╗    ███╗   ███╗███████╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗███████╗
-//  ██╔════╝ ██╔════╝╚══██╔══╝    ████╗ ████║██╔════╝██╔════╝██╔════╝██╔════╝██╔══██╗██╔════╝ ██╔════╝██╔════╝
-//  ██║  ███╗█████╗     ██║       ██╔████╔██║█████╗  ███████╗███████╗███████╗███████║██║  ███╗█████╗  ███████╗
-//  ██║   ██║██╔══╝     ██║       ██║╚██╔╝██║██╔══╝  ╚════██║╚════██║╚════██║██╔══██║██║   ██║██╔══╝  ╚════██║
-//  ╚██████╔╝███████╗   ██║       ██║ ╚═╝ ██║███████╗███████║███████║███████║██║  ██║╚██████╔╝███████╗███████║
-//   ╚═════╝ ╚══════╝   ╚═╝       ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
-
-
-function getMessages(gettingOld) {
-    loadHistoryMessageException = 1;
-
-     var urlToGet = stripTrailingSlash(window.location.href) + "/.json";
-
-     if (gettingOld) {
-        var lastMessageName = $(".rlc-message:last-child").attr("name").split("rlc-id-")[1];
-         urlToGet += "?after="+lastMessageName;
-     }
-
-     var ajaxLoadOldMessages =     $.getJSON( urlToGet, function( data ) {
-       
-                 // Ensure data has data
-                 if(!data.hasOwnProperty('data'))
-                 {
-                     console.log("Help me Obi-Wan Kenobi. We got empty data!");
-                     return;
-                 }
- 
-       
-                var oldmessages = data.data.children;  //navigate the data to the object containing the messages
-                $.each( oldmessages, function( ) {
-                    var msg = $(this).toArray()[0].data; //navigate to the message data level we want
-
-                    var msgID = msg.name;
-                    var $msgbody = msg.body_html;
-
-                    if (GM_getValue("rlc-DisableMarkdown")) {$msgbody + '<div class="md"><p>'+ msg.body +'</p></div>';}
-                    
-                        // Unescaped html escaped string by way of crazy voodo magic.
-                        $msgbody = $("<textarea/>").html($msgbody).val()                        
-
-                    var usr = msg.author;
-                    var utcSeconds = msg.created_utc;
-
-                    // translate created_utc to a human readable version
-                    var readAbleDate = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                    readAbleDate.setUTCSeconds(utcSeconds);
-
-                    var hours = readAbleDate.getHours();
-                    var minutes = ((readAbleDate.getMinutes() < 10)? '0' : '') + readAbleDate.getMinutes() ;
-
-                    if (GM_getValue("rlc-12HourMode")) {
-                            //it is pm if hours from 12 onwards
-                            var suffix = (hours >= 12)? 'PM' : 'AM';
-
-                            //only -12 from hours if it is greater than 12 (if not back at mid night)
-                            hours = (hours > 12)? hours -12 : hours;
-
-                            //if 00 then it is 12 am
-                            hours = (hours === '00')? 12 : hours;
-                    } else {
-                        suffix = "";
-                    }
-
-
-                    var finaltimestamp = hours.toString() + ":" + minutes.toString() + " " + suffix;
-
-                    var fakeMessage = `
-                    <li class="rlc-message" name="rlc-id-${msgID}">
-                        <div class="body">${$msgbody}
-                            <div class="simpletime">${finaltimestamp}</div>
-                            <a href="/user/${usr}" class="author">${usr}</a>
-                        </div>
-                    </li>`
-                    $(".rlc-message-listing").append(fakeMessage);
-                });
-            });
-        ajaxLoadOldMessages.complete(function() {
-            loadHistoryMessageException = 0;
-               reAlternate();
+    // transform userlist into format readable by tab autocomplete
+    function getActiveUserNamesAsArray() {
+        var auArr = [];
+        $.each(userList, function(idx,item){
+            auArr.push(item.name);
         });
-}
+        return auArr;
+    }
+
+
+//  ███╗   ███╗███████╗ ██████╗     ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗     ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗███████╗
+//  ████╗ ████║██╔════╝██╔════╝     ██║  ██║██╔══██╗████╗  ██║██╔══██╗██║     ██║████╗  ██║██╔════╝     ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██╔════╝
+//  ██╔████╔██║███████╗██║  ███╗    ███████║███████║██╔██╗ ██║██║  ██║██║     ██║██╔██╗ ██║██║  ███╗    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ███████╗
+//  ██║╚██╔╝██║╚════██║██║   ██║    ██╔══██║██╔══██║██║╚██╗██║██║  ██║██║     ██║██║╚██╗██║██║   ██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ╚════██║
+//  ██║ ╚═╝ ██║███████║╚██████╔╝    ██║  ██║██║  ██║██║ ╚████║██████╔╝███████╗██║██║ ╚████║╚██████╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ███████║
+//  ╚═╝     ╚═╝╚══════╝ ╚═════╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚══════╝
+
+
+    // Grab users username + play nice with RES
+    var robinUser = $("#header-bottom-right .user a").first().text().toLowerCase();
+
+    // Message background alternation via js
+    var rowAlternator = true;
+
+    // convert an url prefixed by rlc-image into an image link
+    function rlcImageHandler($el,$msg,firstLine) { 
+        var linksObj = $msg.find("a");
+        var url = linksObj.attr("href");
+        if (url) {
+            var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
+            var splitByPipe = $msg.text().split("|");
+            var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
+            var imgHeight = 0;
+            imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
+
+            url = url.replace(/^http:\/\//i, 'https://'); //force usage of https 
+            
+            $el.addClass("rlc-imageWithin");
+
+            firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
+        }
+    }
+
+    // trigger list. supports multiple triggers for one emote(eg meh) 
+    // and automaticly matches both upper and lower case letters(eg :o/:O)
+    var emojiList={":)": "smile",
+                   "3:D": "evilsmile",
+                   ":((": "angry",
+                   ":(": "frown",
+                   ":s": "confused",
+                   ":I": "meh",
+                   ":|": "meh",
+                   ":/": "disappointed",
+                   ":o": "shocked",
+                   ":D": "happy",
+                   "D:": "sad",
+                   ";_;": "crying",
+                   "T_T": "crying",
+                   ";)": "wink",
+                   "-_-": "bored",
+                   "X|": "annoyed",
+                   "X)": "xsmile",
+                   "X(": "xsad",
+                   "XD": "xhappy",
+                   ":P": "tongue",
+                  };
+
+    function emoteSupport(line, $msg, firstLine) {
+        if (!GM_getValue("rlc-NoEmotes")){
+            $.each(emojiList, function(emoji,replace){
+                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
+                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
+                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
+                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrPumpkin mp_${replace}'></span>`));
+                    }
+                }
+            });
+        }
+    }
+
+    var twitchmojiList={
+        "KappaRoss": "ross",
+        "KappaClaus": "claus",
+        "Kappa": "kappa",
+        "PogChamp": "pogchamp",
+        "SMOrc": "smorc",
+        "NotLikeThis": "notlikethis",
+        "FailFish": "failfish",
+        "4Head": "4head",
+        "EleGiggle": "elegiggle",
+        "Kreygasm": "kreygasm",
+        "DansGame": "dansgame",
+        "WutFace": "wutface",
+    };
+
+    function twitchemoteSupport(line, $msg, firstLine) {
+        if (!GM_getValue("rlc-NoTwitchEmotes")){
+            $.each(twitchmojiList, function(emoji,replace){
+                if (line.toLowerCase().indexOf(emoji.toLowerCase()) !== -1 && line.indexOf("http") === -1){
+                    if ($msg.has("h1").length === 0 && $msg.has("li").length === 0 && $msg.has("code").length === 0 && $msg.has("table").length === 0){
+                        firstLine.html(firstLine.html().split(emoji.toUpperCase()).join(emoji.toLowerCase()));
+                        firstLine.html(firstLine.html().split(emoji.toLowerCase()).join(`<span class='mrTwitchEmotes tw_${replace}'></span>`));
+                    }
+                }
+            });
+        }
+    }
+
+    function abbrSupport(line, $msg, firstLine) {
+        if ( firstLine.html() != null ){ // This is usually for excluding embedded, code or other content that doesn't use html representation
+            htmTok = firstLine.html().split(" ");
+            htmTok = htmTok.map(function(tokenStr){
+                var replaceStrList_key = tokenStr.trim().replace(/[^\x20-\x7E]/gmi, "").replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g,"").toUpperCase(); // Strip trailing space and newlines and punctuations with conversion to newline
+                if ( replaceStrList_key in replaceStrList ){
+                    return `<abbr title="${replaceStrList[replaceStrList_key]}">${tokenStr}</abbr>`;
+                }
+                return tokenStr;
+            });
+            firstLine.html(htmTok.join(" "));
+        }
+    }
+
+    function collapseLongMessage($msg,firstLine) {
+        if($msg.text().length>250){
+            $msg.addClass("longMessageClosed");
+            $msg.prepend("<input type='button' value='+' class='extendButton' style='width:18px;height:18px;padding:0px;font-size:0.8em'>");
+            $msg.on('click', '.extendButton', function () {
+                if($msg.hasClass("longMessageClosed")){
+                    $msg.removeClass("longMessageClosed");
+                    $msg.find('.extendButton').val('-');
+                }else{
+                    $msg.addClass("longMessageClosed");
+                    $msg.find('.extendButton').val('+');
+                }
+                scrollToBottom();
+            });
+        }
+    }
+
+    function alternateMsgBackground($el) {
+        var muted = $el.hasClass("muted");
+        if (muted === false) { 
+          if(rowAlternator === false){
+                $el.addClass("alt-bgcolor");
+                rowAlternator = true;
+            }
+            else {
+                rowAlternator = false;                
+            }
+        }
+    }
 
 
 //  ███╗   ███╗███████╗███████╗███████╗ █████╗  ██████╗ ███████╗    ██╗  ██╗ █████╗ ███╗   ██╗██████╗ ██╗     ██╗███╗   ██╗ ██████╗ 
@@ -1612,11 +1604,6 @@ function getMessages(gettingOld) {
 
     var maxmessages = 25;
 
-    // note from stjern: no reason to set these for every message
-    var hexArray    = GM_getValue("hexArrayStore", "") || []; //initialize hex and usr lookup list variables
-    var usrArray    = GM_getValue("usrArrayStore", "") || [];
-    var colorSet    = "error"; //this value should never end up getting used
-
     // Message display handling for new and old (rescan) messages
     // Add any proccessing for new messages in here
     var handleNewMessage = function($el, rescan){
@@ -1629,28 +1616,23 @@ function getMessages(gettingOld) {
 
         //handle giphy images 
         if (line.trim().indexOf("rlc-image") === 0){
-            if (!GM_getValue("rlc-HideGiphyImages")){        
-                var linksObj = $msg.find("a");
-                var url = linksObj.attr("href");
-                if (url) {
-                    var url_2nd = linksObj.length > 1 ? $msg.find("a:eq(1)").attr("href").trim() : url; // I do think this could be made more nicer... not sure why linksObj[1] doesn't work. had to use $msg.find("a:eq(1)") instead
-                    var splitByPipe = $msg.text().split("|");
-                    var searchTerm = splitByPipe.length > 1 ? splitByPipe[1].trim() : " ";
-                    var imgHeight = 0;
-                    imgHeight = splitByPipe.length > 2 ? splitByPipe[2].trim() : " ";
-
-                    url = url.replace(/^http:\/\//i, 'https://'); //force usage of https 
-                    
-                    $el.addClass("rlc-imageWithin");
-                    
-                    firstLine.html(" <a href="+url_2nd+"><img height='"+imgHeight+"' class='rlc-image' src='"+url+"'"+"</img><span class='rlc-imgvia'>via /giphy "+decodeURI(searchTerm)+"</span></a>");
-                }
+            if (!GM_getValue("rlc-HideGiphyImages")){  
+            rlcImageHandler($el,$msg,firstLine);                
             }
             else { 
                 $el.remove();
                 return false; // if this is a Giphy and HideGiphyImages is on, remove this message and stop function
             }
         }
+
+        // Track channels
+        tabbedChannels.proccessLine(line, $el, rescan);
+
+        // User tracking - to include colors, muting(standard/tts), counts
+        doUserTracking($el)
+
+        // tag message with user name for coloration
+        $el.addClass(`user-${$usr.text()}`);    
 
         // remove the oldest message if there are more than 25 if that option is on.
         if (GM_getValue("rlc-MaxMessages25")){
@@ -1666,9 +1648,6 @@ function getMessages(gettingOld) {
             firstLine.html(firstLine.html().replace("/me", " " + $usr.text()));
         }
 
-        // Timestamp modification & user activity tracking
-        timeAndUserTracking($el, $usr);
-
         // long message collapsing
         collapseLongMessage($msg,firstLine);
 
@@ -1678,12 +1657,13 @@ function getMessages(gettingOld) {
         // Alternating background color
         alternateMsgBackground($el);
 
-        // Emote support
+        // Smiley Emotes 
         emoteSupport(line, $msg, firstLine);
 
+        // Twitch emotes 
         twitchemoteSupport(line, $msg, firstLine);
 
-        // Abbrev Support
+        // Abbreviations
         abbrSupport(line, $msg, firstLine);
 
         // Easy (and hacky) multiline
@@ -1691,18 +1671,63 @@ function getMessages(gettingOld) {
         $msg.html($msg.html().replace("<br><br>","<br>"));
         $msg.html($msg.html().replace("</p><br>", ""));
 
-        // Track channels
-        tabbedChannels.proccessLine(line, $el, rescan);
-
-        if (line.indexOf(robinUser) !== -1){
+         if (line.indexOf(robinUser) !== -1){
             // Add bold highlighting
             $el.addClass("user-mention");
         }
 
-        //finds iframes
-        var embedFinder = $msg.find("iframe").length;
-        if (embedFinder === 1) { $el.addClass("rlc-hasEmbed"); }
+        // Stuff that should not be done to messages loaded on init, like TTS handling
+        if (loadHistoryMessageException === 0 && rescan != true) {
 
+            scrollToBottom();
+
+            // if all AllNotificationswhenunfocused option is enabled
+            // check if document is focused. if so:
+            // do both types of notifications if they are enabled
+            if (GM_getValue("rlc-AllNotificationswhenunfocused")){
+                if ( !document.hasFocus() ) {
+                    if (GM_getValue("rlc-ChromeNotifications")){
+                        new Notification("Robin Live Chat",{
+                            icon: chromeNotificationImage,
+                            body: $usr.text() + ": " + line
+                        });
+                    }
+                    if (GM_getValue("rlc-NotificationSound")){
+                        snd.play();
+                    }
+                }
+            }
+            // AllNotificationswhenunfocused is not enabled
+            // Check if user was mentioned and if so:
+            // do both types of notifications if they are enabled
+            else { 
+                if (line.indexOf(robinUser) !== -1){
+                    if (GM_getValue("rlc-ChromeNotifications")){
+                        new Notification("Robin Live Chat",{
+                            icon: chromeNotificationImage,
+                            body: $usr.text() + ": " + line
+                        });
+                    }
+                    if (GM_getValue("rlc-NotificationSound")){
+                        snd.play();
+                    }
+                }
+            }
+
+            //if option is checked, check if message user is "robin" user and do not play if so
+            if (GM_getValue("rlc-TTSDisableSelfnarration")){
+                if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
+                    return false;  //end function before TTS is called.
+                }
+            }
+            // todo: check if we are in another channel and dont play tts if so.
+            if(!$msg.parent().parent().hasClass('muted')){
+                messageTextToSpeechHandler($msg, $usr);
+            }
+        }
+        else {
+
+        // non websocket detection of embedded content, not run on messages from websocket.
         // if theres a link in the message
         if ($msg.find("a").length === 1) {
 
@@ -1716,65 +1741,6 @@ function getMessages(gettingOld) {
             }
         }
 
-        // User color assignment:
-        if (GM_getValue("rlc-RobinColors")) {
-            colorSet = 2;
-        }
-        else {
-            if (GM_getValue("rlc-DarkMode")) {
-            colorSet = 0;
-            }
-            // default non dark colors
-            else {
-            colorSet = 1;
-            }
-        }
-
-        // Tag message with user identifier for muting
-        $el.addClass("u_"+$usr.text());
-
-        //Check if user exists and add user to list if they don't.
-        if (usrArray.indexOf($usr.text()) === -1) {
-            usrArray.push($usr.text());
-            colorGen($usr); //generate dark, light and Robin colorschemes for the user
-            GM_setValue("usrArrayStore", usrArray); //Store usrArray into settings
-            hexArray = GM_getValue("hexArrayStore", ""); //update hexArray to include new user's colors
-        }
-
-        //Apply color through CSS to message author
-        $usr.css("color", "#"+(hexArray[usrArray.indexOf($usr.text())][colorSet]));
-
-        //deal with muting
-        if(mutedUsers.indexOf($usr.text())!=-1){
-            $msg.parent().addClass('muted');
-        }
-
-        // Stuff that should not be done to messages loaded on init, like TTS handling
-        if (loadHistoryMessageException === 0 && rescan != true) {
-
-            scrollToBottom();
-
-            if (line.indexOf(robinUser) !== -1){
-                if (GM_getValue("rlc-NotificationSound")){
-                    snd.play();
-                }
-                if (GM_getValue("rlc-ChromeNotifications")){
-                    new Notification("Robin Live Chat",{
-                        icon: chromeNotificationImage,
-                        body: $usr.text() + ": " + line
-                    });
-                }
-            }
-            //if option is checked, check if message user is "robin" user and do not play if so
-            if (GM_getValue("rlc-TTSDisableSelfnarration")){
-                if ($usr.text().toLowerCase().indexOf(robinUser) != -1){
-                    return false;  //end function before TTS is called.
-                }
-            }
-            // todo: check if we are in another channel and dont play tts if so.
-            if(!$msg.parent().hasClass('muted')){
-                messageTextToSpeechHandler($msg, $usr);
-            }
         }
     };
 
@@ -1789,7 +1755,7 @@ function getMessages(gettingOld) {
 
     String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
-}
+    }
 
     //browser info getter from http://stackoverflow.com/questions/2400935/browser-detection-in-javascript
     navigator.sayswho= (function(){
@@ -1820,8 +1786,6 @@ function getMessages(gettingOld) {
        return message;
     };
 
-function refreshChat() {  $(".rlc-message").remove(); getMessages();}
-
     // Settings Keys (used in /sharesettings)
     var optionsArray = [];
 
@@ -1837,8 +1801,11 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
         // body keypress focuses textarea
         $(document).keydown(function(e) {
             var ctrlDown = e.ctrlKey||e.metaKey
-            if (ctrlDown) {  return;  }            
-            if ($(e.target).is("textarea")) {   }
+            var shiftDown = e.shiftKey
+            var altDown = e.altKey
+
+            if (ctrlDown || shiftDown || altDown ) {  return;  }            
+            if ($(e.target).is("textarea") || $(e.target).is("input") ) {   }
             else { 
                 textArea.focus();
             }
@@ -1859,8 +1826,8 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
         // Handling of keypresses in messagebox textarea
         textArea.on("keydown", function(e) {
             // Tab autocomplete
-            if (e.keyCode === 9) { // Stole my old code from Parrot
-                processActiveUsersList();
+          if (e.keyCode === 9) { // Stole my old code from Parrot
+                var updateArray = getActiveUserNamesAsArray();
                 e.preventDefault();
                 var sourceAlt= $(".usertext-edit textarea").val();
                 var namePart = "";
@@ -1888,7 +1855,11 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
             // Enter message send
             if (e.keyCode === 13) {
                 if (e.shiftKey) { /* Exit enter handling to allow shift+enter newline */  }
-                else if (textArea.val() === "" ) { e.preventDefault();  }
+                else if (textArea.val() === "" ) { 
+                    // prevent sending empty messages
+                    e.preventDefault();  
+                }
+                // slash commands: 
                 else {
                     if (textArea.val().indexOf("/pusheen") === 0){
                         $(this).val(`/gif pusheen`);
@@ -1896,6 +1867,30 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
                     if (textArea.val().indexOf("/version") === 0){
                         $(this).val(`||| RLC Version Info (via /version) RLC v.${GM_info.script.version}`);
                     }
+                    
+                    if (textArea.val().indexOf("/afk") === 0){
+                      var afktime = textArea.val().split("/afk ")[1];
+                      var afkstring = `/me is going AFK`;
+  
+                      if (typeof afktime !== "undefined") {  
+                        afkstring = afkstring + " for the next " + afktime;
+                      }
+                      $(this).val(afkstring);
+
+                    }
+                    
+                    if(textArea.val().indexOf("/ggl") === 0)
+                        {
+                            var searchString = textArea.val().split("/ggl ")[1].replace(/ /g, "+");
+                            var gglString = `https://www.google.com/#q=`;
+                            
+                            if (typeof searchString !== "undefined")
+                                {
+                                    searchString = gglString + searchString;
+                                }
+                            $(this).val(searchString);
+                        }
+                    
                     if (textArea.val().indexOf("/browser") === 0){
                         $(this).val(`||| Browser Details (via /browser ) : ${navigator.sayswho}`);
                     }
@@ -2005,9 +2000,7 @@ function refreshChat() {  $(".rlc-message").remove(); getMessages();}
 //                                                                                                         
 
 
-$( window ).resize(function() {
-  scrollToBottom();
-});
+    // embedLinker,OpenUserPM and deleteComment below are used by authorContextMenuEventHandling
 
     // show the linked content in the left panel
     // rewritten to find the original liveupdate and take the iframe from there
@@ -2037,21 +2030,21 @@ $( window ).resize(function() {
      // instead we show our own structure with our own messages. this deletes the comment by matching the rlc-message with the liveupdate and pressing the delete and yes button on the liveupdate.
     function deleteComment($objComment){
 
-        var selectorstring = $objComment.attr("name").split("rlc-id-LiveUpdate_")[1];
+            var selectorstring = $objComment.attr("name").split("rlc-id-LiveUpdate_")[1];
 
-        var $liveupdateEl = $('a[href$="'+selectorstring+'"]').parent();
+            var $liveupdateEl = $('a[href$="'+selectorstring+'"]').parent();
 
-        if ($liveupdateEl.has(".buttonrow").length>0){
+            if ($liveupdateEl.has(".buttonrow").length>0){
 
-            var $button = $liveupdateEl.find(".delete").find("button");
-             $button.click();
+                var $button = $liveupdateEl.find(".delete").find("button");
+                 $button.click();
 
-            var $button2 = $liveupdateEl.find(".delete").find(".yes");
-            $button2.click();
-        }
+                var $button2 = $liveupdateEl.find(".delete").find(".yes");
+                $button2.click();
+            }
     }
 
-    function mouseClicksEventHandling() {
+    function authorContextMenuEventHandling() {
         // Right click author names in chat to copy to messagebox
         $("body").on("click", ".rlc-message .author", function (event) {
             event.preventDefault();
@@ -2068,7 +2061,7 @@ $( window ).resize(function() {
 
         $("body").on("contextmenu", ".rlc-message .author", function (event) {
             event.preventDefault();
-            $el = $(this).parent().parent();
+            $el = $(this).parent().parent();  //find the message that the author element is in
             var $menu = $("#myContextMenu");
             var $msg = $el.find(".body .md");
             var $usr = $el.find(".author");
@@ -2082,76 +2075,84 @@ $( window ).resize(function() {
             $( "body" ).one( "click", function() {
               $("#myContextMenu").hide();
             });
+                // positioning, semi broken
+                if (window.innerHeight-100 > divPos["top"]){
+                    $menu.css({"left":divPos["left"], "top":divPos["top"], "display": "initial"}); //menu down
+                } else {
+                    $menu.css({"left":divPos["left"], "top":divPos["top"]-70, "display": "initial"}); //menu up
+                }
 
-                    if (window.innerHeight-100 > divPos["top"]){
-                        $menu.css({"left":divPos["left"], "top":divPos["top"], "display": "initial"}); //menu down
-                    } else {
-                        $menu.css({"left":divPos["left"], "top":divPos["top"]-70, "display": "initial"}); //menu up
+                // code for detecting if the message has delete buttons.
+                // obsolete since change to ajax messages, needs to check 
+                // the corrosponding liveupdate
+                /*
+                var $button = $(this).parent().siblings().find(".delete").find("button");
+                if ($button.length>0){
+                    $menu.find("#deleteCom").removeClass("disabled");
+                } else {
+                    $menu.find("#deleteCom").addClass("disabled");
+                }
+                */
+
+                // click event handling, not sure why we unbind it,
+                // maybe to avoid double binds?
+                $menu.find("ul li").unbind("click");
+                $menu.find("ul li").bind("click", function(){
+
+                    var $id = $(this).attr("id");
+                    // (try to) delete this message (requires perms or ownership of message)
+                    if ($id === "deleteCom" && $(this).has(".disabled").length === 0){
+                        deleteComment($el);
                     }
-
-                    var $button = $(this).parent().siblings().find(".delete").find("button");
-                    if ($button.length>0){
-                        $menu.find("#deleteCom").removeClass("disabled");
-                    } else {
-                        $menu.find("#deleteCom").addClass("disabled");
+                    if ($id === "PMUser"){ // send a reddit PM to the author of this message
+                        OpenUserPM($usr.text());
                     }
-
-                    $menu.find("ul li").unbind("click");
-                    $menu.find("ul li").bind("click", function(){
-
-                        var $id = $(this).attr("id");
-                        if ($id === "deleteCom" && $(this).has(".disabled").length === 0){
-                            deleteComment($el);
-                        }
-                        if ($id === "PMUser"){
-                            OpenUserPM($usr.text());
-                        }
-                        if ($id === "mute"){
-                            var banusername = String($usr.text()).trim();
-                            mutedUsers.push(banusername);
-                            updateMutedUsers();
-                        }
-                        if ($id === "copyMessage"){
-                            var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
-                            $(".usertext-edit.md-container textarea").focus().val(copystring);
-                        }
-                        if ($id === "speakMessage"){
-                            messageTextToSpeechHandler($msg, $usr);
-                        }
-                    });
+                    if ($id === "mute"){ // add the author to mute list
+                        var banusername = String($usr.text()).trim();
+                        muteUser(banusername);
+                    }
+                    if ($id === "copyMessage"){ // copy author name and message to messagebox
+                        var copystring = String($usr.text()).trim() + " : " + String($msg.text()).trim();
+                        $(".usertext-edit.md-container textarea").focus().val(copystring);
+                    }
+                    if ($id === "speakMessage"){ // read message aloud
+                        messageTextToSpeechHandler($msg, $usr);
+                    }
+                });
         });
+    }
 
+    function rlcInterfaceClickEventHandling() {
+        
         // Load old messages
         $("#togglebarLoadHist").click(function(){
             getMessages(true);
+            updateUserListInterface();
         });
-
-        // Easy access options
+        // autoscroll option shortcut
         $("#togglebarAutoscroll").click(function(){
             $( "#rlc-settings label:contains('Auto Scroll') input" ).click();
         });
-
+        // text to speech option shortcut
         $("#togglebarTTS").click(function(){
             $( "#rlc-settings label:contains('Text To Speech (TTS)') input" ).click();
         });
-
         //toggle sidebar via css classes
         $("#togglesidebar").click(function(){
             $("body").toggleClass("rlc-hidesidebar");
             $(this).toggleClass("selected");
             scrollToBottom();
         });
-
+        // toggle options menu
         $("#rlc-toggleoptions").click(function(){
             $("body").removeClass("rlc-showreadmebar");
             $("body").toggleClass("rlc-showoptions");
         });
-
+        // toggle readme 
         $("#rlc-toggleguide").click(function(){
             $("body").removeClass("rlc-showoptions");
             $("body").toggleClass("rlc-showreadmebar");
         });
-
         // this makes the RLC send button click on the hidden native reddit live button
         $("#rlc-sendmessage").click(function(){
             $(".save-button .btn").click();
@@ -2165,66 +2166,72 @@ $( window ).resize(function() {
 //  ██╔══██╗██║     ██║         ██╔══██║   ██║   ██║╚██╔╝██║██║     
 //  ██║  ██║███████╗╚██████╗    ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
 //  ╚═╝  ╚═╝╚══════╝ ╚═════╝    ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
-//                                                                  
-
+    
 
     // RLC Containers & UI HTML for injection
     var htmlPayload = `
-                <div id="rlc-wrapper">
-                    <div id="rlc-header">
-                        <div id="rlc-titlebar">
-                            <div id="rlc-togglebar">
-                                <div id="togglebarLoadHist">Load History</div>
-                                <div id="togglebarTTS">TextToSpeech</div>
-                                <div id="togglebarAutoscroll">Autoscroll</div>
-                                <div class="selected" id="togglesidebar">Sidebar</div>
-                            </div>
-                        </div>
-                        <div id="rlc-statusbar"></div>
-                    </div>
-                    <div id="rlc-leftPanel"> &nbsp; </div>
-                    <div id="rlc-main">
-                        <div id="rlc-chat">
-                            <ol class="rlc-message-listing">
+    <div id="rlc-wrapper">
+        <div id="rlc-header">
+            <div id="rlc-titlebar">
+                <div id="rlc-togglebar">
+                    <div id="togglebarLoadHist">Load History</div>
+                    <div id="togglebarTTS">TextToSpeech</div>
+                    <div id="togglebarAutoscroll">Autoscroll</div>
+                    <div class="selected" id="togglesidebar">Sidebar</div>
+                </div>
+            </div>
+            <div id="rlc-statusbar"></div>
+        </div>
+        <div id="rlc-leftPanel"> &nbsp; </div>
+        <div id="rlc-main">
+            <div id="rlc-chat">
+                <ol class="rlc-message-listing">
 
-                            </ol>
-                        </div>
-                        <div id="rlc-messagebox">
-                            <select id="rlc-channel-dropdown">
-                                <option></option>
-                                <option>%general</option>
-                                <option>%offtopic</option>
-                                <option>%dev</option>
-                            </select>
-                            <div id="rlc-sendmessage">Send Message</div>
-                        </div>
-                    </div>
-                    <div id="rlc-sidebar">
-                        <div id="rlc-settingsbar">
-                            <div id="rlc-toggleoptions" title="Show Options" class="noselect">Options</div>
-                            <div id="rlc-update" class="noselect"><a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">Update</a></div>
-                            <div id="rlc-toggleguide" title="Show Guide" class="noselect">Readme</div>
-                        </div>
-                        <div id="rlc-main-sidebar"></div>
-                        <div id="rlc-readmebar">
-                            <div class="md"></div>
-                        </div>
-                        <div id="rlc-guidebar">
-                            <div class="md"></div>
-                        </div>
-                        <div id="rlc-settings"></div>
-                    </div>
-                    <div id="myContextMenu">
-                        <ul>
-                            <li><a>Close Menu</a></li>
-                            <li id="mute"><a>Mute User</a></li>
-                            <li id="PMUser"><a>PM User</a></li>
-                            <li id="deleteCom"><a>Delete Comment</a></li>
-                            <li id="copyMessage"><a>Copy Message</a></li>
-                            <li id="speakMessage"><a>Speak Message</a></li>
-                        </ul>
-                    </div>
-                </div>`;
+                </ol>
+            </div>
+            <div id="rlc-messagebox">
+                <select id="rlc-channel-dropdown">
+                    <option></option>
+                    <option>%general</option>
+                    <option>%offtopic</option>
+                    <option>%dev</option>
+                </select>
+                <div id="rlc-sendmessage">Send Message</div>
+            </div>
+        </div>
+        <div id="rlc-sidebar">
+            <div id="rlc-settingsbar">
+                <div id="rlc-toggleoptions" title="Show Options" class="noselect">Options</div>
+                <div id="rlc-update" class="noselect">
+                    <a target="_blank" href="https://github.com/BNolet/RLC/raw/master/rlcs.user.js" rel="nofollow">
+                    Update
+                    </a>
+                </div>
+                <div id="rlc-toggleguide" title="Show Guide" class="noselect">Readme</div>
+            </div>
+            <div id="rlc-main-sidebar">
+                <div id="rlc-userListUI">
+                </div>
+            </div>
+            <div id="rlc-readmebar">
+                <div class="md"></div>
+            </div>
+            <div id="rlc-guidebar">
+                <div class="md"></div>
+            </div>
+            <div id="rlc-settings"></div>
+        </div>
+        <div id="myContextMenu">
+            <ul>
+                <li><a>Close Menu</a></li>
+                <li id="mute"><a>Mute User</a></li>
+                <li id="PMUser"><a>PM User</a></li>
+                <li id="deleteCom"><a>Delete Comment</a></li>
+                <li id="copyMessage"><a>Copy Message</a></li>
+                <li id="speakMessage"><a>Speak Message</a></li>
+            </ul>
+        </div>
+    </div>`;
 
 
 //  ██╗███╗   ██╗██╗████████╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
@@ -2244,7 +2251,7 @@ $( window ).resize(function() {
       $("#new-update-form").insertBefore("#rlc-sendmessage");
       $("#liveupdate-header").appendTo("#rlc-header #rlc-titlebar");
       $("#liveupdate-statusbar").appendTo("#rlc-header #rlc-statusbar");
-      $("#liveupdate-resources").appendTo("#rlc-sidebar #rlc-main-sidebar");
+      $("#liveupdate-resources").prependTo("#rlc-sidebar #rlc-main-sidebar");
 
       // start up filter tabs by inserting them
       tabbedChannels.init($("<div id=\"filter_tabs\"></div>").insertBefore("#rlc-chat"));
@@ -2265,9 +2272,8 @@ $( window ).resize(function() {
             $("#liveupdate-resources .md").html(res[1]);
             $("#rlc-guidebar .md").append(res[0]);
         }
-        $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><ul></ul></div>");
-        $("#rlc-main-sidebar").append("<div id='banlistcontainer'><div id='bannedlist'></div></div>");
 
+        // append version info to header
         $("#rlc-statusbar").append("<div id='versionnumber'>Reddit Live Chat (RLC) v." + GM_info.script.version + "</div>");
 
     }
@@ -2315,9 +2321,6 @@ $( window ).resize(function() {
         // Tweak stuff
         rlcDocReadyModifications();
 
-        // attempt to load a list of muted users from stored values
-        updateMutedUsers();
-
         // run options setup
         createOptions();
 
@@ -2325,13 +2328,13 @@ $( window ).resize(function() {
         keypressHandling();
 
         // add mouse click related event listeners
-        mouseClicksEventHandling();
+        rlcInterfaceClickEventHandling();
+        authorContextMenuEventHandling();
 
         // add event listener for new content being added, monitoring our own custom rlc-message-listing
         // rather than the native liveupdate-listing (since 3.16)
         $(".rlc-message-listing").on("DOMNodeInserted", function(e) {
             if ($(e.target).is("li.rlc-message")) {
-
                 // Apply changes to line
                 handleNewMessage($(e.target), false);
             }
@@ -2340,23 +2343,26 @@ $( window ).resize(function() {
         // get the initial messages to display from reddit live api
         getMessages();
 
-        // wait for initial load to be completed, and then scroll the chat window to the bottom.
-        // TODO make a preloader, it looks better
+        // testing zone: disable to get contributors from live api reported into console
+        //getContributors();
+        
+        // wait for initial load to be completed
         setTimeout(function(){
-        //   $("#rlc-chat").show();
             scrollToBottom();
             loadHistoryMessageException = 0
+            updateUserListInterface();
+            GM_setValue("storedUserList", userList); 
         }, 500);
 
     });
 
 
-//   ██████╗  ██████╗  ██████╗  ██████╗ ██╗     ███████╗    ███████╗ ██████╗ ███╗   ██╗████████╗
-//  ██╔════╝ ██╔═══██╗██╔═══██╗██╔════╝ ██║     ██╔════╝    ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝
-//  ██║  ███╗██║   ██║██║   ██║██║  ███╗██║     █████╗      █████╗  ██║   ██║██╔██╗ ██║   ██║   
-//  ██║   ██║██║   ██║██║   ██║██║   ██║██║     ██╔══╝      ██╔══╝  ██║   ██║██║╚██╗██║   ██║   
-//  ╚██████╔╝╚██████╔╝╚██████╔╝╚██████╔╝███████╗███████╗    ██║     ╚██████╔╝██║ ╚████║   ██║   
-//   ╚═════╝  ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚══════╝    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   
+//  ███████╗ ██████╗ ███╗   ██╗████████╗
+//  ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝
+//  █████╗  ██║   ██║██╔██╗ ██║   ██║   
+//  ██╔══╝  ██║   ██║██║╚██╗██║   ██║   
+//  ██║     ╚██████╔╝██║ ╚████║   ██║   
+//  ╚═╝      ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   
 
 
     // copypasted google fonts magic embed code, avert your eyes mortal!
@@ -2373,872 +2379,734 @@ $( window ).resize(function() {
     })();
 
 
-//   ██████╗███████╗███████╗    ██████╗ ███████╗███████╗ ██████╗ ██╗   ██╗██████╗  ██████╗███████╗███████╗
-//  ██╔════╝██╔════╝██╔════╝    ██╔══██╗██╔════╝██╔════╝██╔═══██╗██║   ██║██╔══██╗██╔════╝██╔════╝██╔════╝
-//  ██║     ███████╗███████╗    ██████╔╝█████╗  ███████╗██║   ██║██║   ██║██████╔╝██║     █████╗  ███████╗
-//  ██║     ╚════██║╚════██║    ██╔══██╗██╔══╝  ╚════██║██║   ██║██║   ██║██╔══██╗██║     ██╔══╝  ╚════██║
-//  ╚██████╗███████║███████║    ██║  ██║███████╗███████║╚██████╔╝╚██████╔╝██║  ██║╚██████╗███████╗███████║
-//   ╚═════╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚══════╝╚══════╝
+//   ██████╗███████╗███████╗  
+//  ██╔════╝██╔════╝██╔════╝  
+//  ██║     ███████╗███████╗  
+//  ██║     ╚════██║╚════██║  
+//  ╚██████╗███████║███████║  
+//   ╚═════╝╚══════╝╚══════╝  
 
 
     // RLC-CORE
     GM_addStyle(`
-          .dark-background #rlc-messagebox textarea {
-    background: #404040
-}
-
-#rlc-messagebox option {
-    background-color: #FCFCFC
-}
-
-.dark-background .md code {
-    background: #000
-}
-
-#rlc-header,#rlc-wrapper,body {
-    overflow: hidden
-}
-
-img.rlc-image {
-    max-height: 200px
-}
-
-#rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header {
-    max-width: none
-}
-
-#filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS {
-    -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    border-top: 1px solid rgba(128,128,128,.35)
-}
-
-#rlc-messagebox,#rlc-sidebar {
-    float: right;
-    box-sizing: border-box;
-    background-color: #EFEFED
-}
-
-div#rlc-settings label {
-    display: block;
-    font-size: 1.4em;
-    margin-left: 10px
-}
-
-#new-update-form {
-    margin: 0;
-    width: 87%;
-    float: left
-}
-
-#rlc-messagebox .usertext-edit.md-container {
-    max-width: none;
-    padding: 0;
-    margin: 0
-}
-
-header#liveupdate-header {
-    margin: 0!important;
-    padding: 7px 15px;
-}
-
-h1#liveupdate-title:before {
-    content: "chat in "
-}
-
-h1#liveupdate-title {
-    font-size: 1.5em;
-    float: left;
-    padding: 0;
-    width:100%;
-}
-
-#rlc-header #liveupdate-statusbar {
-    margin: 0;
-    padding: 0;
-    border: none!important;
-    background-color: transparent
-}
-
-#rlc-wrapper .rlc-message .body {
-    max-width: none!important;
-    margin: 0;
-    font-size: 13px;
-    font-family: "Open Sans",sans-serif
-}
-
-div#rlc-sidebar {
-    max-height: 550px
-}
-
-#rlc-wrapper {
-    height: calc(100vh - 63px);
-    max-width: 1248px;
-    max-height: 600px;
-    margin: 0 auto;
-    border-radius: 0 0 2px 2px;
-    -moz-border-radius: 0 0 2px 2px;
-    -webkit-border-radius: 0 0 2px 2px
-}
-
-#rlc-header {
-    height: 50px;
-    border-bottom: 1px solid rgba(227,227,224,.44);
-    border-top: 0;
-    box-sizing: border-box
-}
-
-#rlc-main,#rlc-titlebar {
-    width: 76%;
-    float: left;
-    position: relative
-}
-
-#rlc-sidebar {
-    width: 24%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100vh - 114px);
-    border-left: 1px solid rgba(227,227,224,.44);
-    padding: 5px 0
-}
-
-#rlc-chat {
-    height: calc(100vh - 186px);
-    overflow-y: scroll;
-    max-height: 465px;
-    margin-top: 30px
-}
-
-#rlc-main .rlc-message-listing {
-    max-width: 100%;
-    padding: 0 0 0 15px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column-reverse;
-    min-height: 100%
-}
-
-#rlc-messagebox textarea {
-    border: 1px solid rgba(227,227,224,.44);
-    float: left;
-    height: 34px;
-    margin: 0;
-    border-radius: 2px;
-    padding: 6px;
-    background: 0 0;
-    resize: none
-}
-
-#rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown,body {
-    background-color: #fcfcfc
-}
-
-#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update {
-    border-radius: 2px;
-    width: calc(33.3% - 7px);
-    float: left;
-    text-align: center;
-    box-sizing: border-box;
-    cursor: pointer;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    font-size: 1.2em
-}
-
-#rlc-messagebox {
-    padding: 10px;
-    width: 100%
-}
-
-#rlc-sendmessage {
-    height: 32px;
-    width: 13%;
-    float: right;
-    padding: 8px 0
-}
-
-#rlc-toggleguide,#rlc-toggleoptions,#rlc-update {
-    padding: 4px 0 6px;
-    box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    margin-right: 10px;
-    letter-spacing: 1px;
-    margin-bottom: 8px
-}
-
-#rlc-toggleguide {
-    margin-bottom: 0;
-    margin-right: 0
-}
-
-.rlc-message .simpletime {
-    float: left;
-    padding-left: 10px;
-    box-sizing: border-box;
-    width: 75px;
-    text-transform: uppercase;
-    line-height: 32px
-}
-
-.rlc-message a.author {
-    float: left;
-    padding-right: 10px;
-    margin: 0;
-    padding-top: 0;
-    font-weight: 600;
-    width: 130px
-}
-
-.rlc-message-listing li.rlc-message .body .md {
-    float: right;
-    width: calc(100% - 220px);
-    max-width: none;
-    box-sizing: border-box
-}
-
-li.rlc-message.in-channel .body .md {
-    width: calc(100% - 320px)
-}
-
-#rlc-activeusers {
-    padding: 15px 20px 20px 40px;
-    font-size: 1.5em
-}
-
-#rlc-activeusers li {
-    list-style: outside;
-    padding: 0 0 8px
-}
-
-#rlc-settingsbar {
-    width: 100%;
-    height: auto;
-    padding: 0 10px;
-    box-sizing: border-box;
-    margin: 5px 0;
-    float: left
-}
-
-#rlc-main-sidebar {
-    float: right;
-    width: 100%
-}
-
-#rlc-sidebar hr {
-    height: 2px;
-    width: 100%;
-    margin-left: 0
-}
-
-#rlc-sidebar h3 {
-    padding: 0 10px
-}
-
-#rlc-statusbar {
-    width: 24%;
-    float: right;
-    text-align: center;
-    padding-top: 8px
-}
-
-#versionnumber {
-    padding-top: 5px
-}
-
-#liveupdate-description {
-    float: left;
-width:100%;
-  
-}
-
-.noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none
-}
-
-body {
-    min-width: 0;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center
-}
-
-.rlc-channel-add button,body.dark-background #rlc-leftPanel,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown,body.rlc-customBg #rlc-leftPanel {
-    background-color: transparent
-}
-
-#rlc-wrapper .md pre {
-    background-color: transparent!important
-}
-
-.rlc-message.user-narration .body .md {
-    font-style: italic
-}
-
-.rlc-message.user-mention .body .md p {
-    font-weight: 700
-}
-
-.rlc-message a.author,.rlc-message p {
-    line-height: 32px;
-    min-height: 32px
-}
-
-.md {
-    max-width: none!important
-}
-
-.rlc-message-listing li.rlc-message p {
-    font-size: 13px!important
-}
-
-.rlc-message pre {
-    margin: 0;
-    padding: 0;
-    max-width: 90%;
-    border: #FCFCFC;
-    box-sizing: border-box;
-    border: 1px solid rgba(227,227,224,.44)
-}
-
-.channelname {
-    display: block;
-    float: left;
-    width: 100px;
-    line-height: 32px
-}
-
-.rlc-imageWithin span.rlc-imgvia {
-    float: right;
-    margin-left: 10px
-}
-
-div#rlc-settingsbar a {
-    display: inline-block
-}
-
-div#rlc-togglebar {
-    float: right;
-    display: block;
-    height: 100%;
-    padding-right: 10px
-}
-
-#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar {
-    float: right;
-    box-sizing: border-box;
-    text-align: center;
-    padding: 5px;
-    cursor: pointer;
-    border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    width: auto;
-    margin-left: 8px;
-    margin-top: 15px
-}
-
-div#rlc-settings label {
-    float: left;
-    width: 100%;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(227,227,224,.44)
-}
-
-div#rlc-settings label span {
-    padding-top: 3px;
-    padding-bottom: 5px;
-    font-size: .7em;
-    text-align: right;
-    display: block;
-    float: right;
-    padding-right: 20px
-}
-
-div#rlc-settings input {
-    margin-right: 5px
-}
-
-.rlc-channel-add button {
-    border: 0;
-    margin: 0;
-    padding: 4px 14px;
-    border-top: 0;
-    border-bottom: 0
-}
-
-.rlc-showChannelsUI #new-update-form {
-    width: 77%;
-    float: left
-}
-
-.rlc-showChannelsUI select#rlc-channel-dropdown {
-    display: block;
-    width: 10%;
-    height: 34px;
-    float: left;
-    border: 1px solid rgba(227,227,224,.44)
-}
-
-.rlc-showChannelsUI #rlc-sendmessage {
-    width: 13%;
-    float: left
-}
-
-.rlc-showChannelsUI div#filter_tabs {
-    display: block;
-    z-index: 100
-}
-
-.rlc-showChannelsUI .rlc-channel-add {
-    position: absolute;
-    top: 27px;
-    right: 17px;
-    padding: 5px;
-    box-sizing: border-box;
-    -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
-    -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1)
-}
-
-#filter_tabs .rlc-filters>span:last-of-type {
-    border-right: 0
-}
-
-div#filter_tabs {
-    width: calc(100% - 17px)
-}
-
-#filter_tabs {
-    table-layout: fixed;
-    width: 100%;
-    height: 26px;
-    position: absolute
-}
-
-#filter_tabs>span {
-    width: 90%;
-    display: table-cell
-}
-
-#filter_tabs>span.all,#filter_tabs>span.more {
-    width: 60px;
-    text-align: center;
-    vertical-align: middle;
-    cursor: pointer
-}
-
-#filter_tabs .rlc-filters {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-    height: 24px
-}
-
-#filter_tabs .rlc-filters>span {
-    padding: 7px 2px!important;
-    text-align: center;
-    display: table-cell;
-    cursor: pointer;
-    vertical-align: middle;
-    font-size: 1.1em;
-    border-right: 1px solid rgba(227,227,224,.44)
-}
-
-#filter_tabs .rlc-filters>span>span {
-    pointer-events: none
-}
-
-#filter_tabs>span.all {
-    padding: 0 30px;
-    border-right: 1px solid rgba(227,227,224,.44)
-}
-
-#filter_tabs>span.more {
-    padding: 0 30px;
-    border-left: 1px solid rgba(227,227,224,.44)
-}
-
-.rlc-channel-add input {
-    border: 1px solid rgba(227,227,224,.44);
-    padding: 0;
-    height: 24px;
-    background-color: transparent
-}
-
-.longMessageClosed {
-    max-height: 30px;
-    overflow-y: hidden;
-    overflow-x: hidden;
-    position: relative;
-    min-height: 32px
-}
-
-.longMessageClosed p {
-    position: relative;
-    left: 25px;
-    top: -5px
-}
-
-.longMessageClosed .extendButton {
-    position: absolute;
-    top: 7px;
-    margin-right: 5px
-}
-
-.longMessageClosed pre {
-    position: absolute;
-    left: 25px
-}
-
-#myContextMenu {
-    position: absolute;
-    box-shadow: 1px 1px 2px #888;
-    background-color: grey;
-    padding: 5px 0
-}
-
-#myContextMenu ul {
-    list-style-type: none
-}
-
-#myContextMenu ul li a {
-    padding: .5em 1em;
-    display: block
-}
-
-.mrPumpkin,.mrTwitchEmotes {
-    display: inline-block;
-    position: relative
-}
-
-#myContextMenu ul li:not(.disabled) a:hover {
-    cursor: pointer
-}
-
-.mrPumpkin {
-    height: 24px;
-    width: 24px;
-    border-radius: 3px;
-    background-size: 144px;
-    top: 6px
-}
-
-.dark-background .mrPumpkin {
-    border-radius: 5px
-}
-
-.dark-background .mrTwitchEmotes,.mrTwitchEmotes {
-    border-radius: 0
-}
-
-.mp_frown {
-    background-position: -24px 0
-}
-
-.mp_confused {
-    background-position: -48px 0
-}
-
-.mp_meh {
-    background-position: 0 -24px
-}
-
-.mp_angry {
-    background-position: -48px -24px
-}
-
-.mp_shocked {
-    background-position: -24px -24px
-}
-
-.mp_happy {
-    background-position: -72px 120px
-}
-
-.mp_sad {
-    background-position: -72px 96px
-}
-
-.mp_crying {
-    background-position: 0 72px
-}
-
-.mp_tongue {
-    background-position: 0 24px
-}
-
-.mp_xhappy {
-    background-position: -48px 48px
-}
-
-.mp_xsad {
-    background-position: -24px 48px
-}
-
-.mp_xsmile {
-    background-position: 0 48px
-}
-
-.mp_annoyed {
-    background-position: -72px 72px
-}
-
-.mp_bored {
-    background-position: -48px 72px
-}
-
-.mp_wink {
-    background-position: -24px 72px
-}
-
-.mp_evilsmile {
-    background-position: -72px 24px
-}
-
-.mp_disappointed {
-    background-position: -96px 0
-}
-
-.mp_stjerneklar {
-    background-position: -72px 48px
-}
-
-.mp_fatherderp {
-    background-position: -24px 24px
-}
-
-.mp_s3cur1ty {
-    background-position: -48px 24px
-}
-
-.mrTwitchEmotes {
-    height: 28px;
-    width: 25px;
-    background-size: 100px;
-    top: 0
-}
-
-.tw_kappa {
-    background-position: -25px -28px
-}
-
-.tw_elegiggle {
-    background-position: -50px 0
-}
-
-.tw_4head {
-    background-position: 0 0
-}
-
-.tw_notlikethis {
-    background-position: -75px 0
-}
-
-.tw_dansgame {
-    background-position: -25px 0
-}
-
-.tw_failfish {
-    background-position: 0 -28px
-}
-
-.tw_kreygasm {
-    background-position: -50px -28px
-}
-
-.tw_pogchamp {
-    background-position: -75px -28px
-}
-
-.tw_smorc {
-    background-position: 0 -55px
-}
-
-#filter_tabs,#hsts_pixel,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author,select#rlc-channel-dropdown {
-    display: none
-}
-
-#liveupdate-resources h2 {
-    display: none!important
-}
-
-.rlc-showoptions #rlc-settings {
-    display: block
-}
-
-.rlc-showoptions #rlc-main-sidebar {
-    display: none
-}
-
-.rlc-showreadmebar #rlc-readmebar {
-    display: block
-}
-
-.rlc-showreadmebar #rlc-main-sidebar {
-    display: none
-}
-
-#option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-TTSDisableUserbasedVoices,#option-rlc-TTSUsernameNarration,#option-rlc-TTSLongMessages,#option-rlc-TTSDisableSelfnarration {
-    display: none!important
-}
-
-.rlc-TextToSpeech #option-rlc-TTSDisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration,.rlc-TextToSpeech #option-rlc-TTSDisableSelfnarration,.rlc-TextToSpeech #option-rlc-TTSLongMessages {
-    display: block!important
-}
-
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-    #option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars {
-        display:block!important
+    .dark-background #rlc-messagebox textarea {
+        background: #404040
     }
-}
+    #rlc-messagebox option {
+        background-color: #FCFCFC
+    }
+    .dark-background .md code {
+        background: #000
+    }
+    #rlc-header,#rlc-wrapper,body {
+        overflow: hidden
+    }
+    img.rlc-image {
+        max-height: 200px
+    }
+    #rlc-messagebox .md,#rlc-messagebox .usertext,header#liveupdate-header {
+        max-width: none
+    }
+    #filter_tabs,#rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,#rlc-wrapper,#togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS {
+        -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        border-top: 1px solid rgba(128,128,128,.35)
+    }
+    #rlc-messagebox,#rlc-sidebar {
+        float: right;
+        box-sizing: border-box;
+        background-color: #EFEFED
+    }
+    div#rlc-settings label {
+        display: block;
+        font-size: 1.4em;
+        margin-left: 10px
+    }
+    #new-update-form {
+        margin: 0;
+        width: 87%;
+        float: left
+    }
+    #rlc-messagebox .usertext-edit.md-container {
+        max-width: none;
+        padding: 0;
+        margin: 0
+    }
+    header#liveupdate-header {
+        margin: 0!important;
+        padding: 7px 15px;
+    }
+    h1#liveupdate-title:before {
+        content: "chat in "
+    }
+    h1#liveupdate-title {
+        font-size: 1.5em;
+        float: left;
+        padding: 0;
+        width:100%;
+    }
+    #rlc-header #liveupdate-statusbar {
+        margin: 0;
+        padding: 0;
+        border: none!important;
+        background-color: transparent
+    }
+    #rlc-wrapper .rlc-message .body {
+        max-width: none!important;
+        margin: 0;
+        font-size: 13px;
+        font-family: "Open Sans",sans-serif
+    }
+    div#rlc-sidebar {
+        max-height: 550px
+    }
+    #rlc-wrapper {
+        height: calc(100vh - 63px);
+        max-width: 1248px;
+        max-height: 600px;
+        margin: 0 auto;
+        border-radius: 0 0 2px 2px;
+        -moz-border-radius: 0 0 2px 2px;
+        -webkit-border-radius: 0 0 2px 2px
+    }
+    #rlc-header {
+        height: 50px;
+        border-bottom: 1px solid rgba(227,227,224,.44);
+        border-top: 0;
+        box-sizing: border-box
+    }
+    #rlc-main,#rlc-titlebar {
+        width: 76%;
+        float: left;
+        position: relative
+    }
+    #rlc-sidebar {
+        width: 24%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: calc(100vh - 114px);
+        border-left: 1px solid rgba(227,227,224,.44);
+        padding: 5px 0
+    }
+    #rlc-chat {
+        height: calc(100vh - 186px);
+        overflow-y: scroll;
+        max-height: 465px;
+        margin-top: 30px
+    }
+    #rlc-main .rlc-message-listing {
+        max-width: 100%;
+        padding: 0 0 0 15px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column-reverse;
+        min-height: 100%
+    }
+    #rlc-messagebox textarea {
+        border: 1px solid rgba(227,227,224,.44);
+        float: left;
+        height: 34px;
+        margin: 0;
+        border-radius: 2px;
+        padding: 6px;
+        background: 0 0;
+        resize: none
+    }
+    #rlc-messagebox textarea,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update,.rlc-showChannelsUI select#rlc-channel-dropdown,body {
+        background-color: #fcfcfc
+    }
+    #rlc-sendmessage,#rlc-toggleguide,#rlc-toggleoptions,#rlc-update {
+        border-radius: 2px;
+        width: calc(33.3% - 7px);
+        float: left;
+        text-align: center;
+        box-sizing: border-box;
+        cursor: pointer;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        font-size: 1.2em
+    }
+    #rlc-messagebox {
+        padding: 10px;
+        width: 100%
+    }
+    #rlc-sendmessage {
+        height: 32px;
+        width: 13%;
+        float: right;
+        padding: 8px 0
+    }
+    #rlc-toggleguide,#rlc-toggleoptions,#rlc-update {
+        padding: 4px 0 6px;
+        box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        margin-right: 10px;
+        letter-spacing: 1px;
+        margin-bottom: 8px
+    }
+    #rlc-toggleguide {
+        margin-bottom: 0;
+        margin-right: 0
+    }
+    .rlc-message .simpletime {
+        float: left;
+        padding-left: 10px;
+        box-sizing: border-box;
+        width: 75px;
+        text-transform: uppercase;
+        line-height: 32px
+    }
+    .rlc-message a.author {
+        float: left;
+        padding-right: 10px;
+        margin: 0;
+        padding-top: 0;
+        font-weight: 600;
+        width: 130px
+    }
+    .rlc-message-listing li.rlc-message .body .md {
+        float: right;
+        width: calc(100% - 220px);
+        max-width: none;
+        box-sizing: border-box
+    }
+    li.rlc-message.in-channel .body .md {
+        width: calc(100% - 320px)
+    }
+    #rlc-settingsbar {
+        width: 100%;
+        height: auto;
+        padding: 0 10px;
+        box-sizing: border-box;
+        margin: 5px 0;
+        float: left
+    }
+    #rlc-main-sidebar {
+        float: right;
+        width: 100%
+    }
+    #rlc-sidebar hr {
+        height: 2px;
+        width: 100%;
+        margin-left: 0
+    }
+    #rlc-sidebar h3 {
+        padding: 0 10px
+    }
+    #rlc-statusbar {
+        width: 24%;
+        float: right;
+        text-align: center;
+        padding-top: 8px
+    }
+    #versionnumber {
+        padding-top: 5px
+    }
+    #liveupdate-description {
+        float: left;
+        width:100%;      
+    }
+    .noselect {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none
+    }
+    body {
+        min-width: 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center
+    }
+    .rlc-channel-add button,body.dark-background #rlc-leftPanel,body.dark-background #rlc-messagebox,body.dark-background #rlc-sidebar,body.dark-background #rlc-toggleguide,body.dark-background #rlc-toggleoptions,body.dark-background #rlc-update,body.dark-background.rlc-showChannelsUI select#rlc-channel-dropdown,body.rlc-customBg #rlc-leftPanel {
+        background-color: transparent
+    }
+    #rlc-wrapper .md pre {
+        background-color: transparent!important
+    }
+    .rlc-message.user-narration .body .md {
+        font-style: italic
+    }
+    .rlc-message.user-mention .body .md p {
+        font-weight: 700
+    }
+    .rlc-message a.author,.rlc-message p {
+        line-height: 32px;
+        min-height: 32px
+    }
+    .rlc-message-listing li.rlc-message p {
+        font-size: 13px!important
+    }
+    .rlc-message pre {
+        margin: 0;
+        padding: 0;
+        max-width: 90%;
+        border: #FCFCFC;
+        box-sizing: border-box;
+        border: 1px solid rgba(227,227,224,.44)
+    }
+    .channelname {
+        display: block;
+        float: left;
+        width: 100px;
+        line-height: 32px
+    }
+    .rlc-imageWithin span.rlc-imgvia {
+        float: right;
+        margin-left: 10px
+    }
+    div#rlc-settingsbar a {
+        display: inline-block
+    }
+    div#rlc-togglebar {
+        float: right;
+        display: block;
+        height: 100%;
+        padding-right: 10px
+    }
+    #togglebarAutoscroll,#togglebarLoadHist,#togglebarTTS,#togglesidebar {
+        float: right;
+        box-sizing: border-box;
+        text-align: center;
+        padding: 5px;
+        cursor: pointer;
+        border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        width: auto;
+        margin-left: 8px;
+        margin-top: 15px
+    }
+    div#rlc-settings label {
+        float: left;
+        width: 100%;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(227,227,224,.44)
+    }
+    div#rlc-settings label span {
+        padding-top: 3px;
+        padding-bottom: 5px;
+        font-size: .7em;
+        text-align: right;
+        display: block;
+        float: right;
+        padding-right: 20px
+    }
+    div#rlc-settings input {
+        margin-right: 5px
+    }
+    .rlc-channel-add button {
+        border: 0;
+        margin: 0;
+        padding: 4px 14px;
+        border-top: 0;
+        border-bottom: 0
+    }
+    .rlc-showChannelsUI #new-update-form {
+        width: 77%;
+        float: left
+    }
+    .rlc-showChannelsUI select#rlc-channel-dropdown {
+        display: block;
+        width: 10%;
+        height: 34px;
+        float: left;
+        border: 1px solid rgba(227,227,224,.44)
+    }
+    .rlc-showChannelsUI #rlc-sendmessage {
+        width: 13%;
+        float: left
+    }
+    .rlc-showChannelsUI div#filter_tabs {
+        display: block;
+        z-index: 100
+    }
+    .rlc-showChannelsUI .rlc-channel-add {
+        position: absolute;
+        top: 27px;
+        right: 17px;
+        padding: 5px;
+        box-sizing: border-box;
+        -webkit-box-shadow: 0 1px 2px 0 rgba(166,166,166,1);
+        -moz-box-shadow: 0 1px 2px 0 rgba(166,166,166,1)
+    }
+    #filter_tabs .rlc-filters>span:last-of-type {
+        border-right: 0
+    }
+    div#filter_tabs {
+        width: calc(100% - 17px)
+    }
+    #filter_tabs {
+        table-layout: fixed;
+        width: 100%;
+        height: 26px;
+        position: absolute
+    }
+    #filter_tabs>span {
+        width: 90%;
+        display: table-cell
+    }
+    #filter_tabs>span.all,#filter_tabs>span.more {
+        width: 60px;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer
+    }
+    #filter_tabs .rlc-filters {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        height: 24px
+    }
+    #filter_tabs .rlc-filters>span {
+        padding: 7px 2px!important;
+        text-align: center;
+        display: table-cell;
+        cursor: pointer;
+        vertical-align: middle;
+        font-size: 1.1em;
+        border-right: 1px solid rgba(227,227,224,.44)
+    }
+    #filter_tabs .rlc-filters>span>span {
+        pointer-events: none
+    }
+    #filter_tabs>span.all {
+        padding: 0 30px;
+        border-right: 1px solid rgba(227,227,224,.44)
+    }
+    #filter_tabs>span.more {
+        padding: 0 30px;
+        border-left: 1px solid rgba(227,227,224,.44)
+    }
+    .rlc-channel-add input {
+        border: 1px solid rgba(227,227,224,.44);
+        padding: 0;
+        height: 24px;
+        background-color: transparent
+    }
+    .longMessageClosed {
+        max-height: 30px;
+        overflow-y: hidden;
+        overflow-x: hidden;
+        position: relative;
+        min-height: 32px
+    }
+    .longMessageClosed p {
+        position: relative;
+        left: 25px;
+        top: -5px
+    }
+    .longMessageClosed .extendButton {
+        position: absolute;
+        top: 7px;
+        margin-right: 5px
+    }
+    .longMessageClosed pre {
+        position: absolute;
+        left: 25px
+    }
+    #myContextMenu {
+        position: absolute;
+        box-shadow: 1px 1px 2px #888;
+        background-color: grey;
+        padding: 5px 0
+    }
+    #myContextMenu ul {
+        list-style-type: none
+    }
+    #myContextMenu ul li a {
+        padding: .5em 1em;
+        display: block
+    }
+    .mrPumpkin,.mrTwitchEmotes {
+        display: inline-block;
+        position: relative
+    }
+    #myContextMenu ul li:not(.disabled) a:hover {
+        cursor: pointer
+    }
+    .mrPumpkin {
+        height: 24px;
+        width: 24px;
+        background-size: 144px;
+        top: 6px
+    }
+    .mp_frown {
+        background-position: -24px 0
+    }
+    .mp_confused {
+        background-position: -48px 0
+    }
+    .mp_meh {
+        background-position: 0 -24px
+    }
+    .mp_angry {
+        background-position: -48px -24px
+    }
+    .mp_shocked {
+        background-position: -24px -24px
+    }
+    .mp_happy {
+        background-position: -72px 120px
+    }
+    .mp_sad {
+        background-position: -72px 96px
+    }
+    .mp_crying {
+        background-position: 0 72px
+    }
+    .mp_tongue {
+        background-position: 0 24px
+    }
+    .mp_xhappy {
+        background-position: -48px 48px
+    }
+    .mp_xsad {
+        background-position: -24px 48px
+    }
+    .mp_xsmile {
+        background-position: 0 48px
+    }
+    .mp_annoyed {
+        background-position: -72px 72px
+    }
+    .mp_bored {
+        background-position: -48px 72px
+    }
+    .mp_wink {
+        background-position: -24px 72px
+    }
+    .mp_evilsmile {
+        background-position: -72px 24px
+    }
+    .mp_disappointed {
+        background-position: -96px 0
+    }
+    .mp_stjerneklar {
+        background-position: -72px 48px
+    }
+    .mp_fatherderp {
+        background-position: -24px 24px
+    }
+    .mp_s3cur1ty {
+        background-position: -48px 24px
+    }
+    .mrTwitchEmotes {
+        height: 28px;
+        width: 25px;
+        background-size: 100px;
+        top: 0
+    }
+    .tw_ross {
+        background-position: -50px -55px
+    }
+    .tw_claus {
+        background-position: -75px -55px
+    }
+    .tw_kappa {
+        background-position: -25px -28px
+    }
+    .tw_wutface {
+        background-position: -25px -55px
+    }
+    .tw_elegiggle {
+        background-position: -50px 0
+    }
+    .tw_4head {
+        background-position: 0 0
+    }
+    .tw_notlikethis {
+        background-position: -75px 0
+    }
+    .tw_dansgame {
+        background-position: -25px 0
+    }
+    .tw_failfish {
+        background-position: 0 -28px
+    }
+    .tw_kreygasm {
+        background-position: -50px -28px
+    }
+    .tw_pogchamp {
+        background-position: -75px -28px
+    }
+    .tw_smorc {
+        background-position: 0 -55px
+    }
+    #filter_tabs,#hsts_pixel,#myContextMenu,#rlc-guidebar,#rlc-readmebar,#rlc-settings,.bottom-area,.content,.debuginfo,.footer-parent,.rlc-channel-add,.rlc-compact #header,.rlc-hideChannelsInGlobal .rlc-message.in-channel,.rlc-showChannelsUI .rlc-filter .rlc-message,.save-button,.user-narration a.author,select#rlc-channel-dropdown {
+        display: none
+    }
+    #liveupdate-resources h2 {
+        display: none!important
+    }
+    .rlc-showoptions #rlc-settings {
+        display: block
+    }
+    .rlc-showoptions #rlc-main-sidebar {
+        display: none
+    }
+    .rlc-showreadmebar #rlc-readmebar {
+        display: block
+    }
+    .rlc-showreadmebar #rlc-main-sidebar {
+        display: none
+    }
+    #option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars,#option-rlc-TTSDisableUserbasedVoices,#option-rlc-TTSUsernameNarration,#option-rlc-TTSLongMessages,#option-rlc-TTSDisableSelfnarration {
+        display: none!important
+    }
+    .rlc-TextToSpeech #option-rlc-TTSDisableUserbasedVoices,.rlc-TextToSpeech #option-rlc-TTSUsernameNarration,.rlc-TextToSpeech #option-rlc-TTSDisableSelfnarration,.rlc-TextToSpeech #option-rlc-TTSLongMessages {
+        display: block!important
+    }
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        #option-rlc-ChromeNotifications,#option-rlc-ChromeScrollBars {
+            display:block!important
+        }
+    }
+    .rlc-hidesidebar #rlc-sidebar,div#rlc-leftPanel {
+        display: none
+    }
+    #myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button {
+        color: #fff
+    }
+    .rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar {
+        background: 0 0
+    }
+    .rlc-compact #rlc-chat {
+        height: calc(100vh - 252px);
+        max-height: 466px
+    }
+    .rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar {
+        max-height: none
+    }
+    .rlc-fullwidth div#rlc-chat {
+        height: calc(100vh - 198px)
+    }
+    .rlc-fullwidth #rlc-wrapper {
+        max-height: none;
+        max-width: none;
+        height: calc(100vh - 0px)
+    }
+    .rlc-fullwidth div#rlc-wrapper {
+        height: 100%
+    }
+    .rlc-compact.rlc-fullwidth #rlc-chat {
+        height: calc(100vh - 134px)
+    }
+    .rlc-compact.rlc-fullwidth #rlc-leftPanel,.rlc-compact.rlc-fullwidth #rlc-sidebar {
+        height: calc(100vh - 50px)
+    }
+    .rlc-compact #rlc-wrapper {
+        margin-top: 75px
+    }
+    .rlc-compact #rlc-header {
+        border-top: 1px solid rgba(227,227,224,.44)
+    }
+    .rlc-compact.rlc-fullwidth #rlc-wrapper {
+        margin-top: 0
+    }
+    body.dark-background {
+        background-color: #404040
+    }
+    body.rlc-customBg #rlc-wrapper {
+        background-color: rgba(255,255,255,.1)!important
+    }
+    .rlc-customBg #rlc-main textarea { 
+        background:transparent!important; 
+    }
+    body.dark-background.rlc-customBg #rlc-wrapper {
+        background-color: rgba(0,0,0,.1)!important
+    }
+    body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg #rlc-wrapper .md,body.dark-background.rlc-customBg #rlc-wrapper .rlc-channel-add button {
+        text-shadow: 0 0 8px rgba(0,0,0,1)!important
+    }
+    .rlc-customBg #rlc-wrapper .rlc-channel-add button,body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md {
+        text-shadow: 0 0 8px rgba(255,255,255,1)!important
+    }
+    .dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a {
+        color: #add8e6
+    }
+    .rlc-hidesidebar #rlc-main {
+        width: 100%
+    }
+    .rlc-leftPanel #rlc-main {
+        width: 60%;
+        float: left
+    }
+    .rlc-leftPanel #rlc-sidebar {
+        width: 20%
+    }
+    .rlc-leftPanel #rlc-leftPanel {
+        width: 20%;
+        float: left;
+        display: block;
+        background-color: #EFEFED;
+        height: calc(100vh - 114px)
+    }
+    .rlc-customscrollbars div#filter_tabs {
+        width: calc(100% - 12px)
+    }
+    .rlc-customscrollbars ::-webkit-scrollbar {
+        width: 12px
+    }
+    .dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb {
+        border: 1px solid rgba(227,227,224,.26)
+    }
+    .rlc-customscrollbars ::-webkit-scrollbar-thumb {
+        border: 1px solid rgba(227,227,224,.85)
+    }
+    .dark-background #rlc-channel-dropdown {
+        color: #fff
+    }
+    .dark-background #rlc-channel-dropdown option {
+        color: #000
+    }
+    div#rlc-update a {
+        color: inherit!important;
+    }
+    div#rlc-messagebox {
+        display: none;
+    }
+    .rlc-canUpdate div#rlc-messagebox {
+        display: block;
+    }
+    .rlc-secondsMode .simpletime {
+        width: 90px;
+    }
+    .rlc-secondsMode .rlc-message-listing li.rlc-message .body .md {
+        float: right;
+        width: calc(100% - 230px);
+        max-width: none;
+        box-sizing: border-box;
+    }
+    .md {
+        overflow: hidden;
+        max-width: none!important
+    }
+    .muted { 
+        display:none; 
+    }
+    .mutedUser {
+        text-decoration: line-through;
+        cursor:pointer;
+    }
+    #rlc-userListUI {
+        padding: 15px 10px 10px 15px;
+        font-size: 1.3em;
+    }
+    #rlc-userListUI p {
+        list-style: outside;
+        padding: 0 0 4px
+    }
 
-.rlc-hidesidebar #rlc-sidebar,div#rlc-leftPanel {
-    display: none
-}
-
-#myContextMenu a,.dark-background #rlc-messagebox textarea,.dark-background p.state,.dark-background p.viewer-count,body.dark-background #rlc-wrapper,body.dark-background #rlc-wrapper .md,body.dark-background #rlc-wrapper .rlc-channel-add button {
-    color: #fff
-}
-
-.rlc-customBg #rlc-messagebox,.rlc-customBg #rlc-messagebox select,.rlc-customBg #rlc-sidebar {
-    background: 0 0
-}
-
-.rlc-compact #rlc-chat {
-    height: calc(100vh - 252px);
-    max-height: 466px
-}
-
-.rlc-fullwidth div#rlc-chat,.rlc-fullwidth div#rlc-sidebar {
-    max-height: none
-}
-
-.rlc-fullwidth div#rlc-chat {
-    height: calc(100vh - 198px)
-}
-
-.rlc-fullwidth #rlc-wrapper {
-    max-height: none;
-    max-width: none;
-    height: calc(100vh - 0px)
-}
-
-.rlc-fullwidth div#rlc-wrapper {
-    height: 100%
-}
-
-.rlc-compact.rlc-fullwidth #rlc-chat {
-    height: calc(100vh - 134px)
-}
-
-.rlc-compact.rlc-fullwidth #rlc-leftPanel,.rlc-compact.rlc-fullwidth #rlc-sidebar {
-    height: calc(100vh - 50px)
-}
-
-.rlc-compact #rlc-wrapper {
-    margin-top: 75px
-}
-
-.rlc-compact #rlc-header {
-    border-top: 1px solid rgba(227,227,224,.44)
-}
-
-.rlc-compact.rlc-fullwidth #rlc-wrapper {
-    margin-top: 0
-}
-
-body.dark-background {
-    background-color: #404040
-}
-
-body.rlc-customBg #rlc-wrapper {
-    background-color: rgba(255,255,255,.1)!important
-}
-
-.rlc-customBg #rlc-main textarea{ background:transparent!important; }
-
-body.dark-background.rlc-customBg #rlc-wrapper {
-    background-color: rgba(0,0,0,.1)!important
-}
-
-body.dark-background.rlc-customBg #rlc-wrapper,body.dark-background.rlc-customBg #rlc-wrapper .md,body.dark-background.rlc-customBg #rlc-wrapper .rlc-channel-add button {
-    text-shadow: 0 0 8px rgba(0,0,0,1)!important
-}
-
-.rlc-customBg #rlc-wrapper .rlc-channel-add button,body.rlc-customBg #rlc-wrapper,body.rlc-customBg #rlc-wrapper .md {
-    text-shadow: 0 0 8px rgba(255,255,255,1)!important
-}
-
-.dark-background #rlc-sidebar a,.dark-background #rlc-wrapper .md a {
-    color: #add8e6
-}
-
-.rlc-hidesidebar #rlc-main {
-    width: 100%
-}
-
-.rlc-leftPanel #rlc-main {
-    width: 60%;
-    float: left
-}
-
-.rlc-leftPanel #rlc-sidebar {
-    width: 20%
-}
-
-.rlc-leftPanel #rlc-leftPanel {
-    width: 20%;
-    float: left;
-    display: block;
-    background-color: #EFEFED;
-    height: calc(100vh - 114px)
-}
-
-.rlc-customscrollbars div#filter_tabs {
-    width: calc(100% - 12px)
-}
-
-.rlc-customscrollbars ::-webkit-scrollbar {
-    width: 12px
-}
-
-.dark-background.rlc-customscrollbars ::-webkit-scrollbar-thumb {
-    border: 1px solid rgba(227,227,224,.26)
-}
-
-.rlc-customscrollbars ::-webkit-scrollbar-thumb {
-    border: 1px solid rgba(227,227,224,.85)
-}
-
-.dark-background #rlc-channel-dropdown {
-    color: #fff
-}
-
-.dark-background #rlc-channel-dropdown option {
-    color: #000
-}
-div#rlc-update a {
-    color: inherit!important;
-}
-div#rlc-messagebox {
-    display: none;
-}
-
-.rlc-canUpdate div#rlc-messagebox {
-    display: block;
-}
     `);
 
     // BG alternation - breaks minifier
     GM_addStyle('.dark-background .alt-bgcolor,.dark-background .selected {background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6YwwAAdQBAooJK6AAAAAASUVORK5CYII=)!important}.alt-bgcolor,.selected{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGM6Uw8AAiABTnvshQUAAAAASUVORK5CYII=)!important}');
 
     // base 64 encoded emote spritesheet - art by image author 741456963789852123/FlamingObsidian, added to by kreten
-    GM_addStyle('.mrPumpkin{background-image:url("data:image/png;base64,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")}');
+    GM_addStyle('.mrPumpkin{background-image:url(" data:image/png;base64,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")}');
 
     // Twitch emotions base 64 encoded - author kretenkobr2
-    GM_addStyle('.mrTwitchEmotes{background-image:url("data:image/png;base64,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")}');
+    GM_addStyle('.mrTwitchEmotes{background-image:url(" data:image/png;base64,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")}');
