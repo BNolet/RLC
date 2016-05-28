@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.22.1
+// @version        3.22.2
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
@@ -412,9 +412,12 @@
         // render tabs
         this.drawTabs = function(){
             var html = "";
+            $("#rlc-channel-dropdown").empty();
+            $("#rlc-channel-dropdown").append("<option></option>")
             for(var i in this.channels){
                 if (typeof this.channels[i] === "undefined") continue;
                 html += `<span data-filter="${i}" data-filter-name="${this.channels[i]}">${this.channels[i]}(<span>0</span>)</span> `;
+                $("#rlc-channel-dropdown").append(`<option>${this.channels[i]}</option>`)
             }
             this.$el.find(".rlc-filters").html(html);
         };
@@ -2191,10 +2194,7 @@
             </div>
             <div id="rlc-messagebox">
                 <select id="rlc-channel-dropdown">
-                    <option></option>
-                    <option>%general</option>
-                    <option>%offtopic</option>
-                    <option>%dev</option>
+
                 </select>
                 <div id="rlc-sendmessage">Send Message</div>
             </div>
