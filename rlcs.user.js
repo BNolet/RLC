@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           RLC
-// @version        3.21.1
+// @version        3.22
 // @description    Chat-like functionality for Reddit Live
 // @author         FatherDerp & Stjerneklar
 // @contributor    Kretenkobr2, thybag, mofosyne, jhon, FlamingObsidian, MrSpicyWeiner, TheVarmari, dashed
@@ -1261,27 +1261,39 @@
     // try to get persistant user list 
     var storedUserList = GM_getValue("storedUserList");
 
+    // check if we have a persistant user list
     if(storedUserList!=undefined){
-        var userList = storedUserList;
+        // if so, handle loading the storedUserList into userList
+        var userList = [];
+
+            // push each user in the storedUserList to the userList
+            $.each(storedUserList, function(idx,item){
+                var user = {
+                    name: item.name,                // set name of user being tracked
+                    lastMsgTime: item.lastMsgTime,  // set time of latest activity to timestamp passed 
+                    countMsg: 0,                  // reset message count (value equaling 0 means user is inactive)
+                    isMuted: item.isMuted,          // load mute state
+                    colorArray: item.colorArray     // load user colors
+                };
+                userList.push(user); //insert user object into user tracking array
+            });
+
     }else{
+        // if not, create userList as an empty array ready for users 
         var userList = [];
     }
 
     // run only on the first message recived from a user.
-    function addUserToArray(name,time,muted) {
+    function addUserToArray(name,time) {
         // create user object for tracking
         var user = {
-            name:name,           // set name of user being tracked
-            lastMsgTime:time,         // set time of latest activity to timestamp passed 
-            countMsg:"1",          // set initial message tracking count [remeber not to make this persist XD]
-            isMuted:muted,         // could add a check of the associated GM array of muted users to see if it should be true.
-            colorArray: colorGen(name) 
+            name:name,             // set name of user being tracked
+            lastMsgTime:time,      // set time of latest activity to timestamp passed 
+            countMsg:1,          // set message tracking count (value above 0 means user is active)
+            isMuted:false,         // set mute state
+            colorArray: colorGen(name) // generate array of user colors for robin/dark/non-dark modes 
         };
         userList.push(user); //insert user object into user tracking array
-        GM_setValue("storedUserList", userList);
-        if (loadHistoryMessageException === 0) {
-             updateUserListInterface();
-        }
     }
 
     function updateUserListInterface() {
@@ -1302,17 +1314,24 @@
                 // default non dark colors
                 else { var usercolor = item.colorArray[1]; }
             }
-            selectors.push(`.user-${item.name} .author {color:#${usercolor}}`);   
+            selectors.push(`.user-${item.name} .author, p.user-${item.name} {color:#${usercolor}}`);   
 
             if (item.isMuted) { 
-            $("#rlc-userListUI").append(`<p class="mutedUser .user-${item.name}">${item.name}</p>`);     
+            $("#rlc-userListUI").append(`<p class="mutedUser user-${item.name}">${item.name}</p>`);     
             }
             else { 
-            $("#rlc-userListUI").append(`<p>${item.name}</p>`);  
+                if (item.countMsg === 0) { 
+                    $("#rlc-userListUI").append(`<p class="inactiveUser user-${item.name}">${item.name} - ${item.lastMsgTime}</p>`);     
+                }
+                else { 
+                    $("#rlc-userListUI").append(`<p class="user-${item.name}">${item.name} - ${item.lastMsgTime} ( ${item.countMsg} )</p>`);  
+                }
             }
         });
 
         $("body").append(`<style id='userstyles'>${selectors.join(" ")}</style>`); // Inject style tag with user rules
+
+        $("#rlc-userListUI .inactiveUser").appendTo("#rlc-userListUI");
 
         // Handle clicking in muted user list (needs to be here for scope reasons)
         $("#rlc-userListUI .mutedUser").click(function(){
@@ -1320,8 +1339,6 @@
             unMuteUser(target);
         });
     }
-
-
 
     // mute user via interface
     function muteUser(name) { 
@@ -1351,28 +1368,35 @@
     function doUserTracking($el) { 
         var name = $el.find(".author").text();
         var time = $el.find(".simpletime").text();
-        var muted = $el.hasClass("muted");
         // try to find the user object in the userList array by matching its name property with that passed to the function 
         var result = $.grep(userList, function(e){ return e.name == name; });
 
         if (result.length == 0) {  // username not found, add
-              addUserToArray(name,time,muted);
+              addUserToArray(name,time);
+              console.log("doUserTracking added "+name+" to userList");
         } 
         if (result.length == 1) { // username found, track
-
+            //console.log("doUserTracking tracking "+name);
               // do things that require info from user object
               
               // increment the users message count since we are handling a message and already have him listed
               result[0].countMsg++;
-              //console.log(result[0].countMsg)
-            
+
+              result[0].lastMsgTime = time;
+              //console.log(time);
+
             // handling of muted users messages    
             if (result[0].isMuted) { 
                $el.addClass("muted");
             }
+
         } else {
-              console.log("ERROR: multiple users found.");
+              console.log("ERROR: multiple users found when grepping userList for"+name);
               console.log(userList);
+        }
+
+        if (loadHistoryMessageException === 0) {
+             updateUserListInterface();
         }
 
     }
@@ -2220,10 +2244,6 @@
             $("#rlc-guidebar .md").append(res[0]);
         }
 
-        // append userlist and muted user list
-        $("#rlc-main-sidebar").append("<div id='rlc-activeusers'><ul></ul></div>");
-        $("#rlc-main-sidebar").append("<div id='banlistcontainer'><div id='bannedlist'></div></div>");
-
         // append version info to header
         $("#rlc-statusbar").append("<div id='versionnumber'>Reddit Live Chat (RLC) v." + GM_info.script.version + "</div>");
 
@@ -2297,13 +2317,12 @@
         // testing zone: disable to get contributors from live api reported into console
         //getContributors();
         
-        // wait for initial load to be completed, and then scroll the chat window to the bottom.
-        // TODO make a preloader, it looks better
+        // wait for initial load to be completed
         setTimeout(function(){
-        //   $("#rlc-chat").show();
             scrollToBottom();
             loadHistoryMessageException = 0
             updateUserListInterface();
+            GM_setValue("storedUserList", userList); 
         }, 500);
 
     });
@@ -2556,16 +2575,6 @@
 
     li.rlc-message.in-channel .body .md {
         width: calc(100% - 320px)
-    }
-
-    #rlc-activeusers {
-        padding: 15px 20px 20px 40px;
-        font-size: 1.5em
-    }
-
-    #rlc-activeusers li {
-        list-style: outside;
-        padding: 0 0 8px
     }
 
     #rlc-settingsbar {
@@ -3199,12 +3208,27 @@
         max-width: none;
         box-sizing: border-box;
     }
+
     .md {
         overflow: hidden;
         max-width: none!important
     }
 
     .muted { display:none; }
+
+    .mutedUser {
+        text-decoration: line-through;
+    }
+
+    #rlc-userListUI {
+        padding: 15px 20px 20px 40px;
+        font-size: 1.5em
+    }
+
+    #rlc-userListUI p {
+        list-style: outside;
+        padding: 0 0 8px
+    }
 
     `);
 
