@@ -11,7 +11,7 @@ This userscript requires Tampermonkey or Greasemonkey to function
 * [Tampermonkey (Chrome)](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)
 * [Greasemonkey (Firefox)](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
 
-Once you have TamperMonkey or GreaseMonkey installed, click the link below!
+Once you have TamperMonkey or GreaseMonkey installed, click the link below!   
 [Install now](https://github.com/BNolet/RLCS/raw/master/rlcs.user.js)
 
 Then, come hang out in the [RLC Dev Chat](https://www.reddit.com/live/wpytzw1guzg2)!
