@@ -2494,6 +2494,9 @@
         max-height: 465px;
         margin-top: 30px
     }
+    .markdownEditor-wrapper {
+        display: none;
+    }
     #rlc-main .rlc-message-listing {
         max-width: 100%;
         padding: 0 0 0 15px;
